@@ -1,8 +1,10 @@
 #include "code_editor.h"
 #include "line_numbers.h"
+#include "services/highligters/highligters_factory.h"
 
 #include <qtextobject.h>
 #include <qpainter.h>
+#include <qfile.h>
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent) {
     lineNumberArea = new LineNumberArea(this);
@@ -13,6 +15,15 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent) {
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
+}
+
+void CodeEditor::openDocument(const QString & filePath) {
+    QFile file((currentPath = filePath));
+    if (file.open(QFile::ReadOnly | QFile::Text)) {
+        setPlainText(file.readAll());
+        extractExtension();
+        HighlightersFactory::obj().proceedDocument(currentMime, document());
+    }
 }
 
 int CodeEditor::lineNumberAreaWidth() {
