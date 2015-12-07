@@ -1,7 +1,7 @@
 #ifndef C_PLUS_HIGHLIGHTER
 #define C_PLUS_HIGHLIGHTER
 
-#include "ihighlighter.h"
+#include "base/ihighlighter.h"
 
 class CPlusHighLighter : public IHighlighter {
 protected:
@@ -11,19 +11,21 @@ protected:
         QTextCharFormat keywordFormat;
         keywordFormat.setForeground(Qt::darkBlue);
         keywordFormat.setFontWeight(QFont::Bold);
+
+        //TODO: move to external static variable
         QStringList keywordPatterns;
-        keywordPatterns << "\\bchar\\b" << "\\bclass\\b" << "\\bconst\\b"
-                        << "\\bdouble\\b" << "\\benum\\b" << "\\bexplicit\\b"
-                        << "\\bfriend\\b" << "\\binline\\b" << "\\bint\\b"
-                        << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
-                        << "\\bprivate\\b" << "\\bprotected\\b" << "\\bpublic\\b"
-                        << "\\bshort\\b" << "\\bsignals\\b" << "\\bsigned\\b"
-                        << "\\bslots\\b" << "\\bstatic\\b" << "\\bstruct\\b"
-                        << "\\btemplate\\b" << "\\btypedef\\b" << "\\btypename\\b"
-                        << "\\bunion\\b" << "\\bunsigned\\b" << "\\bvirtual\\b"
-                        << "\\bvoid\\b" << "\\bvolatile\\b";
-        foreach (const QString &pattern, keywordPatterns) {
-            rule.pattern = QRegExp(pattern);
+        keywordPatterns << "char" << "class" << "const"
+                        << "double" << "enum" << "explicit"
+                        << "friend" << "inline" << "int"
+                        << "long" << "namespace" << "operator"
+                        << "private" << "protected" << "public"
+                        << "short" << "signals" << "signed"
+                        << "slots" << "static" << "struct"
+                        << "template" << "typedef" << "typename"
+                        << "union" << "unsigned" << "virtual"
+                        << "void" << "volatile";
+        for(QStringList::ConstIterator pattern = keywordPatterns.constBegin(); pattern != keywordPatterns.constEnd(); pattern++) {
+            rule.pattern = QRegExp(QString("\\b" + (*pattern) + "\\b"));
             rule.format = keywordFormat;
             highlightingRules.append(rule);
         }
@@ -33,10 +35,6 @@ protected:
         classFormat.setForeground(Qt::darkMagenta);
         rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
         rule.format = classFormat;
-        highlightingRules.append(rule);
-
-        rule.pattern = QRegExp("//[^\n]*");
-        rule.format = singleLineCommentFormat;
         highlightingRules.append(rule);
 
 
@@ -51,6 +49,10 @@ protected:
         functionFormat.setForeground(Qt::blue);
         rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
         rule.format = functionFormat;
+        highlightingRules.append(rule);
+
+        rule.pattern = QRegExp("//[^\n]*");
+        rule.format = singleLineCommentFormat;
         highlightingRules.append(rule);
 
         commentStartExpression = QRegExp("/\\*");

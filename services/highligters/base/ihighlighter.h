@@ -2,10 +2,11 @@
 #define IHIGHLIGHTER_H
 
 #include <qsyntaxhighlighter.h>
+#include <qstringbuilder.h>
 
 #include "highlighter_rule.h"
 
-class QTextDocument;
+//class QTextDocument;
 
 class IHighlighter : public QSyntaxHighlighter {
     Q_OBJECT
