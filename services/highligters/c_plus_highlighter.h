@@ -25,7 +25,7 @@ protected:
                         << "union" << "unsigned" << "virtual"
                         << "void" << "volatile";
         for(QStringList::ConstIterator pattern = keywordPatterns.constBegin(); pattern != keywordPatterns.constEnd(); pattern++) {
-            rule.pattern = QRegExp(QString("\\b" + (*pattern) + "\\b"));
+            rule.pattern = QRegularExpression(QString("\\b" + (*pattern) + "\\b"));
             rule.format = keywordFormat;
             highlightingRules.append(rule);
         }
@@ -33,30 +33,30 @@ protected:
         QTextCharFormat classFormat;
         classFormat.setFontWeight(QFont::Bold);
         classFormat.setForeground(Qt::darkMagenta);
-        rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
+        rule.pattern = QRegularExpression("\\bQ[A-Za-z]+\\b");
         rule.format = classFormat;
         highlightingRules.append(rule);
 
 
         QTextCharFormat quotationFormat;
         quotationFormat.setForeground(Qt::darkGreen);
-        rule.pattern = QRegExp("\".*\"");
+        rule.pattern = QRegularExpression("\".*\"");
         rule.format = quotationFormat;
         highlightingRules.append(rule);
 
         QTextCharFormat functionFormat;
         functionFormat.setFontItalic(true);
         functionFormat.setForeground(Qt::blue);
-        rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
+        rule.pattern = QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()");
         rule.format = functionFormat;
         highlightingRules.append(rule);
 
-        rule.pattern = QRegExp("//[^\n]*");
+        rule.pattern = QRegularExpression("//[^\n]*");
         rule.format = singleLineCommentFormat;
         highlightingRules.append(rule);
 
-        commentStartExpression = QRegExp("/\\*");
-        commentEndExpression = QRegExp("\\*/");
+        commentStartExpression = QRegularExpression("/\\*");
+        commentEndExpression = QRegularExpression("\\*/");
     }
 public:
     CPlusHighLighter(QTextDocument * parent) : IHighlighter(parent) { initRules(); }

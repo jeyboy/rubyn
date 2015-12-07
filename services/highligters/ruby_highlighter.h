@@ -3,6 +3,10 @@
 
 #include "base/ihighlighter.h"
 
+//TODO: set gray color for comments
+//TODO: set method color for numbers
+//TODO: add rule for regular expresions /.*/\w*
+
 class RubyHighLighter : public IHighlighter {
 protected:
     void initRules() {
@@ -30,7 +34,7 @@ protected:
                         << "until" << "when" << "while"
                         << "yield";
         for(QStringList::ConstIterator pattern = keywordPatterns.constBegin(); pattern != keywordPatterns.constEnd(); pattern++) {
-            rule.pattern = QRegExp("\\b" % (*pattern) % "\\b");
+            rule.pattern = QRegularExpression("\\b" % (*pattern) % "\\b");
             rule.format = keywordFormat;
             highlightingRules.append(rule);
         }
@@ -39,7 +43,7 @@ protected:
         QTextCharFormat variableFormat; // need to check
         variableFormat.setFontWeight(QFont::Bold);
         variableFormat.setForeground(Qt::darkYellow);
-        rule.pattern = QRegExp("(\\$|@@|@)\\w+");
+        rule.pattern = QRegularExpression("(\\$|@@|@)\\w+");
         rule.format = variableFormat;
         highlightingRules.append(rule);
 
@@ -47,7 +51,7 @@ protected:
         QTextCharFormat symbolFormat; // need to check
         symbolFormat.setFontWeight(QFont::Bold);
         symbolFormat.setForeground(Qt::darkCyan);
-        rule.pattern = QRegExp(":[a-z][A-Za-z0-9_!\\?]*");
+        rule.pattern = QRegularExpression("(\\b[a-z][!\\?\\w]*:)|((?<!:):[a-z][\\w!\\?]*)");
         rule.format = symbolFormat;
         highlightingRules.append(rule);
 
@@ -55,7 +59,7 @@ protected:
         QTextCharFormat classFormat;
         classFormat.setFontWeight(QFont::Bold);
         classFormat.setForeground(Qt::darkMagenta);
-        rule.pattern = QRegExp("\\b[A-Z][A-Za-z]*\\b");
+        rule.pattern = QRegularExpression("\\b[A-Z][A-Za-z]*\\b");
         rule.format = classFormat;
         highlightingRules.append(rule);
 
@@ -63,20 +67,21 @@ protected:
         QTextCharFormat constFormat;
         constFormat.setFontWeight(QFont::Bold);
         constFormat.setForeground(Qt::darkMagenta);
-        rule.pattern = QRegExp("\\b[A-Z_]+\\b");
+        rule.pattern = QRegularExpression("\\b[A-Z_]+\\b");
         rule.format = constFormat;
         highlightingRules.append(rule);
 
 
+
         QTextCharFormat quotationFormat;
         quotationFormat.setForeground(Qt::darkGreen);
-        rule.pattern = QRegExp("\".*\"");
+        rule.pattern = QRegularExpression("(\".*?(?=#{)|(?<=}).*?(?=#{)|(?<=}).*?\"|(\".*\"))");
         rule.format = quotationFormat;
         highlightingRules.append(rule);
 
         QTextCharFormat singleQuotationFormat;
         singleQuotationFormat.setForeground(Qt::darkGreen);
-        rule.pattern = QRegExp("'.*'"); // need to check
+        rule.pattern = QRegularExpression("'.*?'"); // need to check
         rule.format = singleQuotationFormat;
         highlightingRules.append(rule);
 
@@ -84,16 +89,16 @@ protected:
         QTextCharFormat functionFormat; // this block should be more complex
         functionFormat.setFontItalic(true);
         functionFormat.setForeground(Qt::blue);
-        rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
+        rule.pattern = QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()");
         rule.format = functionFormat;
         highlightingRules.append(rule);
 
-        rule.pattern = QRegExp("#[^\n]*");
+        rule.pattern = QRegularExpression("#[^{][^\n]*");
         rule.format = singleLineCommentFormat;
         highlightingRules.append(rule);
 
-        commentStartExpression = QRegExp("=begin");
-        commentEndExpression = QRegExp("=end");
+        commentStartExpression = QRegularExpression("=begin");
+        commentEndExpression = QRegularExpression("=end");
     }
 public:
     RubyHighLighter(QTextDocument * parent) : IHighlighter(parent) { initRules(); }

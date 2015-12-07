@@ -28,8 +28,8 @@ protected:
     QTextCharFormat singleLineCommentFormat;
     QTextCharFormat multiLineCommentFormat;
 
-    QRegExp commentStartExpression;
-    QRegExp commentEndExpression;
+    QRegularExpression commentStartExpression;
+    QRegularExpression commentEndExpression;
 public:
     IHighlighter(QTextDocument * parent);
 };
