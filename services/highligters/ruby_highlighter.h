@@ -35,10 +35,20 @@ protected:
             highlightingRules.append(rule);
         }
 
+        // add const support ([A-Z]+)
+        QTextCharFormat constFormat;
+        constFormat.setFontWeight(QFont::Bold);
+        constFormat.setForeground(Qt::darkMagenta);
+        rule.pattern = QRegExp("\\b[A-Z]+\\b");
+        rule.format = constFormat;
+        highlightingRules.append(rule);
+
+
+
         QTextCharFormat variableFormat; // need to check
         variableFormat.setFontWeight(QFont::Bold);
         variableFormat.setForeground(Qt::darkYellow);
-        rule.pattern = QRegExp("\\$|@@|@)\\w+");
+        rule.pattern = QRegExp("(\\$|@@|@)\\w+");
         rule.format = variableFormat;
         highlightingRules.append(rule);
 
@@ -46,7 +56,7 @@ protected:
         QTextCharFormat symbolFormat; // need to check
         symbolFormat.setFontWeight(QFont::Bold);
         symbolFormat.setForeground(Qt::darkCyan);
-        rule.pattern = QRegExp(":[a-z][A-Za-z0-9_]*");
+        rule.pattern = QRegExp(":[a-z][A-Za-z0-9_!\\?]*");
         rule.format = symbolFormat;
         highlightingRules.append(rule);
 
