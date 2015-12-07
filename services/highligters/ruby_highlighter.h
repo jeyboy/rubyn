@@ -35,15 +35,6 @@ protected:
             highlightingRules.append(rule);
         }
 
-        // add const support ([A-Z]+)
-        QTextCharFormat constFormat;
-        constFormat.setFontWeight(QFont::Bold);
-        constFormat.setForeground(Qt::darkMagenta);
-        rule.pattern = QRegExp("\\b[A-Z]+\\b");
-        rule.format = constFormat;
-        highlightingRules.append(rule);
-
-
 
         QTextCharFormat variableFormat; // need to check
         variableFormat.setFontWeight(QFont::Bold);
@@ -64,9 +55,18 @@ protected:
         QTextCharFormat classFormat;
         classFormat.setFontWeight(QFont::Bold);
         classFormat.setForeground(Qt::darkMagenta);
-        rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
+        rule.pattern = QRegExp("\\b[A-Z][A-Za-z]*\\b");
         rule.format = classFormat;
         highlightingRules.append(rule);
+
+        // add const support ([A-Z]+)
+        QTextCharFormat constFormat;
+        constFormat.setFontWeight(QFont::Bold);
+        constFormat.setForeground(Qt::darkMagenta);
+        rule.pattern = QRegExp("\\b[A-Z_]+\\b");
+        rule.format = constFormat;
+        highlightingRules.append(rule);
+
 
         QTextCharFormat quotationFormat;
         quotationFormat.setForeground(Qt::darkGreen);
@@ -79,6 +79,7 @@ protected:
         rule.pattern = QRegExp("'.*'"); // need to check
         rule.format = singleQuotationFormat;
         highlightingRules.append(rule);
+
 
         QTextCharFormat functionFormat; // this block should be more complex
         functionFormat.setFontItalic(true);
