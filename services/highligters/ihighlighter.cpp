@@ -6,12 +6,12 @@ IHighlighter::IHighlighter(QTextDocument * parent) : QSyntaxHighlighter(parent) 
 }
 
 void IHighlighter::highlightBlock(const QString & text) {
-    foreach (const HighlightingRule & rule, highlightingRules) {
-        QRegExp expression(rule.pattern);
+    for(QVector<HighlightingRule>::ConstIterator rule = highlightingRules.constBegin(); rule != highlightingRules.constEnd(); rule++) {
+        QRegExp expression((*rule).pattern);
         int index = expression.indexIn(text);
         while (index >= 0) {
             int length = expression.matchedLength();
-            setFormat(index, length, rule.format);
+            setFormat(index, length, (*rule).format);
             index = expression.indexIn(text, index + length);
         }
     }
