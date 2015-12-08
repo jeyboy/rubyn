@@ -69,7 +69,14 @@ public:
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_signle_line_comment);
         highlighting_rules.append(rule);
 
-        //TODO: set method color for numbers
+        rule.pattern = QRegularExpression("\\b\\d+\\b");
+        rule.format = HighlightFormatFactory::obj().getFormatFor(format_numbers);
+        highlighting_rules.append(rule);
+
+        rule.pattern = QRegularExpression("\\/.*?\\/\\w*?");
+        rule.format = HighlightFormatFactory::obj().getFormatFor(format_regular_expresions);
+        highlighting_rules.append(rule);
+
         //TODO: add rule for regular expresions /.*/\w*
 
         comment_start_expression = QRegularExpression("=begin");

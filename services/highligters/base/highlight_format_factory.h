@@ -93,7 +93,7 @@ protected:
     }
     void registerRegularExpresionsFormat() {
         QTextCharFormat regularExpFormat;
-        regularExpFormat.setForeground(Qt::blue);
+        regularExpFormat.setBackground(QColor::fromRgb(0, 255, 0, 32));
         formats.insert(format_regular_expresions, regularExpFormat);
     }
 public:

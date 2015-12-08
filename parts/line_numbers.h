@@ -13,7 +13,7 @@ public:
     }
 
 protected:
-    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE {
+    void paintEvent(QPaintEvent * event) Q_DECL_OVERRIDE {
         codeEditor -> lineNumberAreaPaintEvent(event);
     }
 };

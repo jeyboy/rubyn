@@ -28,7 +28,7 @@ void CodeEditor::openDocument(const QString & filePath) {
 
 int CodeEditor::lineNumberAreaWidth() {
     int digits = qMax(1, QString::number(blockCount()).length());
-    return 3 + fontMetrics().width(QLatin1Char('9')) * digits;
+    return HPADDING * 2 + fontMetrics().width(QLatin1Char('9')) * digits;
 }
 
 void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */) {
@@ -83,7 +83,7 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent * event) {
         if (block.isVisible() && bottom >= event -> rect().top()) {
             QString number = QString::number(blockNumber + 1);
             painter.setPen(Qt::black);
-            painter.drawText(0, top, lineNumberArea -> width(), fontMetrics().height(), Qt::AlignRight, number);
+            painter.drawText(0, top, lineNumberArea -> width() - HPADDING, fontMetrics().height(), Qt::AlignRight, number);
         }
 
         block = block.next();

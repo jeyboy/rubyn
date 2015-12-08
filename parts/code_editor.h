@@ -10,6 +10,8 @@ class QSize;
 class QWidget;
 class LineNumberArea;
 
+#define HPADDING 3
+
 class CodeEditor : public QPlainTextEdit {
     Q_OBJECT
     QWidget * lineNumberArea;
