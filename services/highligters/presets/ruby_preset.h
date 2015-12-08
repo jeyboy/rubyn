@@ -5,7 +5,7 @@
 
 class RubyPreset : public IHighlightPreset, public SingletonPtr<RubyPreset> {
 public:
-    virtual ~RubyPreset() { qDebug() << "RubyPreset"; }
+    ~RubyPreset() {}
 
     RubyPreset() {
         HighlightingRule rule;

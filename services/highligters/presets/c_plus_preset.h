@@ -5,7 +5,7 @@
 
 class CPlusPreset : public IHighlightPreset, public SingletonPtr<CPlusPreset> {
 public:
-    virtual ~CPlusPreset() { qDebug() << "CPlusPreset"; }
+    ~CPlusPreset() {}
 
     CPlusPreset() {
         HighlightingRule rule;
@@ -28,7 +28,7 @@ public:
         }
 
 
-        rule.pattern = QRegularExpression("\\b[A-Z][a-z]*\\b");
+        rule.pattern = QRegularExpression("\\b(?<![\"])[A-Z_]\\w*[a-z]\\w*(?![\"\\)=\\.\\-])\\b");
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_class);
         highlighting_rules.append(rule);
 

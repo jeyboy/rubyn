@@ -15,7 +15,7 @@ protected:
     QRegularExpression comment_start_expression;
     QRegularExpression comment_end_expression;
 public:
-    virtual ~IHighlightPreset() { qDebug() << "IHighlightPreset"; }
+    virtual ~IHighlightPreset() {}
 
     const QVector<HighlightingRule> & rules() const { return highlighting_rules; }
     const QRegularExpression & commentStartExpression() const { return comment_start_expression; }
