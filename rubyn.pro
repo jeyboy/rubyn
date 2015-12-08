@@ -28,6 +28,7 @@ HEADERS  += ide_window.h \
     services/highligters/highlighter.h \
     services/highligters/presets/ihighlight_preset.h \
     services/highligters/presets/c_plus_preset.h \
-    services/highligters/presets/presets_list.h
+    services/highligters/presets/presets_list.h \
+    services/highligters/presets/sql_preset.h
 
 FORMS    += ide_window.ui

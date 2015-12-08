@@ -5,32 +5,14 @@
 
 class RubyPreset : public IHighlightPreset, public SingletonPtr<RubyPreset> {
 public:
-    ~RubyPreset() {}
-
     RubyPreset() {
         HighlightingRule rule;
 
-        QStringList keywordPatterns;
-        keywordPatterns << "alias" << "and" << "BEGIN"
-                        << "begin" << "break" << "case"
-                        << "class" << "def" << "define_method"
-                        << "defined" << "do" << "each"
-                        << "else" << "elsif" << "END"
-                        << "end" << "ensure" << "false"
-                        << "for" << "if" << "in"
-                        << "module" << "new" << "next"
-                        << "nil" << "not" << "or"
-                        << "raise" << "redo" << "rescue"
-                        << "retry" << "return" << "self"
-                        << "super" << "then" << "throw"
-                        << "true" << "undef" << "unless"
-                        << "until" << "when" << "while"
-                        << "yield";
-        for(QStringList::ConstIterator pattern = keywordPatterns.constBegin(); pattern != keywordPatterns.constEnd(); pattern++) {
-            rule.pattern = QRegularExpression("\\b" % (*pattern) % "\\b");
-            rule.format = HighlightFormatFactory::obj().getFormatFor(format_keyword);
-            highlighting_rules.append(rule);
-        }
+        QString keywords = "new nil def do self if unless yield each true else not elsif super then end ensure false for undef or when until module class return while throw rescue in alias and begin break next case retry define_method raise defined redo BEGIN END";
+        rule.pattern = QRegularExpression("\\b(" % keywords.replace(" ", "|") % ")\\b");
+        rule.format = HighlightFormatFactory::obj().getFormatFor(format_keyword);
+        highlighting_rules.append(rule);
+
 
         rule.pattern = QRegularExpression("(\\$|@@|@)\\w+");
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_variable);
@@ -46,6 +28,7 @@ public:
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_class);
         highlighting_rules.append(rule);
 
+
         // add const support ([A-Z]+)
         rule.pattern = QRegularExpression("\\b[A-Z_]+\\b");
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_const);
@@ -56,6 +39,7 @@ public:
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_double_quotation);
         highlighting_rules.append(rule);
 
+
         rule.pattern = QRegularExpression("'.*?'"); // need to check
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_single_quotation);
         highlighting_rules.append(rule);
@@ -65,19 +49,21 @@ public:
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_func);
         highlighting_rules.append(rule);
 
+
         rule.pattern = QRegularExpression("#[^{][^\n]*");
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_signle_line_comment);
         highlighting_rules.append(rule);
+
 
         rule.pattern = QRegularExpression("\\b\\d+\\b");
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_numbers);
         highlighting_rules.append(rule);
 
+
         rule.pattern = QRegularExpression("\\/.*?\\/\\w*?");
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_regular_expresions);
         highlighting_rules.append(rule);
 
-        //TODO: add rule for regular expresions /.*/\w*
 
         comment_start_expression = QRegularExpression("=begin");
         comment_end_expression = QRegularExpression("=end");

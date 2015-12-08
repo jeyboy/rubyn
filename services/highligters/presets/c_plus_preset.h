@@ -5,27 +5,13 @@
 
 class CPlusPreset : public IHighlightPreset, public SingletonPtr<CPlusPreset> {
 public:
-    ~CPlusPreset() {}
-
     CPlusPreset() {
         HighlightingRule rule;
 
-        QStringList keywordPatterns;
-        keywordPatterns << "char" << "class" << "const"
-                        << "double" << "enum" << "explicit"
-                        << "friend" << "inline" << "int"
-                        << "long" << "namespace" << "operator"
-                        << "private" << "protected" << "public"
-                        << "short" << "signals" << "signed"
-                        << "slots" << "static" << "struct"
-                        << "template" << "typedef" << "typename"
-                        << "union" << "unsigned" << "virtual"
-                        << "void" << "volatile";
-        for(QStringList::ConstIterator pattern = keywordPatterns.constBegin(); pattern != keywordPatterns.constEnd(); pattern++) {
-            rule.pattern = QRegularExpression(QString("\\b" + (*pattern) + "\\b"));
-            rule.format = HighlightFormatFactory::obj().getFormatFor(format_keyword);
-            highlighting_rules.append(rule);
-        }
+        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";
+        rule.pattern = QRegularExpression("\\b(" % keywords.replace(" ", "|") % ")\\b");
+        rule.format = HighlightFormatFactory::obj().getFormatFor(format_keyword);
+        highlighting_rules.append(rule);
 
 
         rule.pattern = QRegularExpression("\\b(?<![\"])[A-Z_]\\w*[a-z]\\w*(?![\"\\)=\\.\\-])\\b");
@@ -33,7 +19,7 @@ public:
         highlighting_rules.append(rule);
 
 
-        rule.pattern = QRegularExpression("\".*\"");
+        rule.pattern = QRegularExpression("\".*?\"");
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_double_quotation);
         highlighting_rules.append(rule);
 

@@ -13,6 +13,8 @@ public:
 
         presets.insert(QStringLiteral("h"), &CPlusPreset::obj());
         presets.insert(QStringLiteral("cpp"), &CPlusPreset::obj());
+
+        presets.insert(QStringLiteral("sql"), &SQLPreset::obj());
     }
 
     bool proceedDocument(const QString & mime, QTextDocument * document) {

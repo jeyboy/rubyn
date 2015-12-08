@@ -31,7 +31,7 @@ void IDEWindow::openFile(const QString & path) {
     QString fileName = path;
 
     if (fileName.isNull())
-        fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", "Ruby Files (*.rb);;C++ Files (*.cpp *.h)");
+        fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", "Ruby Files (*.rb);;C++ Files (*.cpp *.h);;SQL (*.sql)");
 
     if (!fileName.isEmpty())
         editor -> openDocument(fileName);

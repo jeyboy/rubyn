@@ -28,6 +28,7 @@ protected:
     void registerKeywordFormat() {
         QTextCharFormat keywordFormat;
         keywordFormat.setForeground(Qt::darkBlue);
+        keywordFormat.setBackground(QColor::fromRgb(0, 0, 255, 16));
         keywordFormat.setFontWeight(QFont::Bold);
         formats.insert(format_keyword, keywordFormat);
     }
