@@ -1,11 +1,9 @@
-#include "ihighlighter.h"
+#include "highlighter.h"
 
-IHighlighter::IHighlighter(QTextDocument * parent) : QSyntaxHighlighter(parent) {
-    singleLineCommentFormat.setForeground(Qt::red);
-    multiLineCommentFormat.setForeground(Qt::red);
-}
+Highlighter::Highlighter(QTextDocument * parent, IHighlightPreset * preset) : QSyntaxHighlighter(parent), preset(preset) {}
 
-void IHighlighter::highlightBlock(const QString & text) {
+void Highlighter::highlightBlock(const QString & text) {
+    const QVector<HighlightingRule> & highlightingRules = preset -> rules();
     for(QVector<HighlightingRule>::ConstIterator rule = highlightingRules.constBegin(); rule != highlightingRules.constEnd(); rule++) {
         QRegularExpressionMatchIterator i = (*rule).pattern.globalMatch(text);
 
@@ -16,17 +14,17 @@ void IHighlighter::highlightBlock(const QString & text) {
     }
     setCurrentBlockState(0);
 
-    if (!commentStartExpression.isValid()) return;
+    if (!preset -> commentStartExpression().isValid()) return;
 
     int startIndex = 0;
     while(true) {
         if (startIndex > 0 || (startIndex == 0 && previousBlockState() != 1)) {
-            QRegularExpressionMatch startMatch = commentStartExpression.match(text, startIndex);
+            QRegularExpressionMatch startMatch = preset -> commentStartExpression().match(text, startIndex);
             if (!startMatch.hasMatch()) return;
             startIndex = startMatch.capturedStart();
         }
 
-        QRegularExpressionMatch endMatch = commentEndExpression.match(text, startIndex);
+        QRegularExpressionMatch endMatch = preset -> commentEndExpression().match(text, startIndex);
         int commentLength;
 
         if (!endMatch.hasMatch()) {
@@ -35,7 +33,7 @@ void IHighlighter::highlightBlock(const QString & text) {
         }
         else commentLength = endMatch.capturedEnd() - startIndex;
 
-        setFormat(startIndex, commentLength, multiLineCommentFormat);
+        setFormat(startIndex, commentLength, HighlightFormatFactory::obj().getFormatFor(format_multy_line_comment));
 
         if (!endMatch.hasMatch()) return;
         startIndex = endMatch.capturedEnd();

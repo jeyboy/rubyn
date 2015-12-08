@@ -15,16 +15,19 @@ TEMPLATE = app
 SOURCES += main.cpp\
         ide_window.cpp \
     parts/code_editor.cpp \
-    services/highligters/base/ihighlighter.cpp
+    services/highligters/highlighter.cpp
 
 HEADERS  += ide_window.h \
     parts/line_numbers.h \
     parts/code_editor.h \
     services/highligters/highligters_factory.h \
-    services/highligters/base/ihighlighter.h \
     misc/singleton.h \
     services/highligters/base/highlighter_rule.h \
-    services/highligters/c_plus_highlighter.h \
-    services/highligters/ruby_highlighter.h
+    services/highligters/base/highlight_format_factory.h \
+    services/highligters/presets/ruby_preset.h \
+    services/highligters/highlighter.h \
+    services/highligters/presets/ihighlight_preset.h \
+    services/highligters/presets/c_plus_preset.h \
+    services/highligters/presets/presets_list.h
 
 FORMS    += ide_window.ui

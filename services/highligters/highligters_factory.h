@@ -2,23 +2,34 @@
 #define HIGHLIGTERS_FACTORY
 
 #include "misc/singleton.h"
-#include "c_plus_highlighter.h"
-#include "ruby_highlighter.h"
+#include "presets/presets_list.h"
+#include "highlighter.h"
 
 class HighlightersFactory : public QObject, public Singleton<HighlightersFactory> {
+    QHash<QString, IHighlightPreset *> presets;
 public:
-    HighlightersFactory() { }
-    ~HighlightersFactory() { }
+    HighlightersFactory() {
+        presets.insert(QStringLiteral("rb"), new RubyPreset());
+
+        CPlusPreset * cPlusPreset = new CPlusPreset();
+        presets.insert(QStringLiteral("h"), cPlusPreset);
+        presets.insert(QStringLiteral("cpp"), cPlusPreset);
+    }
+    ~HighlightersFactory() {
+        for(QHash<QString, IHighlightPreset *>::Iterator it = presets.begin(); it != presets.end(); it++)
+            delete (*it);
+    }
 
     bool proceedDocument(const QString & mime, QTextDocument * document) {
-        if (mime == QStringLiteral("h") || mime == QStringLiteral("cpp")) {
-            new CPlusHighLighter(document);
-            return true;
-        } else if (mime == QStringLiteral("rb")) {
-            new RubyHighLighter(document);
-            return true;
+        bool result = presets.contains(mime);
+
+        if (presets.contains(mime)) {
+            new Highlighter(document, presets[mime]);
+        } else {
+            //TODO: inform about missed preset
         }
-        return false;
+
+        return result;
     }
 };
 
