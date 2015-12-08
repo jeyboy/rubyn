@@ -3,8 +3,10 @@
 
 #include "ihighlight_preset.h"
 
-class RubyPreset : public IHighlightPreset {
+class RubyPreset : public IHighlightPreset, public SingletonPtr<RubyPreset> {
 public:
+    virtual ~RubyPreset() { qDebug() << "RubyPreset"; }
+
     RubyPreset() {
         HighlightingRule rule;
 

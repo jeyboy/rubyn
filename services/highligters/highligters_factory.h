@@ -9,15 +9,10 @@ class HighlightersFactory : public QObject, public Singleton<HighlightersFactory
     QHash<QString, IHighlightPreset *> presets;
 public:
     HighlightersFactory() {
-        presets.insert(QStringLiteral("rb"), new RubyPreset());
+        presets.insert(QStringLiteral("rb"), &RubyPreset::obj());
 
-        CPlusPreset * cPlusPreset = new CPlusPreset();
-        presets.insert(QStringLiteral("h"), cPlusPreset);
-        presets.insert(QStringLiteral("cpp"), cPlusPreset);
-    }
-    ~HighlightersFactory() {
-        for(QHash<QString, IHighlightPreset *>::Iterator it = presets.begin(); it != presets.end(); it++)
-            delete (*it);
+        presets.insert(QStringLiteral("h"), &CPlusPreset::obj());
+        presets.insert(QStringLiteral("cpp"), &CPlusPreset::obj());
     }
 
     bool proceedDocument(const QString & mime, QTextDocument * document) {

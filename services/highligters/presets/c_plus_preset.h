@@ -3,8 +3,10 @@
 
 #include "ihighlight_preset.h"
 
-class CPlusPreset : public IHighlightPreset {
+class CPlusPreset : public IHighlightPreset, public SingletonPtr<CPlusPreset> {
 public:
+    virtual ~CPlusPreset() { qDebug() << "CPlusPreset"; }
+
     CPlusPreset() {
         HighlightingRule rule;
 
