@@ -2,6 +2,7 @@
 #include "line_numbers.h"
 #include "services/highligters/highligters_factory.h"
 
+#include <qwidget.h>
 #include <qtextobject.h>
 #include <qpainter.h>
 #include <qfile.h>
@@ -15,15 +16,21 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent) {
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
+
+    // setTabStopWidth(int width)//set tab width
 }
 
-void CodeEditor::openDocument(const QString & filePath) {
-    QFile file((currentPath = filePath));
-    if (file.open(QFile::ReadOnly | QFile::Text)) {
-        setPlainText(file.readAll());
-        extractExtension();
-        HighlightersFactory::obj().proceedDocument(currentMime, document());
+void CodeEditor::openDocument(TextDocument * doc) {
+    if (doc) {
+        HighlightersFactory::obj().proceedDocument(doc);
+        setDocumentTitle(doc -> name());
+        setDocument(doc);
+
+        if (!doc -> isFullyReaded()) {
+            //    verticalScrollBar()
+        }
     }
+    // else inform user about fail
 }
 
 int CodeEditor::lineNumberAreaWidth() {

@@ -1,6 +1,7 @@
 #ifndef HIGHLIGTERS_FACTORY
 #define HIGHLIGTERS_FACTORY
 
+#include "parts/documents/text_document.h"
 #include "misc/singleton.h"
 #include "presets/presets_list.h"
 #include "highlighter.h"
@@ -17,11 +18,11 @@ public:
         presets.insert(QStringLiteral("sql"), &SQLPreset::obj());
     }
 
-    bool proceedDocument(const QString & mime, QTextDocument * document) {
-        bool result = presets.contains(mime);
+    bool proceedDocument(TextDocument * document) {
+        bool result = presets.contains(document -> mime());
 
-        if (presets.contains(mime)) {
-            new Highlighter(document, presets[mime]);
+        if (presets.contains(document -> mime())) {
+            new Highlighter(document, presets[document -> mime()]);
         } else {
             //TODO: inform about missed preset
         }

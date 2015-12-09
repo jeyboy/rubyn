@@ -1,31 +1,38 @@
 #include "ide_window.h"
 #include "ui_ide_window.h"
 
+#include "parts/documents.h"
+
 #include <qmessagebox.h>
 #include <qfiledialog.h>
+#include <qsplitter>
 
-IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow) {
+IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), activeEditor(0) {
     ui -> setupUi(this);
+
+    connect(&Documents::obj(), SIGNAL(textDocumentAdded(QString)), this, SLOT(textDocumentAdded(QString)));
 
     setupFileMenu();
     setupHelpMenu();
+    setupSplitter();
     setupEditor();
 
     setWindowTitle(tr("Bla bla blashka"));
-    setCentralWidget(editor);
 }
 
 IDEWindow::~IDEWindow() { delete ui; }
 
-void IDEWindow::about() {
-    QMessageBox::about(this, tr("About Syntax Highlighter"),
-                tr("<p>The <b>Syntax Highlighter</b> example shows how " \
-                   "to perform simple syntax highlighting by subclassing " \
-                   "the QSyntaxHighlighter class and describing " \
-                   "highlighting rules using regular expressions.</p>"));
+void IDEWindow::textDocumentAdded(QString path) {
+    activeEditor -> openDocument((TextDocument *)Documents::obj().document(path));
 }
 
-void IDEWindow::newFile() { editor -> clear(); }
+void IDEWindow::about() {
+    QMessageBox::about(this, tr("About"), tr("<p>At this time this is a <b> simple editor with syntax highlighting</b>.</p>"));
+}
+
+void IDEWindow::newFile() {
+    // need to show dialog for name and type inputing
+}
 
 void IDEWindow::openFile(const QString & path) {
     QString fileName = path;
@@ -34,23 +41,19 @@ void IDEWindow::openFile(const QString & path) {
         fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", "Ruby Files (*.rb);;C++ Files (*.cpp *.h);;SQL (*.sql)");
 
     if (!fileName.isEmpty())
-        editor -> openDocument(fileName);
+        Documents::obj().openDocument(fileName);
 }
 
 void IDEWindow::setupEditor() {
-    editor = new CodeEditor(this);
+    editors << (activeEditor = new CodeEditor(this));
 
     QFont font;
     font.setFamily("Courier");
     font.setFixedPitch(true);
     font.setPointSize(10);
 
-    editor -> setFont(font);
-
-//    highlighter = new Highlighter(editor -> document());
-//    QFile file("mainwindow.h");
-//    if (file.open(QFile::ReadOnly | QFile::Text))
-//        editor->setPlainText(file.readAll());
+    activeEditor -> setFont(font);
+    editorsSpliter -> addWidget(activeEditor);
 }
 
 void IDEWindow::setupFileMenu() {
@@ -65,6 +68,10 @@ void IDEWindow::setupFileMenu() {
 void IDEWindow::setupHelpMenu() {
     QMenu * helpMenu = new QMenu(tr("&Help"), this);
     menuBar() -> addMenu(helpMenu);
-
     helpMenu -> addAction(tr("&About"), this, SLOT(about()));
+}
+
+void IDEWindow::setupSplitter() {
+    editorsSpliter = new QSplitter(this);
+    setCentralWidget(editorsSpliter);
 }
