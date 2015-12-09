@@ -4,11 +4,11 @@
 #include <qtextcursor>
 #include <qtextdocument>
 #include <QPlainTextDocumentLayout>
+#include <qdebug.h>
 
 #include "idocument.h"
 
-#define READ_LIMIT (qint64)(268435456) // ~250 kb
-
+#define READ_LIMIT (qint64)(512000) // ~512 kb
 class TextDocument : public QTextDocument,  public IDocument {
     bool fully_readed;
 public:
