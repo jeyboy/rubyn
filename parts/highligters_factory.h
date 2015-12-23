@@ -3,8 +3,9 @@
 
 #include "parts/documents/text_document.h"
 #include "misc/singleton.h"
-#include "presets/presets_list.h"
-#include "highlighter.h"
+
+#include "highligters/presets/presets_list.h"
+#include "highligters/highlighter.h"
 
 class HighlightersFactory : public QObject, public Singleton<HighlightersFactory> {
     QHash<QString, IHighlightPreset *> presets;

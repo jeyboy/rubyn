@@ -1,6 +1,6 @@
 #include "code_editor.h"
-#include "line_numbers.h"
-#include "services/highligters/highligters_factory.h"
+#include "editor_parts/line_numbers.h"
+#include "highligters_factory.h"
 
 #include <qwidget.h>
 #include <qtextobject.h>
