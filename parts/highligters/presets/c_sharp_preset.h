@@ -9,6 +9,12 @@
 //  out override params private protected public readonly ref return sbyte sealed set short sizeof stackalloc static string struct switch this
 //  throw true try typeof uint ulong unchecked unsafe ushort using virtual void while
 
+// SingleLineCComments
+// MultiLineCComments
+
+// SingleQuotedString
+// DoubleQuotedString
+
 class CSharpPreset : public IHighlightPreset, public SingletonPtr<CSharpPreset> {
 public:
     CSharpPreset() {

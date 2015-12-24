@@ -1,34 +1,22 @@
-#ifndef DELPHI_PRESET
-#define DELPHI_PRESET
+#ifndef JAVASCRIPT_PRESET
+#define JAVASCRIPT_PRESET
 
 #include "ihighlight_preset.h"
 
 // keywords=
-//  abs addr and ansichar ansistring array as asm begin boolean byte cardinal case char class comp const constructor currency destructor div do double
-//  downto else end except exports extended false file finalization finally for function goto if implementation in inherited int64 initialization integer
-//  interface is label library longint longword mod nil not object of on or packed pansichar pansistring pchar pcurrency pdatetime pextended pint64 pointer
-//  private procedure program property pshortstring pstring pvariant pwidechar pwidestring protected public published raise real real48 record repeat set shl
-//  shortint shortstring shr single smallint string then threadvar to true try type unit until uses val var varirnt while widechar widestring with word write
-//  writeln xor
+//  abstract boolean break byte case catch char class const continue debugger default delete do double else enum export extends false final finally float
+//  for function goto if implements import in instanceof int interface long native new null package private protected public return short static super switch
+//  synchronized this throw throws transient true try typeof var void volatile while with
 
-// comment=
-//  \\(\\*[\\s\\S]*?\\*\\)
-//  {(?!\\$)[\\s\\S]*?}
-//  SingleLineCComments
+// SingleLineCComments
+// MultiLineCComments
 
+// DoubleQuotedString
+// SingleQuotedString
 
-// RegexLib.SingleQuotedString
-
-// directive=
-//  \\{\\$[a-zA-Z]+ .+\\}
-
-// number=
-//  \\$[a-zA-Z0-9]+\\b
-
-
-class DelphiPreset : public IHighlightPreset, public SingletonPtr<DelphiPreset> {
+class JavascriptPreset : public IHighlightPreset, public SingletonPtr<JavascriptPreset> {
 public:
-    DelphiPreset() {
+    JavascriptPreset() {
         HighlightingRule rule;
 
 //        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";
@@ -42,9 +30,9 @@ public:
 //        highlighting_rules.append(rule);
 
 
-//        rule.pattern = QRegularExpression("^ *#.*");
-//        rule.format = HighlightFormatFactory::obj().getFormatFor(format_preprocessing);
-//        highlighting_rules.append(rule);
+        rule.pattern = QRegularExpression("^\\s*#.*");
+        rule.format = HighlightFormatFactory::obj().getFormatFor(format_preprocessing);
+        highlighting_rules.append(rule);
 
 
 //        rule.pattern = QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()");
@@ -70,4 +58,4 @@ public:
     }
 };
 
-#endif // DELPHI_PRESET
+#endif // JAVASCRIPT_PRESET

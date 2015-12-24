@@ -1,34 +1,24 @@
-#ifndef DELPHI_PRESET
-#define DELPHI_PRESET
+#ifndef VB_PRESET
+#define VB_PRESET
 
 #include "ihighlight_preset.h"
 
-// keywords=
-//  abs addr and ansichar ansistring array as asm begin boolean byte cardinal case char class comp const constructor currency destructor div do double
-//  downto else end except exports extended false file finalization finally for function goto if implementation in inherited int64 initialization integer
-//  interface is label library longint longword mod nil not object of on or packed pansichar pansistring pchar pcurrency pdatetime pextended pint64 pointer
-//  private procedure program property pshortstring pstring pvariant pwidechar pwidestring protected public published raise real real48 record repeat set shl
-//  shortint shortstring shr single smallint string then threadvar to true try type unit until uses val var varirnt while widechar widestring with word write
-//  writeln xor
+//keywords=
+//  AddHandler AddressOf AndAlso Alias And Ansi As Assembly Auto Boolean ByRef Byte ByVal Call Case Catch CBool CByte CChar CDate CDec CDbl Char CInt Class CLng CObj
+//  Const CShort CSng CStr CType Date Decimal Declare Default Delegate Dim DirectCast Do Double Each Else ElseIf End Enum Erase Error Event Exit False Finally For Friend
+//  Function Get GetType GoSub GoTo Handles If Implements Imports In Inherits Integer Interface Is Let Lib Like Long Loop Me Mod Module MustInherit MustOverride MyBase
+//  MyClass Namespace New Next Not Nothing NotInheritable NotOverridable Object On Option Optional Or OrElse Overloads Overridable Overrides ParamArray Preserve Private
+//  Property Protected Public RaiseEvent ReadOnly ReDim REM RemoveHandler Resume Return Select Set Shadows Shared Short Single Static Step Stop String Structure Sub SyncLock
+//  Then Throw To True Try TypeOf Unicode Until Variant When While With WithEvents WriteOnly Xor
 
-// comment=
-//  \\(\\*[\\s\\S]*?\\*\\)
-//  {(?!\\$)[\\s\\S]*?}
-//  SingleLineCComments
+//comment=
+//  RegExp('\'.*$')
 
+//DoubleQuotedString
 
-// RegexLib.SingleQuotedString
-
-// directive=
-//  \\{\\$[a-zA-Z]+ .+\\}
-
-// number=
-//  \\$[a-zA-Z0-9]+\\b
-
-
-class DelphiPreset : public IHighlightPreset, public SingletonPtr<DelphiPreset> {
+class VbPreset : public IHighlightPreset, public SingletonPtr<VbPreset> {
 public:
-    DelphiPreset() {
+    VbPreset() {
         HighlightingRule rule;
 
 //        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";
@@ -42,9 +32,9 @@ public:
 //        highlighting_rules.append(rule);
 
 
-//        rule.pattern = QRegularExpression("^ *#.*");
-//        rule.format = HighlightFormatFactory::obj().getFormatFor(format_preprocessing);
-//        highlighting_rules.append(rule);
+        rule.pattern = QRegularExpression("^\\s*#.*");
+        rule.format = HighlightFormatFactory::obj().getFormatFor(format_preprocessing);
+        highlighting_rules.append(rule);
 
 
 //        rule.pattern = QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()");
@@ -70,4 +60,4 @@ public:
     }
 };
 
-#endif // DELPHI_PRESET
+#endif // VB_PRESET

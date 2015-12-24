@@ -39,6 +39,11 @@ HEADERS  += ide_window.h \
     parts/highligters/presets/c_sharp_preset.h \
     parts/highligters/presets/css_preset.h \
     parts/highligters/presets/delphi_preset.h \
-    parts/highligters/presets/java_preset.h
+    parts/highligters/presets/java_preset.h \
+    parts/highligters/presets/javascript_preset.h \
+    parts/highligters/presets/php_preset.h \
+    parts/highligters/presets/python_preset.h \
+    parts/highligters/presets/vb_preset.h \
+    parts/highligters/presets/xml_preset.h
 
 FORMS    += ide_window.ui

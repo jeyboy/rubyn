@@ -1,34 +1,31 @@
-#ifndef DELPHI_PRESET
-#define DELPHI_PRESET
+#ifndef XML_PRESET
+#define XML_PRESET
 
 #include "ihighlight_preset.h"
 
-// keywords=
-//  abs addr and ansichar ansistring array as asm begin boolean byte cardinal case char class comp const constructor currency destructor div do double
-//  downto else end except exports extended false file finalization finally for function goto if implementation in inherited int64 initialization integer
-//  interface is label library longint longword mod nil not object of on or packed pansichar pansistring pchar pcurrency pdatetime pextended pint64 pointer
-//  private procedure program property pshortstring pstring pvariant pwidechar pwidestring protected public published raise real real48 record repeat set shl
-//  shortint shortstring shr single smallint string then threadvar to true try type unit until uses val var varirnt while widechar widestring with word write
-//  writeln xor
+//!!!!!!!!!!!!!!!!
+//TODO: need to find rules
 
-// comment=
-//  \\(\\*[\\s\\S]*?\\*\\)
-//  {(?!\\$)[\\s\\S]*?}
-//  SingleLineCComments
+//cdata=
+//  RegExp('(\&lt;|<)\\!\\[[\\w\\s]*?\\[(.|\\s)*?\\]\\](\&gt;|>)','gm')
 
+//comments=
+//  RegExp('(\&lt;|<)!--\\s*.*?\\s*--(\&gt;|>)','gm')
 
-// RegexLib.SingleQuotedString
+//?=
+// RegExp('([:\\w-\.]+)\\s*=\\s*(".*?"|\'.*?\'|\\w+)*|(\\w+)','gm')
 
-// directive=
-//  \\{\\$[a-zA-Z]+ .+\\}
+//;while((match=regex.exec(this.code))!=null)
+//{if(match[1]==null)
+//{continue;}
+//push(this.matches,new dp.sh.Match(match[1],match.index,'attribute'));if(match[2]!=undefined)
+//{push(this.matches,new dp.sh.Match(match[2],match.index+match[0].indexOf(match[2]),'attribute-value'));}}
+//this.GetMatches(new RegExp('(\&lt;|<)/*\\?*(?!\\!)|/*\\?*(\&gt;|>)','gm'),'tag');regex=new RegExp('(?:\&lt;|<)/*\\?*\\s*([:\\w-\.]+)','gm');while((match=regex.exec(this.code))!=null)
+//{push(this.matches,new dp.sh.Match(match[1],match.index+match[0].indexOf(match[1]),'tag-name'));}}
 
-// number=
-//  \\$[a-zA-Z0-9]+\\b
-
-
-class DelphiPreset : public IHighlightPreset, public SingletonPtr<DelphiPreset> {
+class XmlPreset : public IHighlightPreset, public SingletonPtr<XmlPreset> {
 public:
-    DelphiPreset() {
+    XmlPreset() {
         HighlightingRule rule;
 
 //        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";
@@ -42,7 +39,7 @@ public:
 //        highlighting_rules.append(rule);
 
 
-//        rule.pattern = QRegularExpression("^ *#.*");
+//        rule.pattern = QRegularExpression("^\\s*#.*");
 //        rule.format = HighlightFormatFactory::obj().getFormatFor(format_preprocessing);
 //        highlighting_rules.append(rule);
 
@@ -70,4 +67,4 @@ public:
     }
 };
 
-#endif // DELPHI_PRESET
+#endif // XML_PRESET

@@ -1,34 +1,31 @@
-#ifndef DELPHI_PRESET
-#define DELPHI_PRESET
+#ifndef PYTHON_PRESET
+#define PYTHON_PRESET
 
 #include "ihighlight_preset.h"
 
-// keywords=
-//  abs addr and ansichar ansistring array as asm begin boolean byte cardinal case char class comp const constructor currency destructor div do double
-//  downto else end except exports extended false file finalization finally for function goto if implementation in inherited int64 initialization integer
-//  interface is label library longint longword mod nil not object of on or packed pansichar pansistring pchar pcurrency pdatetime pextended pint64 pointer
-//  private procedure program property pshortstring pstring pvariant pwidechar pwidestring protected public published raise real real48 record repeat set shl
-//  shortint shortstring shr single smallint string then threadvar to true try type unit until uses val var varirnt while widechar widestring with word write
-//  writeln xor
+//keywords=
+//  and assert break class continue def del elif else except exec finally for from global if import in is lambda not or pass print raise return try yield while
 
-// comment=
-//  \\(\\*[\\s\\S]*?\\*\\)
-//  {(?!\\$)[\\s\\S]*?}
-//  SingleLineCComments
+//special=
+//  None True False self cls class_
 
+// SingleLinePerlComments
+//comment=
+//  (['\"]{3})([^\\1])*?\\1
 
-// RegexLib.SingleQuotedString
+//decorator=
+//  ^\\s*@\\w+
 
-// directive=
-//  \\{\\$[a-zA-Z]+ .+\\}
+//string=
+//  "(?!")(?:\\.|\\\\\\"|[^\\""\\n\\r])*"
+//  '(?!')*(?:\\.|(\\\\\\')|[^\\''\\n\\r])*'
 
-// number=
-//  \\$[a-zA-Z0-9]+\\b
+//number=
+//  \\b\\d+\\.?\\w*
 
-
-class DelphiPreset : public IHighlightPreset, public SingletonPtr<DelphiPreset> {
+class PythonPreset : public IHighlightPreset, public SingletonPtr<PythonPreset> {
 public:
-    DelphiPreset() {
+    PythonPreset() {
         HighlightingRule rule;
 
 //        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";
@@ -42,7 +39,7 @@ public:
 //        highlighting_rules.append(rule);
 
 
-//        rule.pattern = QRegularExpression("^ *#.*");
+//        rule.pattern = QRegularExpression("^\\s*#.*");
 //        rule.format = HighlightFormatFactory::obj().getFormatFor(format_preprocessing);
 //        highlighting_rules.append(rule);
 
@@ -70,4 +67,4 @@ public:
     }
 };
 
-#endif // DELPHI_PRESET
+#endif // PYTHON_PRESET
