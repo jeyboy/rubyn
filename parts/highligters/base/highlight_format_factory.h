@@ -19,7 +19,9 @@ enum HighlightFormat {
     format_multy_line_comment,
     format_heredoc,
     format_numbers,
-    format_regular_expresions
+    format_regular_expresions,
+    format_preprocessing,
+    format_datatype
 };
 
 class HighlightFormatFactory : public Singleton<HighlightFormatFactory> {
@@ -97,6 +99,16 @@ protected:
         regularExpFormat.setBackground(QColor::fromRgb(0, 255, 0, 32));
         formats.insert(format_regular_expresions, regularExpFormat);
     }
+    void registerPreprocessingFormat() {
+        QTextCharFormat preprocessingFormat;
+        preprocessingFormat.setForeground(QColor::fromRgb(0, 255, 0, 164));
+        formats.insert(format_preprocessing, preprocessingFormat);
+    }
+    void registerDatatypeFormat() {
+        QTextCharFormat datatypeFormat;
+        datatypeFormat.setForeground(QColor::fromRgb(0, 0, 255, 164));
+        formats.insert(format_datatype, datatypeFormat);
+    }
 public:
     HighlightFormatFactory() {
         registerKeywordFormat();
@@ -112,6 +124,8 @@ public:
         registerHeredocFormat();
         registerNumbersFormat();
         registerRegularExpresionsFormat();
+        registerPreprocessingFormat();
+        registerDatatypeFormat();
     }
 
     const QTextCharFormat & getFormatFor(const HighlightFormat & format) { return formats[format]; }

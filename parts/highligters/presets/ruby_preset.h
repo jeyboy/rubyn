@@ -40,9 +40,7 @@ public:
         highlighting_rules.append(rule);
 
 
-        rule.pattern = QRegularExpression("'.*?'"); // need to check
-        rule.format = HighlightFormatFactory::obj().getFormatFor(format_single_quotation);
-        highlighting_rules.append(rule);
+        highlighting_rules.append(singleQuotationRule());
 
 
         rule.pattern = QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()");
@@ -55,9 +53,7 @@ public:
         highlighting_rules.append(rule);
 
 
-        rule.pattern = QRegularExpression("\\b\\d+\\b");
-        rule.format = HighlightFormatFactory::obj().getFormatFor(format_numbers);
-        highlighting_rules.append(rule);
+        highlighting_rules.append(numbersRule());
 
 
         rule.pattern = QRegularExpression("\\/.*?\\/\\w*?");

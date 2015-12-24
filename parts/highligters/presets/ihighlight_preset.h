@@ -17,6 +17,27 @@ protected:
 public:
     virtual ~IHighlightPreset() {}
 
+    HighlightingRule numbersRule() {
+        HighlightingRule rule;
+        rule.pattern = QRegularExpression("\\b\\d+\\b"); // \\b[\\d\\.]+\\b
+        rule.format = HighlightFormatFactory::obj().getFormatFor(format_numbers);
+        return rule;
+    }
+
+    HighlightingRule singleQuotationRule() {
+        HighlightingRule rule;
+        rule.pattern = QRegularExpression("'.*?'");
+        rule.format = HighlightFormatFactory::obj().getFormatFor(format_single_quotation);
+        return rule;
+    }
+
+    HighlightingRule doubleQuotationRule() {
+        HighlightingRule rule;
+        rule.pattern = QRegularExpression("\".*?\"");
+        rule.format = HighlightFormatFactory::obj().getFormatFor(format_double_quotation);
+        return rule;
+    }
+
     const QVector<HighlightingRule> & rules() const { return highlighting_rules; }
     const QRegularExpression & commentStartExpression() const { return comment_start_expression; }
     const QRegularExpression & commentEndExpression() const { return comment_end_expression; }

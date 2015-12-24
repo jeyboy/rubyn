@@ -17,6 +17,8 @@ public:
         presets.insert(QStringLiteral("cpp"), &CPlusPreset::obj());
 
         presets.insert(QStringLiteral("sql"), &SQLPreset::obj());
+
+        presets.insert(QStringLiteral("cs"), &CSharpPreset::obj());
     }
 
     bool proceedDocument(TextDocument * document) {

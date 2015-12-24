@@ -31,20 +31,15 @@ public:
         highlighting_rules.append(rule);
 
 
-        rule.pattern = QRegularExpression("\\b\\d+\\b");
-        rule.format = HighlightFormatFactory::obj().getFormatFor(format_numbers);
-        highlighting_rules.append(rule);
+        highlighting_rules.append(numbersRule());
 
 
-        rule.pattern = QRegularExpression("\".*?\"");
-        rule.format = HighlightFormatFactory::obj().getFormatFor(format_double_quotation);
-        highlighting_rules.append(rule);
+        highlighting_rules.append(doubleQuotationRule());
 
 
         rule.pattern = QRegularExpression("--[^\n]*");
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_signle_line_comment);
         highlighting_rules.append(rule);
-
 
         comment_start_expression = QRegularExpression("/\\*");
         comment_end_expression = QRegularExpression("\\*/");

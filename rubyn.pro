@@ -35,6 +35,10 @@ HEADERS  += ide_window.h \
     parts/documents.h \
     parts/documents/documents_list.h \
     parts/documents/text_document.h \
-    parts/documents/image_document.h
+    parts/documents/image_document.h \
+    parts/highligters/presets/c_sharp_preset.h \
+    parts/highligters/presets/css_preset.h \
+    parts/highligters/presets/delphi_preset.h \
+    parts/highligters/presets/java_preset.h
 
 FORMS    += ide_window.ui
