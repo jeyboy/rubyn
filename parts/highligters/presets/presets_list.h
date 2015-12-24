@@ -13,5 +13,12 @@
 #include "python_preset.h"
 #include "vb_preset.h"
 #include "xml_preset.h"
+#include "json_preset.h"
+#include "c_preset.h"
+#include "erb_preset.h"
+#include "haml_preset.h"
+#include "html_preset.h"
+#include "sass_preset.h"
+#include "yaml_preset.h"
 
 #endif // PRESETS_LIST

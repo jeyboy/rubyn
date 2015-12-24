@@ -17,6 +17,20 @@ protected:
 public:
     virtual ~IHighlightPreset() {}
 
+    // science notation
+//    /[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?/
+//    allowed:
+//    +3
+//    3.2e23
+//    -4.70e+9
+//    -.2E-4
+//    -7.6603
+
+//    not allowed:
+//    +0003   (leading zeros)
+//    37.e88  (dot before the e)
+
+
     HighlightingRule numbersRule() {
         HighlightingRule rule;
         rule.pattern = QRegularExpression("\\b\\d+\\b"); // \\b[\\d\\.]+\\b

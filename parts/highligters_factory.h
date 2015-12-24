@@ -13,6 +13,8 @@ public:
     HighlightersFactory() {
         presets.insert(QStringLiteral("rb"), &RubyPreset::obj());
 
+        presets.insert(QStringLiteral("c"), &CPreset::obj());
+
         presets.insert(QStringLiteral("h"), &CPlusPreset::obj());
         presets.insert(QStringLiteral("cpp"), &CPlusPreset::obj());
 
@@ -20,9 +22,13 @@ public:
 
         presets.insert(QStringLiteral("cs"), &CSharpPreset::obj());
 
+        presets.insert(QStringLiteral("html"), &HtmlPreset::obj());
+
         presets.insert(QStringLiteral("css"), &CssPreset::obj());
 
-        presets.insert(QStringLiteral("dpr"), &DelphiPreset::obj());
+        presets.insert(QStringLiteral("sass"), &SassPreset::obj());
+
+        presets.insert(QStringLiteral("pas"), &DelphiPreset::obj());
 
         presets.insert(QStringLiteral("java"), &JavaPreset::obj());
 
@@ -34,7 +40,15 @@ public:
 
         presets.insert(QStringLiteral("vb"), &VbPreset::obj());
 
-        presets.insert(QStringLiteral("xml"), &XmlPreset::obj());
+        presets.insert(QStringLiteral("xml"), &/*XmlPreset*/HtmlPreset::obj());
+
+        presets.insert(QStringLiteral("json"), &JsonPreset::obj());
+
+        presets.insert(QStringLiteral("erb"), &ErbPreset::obj());
+
+        presets.insert(QStringLiteral("haml"), &HamlPreset::obj());
+
+        presets.insert(QStringLiteral("yml"), &YamlPreset::obj());
     }
 
     bool proceedDocument(TextDocument * document) {

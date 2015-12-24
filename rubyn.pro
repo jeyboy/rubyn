@@ -44,6 +44,13 @@ HEADERS  += ide_window.h \
     parts/highligters/presets/php_preset.h \
     parts/highligters/presets/python_preset.h \
     parts/highligters/presets/vb_preset.h \
-    parts/highligters/presets/xml_preset.h
+    parts/highligters/presets/xml_preset.h \
+    parts/highligters/presets/json_preset.h \
+    parts/highligters/presets/c_preset.h \
+    parts/highligters/presets/erb_preset.h \
+    parts/highligters/presets/haml_preset.h \
+    parts/highligters/presets/html_preset.h \
+    parts/highligters/presets/sass_preset.h \
+    parts/highligters/presets/yaml_preset.h
 
 FORMS    += ide_window.ui
