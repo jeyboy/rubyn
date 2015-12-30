@@ -10,12 +10,15 @@
 IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), activeEditor(0) {
     ui -> setupUi(this);
 
+    setAcceptDrops(true);
     connect(&Documents::obj(), SIGNAL(textDocumentAdded(QString)), this, SLOT(textDocumentAdded(QString)));
 
     setupFileMenu();
     setupHelpMenu();
     setupSplitter();
     setupEditor();
+
+    activeEditor -> hide();
 
     setWindowTitle(tr("Bla bla blashka"));
 }
@@ -24,6 +27,7 @@ IDEWindow::~IDEWindow() { delete ui; }
 
 void IDEWindow::textDocumentAdded(QString path) {
     activeEditor -> openDocument((TextDocument *)Documents::obj().document(path));
+    activeEditor -> show();
 }
 
 void IDEWindow::about() {
@@ -34,14 +38,14 @@ void IDEWindow::newFile() {
     // need to show dialog for name and type inputing
 }
 
-void IDEWindow::openFile(const QString & path) {
-    QString fileName = path;
+void IDEWindow::openFile(const QUrl & url) {
+    QUrl fileUrl = url;
 
-    if (fileName.isNull())
-        fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", "Ruby Files (*.rb);;C++ Files (*.cpp *.h);;SQL (*.sql);;C Sharp (*.cs)");
+    if (fileUrl.isEmpty())
+        fileUrl = QFileDialog::getOpenFileName(this, tr("Open File"), "", "Ruby Files (*.rb);;C++ Files (*.cpp *.h);;SQL (*.sql);;C Sharp (*.cs)");
 
-    if (!fileName.isEmpty())
-        Documents::obj().openDocument(fileName);
+    if (!fileUrl.isEmpty())
+        Documents::obj().openDocument(fileUrl);
 }
 
 void IDEWindow::setupEditor() {
@@ -74,4 +78,43 @@ void IDEWindow::setupHelpMenu() {
 void IDEWindow::setupSplitter() {
     editorsSpliter = new QSplitter(this);
     setCentralWidget(editorsSpliter);
+}
+
+void IDEWindow::dragEnterEvent(QDragEnterEvent * event) {
+//    QList<QUrl> urls() const;
+//    void setUrls(const QList<QUrl> &urls);
+//    bool hasUrls() const;
+
+//    QString text() const;
+//    void setText(const QString &text);
+//    bool hasText() const;
+
+//    QString html() const;
+//    void setHtml(const QString &html);
+//    bool hasHtml() const;
+
+//    QVariant imageData() const;
+//    void setImageData(const QVariant &image);
+//    bool hasImage() const;
+
+
+
+    if (event -> mimeData() -> hasUrls())
+        event -> accept();
+    else event -> ignore();
+}
+void IDEWindow::dragMoveEvent(QDragMoveEvent * event) {
+    if (event -> mimeData() -> hasUrls())
+        event -> accept();
+    else event -> ignore();
+}
+
+void IDEWindow::dropEvent(QDropEvent * event) {
+    if (event -> mimeData() -> hasUrls()) {
+        QList<QUrl> urls = event -> mimeData() -> urls();
+        for(QList<QUrl>::Iterator url = urls.begin(); url != urls.end(); url++)
+            openFile(*url);
+
+        event -> accept();
+    } else event -> ignore();
 }

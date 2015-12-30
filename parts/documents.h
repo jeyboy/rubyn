@@ -1,7 +1,7 @@
 #ifndef DOCUMENTS
 #define DOCUMENTS
 
-#include <qobject.h>
+#include <qurl.h>
 #include <qhash.h>
 #include <qfile>
 #include <qdebug.h>
@@ -22,33 +22,66 @@ public:
         docTypes.insert(QStringLiteral("h"), doc_type_text);
         docTypes.insert(QStringLiteral("cpp"), doc_type_text);
         docTypes.insert(QStringLiteral("sql"), doc_type_text);
+        docTypes.insert(QStringLiteral("c"), doc_type_text);
+        docTypes.insert(QStringLiteral("cs"), doc_type_text);
+        docTypes.insert(QStringLiteral("html"), doc_type_text);
+        docTypes.insert(QStringLiteral("css"), doc_type_text);
+        docTypes.insert(QStringLiteral("sass"), doc_type_text);
+        docTypes.insert(QStringLiteral("pas"), doc_type_text);
+        docTypes.insert(QStringLiteral("java"), doc_type_text);
+        docTypes.insert(QStringLiteral("js"), doc_type_text);
+        docTypes.insert(QStringLiteral("php"), doc_type_text);
+        docTypes.insert(QStringLiteral("py"), doc_type_text);
+        docTypes.insert(QStringLiteral("vb"), doc_type_text);
+        docTypes.insert(QStringLiteral("xml"), doc_type_text);
+        docTypes.insert(QStringLiteral("json"), doc_type_text);
+        docTypes.insert(QStringLiteral("erb"), doc_type_text);
+        docTypes.insert(QStringLiteral("haml"), doc_type_text);
+        docTypes.insert(QStringLiteral("yml"), doc_type_text);
     }
     ~Documents() { qDeleteAll(documents); }
-    bool openDocument(const QString & path) {
+    bool openDocument(const QUrl & url) {
+        bool isLocal = url.isLocalFile();
+        QString path = isLocal ? url.toLocalFile() : url.toString();
+
+
         if (!documents.contains(path)) {
-            QFile * file = new QFile(path);
-            if (file -> open(QFile::ReadOnly | QFile::Text)) {
-                QString mime = IDocument::extractMime(file -> fileName());
+            QString mime;
+            QString name;
+            QIODevice * device = 0;
 
-                switch(docTypes.value(mime)) {
-                    case doc_type_text: {
-                        documents.insert(path, new TextDocument(mime, path, file -> fileName(), file));
-                        emit documentAdded(path);
-                        emit textDocumentAdded(path);
-                    break; }
+            if (url.isLocalFile()) {
+                QFile * file = new QFile(path);
 
-                    case doc_type_image: {
-                        documents.insert(path, new ImageDocument(mime, path, file -> fileName(), file));
-                        emit documentAdded(path);
-                        emit imageDocumentAdded(path);
-                    break; }
-
-                    default: return false;
+                if (file -> open(QFile::ReadOnly | QFile::Text)) {
+                    name = file -> fileName();
+                    mime = IDocument::extractMime(name);
+                    device = file;
+                } else {
+                    file -> deleteLater();
+                    return false;
                 }
+            } else {
+                // proceed remote file
+                return false; // but not now ...
             }
-            else {
-                file -> deleteLater();
-                return false;
+
+
+
+            switch(docTypes.value(mime)) {
+                case doc_type_text: {
+                    documents.insert(path, new TextDocument(mime, path, name, device));
+                    emit documentAdded(path);
+                    emit textDocumentAdded(path);
+                break; }
+
+                case doc_type_image: {
+                    documents.insert(path, new ImageDocument(mime, path, name, device));
+                    emit documentAdded(path);
+                    emit imageDocumentAdded(path);
+                break; }
+
+                default: return false;
             }
         }
 

@@ -2,6 +2,8 @@
 #define CODE_EDITOR
 
 #include <qplaintextedit.h>
+#include <qevent.h>
+#include <qmimedata.h>
 
 #include "documents/text_document.h"
 

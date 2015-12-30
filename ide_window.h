@@ -22,6 +22,10 @@ class IDEWindow : public QMainWindow {
     void setupFileMenu();
     void setupHelpMenu();
     void setupSplitter();
+protected:
+    void dragEnterEvent(QDragEnterEvent *);
+    void dragMoveEvent(QDragMoveEvent *);
+    void dropEvent(QDropEvent *);
 public:
     explicit IDEWindow(QWidget * parent = 0);
     ~IDEWindow();
@@ -31,7 +35,7 @@ protected slots:
 public slots:
     void about();
     void newFile();
-    void openFile(const QString & path = QString());
+    void openFile(const QUrl & url = QUrl());
 };
 
 #endif // IDE_WINDOW_H
