@@ -15,42 +15,48 @@ TEMPLATE = app
 SOURCES += main.cpp\
     ide_window.cpp \
     parts/code_editor.cpp \
-    parts/highligters/highlighter.cpp
+    parts/highligters/highlighter.cpp \
+    parts/langs/ruby/format_ruby.cpp \
+    parts/formats/format_unknown.cpp \
+    parts/document_types/idocument.cpp \
+    parts/formats/iformat.cpp
 
 HEADERS  += ide_window.h \
     parts/editor_parts/line_numbers.h \
     parts/code_editor.h \
-    parts/highligters_factory.h \
     misc/singleton.h \
     parts/highligters/base/highlighter_rule.h \
     parts/highligters/base/highlight_format_factory.h \
-    parts/highligters/presets/ruby_preset.h \
     parts/highligters/highlighter.h \
-    parts/highligters/presets/ihighlight_preset.h \
-    parts/highligters/presets/c_plus_preset.h \
-    parts/highligters/presets/presets_list.h \
-    parts/highligters/presets/sql_preset.h \
+    parts/highligters/ihighlight_preset.h \
     dock_widgets.h \
-    parts/documents/idocument.h \
     parts/documents.h \
-    parts/documents/documents_list.h \
-    parts/documents/text_document.h \
-    parts/documents/image_document.h \
-    parts/highligters/presets/c_sharp_preset.h \
-    parts/highligters/presets/css_preset.h \
-    parts/highligters/presets/delphi_preset.h \
-    parts/highligters/presets/java_preset.h \
-    parts/highligters/presets/javascript_preset.h \
-    parts/highligters/presets/php_preset.h \
-    parts/highligters/presets/python_preset.h \
-    parts/highligters/presets/vb_preset.h \
-    parts/highligters/presets/xml_preset.h \
-    parts/highligters/presets/json_preset.h \
-    parts/highligters/presets/c_preset.h \
-    parts/highligters/presets/erb_preset.h \
-    parts/highligters/presets/haml_preset.h \
-    parts/highligters/presets/html_preset.h \
-    parts/highligters/presets/sass_preset.h \
-    parts/highligters/presets/yaml_preset.h
+    parts/document_types/idocument.h \
+    parts/document_types/text_document.h \
+    parts/document_types/image_document.h \
+    parts/document_types/documents_types.h \
+    parts/langs/ruby/format_ruby.h \
+    parts/formats/iformat.h \
+    parts/formats/format_types.h \
+    parts/langs/css/css_preset.h \
+    parts/langs/erb/erb_preset.h \
+    parts/langs/haml/haml_preset.h \
+    parts/langs/html/html_preset.h \
+    parts/langs/javascript/javascript_preset.h \
+    parts/langs/json/json_preset.h \
+    parts/langs/ruby/ruby_preset.h \
+    parts/langs/sass/sass_preset.h \
+    parts/langs/sql/sql_preset.h \
+    parts/langs/xml/xml_preset.h \
+    parts/langs/yaml/yaml_preset.h \
+    parts/langs/c_plus_preset.h \
+    parts/langs/c_preset.h \
+    parts/langs/c_sharp_preset.h \
+    parts/langs/delphi_preset.h \
+    parts/langs/java_preset.h \
+    parts/langs/php_preset.h \
+    parts/langs/python_preset.h \
+    parts/langs/vb_preset.h \
+    parts/formats/format_text.h
 
 FORMS    += ide_window.ui

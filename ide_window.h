@@ -31,7 +31,7 @@ public:
     ~IDEWindow();
 
 protected slots:
-    void textDocumentAdded(QString path);
+    void textDocumentAdded(const QString & path);
 public slots:
     void about();
     void newFile();

@@ -2,19 +2,17 @@
 #define TEXT_DOCUMENT
 
 #include <qtextcursor>
-#include <qtextdocument>
 #include <QPlainTextDocumentLayout>
 #include <qdebug.h>
 
 #include "idocument.h"
 
 #define READ_LIMIT (qint64)(512000) // ~512 kb
-class TextDocument : public QTextDocument,  public IDocument {
-    bool fully_readed;
+
+class TextDocument : public IDocument {
 public:
-    TextDocument(const QString & mime, const QString & path, const QString & name, QIODevice * device)
-        : IDocument(mime, path, name, device), fully_readed(true) {
-        _doc_type = doc_type_text;
+    TextDocument(const QString & path, const QString & name, QIODevice * device, const FormatType & def_format = ft_unknown, const bool & complex = false)
+        : IDocument(path, name, device, def_format, complex) {
 
         setDocumentLayout(new QPlainTextDocumentLayout(this));
 
@@ -24,8 +22,6 @@ public:
             fully_readed = false;
             readNextBlock();
     }
-
-    inline bool isFullyReaded() { return fully_readed; }
 
     void readNextBlock() {
         if (fully_readed) return;

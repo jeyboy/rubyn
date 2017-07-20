@@ -5,8 +5,8 @@
 #include <qvector.h>
 #include <qstringbuilder.h>
 
-#include <parts/highligters/base/highlighter_rule.h>
-#include <parts/highligters/base/highlight_format_factory.h>
+#include "base/highlighter_rule.h"
+#include "base/highlight_format_factory.h"
 
 class IHighlightPreset {
 protected:

@@ -3,7 +3,7 @@
 
 #include <qsyntaxhighlighter.h>
 
-#include "presets/ihighlight_preset.h"
+#include "ihighlight_preset.h"
 
 class Highlighter : public QSyntaxHighlighter {
     Q_OBJECT

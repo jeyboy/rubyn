@@ -1,11 +1,12 @@
 #include "code_editor.h"
 #include "editor_parts/line_numbers.h"
-#include "highligters_factory.h"
 
 #include <qwidget.h>
 #include <qtextobject.h>
 #include <qpainter.h>
 #include <qfile.h>
+
+#include "document_types/idocument.h"
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent) {
     lineNumberArea = new LineNumberArea(this);
@@ -20,9 +21,8 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent) {
     // setTabStopWidth(int width)//set tab width
 }
 
-void CodeEditor::openDocument(TextDocument * doc) {
+void CodeEditor::openDocument(IDocument * doc) {
     if (doc) {
-        HighlightersFactory::obj().proceedDocument(doc);
         setDocumentTitle(doc -> name());
         setDocument(doc);
 

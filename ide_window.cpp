@@ -25,8 +25,8 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 IDEWindow::~IDEWindow() { delete ui; }
 
-void IDEWindow::textDocumentAdded(QString path) {
-    activeEditor -> openDocument((TextDocument *)Documents::obj().document(path));
+void IDEWindow::textDocumentAdded(const QString & path) {
+    activeEditor -> openDocument(Documents::obj().document(path));
     activeEditor -> show();
 }
 
@@ -42,7 +42,12 @@ void IDEWindow::openFile(const QUrl & url) {
     QUrl fileUrl = url;
 
     if (fileUrl.isEmpty())
-        fileUrl = QFileDialog::getOpenFileName(this, tr("Open File"), "", "Ruby Files (*.rb);;C++ Files (*.cpp *.h);;SQL (*.sql);;C Sharp (*.cs)");
+        fileUrl = QUrl::fromLocalFile(
+            QFileDialog::getOpenFileName(
+                this,
+                tr("Open File"), "", "All (*.*);;Ruby Files (*.rb);;C++ Files (*.cpp *.h);;SQL (*.sql);;C Sharp (*.cs)"
+            )
+        );
 
     if (!fileUrl.isEmpty())
         Documents::obj().openDocument(fileUrl);

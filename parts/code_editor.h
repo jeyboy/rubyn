@@ -5,13 +5,12 @@
 #include <qevent.h>
 #include <qmimedata.h>
 
-#include "documents/text_document.h"
-
 class QPaintEvent;
 class QResizeEvent;
 class QSize;
 class QWidget;
 class LineNumberArea;
+class IDocument;
 
 #define HPADDING 3
 
@@ -24,7 +23,7 @@ public:
     void lineNumberAreaPaintEvent(QPaintEvent * event);
     int lineNumberAreaWidth();
 
-    void openDocument(TextDocument * doc);
+    void openDocument(IDocument * doc);
 protected:
     void resizeEvent(QResizeEvent * event) Q_DECL_OVERRIDE;
 
