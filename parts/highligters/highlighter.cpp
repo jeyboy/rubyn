@@ -1,6 +1,7 @@
 #include "highlighter.h"
 
-Highlighter::Highlighter(QTextDocument * parent, IHighlightPreset * preset) : QSyntaxHighlighter(parent), preset(preset) {}
+Highlighter::Highlighter(QTextDocument * parent, IHighlightPreset * preset)
+    : QSyntaxHighlighter(parent), preset(preset) {}
 
 void Highlighter::highlightBlock(const QString & text) {
     const QVector<HighlightingRule> & highlightingRules = preset -> rules();

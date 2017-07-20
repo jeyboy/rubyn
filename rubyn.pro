@@ -17,7 +17,6 @@ SOURCES += main.cpp\
     parts/code_editor.cpp \
     parts/highligters/highlighter.cpp \
     parts/langs/ruby/format_ruby.cpp \
-    parts/formats/format_unknown.cpp \
     parts/document_types/idocument.cpp \
     parts/formats/iformat.cpp
 
@@ -57,6 +56,7 @@ HEADERS  += ide_window.h \
     parts/langs/php_preset.h \
     parts/langs/python_preset.h \
     parts/langs/vb_preset.h \
-    parts/formats/format_text.h
+    parts/formats/format_text.h \
+    parts/formats/format_image.h
 
 FORMS    += ide_window.ui

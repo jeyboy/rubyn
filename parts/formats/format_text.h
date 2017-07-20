@@ -3,11 +3,12 @@
 
 #include "iformat.h"
 
-class FormatText : public Singleton<FormatText> {
+class FormatText : public IFormat, public Singleton<FormatText> {
 public:
-    FormatText();
+    FormatText() {}
 
     inline FormatType formatType() const { return ft_text; }
+    inline IHighlightPreset * highlightPreset() const { return 0; }
 };
 
 #endif // FORMAT_TEXT_H

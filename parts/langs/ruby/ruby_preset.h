@@ -1,7 +1,7 @@
 #ifndef RUBY_PRESET
 #define RUBY_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
 //def interpreted_string_state
 //  StringState.new :string, true, '"'

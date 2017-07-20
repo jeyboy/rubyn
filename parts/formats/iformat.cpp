@@ -1,5 +1,9 @@
 #include "iformat.h"
 
+#include "parts/formats/format_text.h"
+#include "parts/formats/format_image.h"
+#include "parts/langs/ruby/format_ruby.h"
+
 QHash<QByteArray, FormatType> IFormat::types = {
     { QByteArrayLiteral("rb"), ft_rb },
     { QByteArrayLiteral("sql"), ft_sql },
@@ -26,23 +30,30 @@ QHash<QByteArray, FormatType> IFormat::types = {
 //    { QByteArrayLiteral("vb"), ft_vb },
 };
 
-bool IFormat::determine(const QString & path, FormatType & format, bool & complex) {
+QHash<FormatType, IFormat *> IFormat::formats = {
+    { ft_text, &FormatText::obj() },
+    { ft_image, &FormatImage::obj() },
+
+    { ft_rb, &FormatRuby::obj() },
+};
+
+bool IFormat::determine(const QString & path, IFormat *& iformat) {
     QByteArray ch_arr = path.toUtf8();
     const char * str = ch_arr.constData();
     const char * iter = str, * sub = 0;
 
-    format = ft_unknown;
+    FormatType format_type = ft_unknown;
 
     while(true) {
         switch(*iter) {
             case '.': {
-                if (sub) IDENT_FORMAT(iter, sub, format, complex);
+                if (sub) IDENT_FORMAT(iter, sub, format_type);
 
                 sub = iter + 1;
             break;}
 
             case 0: {
-                if (sub) IDENT_FORMAT(iter, sub, format, complex);
+                if (sub) IDENT_FORMAT(iter, sub, format_type);
 
                 goto exit;
             }
@@ -53,5 +64,8 @@ bool IFormat::determine(const QString & path, FormatType & format, bool & comple
         ++iter;
     }
 
-    exit: return format == ft_unknown;
+    exit:
+        iformat = formats[format_type];
+
+        return iformat && format_type == ft_unknown;
 }

@@ -8,22 +8,22 @@ IDocument * IDocument::create(const QUrl & url) {
 
     QString name;
     QIODevice * device = 0;
-    FormatType f;
-    bool complex;
+    IFormat * f;
 
     if (isLocal)
         name = path.section('/', -1, -1);
     else
         name = path;
 
-
-    bool res = IFormat::determine(name, f, complex);
+    bool res = IFormat::determine(name, f);
 
     if (!res) {
         //TODO: ask user about preffered type of file
     }
 
-    bool is_text = f & ft_text, is_bynary = f & ft_bynary;
+    FormatType format = f -> formatType();
+
+    bool is_text = format & ft_text, is_bynary = format & ft_bynary;
 
     if (is_text || is_bynary) {
         if (isLocal) {
@@ -47,11 +47,11 @@ IDocument * IDocument::create(const QUrl & url) {
 
         //TODO: return BynaryDocument if is_bynary
 
-        return new TextDocument(path, name, device, f, complex);
+        return new TextDocument(path, name, device, f);
     }
 
-    if (f & ft_image)
-        return new ImageDocument(path, name, device, f, complex);
+    if (format & ft_image)
+        return new ImageDocument(path, name, device, f);
 
     return 0;
 }

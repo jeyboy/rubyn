@@ -11,8 +11,8 @@
 
 class TextDocument : public IDocument {
 public:
-    TextDocument(const QString & path, const QString & name, QIODevice * device, const FormatType & def_format = ft_unknown, const bool & complex = false)
-        : IDocument(path, name, device, def_format, complex) {
+    TextDocument(const QString & path, const QString & name, QIODevice * device, IFormat * format)
+        : IDocument(path, name, device, format) {
 
         setDocumentLayout(new QPlainTextDocumentLayout(this));
 

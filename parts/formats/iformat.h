@@ -6,19 +6,22 @@
 #include "format_types.h"
 #include "misc/singleton.h"
 
-#define IDENT_FORMAT(iter, sub, format, complex) \
+#define IDENT_FORMAT(iter, sub, format) \
     {\
         FormatType nft = types.value(QByteArray(sub, iter - sub), ft_unknown);\
-        complex = complex || (format != ft_unknown && nft != ft_unknown && nft != format); \
         format = (FormatType)(format | nft);\
     }
 
-class IFormat : public Singleton<IFormat> {
+class IHighlightPreset;
+
+class IFormat {
     static QHash<QByteArray, FormatType> types;
+    static QHash<FormatType, IFormat *> formats;
 public:
     virtual FormatType formatType() const = 0;
+    virtual IHighlightPreset * highlightPreset() const = 0;
 
-    static bool determine(const QString & path, FormatType & format, bool & complex);
+    static bool determine(const QString & path, IFormat *& format);
 };
 
 #endif // IFORMAT_H
