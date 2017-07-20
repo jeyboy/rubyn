@@ -3,7 +3,9 @@
 
 #include <qstring>
 #include <qtextdocument>
-#include <qiodevice>
+#include <qurl.h>
+#include <qfile>
+#include <qdebug.h>
 
 #include "parts/formats/format_types.h"
 
@@ -17,7 +19,7 @@ protected:
 
     bool fully_readed;
 public:
-    static IDocument * create(const QString & path, const QString & name, QIODevice * device);
+    static IDocument * create(const QUrl & url);
 
     IDocument(const QString & path, const QString & name, QIODevice * device, const FormatType & def_format = ft_unknown, const bool & complex = false) :
         _path(path), _name(name), _device(device), _mime(def_format), complex(complex), fully_readed(true) {

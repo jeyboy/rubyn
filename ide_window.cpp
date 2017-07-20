@@ -11,7 +11,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     ui -> setupUi(this);
 
     setAcceptDrops(true);
-    connect(&Documents::obj(), SIGNAL(textDocumentAdded(QString)), this, SLOT(textDocumentAdded(QString)));
+    connect(&Documents::obj(), SIGNAL(textDocumentAdded(QUrl)), this, SLOT(textDocumentAdded(QUrl)));
 
     setupFileMenu();
     setupHelpMenu();
@@ -25,8 +25,8 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 IDEWindow::~IDEWindow() { delete ui; }
 
-void IDEWindow::textDocumentAdded(const QString & path) {
-    activeEditor -> openDocument(Documents::obj().document(path));
+void IDEWindow::textDocumentAdded(const QUrl & url) {
+    activeEditor -> openDocument(Documents::obj().document(url));
     activeEditor -> show();
 }
 
@@ -45,7 +45,7 @@ void IDEWindow::openFile(const QUrl & url) {
         fileUrl = QUrl::fromLocalFile(
             QFileDialog::getOpenFileName(
                 this,
-                tr("Open File"), "", "All (*.*);;Ruby Files (*.rb);;C++ Files (*.cpp *.h);;SQL (*.sql);;C Sharp (*.cs)"
+                tr("Open File"), "", "All (*.*);;Ruby Files (*.rb);;SQL (*.sql)" // ;;C Sharp (*.cs);;C++ Files (*.cpp *.h)
             )
         );
 
