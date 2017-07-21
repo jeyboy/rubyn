@@ -11,6 +11,7 @@ class QSize;
 class QWidget;
 class ExtraArea;
 class IDocument;
+class QPen;
 
 #define HPADDING 3
 
@@ -19,6 +20,7 @@ class CodeEditor : public QPlainTextEdit {
     QWidget * extraArea;
 public:
     CodeEditor(QWidget * parent = 0);
+    ~CodeEditor() {}
 
     void extraAreaPaintEvent(QPaintEvent * event);
     int extraAreaWidth();

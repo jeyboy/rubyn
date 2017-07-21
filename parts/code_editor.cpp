@@ -86,12 +86,19 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     int block_number = block.blockNumber();
     int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
     int bottom = top + (int) blockBoundingRect(block).height();
-    int curr_block_number = textCursor().blockNumber();
+//    int curr_block_number = textCursor().blockNumber();
 
-    while (block.isValid() && top <= event -> rect().bottom()) {
-        if (block.isVisible() && bottom >= event -> rect().top()) {
-            painter.setPen(curr_block_number == block_number ? Qt::red : Qt::black);
+    painter.setPen(Qt::black);
+//    QFont curr_font = font();
+//    QFont curr_line_font(curr_font.family(), curr_font.pointSize(), 100);
+
+    int rect_top = event -> rect().top();
+    int rect_bottom = event -> rect().bottom();
+
+    while (block.isValid() && top <= rect_bottom) {
+        if (block.isVisible() && bottom >= rect_top) {
             QString number = QString::number(block_number + 1);
+//            painter.setFont(curr_block_number == block_number ? curr_line_font : curr_font);
             painter.drawText(0, top, extraArea -> width() - HPADDING, fontMetrics().height(), Qt::AlignRight, number);
         }
 
