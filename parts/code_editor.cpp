@@ -18,6 +18,8 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent) {
     updateExtraAreaWidth(0);
     highlightCurrentLine();
 
+    setTabStopWidth(1 * fontMetrics().width(' '));
+
     // setTabStopWidth(int width)//set tab width
 }
 
@@ -57,6 +59,17 @@ void CodeEditor::resizeEvent(QResizeEvent * e) {
 
     QRect cr = contentsRect();
     extraArea -> setGeometry(QRect(cr.left(), cr.top(), extraAreaWidth(), cr.height()));
+}
+
+void CodeEditor::keyPressEvent(QKeyEvent * e) {
+    switch (e -> key()) {
+        case Qt::Key_Tab: {
+            textCursor().insertText(QLatin1Literal("  "));
+            e -> accept();
+        break;}
+//        case Qt::Key_Backtab
+        default: QPlainTextEdit::keyPressEvent(e);
+    }
 }
 
 void CodeEditor::highlightCurrentLine() {
