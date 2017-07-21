@@ -9,28 +9,29 @@ class QPaintEvent;
 class QResizeEvent;
 class QSize;
 class QWidget;
-class LineNumberArea;
+class ExtraArea;
 class IDocument;
 
 #define HPADDING 3
 
 class CodeEditor : public QPlainTextEdit {
     Q_OBJECT
-    QWidget * lineNumberArea;
+    QWidget * extraArea;
 public:
     CodeEditor(QWidget * parent = 0);
 
-    void lineNumberAreaPaintEvent(QPaintEvent * event);
-    int lineNumberAreaWidth();
+    void extraAreaPaintEvent(QPaintEvent * event);
+    int extraAreaWidth();
 
     void openDocument(IDocument * doc);
 protected:
     void resizeEvent(QResizeEvent * event) Q_DECL_OVERRIDE;
 
 private slots:
-    void updateLineNumberAreaWidth(int newBlockCount);
     void highlightCurrentLine();
-    void updateLineNumberArea(const QRect &, int);
+
+    void updateExtraAreaWidth(int newBlockCount);
+    void updateExtraArea(const QRect &, int);
 };
 
 #endif // CODE_EDITOR

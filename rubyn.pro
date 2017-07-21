@@ -21,7 +21,6 @@ SOURCES += main.cpp\
     parts/formats/iformat.cpp
 
 HEADERS  += ide_window.h \
-    parts/editor_parts/line_numbers.h \
     parts/code_editor.h \
     misc/singleton.h \
     parts/highligters/base/highlighter_rule.h \
@@ -57,6 +56,7 @@ HEADERS  += ide_window.h \
     parts/langs/python_preset.h \
     parts/langs/vb_preset.h \
     parts/formats/format_text.h \
-    parts/formats/format_image.h
+    parts/formats/format_image.h \
+    parts/editor_parts/extra_area.h
 
 FORMS    += ide_window.ui
