@@ -1,6 +1,7 @@
 #ifndef CODE_EDITOR
 #define CODE_EDITOR
 
+#include <qapplication.h>
 #include <qplaintextedit.h>
 #include <qevent.h>
 #include <qmimedata.h>
@@ -29,6 +30,7 @@ public:
 protected:
     void resizeEvent(QResizeEvent * event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
+    void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
 
 private slots:
     void highlightCurrentLine();

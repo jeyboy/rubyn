@@ -5,6 +5,7 @@
 #include <qtextobject.h>
 #include <qpainter.h>
 #include <qfile.h>
+#include <qscrollbar.h>
 
 #include "document_types/idocument.h"
 
@@ -18,13 +19,22 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent) {
     updateExtraAreaWidth(0);
     highlightCurrentLine();
 
-    setTabStopWidth(1 * fontMetrics().width(' '));
+    verticalScrollBar() -> setSingleStep(2);
+//    scrollBarWidgets()
 
-    // setTabStopWidth(int width)//set tab width
+    //    QTextCursor cursor = ui->textEdit->textCursor();
+    //    ui->textEdit->selectAll();
+    //    ui->textEdit->setFontPointSize(32);
+    //    ui->textEdit->setTextCursor( cursor );
 }
 
 void CodeEditor::openDocument(IDocument * doc) {
     if (doc) {
+        QFont new_font(font().family(), 11);
+
+        doc -> setDefaultFont(new_font);
+        setFont(new_font);
+
         setDocumentTitle(doc -> name());
         setDocument(doc);
 
@@ -70,6 +80,17 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
 //        case Qt::Key_Backtab
         default: QPlainTextEdit::keyPressEvent(e);
     }
+}
+
+void CodeEditor::wheelEvent(QWheelEvent * e) {
+    if (e -> modifiers() & Qt::ControlModifier) {
+        const float delta = e -> angleDelta().y();
+
+        e -> accept();
+        return;
+    }
+
+    QPlainTextEdit::wheelEvent(e);
 }
 
 void CodeEditor::highlightCurrentLine() {

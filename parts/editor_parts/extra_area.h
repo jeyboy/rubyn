@@ -36,9 +36,9 @@ protected:
 //        textEdit->extraAreaContextMenuEvent(event);
 //    }
 
-//    void wheelEvent(QWheelEvent *event) {
-//        QCoreApplication::sendEvent(textEdit->viewport(), event);
-//    }
+    void wheelEvent(QWheelEvent * event) {
+        QCoreApplication::sendEvent(codeEditor -> viewport(), event);
+    }
 };
 
 #endif // EXTRA_AREA_H
