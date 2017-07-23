@@ -20,6 +20,8 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
     activeEditor -> hide();
 
+    openFile(QUrl::fromLocalFile("F://rubyn test//base_parser.rb"));
+
     setWindowTitle(tr("Bla bla blashka"));
 }
 
@@ -59,7 +61,7 @@ void IDEWindow::setupEditor() {
     QFont font;
     font.setFamily("Courier");
     font.setFixedPitch(true);
-    font.setPointSize(10);
+    font.setPointSize(11);
 
     activeEditor -> setFont(font);
     editorsSpliter -> addWidget(activeEditor);

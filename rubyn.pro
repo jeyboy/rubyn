@@ -58,6 +58,10 @@ HEADERS  += ide_window.h \
     parts/formats/format_text.h \
     parts/formats/format_image.h \
     parts/editor_parts/extra_area.h \
-    parts/document_types/binary_document.h
+    parts/document_types/binary_document.h \
+    parts/editor_parts/block_user_data.h
 
 FORMS    += ide_window.ui
+
+RESOURCES += \
+    resources.qrc

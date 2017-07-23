@@ -15,22 +15,28 @@ class IDocument;
 class QPen;
 
 #define HPADDING 3
+#define FOLDING_WIDTH 16
 
 class CodeEditor : public QPlainTextEdit {
     Q_OBJECT
-    QWidget * extraArea;
+    QWidget * extra_area;
+    int folding_y;
 public:
     CodeEditor(QWidget * parent = 0);
     ~CodeEditor() {}
 
+    void extraAreaMouseEvent(QMouseEvent * event);
     void extraAreaPaintEvent(QPaintEvent * event);
     int extraAreaWidth();
+    int foldingOffset();
 
     void openDocument(IDocument * doc);
 protected:
     void resizeEvent(QResizeEvent * event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
+
+    void drawFolding(QPainter & p, const int & x, const int & y, const bool & open, const bool & hover);
 
 private slots:
     void highlightCurrentLine();

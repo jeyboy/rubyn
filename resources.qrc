@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="folding_close">icons/folding_closed.png</file>
+        <file alias="folding_close_hover">icons/folding_closed_hover.png</file>
+        <file alias="folding_open">icons/folding_opened.png</file>
+        <file alias="folding_open_hover">icons/folding_opened_hover.png</file>
+    </qresource>
+</RCC>

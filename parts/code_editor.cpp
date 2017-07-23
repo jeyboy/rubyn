@@ -9,8 +9,8 @@
 
 #include "document_types/idocument.h"
 
-CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent) {
-    extraArea = new ExtraArea(this);
+CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), folding_y(-100) {
+    extra_area = new ExtraArea(this);
 
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateExtraAreaWidth(int)));
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateExtraArea(QRect,int)));
@@ -18,6 +18,8 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent) {
 
     updateExtraAreaWidth(0);
     highlightCurrentLine();
+
+//    setLineWrapMode(NoWrap);
 
     verticalScrollBar() -> setSingleStep(2);
 //    scrollBarWidgets()
@@ -45,9 +47,13 @@ void CodeEditor::openDocument(IDocument * doc) {
     // else inform user about fail
 }
 
-int CodeEditor::extraAreaWidth() {
+int CodeEditor::foldingOffset() {
     int digits = qMax(1, QString::number(blockCount()).length());
     return HPADDING * 2 + fontMetrics().width(QLatin1Char('9')) * digits;
+}
+
+int CodeEditor::extraAreaWidth() {
+    return foldingOffset() + HPADDING + FOLDING_WIDTH;
 }
 
 void CodeEditor::updateExtraAreaWidth(int /* newBlockCount */) {
@@ -56,9 +62,9 @@ void CodeEditor::updateExtraAreaWidth(int /* newBlockCount */) {
 
 void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
     if (dy)
-        extraArea -> scroll(0, dy);
+        extra_area -> scroll(0, dy);
     else
-        extraArea -> update(0, rect.y(), extraArea -> width(), rect.height());
+        extra_area -> update(0, rect.y(), extra_area -> width(), rect.height());
 
     if (rect.contains(viewport() -> rect()))
         updateExtraAreaWidth(0);
@@ -68,7 +74,7 @@ void CodeEditor::resizeEvent(QResizeEvent * e) {
     QPlainTextEdit::resizeEvent(e);
 
     QRect cr = contentsRect();
-    extraArea -> setGeometry(QRect(cr.left(), cr.top(), extraAreaWidth(), cr.height()));
+    extra_area -> setGeometry(QRect(cr.left(), cr.top(), extraAreaWidth(), cr.height()));
 }
 
 void CodeEditor::keyPressEvent(QKeyEvent * e) {
@@ -117,8 +123,20 @@ void CodeEditor::highlightCurrentLine() {
     setExtraSelections(extraSelections);
 }
 
+void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
+    int folding_offset = foldingOffset();
+    int x = event -> x();
+
+    folding_y =
+        x >= folding_offset && x < extra_area -> width() - HPADDING ?
+            event -> y() : -100;
+
+    event -> accept();
+    update();
+}
+
 void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
-    QPainter painter(extraArea);
+    QPainter painter(extra_area);
     painter.fillRect(event -> rect(), Qt::lightGray);
 
     QTextBlock block = firstVisibleBlock();
@@ -133,12 +151,25 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
     int rect_top = event -> rect().top();
     int rect_bottom = event -> rect().bottom();
+    int line_number_width = extra_area -> width() - HPADDING * 2 - FOLDING_WIDTH;
+    int line_number_height = fontMetrics().height();
+
 
     while (block.isValid() && top <= rect_bottom) {
         if (block.isVisible() && bottom >= rect_top) {
+
+//            BlockUserData * user_data = static_cast<BlockUserData *>(block.userData())
+
+//            if (user_data) {
+
+//            }
+
+            drawFolding(painter, foldingOffset(), top, false, folding_y > top && folding_y < bottom);
+
+
             QString number = QString::number(block_number + 1);
 //            painter.setFont(curr_block_number == block_number ? curr_line_font : curr_font);
-            painter.drawText(0, top, extraArea -> width() - HPADDING, fontMetrics().height(), Qt::AlignRight, number);
+            painter.drawText(0, top, line_number_width, line_number_height, Qt::AlignRight, number);
         }
 
         block = block.next();
@@ -146,4 +177,16 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
         bottom = top + (int) blockBoundingRect(block).height();
         ++block_number;
     }
+
+    event -> accept();
+}
+
+void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const bool & open, const bool & hover) {
+    QString name = QStringLiteral(":/folding");
+    name = name % (open ?  QStringLiteral("_open") : QStringLiteral("_close"));
+
+    if (hover)
+        name = name % QStringLiteral("_hover");
+
+    p.drawPixmap(x, y, FOLDING_WIDTH, fontMetrics().height(), QPixmap(name).scaled(FOLDING_WIDTH, fontMetrics().height(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }

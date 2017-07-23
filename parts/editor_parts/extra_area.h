@@ -6,7 +6,9 @@
 class ExtraArea : public QWidget {
     CodeEditor * codeEditor;
 public:
-    ExtraArea(CodeEditor * editor) : QWidget(editor), codeEditor(editor) {}
+    ExtraArea(CodeEditor * editor) : QWidget(editor), codeEditor(editor) {
+        setMouseTracking(true);
+    }
 
     QSize sizeHint() const Q_DECL_OVERRIDE {
         return QSize(codeEditor -> extraAreaWidth(), 0);
@@ -23,9 +25,9 @@ protected:
 //    void mousePressEvent(QMouseEvent *event) {
 //        textEdit->extraAreaMouseEvent(event);
 //    }
-//    void mouseMoveEvent(QMouseEvent *event) {
-//        textEdit->extraAreaMouseEvent(event);
-//    }
+    void mouseMoveEvent(QMouseEvent * event) {
+        codeEditor -> extraAreaMouseEvent(event);
+    }
 //    void mouseReleaseEvent(QMouseEvent *event) {
 //        textEdit->extraAreaMouseEvent(event);
 //    }
