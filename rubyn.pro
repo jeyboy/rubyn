@@ -57,6 +57,7 @@ HEADERS  += ide_window.h \
     parts/langs/vb_preset.h \
     parts/formats/format_text.h \
     parts/formats/format_image.h \
-    parts/editor_parts/extra_area.h
+    parts/editor_parts/extra_area.h \
+    parts/document_types/binary_document.h
 
 FORMS    += ide_window.ui

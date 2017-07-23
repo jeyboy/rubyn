@@ -86,6 +86,11 @@ void CodeEditor::wheelEvent(QWheelEvent * e) {
     if (e -> modifiers() & Qt::ControlModifier) {
         const float delta = e -> angleDelta().y();
 
+        if (delta > 0)
+            zoomIn(4);
+        else
+            zoomOut(4);
+
         e -> accept();
         return;
     }
