@@ -19,23 +19,20 @@ protected:
         codeEditor -> extraAreaPaintEvent(event);
     }
 
-//    void paintEvent(QPaintEvent *event) {
-//        textEdit->extraAreaPaintEvent(event);
-//    }
-//    void mousePressEvent(QMouseEvent *event) {
-//        textEdit->extraAreaMouseEvent(event);
-//    }
+    void mousePressEvent(QMouseEvent * event) {
+        codeEditor -> extraAreaMouseEvent(event);
+    }
     void mouseMoveEvent(QMouseEvent * event) {
         codeEditor -> extraAreaMouseEvent(event);
     }
-//    void mouseReleaseEvent(QMouseEvent *event) {
-//        textEdit->extraAreaMouseEvent(event);
-//    }
-//    void leaveEvent(QEvent *event) {
-//        textEdit->extraAreaLeaveEvent(event);
-//    }
-//    void contextMenuEvent(QContextMenuEvent *event) {
-//        textEdit->extraAreaContextMenuEvent(event);
+    void mouseReleaseEvent(QMouseEvent * event) {
+        codeEditor -> extraAreaMouseEvent(event);
+    }
+    void leaveEvent(QEvent * event) {
+        codeEditor -> extraAreaLeaveEvent(event);
+    }
+//    void contextMenuEvent(QContextMenuEvent * event) {
+//        codeEditor -> extraAreaContextMenuEvent(event);
 //    }
 
     void wheelEvent(QWheelEvent * event) {

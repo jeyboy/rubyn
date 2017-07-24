@@ -9,7 +9,7 @@
 
 #include "document_types/idocument.h"
 
-CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), folding_y(-100) {
+CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), folding_y(NO_FOLDING), folding_click(false) {
     extra_area = new ExtraArea(this);
 
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateExtraAreaWidth(int)));
@@ -129,10 +129,44 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
     folding_y =
         x >= folding_offset && x < extra_area -> width() - HPADDING ?
-            event -> y() : -100;
+            event -> y() : NO_FOLDING;
+
+    switch(event -> type()) {
+        case QEvent::MouseMove: {
+
+        break;}
+
+        case QEvent::MouseButtonPress: {
+            folding_click = folding_y != NO_FOLDING;
+        break;}
+
+        case QEvent::MouseButtonRelease: {
+            folding_click = false;
+            return;
+        break;}
+
+        case QEvent::MouseButtonDblClick: {
+            return;
+        break;}
+
+        default:
+            event -> ignore();
+            return;
+    }
+
+
+    if (event -> type() == QEvent::MouseButtonPress && event -> button() == Qt::LeftButton) {
+
+    }
 
     event -> accept();
     update();
+}
+
+void CodeEditor::extraAreaLeaveEvent(QEvent *) {
+    // fake missing mouse move event from Qt
+    QMouseEvent me(QEvent::MouseMove, QPoint(-1, -1), Qt::NoButton, 0, 0);
+    extraAreaMouseEvent(&me);
 }
 
 void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
@@ -161,11 +195,10 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 //            BlockUserData * user_data = static_cast<BlockUserData *>(block.userData())
 
 //            if (user_data) {
+//              bool curr_folding = folding_y > top && folding_y < bottom;
 
+//              drawFolding(painter, foldingOffset(), top, curr_folding && folding_click, curr_folding);
 //            }
-
-            drawFolding(painter, foldingOffset(), top, false, folding_y > top && folding_y < bottom);
-
 
             QString number = QString::number(block_number + 1);
 //            painter.setFont(curr_block_number == block_number ? curr_line_font : curr_font);
@@ -182,11 +215,14 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 }
 
 void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const bool & open, const bool & hover) {
+    //TODO: rewrite me: use cached pixmaps
     QString name = QStringLiteral(":/folding");
     name = name % (open ?  QStringLiteral("_open") : QStringLiteral("_close"));
 
     if (hover)
         name = name % QStringLiteral("_hover");
 
-    p.drawPixmap(x, y, FOLDING_WIDTH, fontMetrics().height(), QPixmap(name).scaled(FOLDING_WIDTH, fontMetrics().height(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    int row_height = fontMetrics().height();
+
+    p.drawPixmap(x, y + (row_height - FOLDING_WIDTH) / 2, FOLDING_WIDTH, FOLDING_WIDTH, QPixmap(name).scaled(FOLDING_WIDTH, FOLDING_WIDTH, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }

@@ -16,16 +16,20 @@ class QPen;
 
 #define HPADDING 3
 #define FOLDING_WIDTH 16
+#define NO_FOLDING -100
 
 class CodeEditor : public QPlainTextEdit {
     Q_OBJECT
     QWidget * extra_area;
+
     int folding_y;
+    bool folding_click;
 public:
     CodeEditor(QWidget * parent = 0);
     ~CodeEditor() {}
 
     void extraAreaMouseEvent(QMouseEvent * event);
+    void extraAreaLeaveEvent(QEvent * event);
     void extraAreaPaintEvent(QPaintEvent * event);
     int extraAreaWidth();
     int foldingOffset();
