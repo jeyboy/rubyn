@@ -31,7 +31,7 @@ protected:
         QTextCharFormat keywordFormat;
         keywordFormat.setForeground(Qt::darkBlue);
         keywordFormat.setBackground(QColor::fromRgb(0, 0, 255, 16));
-        keywordFormat.setFontWeight(QFont::Bold);
+        keywordFormat.setFontWeight(QFont::Black);
         formats.insert(format_keyword, keywordFormat);
     }
     void registerVariableFormat() {

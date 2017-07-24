@@ -33,6 +33,7 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), folding_y(NO_
 void CodeEditor::openDocument(IDocument * doc) {
     if (doc) {
         QFont new_font(font().family(), 11);
+//        new_font.setStretch(110);
 
         doc -> setDefaultFont(new_font);
         setFont(new_font);
