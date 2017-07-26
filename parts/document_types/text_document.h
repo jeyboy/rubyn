@@ -6,6 +6,8 @@
 #include <qdebug.h>
 
 #include "idocument.h"
+#include "parts/lexer/lexer.h"
+
 
 #define READ_LIMIT (qint64)(512000) // ~512 kb
 
@@ -16,8 +18,12 @@ public:
 
         setDocumentLayout(new QPlainTextDocumentLayout(this));
 
+        QByteArray ar = _device -> readAll();
+
+        Lexer().analize(ar);
+
         if (_device -> size() < READ_LIMIT)
-            setPlainText(_device -> readAll());
+            setPlainText(ar);
         else
             fully_readed = false;
             readNextBlock();

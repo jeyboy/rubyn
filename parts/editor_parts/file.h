@@ -5,10 +5,13 @@
 
 #include "parts/formats/format_types.h"
 
+class Project;
+
 class File {
     FormatType main_format;
+    Project * project;
 public:
-    File();
+    File(Project * project);
 };
 
 #endif // FILE_H

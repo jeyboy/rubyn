@@ -1,6 +1,7 @@
 #include "code_editor.h"
 #include "editor_parts/extra_area.h"
 
+#include <qstringbuilder.h>
 #include <qwidget.h>
 #include <qtextobject.h>
 #include <qpainter.h>

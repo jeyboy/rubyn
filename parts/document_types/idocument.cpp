@@ -1,6 +1,7 @@
 #include "idocument.h"
 #include "documents_types.h"
 #include "parts/formats/iformat.h"
+#include "parts/highligters/highlighter.h"
 
 IDocument * IDocument::create(const QUrl & url) {
     bool isLocal = url.isLocalFile();
@@ -54,4 +55,22 @@ IDocument * IDocument::create(const QUrl & url) {
         return new ImageDocument(path, name, device, f);
 
     return 0;
+}
+
+IDocument::IDocument(const QString & path, const QString & name, QIODevice * device, IFormat * def_format) :
+    _path(path), _name(name), _device(device), _format(def_format), fully_readed(true) {
+
+    IHighlightPreset * preset = _format -> highlightPreset();
+
+    if (preset)
+        new Highlighter(this, preset);
+}
+
+IDocument::~IDocument() {
+    if (_device) {
+        if (_device -> isOpen())
+            _device -> close();
+
+        delete _device;
+    }
 }

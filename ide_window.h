@@ -4,6 +4,11 @@
 #include <qmainwindow.h>
 #include <qlist.h>
 
+//https://www.youtube.com/watch?v=GwgF8GcynV0
+//http://rusrails.ru/debugging-rails-applications
+//http://guides.rubyonrails.org/debugging_rails_applications.html
+//https://github.com/deivid-rodriguez/byebug/blob/master/GUIDE.md
+
 class QSplitter;
 
 #include "parts/code_editor.h"

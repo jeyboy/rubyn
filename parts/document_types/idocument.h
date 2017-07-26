@@ -8,7 +8,6 @@
 #include <qdebug.h>
 
 #include "parts/formats/format_text.h"
-#include "parts/highligters/highlighter.h"
 
 class IDocument : public QTextDocument {
 protected:
@@ -21,23 +20,8 @@ protected:
 public:
     static IDocument * create(const QUrl & url);
 
-    IDocument(const QString & path, const QString & name, QIODevice * device, IFormat * def_format = &FormatText::obj()) :
-        _path(path), _name(name), _device(device), _format(def_format), fully_readed(true) {
-
-        IHighlightPreset * preset = _format -> highlightPreset();
-
-        if (preset)
-            new Highlighter(this, preset);
-    }
-
-    virtual ~IDocument() {
-        if (_device) {
-            if (_device -> isOpen())
-                _device -> close();
-
-            delete _device;
-        }
-    }
+    IDocument(const QString & path, const QString & name, QIODevice * device, IFormat * def_format = &FormatText::obj());
+    virtual ~IDocument();
 
     inline QString name() const { return _name; }
     inline QString path() const { return _path; }

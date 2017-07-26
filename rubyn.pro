@@ -65,7 +65,17 @@ HEADERS  += ide_window.h \
     parts/editor_parts/project.h \
     parts/editor_parts/file.h \
     parts/lexer/lexer.h \
-    parts/lexer/lexems.h
+    parts/lexer/lexems.h \
+    parts/lexer/lexem.h \
+    parts/lexer/scopes/iscope.h \
+    parts/lexer/scopes/global_scope.h \
+    parts/lexer/scopes/class_scope.h \
+    parts/lexer/scopes/instance_scope.h \
+    parts/lexer/scopes/local_scope.h \
+    parts/editor_parts/file_point.h \
+    parts/lexer/scopes/module_scope.h \
+    parts/lexer/scopes/scope_node.h \
+    parts/lexer/scopes/scope_types.h
 
 FORMS    += ide_window.ui
 
