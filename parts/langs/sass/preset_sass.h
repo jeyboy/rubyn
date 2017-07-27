@@ -1,31 +1,11 @@
-#ifndef XML_PRESET
-#define XML_PRESET
+#ifndef SASS_PRESET
+#define SASS_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
-//!!!!!!!!!!!!!!!!
-//TODO: need to find rules
-
-//cdata=
-//  RegExp('(\&lt;|<)\\!\\[[\\w\\s]*?\\[(.|\\s)*?\\]\\](\&gt;|>)','gm')
-
-//comments=
-//  RegExp('(\&lt;|<)!--\\s*.*?\\s*--(\&gt;|>)','gm')
-
-//?=
-// RegExp('([:\\w-\.]+)\\s*=\\s*(".*?"|\'.*?\'|\\w+)*|(\\w+)','gm')
-
-//;while((match=regex.exec(this.code))!=null)
-//{if(match[1]==null)
-//{continue;}
-//push(this.matches,new dp.sh.Match(match[1],match.index,'attribute'));if(match[2]!=undefined)
-//{push(this.matches,new dp.sh.Match(match[2],match.index+match[0].indexOf(match[2]),'attribute-value'));}}
-//this.GetMatches(new RegExp('(\&lt;|<)/*\\?*(?!\\!)|/*\\?*(\&gt;|>)','gm'),'tag');regex=new RegExp('(?:\&lt;|<)/*\\?*\\s*([:\\w-\.]+)','gm');while((match=regex.exec(this.code))!=null)
-//{push(this.matches,new dp.sh.Match(match[1],match.index+match[0].indexOf(match[1]),'tag-name'));}}
-
-class XmlPreset : public IHighlightPreset, public SingletonPtr<XmlPreset> {
+class PresetSass : public IHighlightPreset, public SingletonPtr<PresetSass> {
 public:
-    XmlPreset() {
+    PresetSass() {
         HighlightingRule rule;
 
 //        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";
@@ -39,7 +19,7 @@ public:
 //        highlighting_rules.append(rule);
 
 
-//        rule.pattern = QRegularExpression("^\\s*#.*");
+//        rule.pattern = QRegularExpression("^ *#.*");
 //        rule.format = HighlightFormatFactory::obj().getFormatFor(format_preprocessing);
 //        highlighting_rules.append(rule);
 
@@ -67,4 +47,4 @@ public:
     }
 };
 
-#endif // XML_PRESET
+#endif // SASS_PRESET

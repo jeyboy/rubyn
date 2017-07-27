@@ -38,21 +38,8 @@ HEADERS  += ide_window.h \
     parts/langs/ruby/format_ruby.h \
     parts/formats/iformat.h \
     parts/formats/format_types.h \
-    parts/langs/css/css_preset.h \
-    parts/langs/erb/erb_preset.h \
-    parts/langs/haml/haml_preset.h \
-    parts/langs/html/html_preset.h \
-    parts/langs/javascript/javascript_preset.h \
-    parts/langs/json/json_preset.h \
-    parts/langs/ruby/ruby_preset.h \
-    parts/langs/sass/sass_preset.h \
-    parts/langs/sql/sql_preset.h \
-    parts/langs/xml/xml_preset.h \
-    parts/langs/yaml/yaml_preset.h \
     parts/langs/c_plus_preset.h \
     parts/langs/c_preset.h \
-    parts/langs/c_sharp_preset.h \
-    parts/langs/delphi_preset.h \
     parts/langs/java_preset.h \
     parts/langs/php_preset.h \
     parts/langs/python_preset.h \
@@ -75,7 +62,19 @@ HEADERS  += ide_window.h \
     parts/editor_parts/file_point.h \
     parts/lexer/scopes/module_scope.h \
     parts/lexer/scopes/scope_node.h \
-    parts/lexer/scopes/scope_types.h
+    parts/lexer/scopes/scope_types.h \
+    parts/langs/ruby/keywords_ruby.h \
+    parts/langs/ruby/preset_ruby.h \
+    parts/langs/css/preset_css.h \
+    parts/langs/erb/preset_erb.h \
+    parts/langs/haml/preset_haml.h \
+    parts/langs/html/preset_html.h \
+    parts/langs/javascript/preset_javascript.h \
+    parts/langs/json/preset_json.h \
+    parts/langs/sass/preset_sass.h \
+    parts/langs/sql/preset_sql.h \
+    parts/langs/xml/preset_xml.h \
+    parts/langs/yaml/preset_yaml.h
 
 FORMS    += ide_window.ui
 

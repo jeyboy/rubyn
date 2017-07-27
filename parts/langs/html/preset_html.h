@@ -1,7 +1,7 @@
 #ifndef HTML_PRESET
 #define HTML_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
 //KINDS_NOT_LOC = [
 //  :comment, :doctype, :preprocessor,
@@ -267,9 +267,9 @@
 //end
 //end
 
-class HtmlPreset : public IHighlightPreset, public SingletonPtr<HtmlPreset> {
+class PresetHtml : public IHighlightPreset, public SingletonPtr<PresetHtml> {
 public:
-    HtmlPreset() {
+    PresetHtml() {
         HighlightingRule rule;
 
 //        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";

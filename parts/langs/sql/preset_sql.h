@@ -1,7 +1,7 @@
 #ifndef SQL_PRESET
 #define SQL_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
 //KEYWORDS = %w(
 //  all and any as before begin between by case check collate
@@ -166,9 +166,9 @@
 //end
 
 
-class SQLPreset : public IHighlightPreset, public SingletonPtr<SQLPreset> {
+class PresetSQL : public IHighlightPreset, public SingletonPtr<PresetSQL> {
 public:
-    SQLPreset() {
+    PresetSQL() {
         HighlightingRule rule;
 
         QString keywords = "begin commit rollback select from where explain insert into values update create delete drop grant revoke lock set truncate as join on table view order group by having";

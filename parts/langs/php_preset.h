@@ -1,7 +1,7 @@
 #ifndef PHP_PRESET
 #define PHP_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
 //KINDS_NOT_LOC = HTML::KINDS_NOT_LOC
 

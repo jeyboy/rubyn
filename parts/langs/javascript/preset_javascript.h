@@ -1,7 +1,7 @@
 #ifndef JAVASCRIPT_PRESET
 #define JAVASCRIPT_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
 //# The actual JavaScript keywords.
 //KEYWORDS = %w[
@@ -237,9 +237,9 @@
 //  for function goto if implements import in instanceof int interface long native new null package private protected public return short static super switch
 //  synchronized this throw throws transient true try typeof var void volatile while with
 
-class JavascriptPreset : public IHighlightPreset, public SingletonPtr<JavascriptPreset> {
+class PresetJavascript : public IHighlightPreset, public SingletonPtr<PresetJavascript> {
 public:
-    JavascriptPreset() {
+    PresetJavascript() {
         HighlightingRule rule;
 
         QString keywords = "abstract boolean break byte case catch char class const continue debugger default delete do double else enum export extends false final finally float for function goto if implements import in instanceof int interface long native new null package private protected public return short static super switch synchronized this throw throws transient true try typeof var void volatile while with";

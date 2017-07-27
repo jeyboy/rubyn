@@ -1,24 +1,31 @@
-#ifndef VB_PRESET
-#define VB_PRESET
+#ifndef XML_PRESET
+#define XML_PRESET
 
 #include "parts/highligters/ihighlight_preset.h"
 
-//keywords=
-//  AddHandler AddressOf AndAlso Alias And Ansi As Assembly Auto Boolean ByRef Byte ByVal Call Case Catch CBool CByte CChar CDate CDec CDbl Char CInt Class CLng CObj
-//  Const CShort CSng CStr CType Date Decimal Declare Default Delegate Dim DirectCast Do Double Each Else ElseIf End Enum Erase Error Event Exit False Finally For Friend
-//  Function Get GetType GoSub GoTo Handles If Implements Imports In Inherits Integer Interface Is Let Lib Like Long Loop Me Mod Module MustInherit MustOverride MyBase
-//  MyClass Namespace New Next Not Nothing NotInheritable NotOverridable Object On Option Optional Or OrElse Overloads Overridable Overrides ParamArray Preserve Private
-//  Property Protected Public RaiseEvent ReadOnly ReDim REM RemoveHandler Resume Return Select Set Shadows Shared Short Single Static Step Stop String Structure Sub SyncLock
-//  Then Throw To True Try TypeOf Unicode Until Variant When While With WithEvents WriteOnly Xor
+//!!!!!!!!!!!!!!!!
+//TODO: need to find rules
 
-//comment=
-//  RegExp('\'.*$')
+//cdata=
+//  RegExp('(\&lt;|<)\\!\\[[\\w\\s]*?\\[(.|\\s)*?\\]\\](\&gt;|>)','gm')
 
-//DoubleQuotedString
+//comments=
+//  RegExp('(\&lt;|<)!--\\s*.*?\\s*--(\&gt;|>)','gm')
 
-class VbPreset : public IHighlightPreset, public SingletonPtr<VbPreset> {
+//?=
+// RegExp('([:\\w-\.]+)\\s*=\\s*(".*?"|\'.*?\'|\\w+)*|(\\w+)','gm')
+
+//;while((match=regex.exec(this.code))!=null)
+//{if(match[1]==null)
+//{continue;}
+//push(this.matches,new dp.sh.Match(match[1],match.index,'attribute'));if(match[2]!=undefined)
+//{push(this.matches,new dp.sh.Match(match[2],match.index+match[0].indexOf(match[2]),'attribute-value'));}}
+//this.GetMatches(new RegExp('(\&lt;|<)/*\\?*(?!\\!)|/*\\?*(\&gt;|>)','gm'),'tag');regex=new RegExp('(?:\&lt;|<)/*\\?*\\s*([:\\w-\.]+)','gm');while((match=regex.exec(this.code))!=null)
+//{push(this.matches,new dp.sh.Match(match[1],match.index+match[0].indexOf(match[1]),'tag-name'));}}
+
+class PresetXml : public IHighlightPreset, public SingletonPtr<PresetXml> {
 public:
-    VbPreset() {
+    PresetXml() {
         HighlightingRule rule;
 
 //        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";
@@ -32,9 +39,9 @@ public:
 //        highlighting_rules.append(rule);
 
 
-        rule.pattern = QRegularExpression("^\\s*#.*");
-        rule.format = HighlightFormatFactory::obj().getFormatFor(format_preprocessing);
-        highlighting_rules.append(rule);
+//        rule.pattern = QRegularExpression("^\\s*#.*");
+//        rule.format = HighlightFormatFactory::obj().getFormatFor(format_preprocessing);
+//        highlighting_rules.append(rule);
 
 
 //        rule.pattern = QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()");
@@ -60,4 +67,4 @@ public:
     }
 };
 
-#endif // VB_PRESET
+#endif // XML_PRESET

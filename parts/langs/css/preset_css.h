@@ -1,7 +1,7 @@
 #ifndef CSS_PRESET
 #define CSS_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
 
 //KINDS_NOT_LOC = [
@@ -240,9 +240,9 @@
 
 
 
-class CssPreset : public IHighlightPreset, public SingletonPtr<CssPreset> {
+class PresetCss : public IHighlightPreset, public SingletonPtr<PresetCss> {
 public:
-    CssPreset() {
+    PresetCss() {
         HighlightingRule rule;
 
 //        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";

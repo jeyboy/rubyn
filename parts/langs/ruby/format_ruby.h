@@ -2,14 +2,14 @@
 #define FORMAT_RUBY_H
 
 #include "parts/formats/iformat.h"
-#include "ruby_preset.h"
+#include "preset_ruby.h"
 
 class FormatRuby : public IFormat, public Singleton<FormatRuby> {
 public:
     FormatRuby();
 
     inline FormatType formatType() const { return ft_rb; }
-    inline IHighlightPreset * highlightPreset() const { return &RubyPreset::obj(); }
+    inline IHighlightPreset * highlightPreset() const { return &PresetRuby::obj(); }
 };
 
 #endif // FORMAT_RUBY_H

@@ -1,7 +1,7 @@
 #ifndef PYTHON_PRESET
 #define PYTHON_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
 //KEYWORDS = [
 //  'and', 'as', 'assert', 'break', 'class', 'continue', 'def',

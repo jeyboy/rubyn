@@ -1,7 +1,7 @@
 #ifndef JSON_PRESET
 #define JSON_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
 /////////////////// FULL VALIDATION  ///////////////////////
 
@@ -115,9 +115,9 @@
 //end
 
 
-class JsonPreset : public IHighlightPreset, public SingletonPtr<JsonPreset> {
+class PresetJson : public IHighlightPreset, public SingletonPtr<PresetJson> {
 public:
-    JsonPreset() {
+    PresetJson() {
         HighlightingRule rule;
 
 //        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";

@@ -1,7 +1,7 @@
 #ifndef YAML_PRESET
 #define YAML_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
 //KINDS_NOT_LOC = :all
 
@@ -133,9 +133,9 @@
 //end
 //end
 
-class YamlPreset : public IHighlightPreset, public SingletonPtr<YamlPreset> {
+class PresetYaml : public IHighlightPreset, public SingletonPtr<PresetYaml> {
 public:
-    YamlPreset() {
+    PresetYaml() {
         HighlightingRule rule;
 
 //        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";

@@ -39,6 +39,42 @@ public:
     {
         if (parent)
             parent -> next = this;
+        else
+            gscope = new GlobalScope(); // we must initiate global scope with global attributes
+    }
+
+    bool hasModule(const QByteArray & name) {
+        if (cscope && cscope -> hasModule(name))
+            return true;
+
+        if (mscope && mscope -> hasModule(name))
+            return true;
+
+        if (gscope && gscope -> hasModule(name))
+            return true;
+
+        return false;
+    }
+    void addModule(const ScopeType & stype, const QByteArray & name, const int & line, const int & left) {
+        CHOOSE_SCOPE_BLOCK(stype);
+        scope -> addModule(name, FilePoint {file, line, left, stype});
+    }
+
+    bool hasClass(const QByteArray & name) {
+        if (cscope && cscope -> hasClass(name))
+            return true;
+
+        if (mscope && mscope -> hasClass(name))
+            return true;
+
+        if (gscope && gscope -> hasClass(name))
+            return true;
+
+        return false;
+    }
+    void addClass(const ScopeType & stype, const QByteArray & name, const int & line, const int & left) {
+        CHOOSE_SCOPE_BLOCK(stype);
+        scope -> addClass(name, FilePoint {file, line, left, stype});
     }
 
     ScopeType hasVariable(const QByteArray & name, const bool & ignore_local = false) {
@@ -64,7 +100,7 @@ public:
     }
     void addVariable(const ScopeType & stype, const QByteArray & name, const int & line, const int & left) {
         CHOOSE_SCOPE_BLOCK(stype);
-        scope -> addVariable(name, FilePoint {file, line, left});
+        scope -> addVariable(name, FilePoint {file, line, left, stype});
     }
 
     ScopeType hasConst(const QByteArray & name, const bool & ignore_local = false) {
@@ -90,7 +126,7 @@ public:
     }
     void addConst(const ScopeType & stype, const QByteArray & name, const int & line, const int & left) {
         CHOOSE_SCOPE_BLOCK(stype);
-        scope -> addConst(name, FilePoint {file, line, left});
+        scope -> addConst(name, FilePoint {file, line, left, stype});
     }
 
     ScopeType hasMethod(const QByteArray & name, const bool & ignore_local = false) {
@@ -116,7 +152,7 @@ public:
     }
     void addMethod(const ScopeType & stype, const QByteArray & name, const int & line, const int & left) {
         CHOOSE_SCOPE_BLOCK(stype);
-        scope -> addMethod(name, FilePoint {file, line, left});
+        scope -> addMethod(name, FilePoint {file, line, left, stype});
     }
 
 };

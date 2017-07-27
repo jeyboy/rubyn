@@ -1,7 +1,7 @@
 #ifndef JAVA_PRESET
 #define JAVA_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
 //# http://java.sun.com/docs/books/tutorial/java/nutsandbolts/_keywords.html
 //KEYWORDS = %w[

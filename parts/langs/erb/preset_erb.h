@@ -1,7 +1,7 @@
 #ifndef ERB_PRESET
 #define ERB_PRESET
 
-#include "ihighlight_preset.h"
+#include "parts/highligters/ihighlight_preset.h"
 
 //KINDS_NOT_LOC = HTML::KINDS_NOT_LOC
 
@@ -73,9 +73,9 @@
 //end
 //end
 
-class ErbPreset : public IHighlightPreset, public SingletonPtr<ErbPreset> {
+class PresetErb : public IHighlightPreset, public SingletonPtr<PresetErb> {
 public:
-    ErbPreset() {
+    PresetErb() {
         HighlightingRule rule;
 
 //        QString keywords = "void class char volatile template typedef union unsigned virtual typename const double enum explicit friend private protected public inline short signals static struct slots signed int long namespace operator";
