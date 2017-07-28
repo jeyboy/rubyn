@@ -3,6 +3,8 @@
 
 class File;
 
+#include "scope_node_type.h"
+
 #include "global_scope.h"
 #include "module_scope.h"
 #include "class_scope.h"
@@ -26,6 +28,9 @@ class ScopeNode {
     ScopeNode * parent;
     ScopeNode * next;
     File * file;
+    int start;
+    ScopeNodeType sn_type;
+//    int end;
 
     GlobalScope * gscope;
     ModuleScope * mscope;
@@ -33,9 +38,9 @@ class ScopeNode {
     InstanceScope * iscope;
     LocalScope * lscope;
 public:
-    ScopeNode(File * file, ScopeNode * parent = 0) :
-        parent(parent), next(0), file(file), gscope(0),
-        mscope(0), cscope(0), iscope(0), lscope(0)
+    ScopeNode(const ScopeNodeType & sn_type = snt_block, File * file = 0, const int & start = 0, ScopeNode * parent = 0) :
+        parent(parent), next(0), file(file), start(start), sn_type(sn_type),
+        gscope(0), mscope(0), cscope(0), iscope(0), lscope(0)
     {
         if (parent)
             parent -> next = this;

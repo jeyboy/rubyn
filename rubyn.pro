@@ -53,7 +53,6 @@ HEADERS  += ide_window.h \
     parts/editor_parts/file.h \
     parts/lexer/lexer.h \
     parts/lexer/lexems.h \
-    parts/lexer/lexem.h \
     parts/lexer/scopes/iscope.h \
     parts/lexer/scopes/global_scope.h \
     parts/lexer/scopes/class_scope.h \
@@ -74,7 +73,10 @@ HEADERS  += ide_window.h \
     parts/langs/sass/preset_sass.h \
     parts/langs/sql/preset_sql.h \
     parts/langs/xml/preset_xml.h \
-    parts/langs/yaml/preset_yaml.h
+    parts/langs/yaml/preset_yaml.h \
+    parts/lexer/scopes/scope_node_type.h \
+    parts/langs/ruby/lexer_ruby.h \
+    parts/langs/ruby/predefined_ruby.h
 
 FORMS    += ide_window.ui
 

@@ -6,6 +6,7 @@
 #include "parts/editor_parts/file_point.h"
 
 class IScope {
+    QHash<QByteArray, bool> context_obj;
     QHash<QByteArray, FilePoint> * methods;
     QHash<QByteArray, FilePoint> * variables;
     QHash<QByteArray, FilePoint> * constants;

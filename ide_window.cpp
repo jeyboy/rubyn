@@ -20,7 +20,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
     activeEditor -> hide();
 
-    openFile(QUrl::fromLocalFile("F://rubyn test//base_parser.rb"));
+    openFile(QUrl::fromLocalFile("F://rubyn test//ruby//base_parser.rb"));
 
     setWindowTitle(tr("Bla bla blashka"));
 }
