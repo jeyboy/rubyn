@@ -89,11 +89,15 @@
 //--yydebug
 //Enables parser debug mode (equivalent to -y).
 
+#define CUT_WORD(window, prev) \
+    QByteArray word(prev, window - prev);\
+    prev = window;
+
 class LexerRuby : public Lexer {
 protected:
-    void parse(const char * window, const Lexems & init) {
+    void parse(const char * window, Lexem lex_state) {
         ScopeNode * scope = new ScopeNode();
-        Lexems state = init;
+        Stack<Lexem> stack(lex_state);
 
         const char * prev = window;
 
@@ -112,109 +116,162 @@ protected:
                 case '\v':
                 case '\t':
                 case ' ': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '.': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case ',': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '\'':
                 case '"': {
                     int i = 0;
-                    qDebug() << (*window) << QByteArray(prev, window - prev);
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                     parseStr(window); // if false return error
                 break;}
 
                 case ':': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '=': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
                 case '|': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
                 case '&': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
                 case '!': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
                 case '?': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
                 case '<': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
                 case '>': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
 
                 case '[': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
                 case ']': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '(': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
                 case ')': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '{': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
                 case '}': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '#': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '*':
                 case '/':
                 case '+':
                 case '-': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '@': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
                 case '$': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '\\': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '~': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case ';': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '`': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 case '\r':
                 case '\n': {
-                    int i = 0; qDebug() << (*window) << QByteArray(prev, window - prev);
+                    int i = 0;
+                    CUT_WORD(window, prev);
+                    qDebug() << (*window) << word;
                 break;}
 
                 default:;

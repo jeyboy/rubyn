@@ -76,7 +76,8 @@ HEADERS  += ide_window.h \
     parts/langs/yaml/preset_yaml.h \
     parts/lexer/scopes/scope_node_type.h \
     parts/langs/ruby/lexer_ruby.h \
-    parts/langs/ruby/predefined_ruby.h
+    parts/langs/ruby/predefined_ruby.h \
+    misc/stack.h
 
 FORMS    += ide_window.ui
 

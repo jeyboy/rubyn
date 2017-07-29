@@ -5,6 +5,7 @@
 #include <qbytearray.h>
 
 #include "misc/singleton.h"
+#include "parts/lexer/lexems.h"
 
 class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
     QHash<QByteArray, bool> keys;

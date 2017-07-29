@@ -25,8 +25,7 @@ class File;
 
 
 class ScopeNode {
-    ScopeNode * parent;
-    ScopeNode * next;
+    ScopeNode * ancestor;
     File * file;
     int start;
     ScopeNodeType sn_type;
@@ -38,13 +37,11 @@ class ScopeNode {
     InstanceScope * iscope;
     LocalScope * lscope;
 public:
-    ScopeNode(const ScopeNodeType & sn_type = snt_block, File * file = 0, const int & start = 0, ScopeNode * parent = 0) :
-        parent(parent), next(0), file(file), start(start), sn_type(sn_type),
+    ScopeNode(const ScopeNodeType & sn_type = snt_block, File * file = 0, const int & start = 0,
+        ScopeNode * parent = 0) : ancestor(parent), file(file), start(start), sn_type(sn_type),
         gscope(0), mscope(0), cscope(0), iscope(0), lscope(0)
     {
-        if (parent)
-            parent -> next = this;
-        else
+        if (!parent)
             gscope = new GlobalScope(); // we must initiate global scope with global attributes
     }
 
@@ -98,8 +95,8 @@ public:
         if (gscope && gscope -> hasVariable(name))
             return gscope -> scopeType();
 
-        if (parent)
-            return parent -> hasVariable(name, true);
+        if (ancestor)
+            return ancestor -> hasVariable(name, true);
         else
             return sct_none;
     }
@@ -124,8 +121,8 @@ public:
         if (gscope && gscope -> hasConst(name))
             return gscope -> scopeType();
 
-        if (parent)
-            return parent -> hasConst(name, true);
+        if (ancestor)
+            return ancestor -> hasConst(name, true);
         else
             return sct_none;
     }
@@ -150,8 +147,8 @@ public:
         if (gscope && gscope -> hasMethod(name))
             return gscope -> scopeType();
 
-        if (parent)
-            return parent -> hasMethod(name, true);
+        if (ancestor)
+            return ancestor -> hasMethod(name, true);
         else
             return sct_none;
     }
