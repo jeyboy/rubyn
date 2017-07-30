@@ -29,7 +29,7 @@ enum Lexem {
     lex_commentary = (1 << 16),
 
 
-//    lex_require = (1 << 17),
+    lex_require = (1 << 17),
 //    lex_include = (1 << 18),
 //    lex_extend = (1 << 19),
     lex_inheritance = (1 << 20), // <

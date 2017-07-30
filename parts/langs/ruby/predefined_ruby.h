@@ -44,7 +44,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("BEGIN"), lex_block_requred); // Runs before any other code in the current file
         keys.insert(QByteArrayLiteral("END"), lex_block_requred); // Runs after any other code in the current file
 
-        keys.insert(QByteArrayLiteral("alias"), lex_method); // Creates an alias between two methods (and other things)
+        keys.insert(QByteArrayLiteral("alias"), lex_param_method_obj); // Creates an alias between two methods (and other things)
         keys.insert(QByteArrayLiteral("and"), lex_binary_operator); // Short-circuit Boolean and with lower precedence than &&
 
         keys.insert(QByteArrayLiteral("begin"), lex_block_start); // Starts an exception handling block

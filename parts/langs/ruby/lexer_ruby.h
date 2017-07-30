@@ -90,21 +90,26 @@
 //--yydebug
 //Enables parser debug mode (equivalent to -y).
 
-#define CUT_WORD(window, prev) \
-    QByteArray word(prev, window - prev);\
-    new_lex_state = PredefinedRuby::obj().lexem(word);\
-    if (new_lex_state == lex_undefined) {\
-    \
-    }\
-    lex_state = stack.push(new_lex_state);\
-    prev = window;
 
 class LexerRuby : public Lexer {
+    Lexem cutWord(Stack<Lexem> & stack, const char * window, const char *& prev, QByteArray & word, Lexem & lexem) {
+        word = QByteArray(prev, window - prev);
+
+        lexem = PredefinedRuby::obj().lexem(word);
+
+        if (lexem == lex_undefined) {
+
+        }
+
+        prev = window;
+
+        return stack.push(lexem);
+    }
 protected:
     void parse(const char * window, Lexem lex_state) {
         ScopeNode * scope = new ScopeNode();
         Stack<Lexem> stack(lex_state);
-        Lexem new_lex_state;
+        QByteArray word;
 
         const char * prev = window;
 
@@ -123,110 +128,92 @@ protected:
                 case '\v':
                 case '\t':
                 case ' ': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '.': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case ',': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '\'':
                 case '"': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                     parseStr(window); // if false return error
                 break;}
 
                 case ':': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '=': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
                 case '|': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
                 case '&': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
                 case '!': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
                 case '?': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
                 case '<': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
                 case '>': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
 
                 case '[': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
                 case ']': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '(': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
                 case ')': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '{': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
                 case '}': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '#': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -234,50 +221,42 @@ protected:
                 case '/':
                 case '+':
                 case '-': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '@': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
                 case '$': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '\\': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '~': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case ';': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '`': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '\r':
                 case '\n': {
-                    int i = 0;
-                    CUT_WORD(window, prev);
+                    cutWord(stack, window, prev, word, lex_state);
                     qDebug() << (*window) << word;
                 break;}
 
