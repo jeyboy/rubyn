@@ -31,11 +31,11 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
     QHash<QByteArray, Lexem> keys;
 
     PredefinedRuby() {
-        keys.insert(QByteArrayLiteral("__ENCODING__"), lex_var); // The script encoding of the current file
-        keys.insert(QByteArrayLiteral("__LINE__"), lex_var); // The line number of this keyword in the current file
-        keys.insert(QByteArrayLiteral("__FILE__"), lex_var); // The path to the current file.
+        keys.insert(QByteArrayLiteral("__ENCODING__"), lex_const); // The script encoding of the current file
+        keys.insert(QByteArrayLiteral("__LINE__"), lex_const); // The line number of this keyword in the current file
+        keys.insert(QByteArrayLiteral("__FILE__"), lex_const); // The path to the current file.
         keys.insert(QByteArrayLiteral("__END__"), lex_none); // Denotes the end of the regular source code section of a program file. Lines below __END__ will not be executed
-        keys.insert(QByteArrayLiteral("__method__"), lex_var); // Name of current method
+        keys.insert(QByteArrayLiteral("__method__"), lex_const); // Name of current method
 
 
         keys.insert(QByteArrayLiteral("=begin"), lex_multiline_commentary_start); // Start of multiline comment

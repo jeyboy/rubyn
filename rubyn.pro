@@ -41,9 +41,6 @@ HEADERS  += ide_window.h \
     parts/langs/c_plus_preset.h \
     parts/langs/c_preset.h \
     parts/langs/java_preset.h \
-    parts/langs/php_preset.h \
-    parts/langs/python_preset.h \
-    parts/langs/vb_preset.h \
     parts/formats/format_text.h \
     parts/formats/format_image.h \
     parts/editor_parts/extra_area.h \
@@ -53,15 +50,7 @@ HEADERS  += ide_window.h \
     parts/editor_parts/file.h \
     parts/lexer/lexer.h \
     parts/lexer/lexems.h \
-    parts/lexer/scopes/iscope.h \
-    parts/lexer/scopes/global_scope.h \
-    parts/lexer/scopes/class_scope.h \
-    parts/lexer/scopes/instance_scope.h \
-    parts/lexer/scopes/local_scope.h \
-    parts/editor_parts/file_point.h \
-    parts/lexer/scopes/module_scope.h \
-    parts/lexer/scopes/scope_node.h \
-    parts/lexer/scopes/scope_types.h \
+    parts/lexer/scopes/file_point.h \
     parts/langs/ruby/preset_ruby.h \
     parts/langs/css/preset_css.h \
     parts/langs/erb/preset_erb.h \
@@ -73,10 +62,12 @@ HEADERS  += ide_window.h \
     parts/langs/sql/preset_sql.h \
     parts/langs/xml/preset_xml.h \
     parts/langs/yaml/preset_yaml.h \
-    parts/lexer/scopes/scope_node_type.h \
     parts/langs/ruby/lexer_ruby.h \
     parts/langs/ruby/predefined_ruby.h \
-    misc/stack.h
+    misc/stack.h \
+    parts/lexer/scopes/scope.h \
+    parts/lexer/scopes/scope_item_types.h \
+    parts/lexer/scopes/scope_item.h
 
 FORMS    += ide_window.ui
 
