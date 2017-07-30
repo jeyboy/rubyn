@@ -62,7 +62,6 @@ HEADERS  += ide_window.h \
     parts/lexer/scopes/module_scope.h \
     parts/lexer/scopes/scope_node.h \
     parts/lexer/scopes/scope_types.h \
-    parts/langs/ruby/keywords_ruby.h \
     parts/langs/ruby/preset_ruby.h \
     parts/langs/css/preset_css.h \
     parts/langs/erb/preset_erb.h \

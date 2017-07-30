@@ -65,7 +65,7 @@ public:
         root -> obj = new_val;
     }
 
-    T & push(const T & val) {
+    const T & push(const T & val) {
         new StackCell<T>(root, val);
         return val;
     }

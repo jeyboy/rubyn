@@ -2,6 +2,7 @@
 #define LEXER_RUBY_H
 
 #include "parts/lexer/lexer.h"
+#include "predefined_ruby.h"
 
 //$ ruby [ options ] [.] [ programfile ] [ arguments ... ]
 
@@ -91,6 +92,11 @@
 
 #define CUT_WORD(window, prev) \
     QByteArray word(prev, window - prev);\
+    new_lex_state = PredefinedRuby::obj().lexem(word);\
+    if (new_lex_state == lex_undefined) {\
+    \
+    }\
+    lex_state = stack.push(new_lex_state);\
     prev = window;
 
 class LexerRuby : public Lexer {
@@ -98,6 +104,7 @@ protected:
     void parse(const char * window, Lexem lex_state) {
         ScopeNode * scope = new ScopeNode();
         Stack<Lexem> stack(lex_state);
+        Lexem new_lex_state;
 
         const char * prev = window;
 

@@ -4,6 +4,7 @@
 #pragma once
 
 enum Lexem {
+    lex_undefined = -1,
     lex_none = 0,
 
     lex_unary = (1 << 0),
@@ -28,9 +29,9 @@ enum Lexem {
     lex_commentary = (1 << 16),
 
 
-    lex_require = (1 << 17),
-    lex_include = (1 << 18),
-    lex_extend = (1 << 19),
+//    lex_require = (1 << 17),
+//    lex_include = (1 << 18),
+//    lex_extend = (1 << 19),
     lex_inheritance = (1 << 20), // <
 
     lex_scope_visibility = (1 << 21), // private, protected
@@ -43,6 +44,8 @@ enum Lexem {
 
     lex_arg = (1 << 25),
 
+    lex_const = (1 << 26),
+
     ////// MIXES
 
     les_def_method = lex_def | lex_method, // def
@@ -54,6 +57,8 @@ enum Lexem {
     lex_class_obj = lex_obj | lex_class, // class name
     lex_module_obj = lex_obj | lex_module, // module name
     lex_method_obj = lex_obj | lex_method, // method name
+
+    lex_param_method_obj = lex_method_obj | lex_parametrized,
 
 
     lex_wrap_start = lex_wrap | lex_start, // (
