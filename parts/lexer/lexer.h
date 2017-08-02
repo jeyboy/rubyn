@@ -10,23 +10,23 @@
 
 class Lexer {
 protected:
-    bool parseStr(const char * window) {
-        const char & end_cmb = *window;
+//    bool parseStr(const char * window) {
+//        const char & end_cmb = *window;
 
-        while(*++window) {
-            switch(*window) {
-                case '"':
-                case '\'': {
-                    if (*window == end_cmb && *(window - 1) != '\\')
-                        return true;
-                break;}
+//        while(*++window) {
+//            switch(*window) {
+//                case '"':
+//                case '\'': {
+//                    if (*window == end_cmb && *(window - 1) != '\\')
+//                        return true;
+//                break;}
 
-                default:;
-            }
-        }
+//                default:;
+//            }
+//        }
 
-        return false;
-    }
+//        return false;
+//    }
 
     //    inline bool isCtrl(const char & c) { return c >= 0 && c < 0x20 || c == 0x7f; }
     //    inline bool isBlank(const char & c) { return c == ' ' || c == '\t'; }

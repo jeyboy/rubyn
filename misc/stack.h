@@ -32,7 +32,7 @@ public:
             root -> deleteChildren();
     }
 
-    inline T touch() {
+    inline T & touch() {
         return root -> obj;
     }
 

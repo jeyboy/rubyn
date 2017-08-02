@@ -93,7 +93,11 @@
 
 class LexerRuby : public Lexer {
     Lexem cutWord(Stack<Lexem> & stack, const char * window, const char *& prev, QByteArray & word, Lexem & lexem, Scope * scope, LexToken * root) {
-        word = QByteArray(prev, window - prev);
+        int word_length = window - prev;
+
+        if (word_length == 0) return lex_none;
+
+        word = QByteArray(prev, word_length);
 
         lexem = PredefinedRuby::obj().lexem(word);
 
@@ -112,6 +116,7 @@ protected:
         QByteArray word;
         LexToken * lexems = new LexToken();
 
+        char end_str_symb = 0;
         const char * prev = window;
 
 //        a + b is interpreted as a+b ( Here a is a local variable)
@@ -125,7 +130,6 @@ protected:
 
         while(window) {
             switch(*window) {
-                case '\f':
                 case '\v':
                 case '\t':
                 case ' ': {
@@ -133,27 +137,54 @@ protected:
                     qDebug() << (*window) << word;
                 break;}
 
+
+
                 case '.': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
 
                 case ',': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
+
+
+                case '`':
                 case '\'':
-                case '"': {
+                case '"': {               
+                    if (end_str_symb) {
+                        if (*window == end_str_symb) {
+                            if (*(window - 1) != '\\')
+                                goto iterate;
+
+                            if (stack.touch() == lex_string_start)
+                                stack.drop();
+                            else
+                                ; // output err
+
+                            end_str_symb = 0;
+                        }
+                    } else {
+                        end_str_symb = *window;
+                        stack.push(lex_string_start);
+                    }
+
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
-                    parseStr(window); // if false return error
                 break;}
+
+
 
                 case ':': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
 
                 case '=': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
@@ -176,7 +207,6 @@ protected:
                     qDebug() << (*window) << word;
                 break;}
                 case '<': {
-
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
@@ -184,6 +214,7 @@ protected:
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
 
 
                 case '[': {
@@ -195,6 +226,8 @@ protected:
                     qDebug() << (*window) << word;
                 break;}
 
+
+
                 case '(': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
@@ -203,6 +236,8 @@ protected:
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
 
                 case '{': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
@@ -213,10 +248,14 @@ protected:
                     qDebug() << (*window) << word;
                 break;}
 
+
+
                 case '#': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
 
                 case '*':
                 case '/':
@@ -225,6 +264,8 @@ protected:
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
 
                 case '@': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
@@ -235,25 +276,27 @@ protected:
                     qDebug() << (*window) << word;
                 break;}
 
+
+
                 case '\\': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
 
                 case '~': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
+
+
                 case ';': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
-                case '`': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
-                    qDebug() << (*window) << word;
-                break;}
 
                 case '\r':
                 case '\n': {
@@ -264,7 +307,8 @@ protected:
                 default:;
             }
 
-            ++window;
+            iterate:
+                ++window;
         }
 
         return lexems;

@@ -5,8 +5,7 @@
 
 #include <qglobal.h>
 
-enum Lexem : qint64 {
-    lex_undefined = -1,
+enum Lexem : quint64 {
     lex_none = 0,
 
     lex_unary = (1 << 0),
@@ -54,6 +53,11 @@ enum Lexem : qint64 {
     lex_array = (1 << 30),
     lex_symb = (1 << 31),
 
+
+
+
+    lex_undefined =(1 << 63),
+
     ////// MIXES
 
     les_def_method = lex_def | lex_method, // def
@@ -100,7 +104,8 @@ enum Lexem : qint64 {
     lex_multiline_commentary_start = lex_commentary | lex_poly | lex_start, // =begin
     lex_multiline_commentary_end = lex_commentary | lex_poly | lex_end, // =end
 
-
+    lex_string_start = lex_string | lex_start,
+    lex_string_end = lex_string | lex_end,
 
 
 
