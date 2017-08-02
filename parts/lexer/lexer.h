@@ -6,7 +6,7 @@
 
 #include "misc/stack.h"
 #include "lexems.h"
-#include "scopes/scope_node.h"
+#include "scopes/scope.h"
 
 class Lexer {
 protected:
@@ -42,15 +42,15 @@ protected:
         //template<typename ch_t> inline bool is_print(ch_t c)   {   return c>=' ' && c<='~';    }
         //template<typename ch_t> inline bool is_crlf(ch_t c) { return c=='\r' || c=='\n'; }
 
-    virtual void parse(const char * window, Lexem lex_state) = 0;
+    virtual void parse(const char * window, Lexem lex_state, Scope * scope) = 0;
 
 public:
-    void analize(const QString & text, const Lexem & init = lex_none) {
+    void analize(const QString & text, const Lexem & init = lex_none, Scope * scope = new Scope()) {
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();
 
         quint64 date = QDateTime::currentMSecsSinceEpoch();
-        parse(window, init);
+        parse(window, init, scope);
         qDebug() << (QDateTime::currentMSecsSinceEpoch() - date);
     }
 };

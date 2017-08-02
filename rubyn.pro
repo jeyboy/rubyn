@@ -66,8 +66,7 @@ HEADERS  += ide_window.h \
     parts/langs/ruby/predefined_ruby.h \
     misc/stack.h \
     parts/lexer/scopes/scope.h \
-    parts/lexer/scopes/scope_item_types.h \
-    parts/lexer/scopes/scope_item.h
+    parts/lexer/scopes/scope_item_types.h
 
 FORMS    += ide_window.ui
 

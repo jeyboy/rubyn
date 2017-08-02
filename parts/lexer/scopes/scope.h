@@ -3,47 +3,27 @@
 
 #include <qhash.h>
 
-#include "scope_item.h"
+#include "file_point.h"
 
 class Scope {
-    QHash<QByteArray, Lexem> context_obj;
+    QHash<QByteArray, FilePoint *> context_objs;
+    QHash<QByteArray, VarPointChain<VarPoint> > inclusions;
 public:
+    ~Scope() {
+        qDeleteAll(context_objs);
+    }
 
+    inline bool hasVariable(const QByteArray & name) { return context_objs.contains(name); }
+    inline void addVariable(const QByteArray & name, FilePoint * fpoint) {
+        context_objs.insert(name, fpoint);
+    }
 
-//    inline bool hasVariable(const QByteArray & name) { return variables -> contains(name); }
-//    inline void addVariable(const QByteArray & name, const FilePoint & fpoint) {
-//        if (!variables) variables = new QHash<QByteArray, FilePoint>();
+    inline void registerInclusion(const QByteArray & name, const VarPoint & val) {
+        if (!inclusions.contains(name))
+            inclusions[name] = VarPointChain<VarPoint>();
 
-//        variables -> insert(name, fpoint);
-//    }
-
-//    inline bool hasConst(const QByteArray & name) { return constants -> contains(name); }
-//    inline void addConst(const QByteArray & name, const FilePoint & fpoint) {
-//        if (!constants) constants = new QHash<QByteArray, FilePoint>();
-
-//        constants -> insert(name, fpoint);
-//    }
-
-//    inline bool hasMethod(const QByteArray & name) { return methods -> contains(name); }
-//    void addMethod(const QByteArray & name, const FilePoint & fpoint) {
-//        if (!methods) methods = new QHash<QByteArray, FilePoint>();
-
-//        methods -> insert(name, fpoint);
-//    }
-
-//    inline bool hasClass(const QByteArray & name) { return classes -> contains(name); }
-//    void addClass(const QByteArray & name, const FilePoint & fpoint) {
-//        if (!classes) classes = new QHash<QByteArray, FilePoint>();
-
-//        classes -> insert(name, fpoint);
-//    }
-
-//    inline bool hasModule(const QByteArray & name) { return modules -> contains(name); }
-//    void addModule(const QByteArray & name, const FilePoint & fpoint) {
-//        if (!modules) modules = new QHash<QByteArray, FilePoint>();
-
-//        modules -> insert(name, fpoint);
-//    }
+        inclusions[name].add(val);
+    }
 };
 
 #endif // SCOPE_H
