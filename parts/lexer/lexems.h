@@ -3,7 +3,9 @@
 
 #pragma once
 
-enum Lexem {
+#include <qglobal.h>
+
+enum Lexem : qint64 {
     lex_undefined = -1,
     lex_none = 0,
 
@@ -12,39 +14,45 @@ enum Lexem {
 
     lex_def = (1 << 2),
     lex_obj = (1 << 3),
-    lex_parametrized = (1 << 4),
-//     (1 << 5)
+    lex_local = (1 << 4),
+    lex_global = (1 << 5),
+    lex_parametrized = (1 << 6),
 
-    lex_start = (1 << 6),
-    lex_end = (1 << 7),
+    lex_start = (1 << 7),
+    lex_end = (1 << 8),
 
-    lex_operator = (1 << 8),
-    lex_method = (1 << 9),
-    lex_module = (1 << 10),
-    lex_class = (1 << 11),
-    lex_proc = (1 << 12),
-    lex_lambda = (1 << 13),
-    lex_block = (1 << 14),
-    lex_var = (1 << 15),
-    lex_commentary = (1 << 16),
+    lex_operator = (1 << 9),
+    lex_method = (1 << 10),
+    lex_module = (1 << 11),
+    lex_class = (1 << 12),
+    lex_proc = (1 << 13),
+    lex_lambda = (1 << 14),
+    lex_block = (1 << 15),
+    lex_var = (1 << 16),
+    lex_commentary = (1 << 17),
 
 
-    lex_require = (1 << 17),
-//    lex_include = (1 << 18),
-//    lex_extend = (1 << 19),
-    lex_inheritance = (1 << 20), // <
+    lex_require = (1 << 18),
+    lex_inheritance = (1 << 19), // <
 
-    lex_scope_visibility = (1 << 21), // private, protected
+    lex_scope_visibility = (1 << 20), // private, protected
 
-    lex_acess = (1 << 22),  // .
+    lex_acess = (1 << 21),  // .
 
-    lex_comma = (1 << 23),  // ,
+    lex_comma = (1 << 22),  // ,
 
-    lex_wrap = (1 << 24), // ()
+    lex_wrap = (1 << 23), // ()
 
-    lex_arg = (1 << 25),
+    lex_arg = (1 << 24),
 
-    lex_const = (1 << 26),
+    lex_const = (1 << 25),
+
+    lex_string = (1 << 26),
+    lex_number = (1 << 27),
+    lex_regexp = (1 << 28),
+    lex_hash = (1 << 29),
+    lex_array = (1 << 30),
+    lex_symb = (1 << 31),
 
     ////// MIXES
 
@@ -60,6 +68,10 @@ enum Lexem {
 
     lex_param_method_obj = lex_method_obj | lex_parametrized,
 
+    lex_local_var = lex_var | lex_local, // local
+    lex_global_var = lex_var | lex_global, // global
+    lex_instance_var = lex_var | lex_obj, // instance
+    lex_class_var = lex_var | lex_def, // class or module
 
     lex_wrap_start = lex_wrap | lex_start, // (
     lex_wrap_end = lex_wrap | lex_end, // )

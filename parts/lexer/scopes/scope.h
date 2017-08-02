@@ -4,10 +4,11 @@
 #include <qhash.h>
 
 #include "file_point.h"
+#include "misc/chain.h"
 
 class Scope {
     QHash<QByteArray, FilePoint *> context_objs;
-    QHash<QByteArray, VarPointChain<VarPoint> > inclusions;
+    QHash<QByteArray, Chain<VarPoint> > inclusions;
 public:
     ~Scope() {
         qDeleteAll(context_objs);
@@ -20,7 +21,7 @@ public:
 
     inline void registerInclusion(const QByteArray & name, const VarPoint & val) {
         if (!inclusions.contains(name))
-            inclusions[name] = VarPointChain<VarPoint>();
+            inclusions[name] = Chain<VarPoint>();
 
         inclusions[name].add(val);
     }

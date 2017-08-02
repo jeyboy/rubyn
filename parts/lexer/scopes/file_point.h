@@ -1,15 +1,39 @@
 #ifndef FILE_POINT_H
 #define FILE_POINT_H
 
+#include <qstring.h>
+
 #include "scope_item_types.h"
 #include "parts/lexer/lexems.h"
 #include "file_point.h"
-#include "scope_item_types.h"
 
 class File;
 
 #define DEF_LINE -1
 #define DEF_LINE_END -2
+
+struct LexToken {
+    LexToken * next;
+
+    Lexem lexem;
+    int left;
+    int length;
+
+    LexToken(const Lexem & lexem = lex_none, const int & left = 0, const int & length = 0)
+        : next(0), lexem(lexem), left(left), length(length) {}
+
+    virtual QString error() const { return QString(); }
+};
+
+struct LexError : public LexToken {
+    QString err;
+
+    LexError(const int & left, const int & length, const QString & err)
+        : LexToken(lex_undefined, left, length), err(err) {}
+
+    QString error() const { return err; }
+};
+
 
 struct VarPoint {
     ScopeItemType stype;
@@ -18,52 +42,6 @@ struct VarPoint {
 
     VarPoint(const ScopeItemType & stype, const int & line_start, const int & left)
         : stype(stype), line_start(line_start), left(left) {}
-};
-
-template <class T>
-class VarPointChain;
-
-template <class T>
-class ChainCell {
-  ChainCell * next;
-  T val;
-
-  friend class VarPointChain<T>;
-public:
-  ChainCell(const T & val) : next(0), val(val) {}
-};
-
-template <class T>
-class VarPointChain {
-    ChainCell<T> * root;
-    ChainCell<T> * last;
-public:
-    VarPointChain() : root(0), last(0) {}
-
-    void add(const T & val) {
-        if (last)
-            last = (last -> next = new ChainCell<T>(val));
-        else
-            root = last = new ChainCell<T>(val);
-    }
-
-    void remove(const T & val) {
-        ChainCell<T> * iter = root;
-
-        if (root && root -> val == val) {
-            root = root -> next;
-            delete iter;
-            return;
-        }
-
-        while(iter) {
-            if (iter -> next && iter -> next -> val == val) {
-                ChainCell<T> * temp = iter;
-                iter -> next = iter -> next -> next;
-                delete temp;
-            }
-        }
-    }
 };
 
 struct FilePoint : public VarPoint {
