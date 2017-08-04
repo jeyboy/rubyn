@@ -198,7 +198,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("$~"), lex_var); // The local variable, MatchData relating to the last match. Regex#match method returns the last match information.
 
         // $ n ($1, $2, $3...) // The string matched in the nth group of the last pattern match. Equivalent to m[n], where m is a MatchData object.
-        for(int i = 1; i <= 100; i++)
+        for(int i = 1; i < 100; i++)
             keys.insert('$' + QByteArray::number(i), lex_var);
 
         keys.insert(QByteArrayLiteral("$&"), lex_var); // The string matched in the last pattern match. Equivalent to m[0], where m is a MatchData object.

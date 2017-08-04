@@ -5,7 +5,7 @@
 #include "predefined_ruby.h"
 
 class LexerRuby : public Lexer {
-    Lexem cutWord(Stack<Lexem> & stack, const char * window, const char *& prev, QByteArray & word, Lexem & lexem, Scope * scope, LexToken * root) {
+    void cutWord(const char * window, const char *& prev, QByteArray & word, Lexem & lexem, Scope * scope, LexToken * root) {
         int word_length = window - prev;
 
         if (word_length == 0) return lex_none;
@@ -20,8 +20,6 @@ class LexerRuby : public Lexer {
         }
 
         prev = window;
-
-        return stack.push(lexem);
     }
 protected:
     LexToken * parse(const char * window, Lexem lex_state, Scope * scope) {
@@ -72,7 +70,7 @@ protected:
                 case '\t':
                 case ' ': {
                     prev_is_blank = true;
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -92,19 +90,19 @@ protected:
                             goto iterate;
                     }
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
 
 
                 case ',': {                   
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
-
-                    if (stack.touch() == lex_comma)
+                    if (lex_state == lex_comma)
                         ; // raise error
 
-                    lex_state = stack.push(lex_comma);
+                    //                    lex_state = stack.push(lex_comma);
+
+                    cutWord(window, prev, word, lex_state, scope, lexems);
 
                     qDebug() << (*window) << word;
                 break;}
@@ -131,7 +129,7 @@ protected:
                         lex_state = stack.push(lex_string_start);
                     }
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -145,7 +143,7 @@ protected:
                         lex_state = lex_chain_access;
                     }
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -158,12 +156,12 @@ protected:
                     if (NEXT_CHAR(window) == '=') // ===
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '^': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -171,7 +169,7 @@ protected:
                     if (NEXT_CHAR(window) == '|')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -181,7 +179,7 @@ protected:
                     if (NEXT_CHAR(window) == '&')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -194,7 +192,7 @@ protected:
                     if (NEXT_CHAR(window) == '=')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -202,7 +200,7 @@ protected:
                     if (PREV_CHAR(window) == '=')
                         goto iterate;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -212,7 +210,7 @@ protected:
                     if (!prev_is_blank)
                         goto iterate;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -228,7 +226,7 @@ protected:
                             window++;
                     }
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -240,41 +238,41 @@ protected:
                     else if (NEXT_CHAR(window) == '=')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
 
 
                 case '[': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
                 case ']': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
 
 
                 case '(': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
                 case ')': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
 
 
                 case '{': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
                 case '}': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -287,7 +285,7 @@ protected:
                     }
 
                     // if inline comment
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
 
                     int offset = strlen(window) - index;
@@ -307,7 +305,7 @@ protected:
                     if (NEXT_CHAR(window) == '=')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -321,7 +319,7 @@ protected:
                         window++;
 
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
@@ -330,25 +328,81 @@ protected:
                     if (NEXT_CHAR(window) == '=')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                    cutWord(window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
 
 
-//                case '@': {
-//                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
-//                    qDebug() << (*window) << word;
-//                break;}
-//                case '$': {
-//                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
-//                    qDebug() << (*window) << word;
-//                break;}
+                case '@': {
+                    cutWord(window, prev, word, lex_state, scope, lexems);
+                    qDebug() << (*window) << word;
+                break;}
 
+                case '$': {
+                    bool has_match = false;
+                    char next_char = NEXT_CHAR(window);
 
+                    switch(next_char) {
+                        case '!':
+                        case '@':
+                        case '/':
+                        case '\\':
+                        case ',':
+                        case ';':
+                        case '.':
+                        case '<':
+                        case '>':
+                        case '0':
+                        case '$':
+                        case '?':
+                        case ':':
+                        case '~':
+                        case '&':
+                        case '`':
+                        case '\'':
+                        case '+': {
+                            window++;
+                            has_match = true;
+                        break; }
+
+                        default: {
+                            char & n1_char = NEXT_CHAR(window + 1);
+
+                            if (next_char == '-') {
+                                switch(n1_char) {
+                                    case '0':
+                                    case 'a':
+                                    case 'd':
+                                    case 'F':
+                                    case 'i':
+                                    case 'K':
+                                    case 'l':
+                                    case 'p':
+                                    case 'v':
+                                    case '+': {
+                                        window+=2;
+                                        has_match = true;
+                                    break; }
+
+                                    default:;
+                                }
+                            } else if (next_char == '_') {
+                                if (!isAlphaNum(n1_char))
+                                    has_match = true;
+                            } else if (isDigit(next_char) && isDigit(n1_char)) // $0-$99
+                                has_match = true;
+                        }
+                    }
+
+                    if (has_match) {
+                        cutWord(window, prev, word, lex_state, scope, lexems);
+                        qDebug() << (*window) << word;
+                    }
+                break;}
 
 //                case '\\': {
-//                    cutWord(stack, window, prev, word, lex_state, scope, lexems);
+//                    cutWord(window, prev, word, lex_state, scope, lexems);
 //                    qDebug() << (*window) << word;
 //                break;}
 

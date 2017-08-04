@@ -33,18 +33,19 @@ protected:
 
 //        return false;
 //    }
-
+    inline bool isBDigit(const char & c) { return c == '0' || c == '1'; }
+    inline bool isODigit(const char & c) { return c >= '0' && c <= '7'; }
     inline bool isDigit(const char & c) { return c >= '0' && c <= '9'; }
+    inline bool isHDigit(const char & c) { return isDigit(c) || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F'; }
+
+    inline bool isUpper(const char & c) { return c >= 'A' && c <= 'Z'; }
+    inline bool isLower(const char & c) { return c >= 'a' && c <= 'z'; }
+    inline bool isAlpha(const char & c) { return isLower(c) || isUpper(c); }
+    inline bool isAlphaNum(const char & c) { return isAlpha(c) || isDigit(c); }
 
     //    inline bool isCtrl(const char & c) { return c >= 0 && c < 0x20 || c == 0x7f; }
     //    inline bool isBlank(const char & c) { return c == ' ' || c == '\t'; }
     //    inline bool isSpace(const char & c) { return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v'; }
-        //template<typename ch_t> inline bool is_upper(ch_t c)   {   return c>='A' && c<='Z';    }
-        //template<typename ch_t> inline bool is_lower(ch_t c)   {   return c>='a' && c<='z';    }
-        //template<typename ch_t> inline bool is_alpha(ch_t c)   {   return c>='a' && c<='z' || c>='A' && c<='Z';    }
-        //template<typename ch_t> inline bool is_digit(ch_t c)   {   return c>='0' && c<='9';    }
-        //template<typename ch_t> inline bool is_xdigit(ch_t c)  {   return c>='0' && c<='9' || c>='a' && c<='f' || c>='A' && c<='F';    }
-        //template<typename ch_t> inline bool is_alnum(ch_t c)   {   return is_alpha(c) || is_digit(c);    }
         //template<typename ch_t> inline bool is_punct(ch_t c)   {   return c>='!' && c<='/' || c>=':' && c<='@' || c>='[' && c<='`' || c>='{' && c<='~';    }
         //template<typename ch_t> inline bool is_graph(ch_t c)   {   return c>='!' && c<='~';    }
         //template<typename ch_t> inline bool is_print(ch_t c)   {   return c>=' ' && c<='~';    }
