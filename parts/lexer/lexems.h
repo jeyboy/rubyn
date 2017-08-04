@@ -11,26 +11,25 @@ enum Lexem : quint64 {
     lex_unary = (1 << 0),
     lex_poly = (1 << 1),
 
-    lex_def = (1 << 2),
-    lex_obj = (1 << 3) | lex_var,
-    lex_local = (1 << 4),
-    lex_global = (1 << 5),
-    lex_parametrized = (1 << 6),
-    lex_conditional = (1 << 7),
+    lex_operator = (1 << 2),
+    lex_method = (1 << 3),
+    lex_module = (1 << 4),
+    lex_class = (1 << 5),
+    lex_proc = (1 << 6),
+    lex_lambda = (1 << 7),
+    lex_block = (1 << 8),
+    lex_var = (1 << 9),
+    lex_commentary = (1 << 10),
 
-    lex_start = (1 << 8),
-    lex_end = (1 << 9),
+    lex_def = (1 << 11),
+    lex_obj = (1 << 12) | lex_var,
+    lex_local = (1 << 13),
+    lex_global = (1 << 14),
+    lex_parametrized = (1 << 15),
+    lex_conditional = (1 << 16),
 
-    lex_operator = (1 << 10),
-    lex_method = (1 << 11),
-    lex_module = (1 << 12),
-    lex_class = (1 << 13),
-    lex_proc = (1 << 14),
-    lex_lambda = (1 << 15),
-    lex_block = (1 << 16),
-    lex_var = (1 << 17),
-    lex_commentary = (1 << 18),
-
+    lex_start = (1 << 17),
+    lex_end = (1 << 18),
 
     lex_require = (1 << 19),
     lex_inheritance = (1 << 20), // <
@@ -51,14 +50,14 @@ enum Lexem : quint64 {
     lex_number = (1 << 29) | lex_var,
     lex_regexp = (1 << 30) | lex_var,
     lex_hash = (1 << 31) | lex_var,
-    lex_array = (1 << 32) | lex_var,
-    lex_symb = (1 << 33) | lex_var,
+    lex_array = (1ULL << 32) | lex_var,
+    lex_symb = (1ULL << 33) | lex_var,
 
 
 
 
-    lex_ignore =(1 << 61),
-    lex_undefined =(1 << 62),
+    lex_ignore =(1ULL << 61),
+    lex_undefined =(1ULL << 62),
 
     ////// MIXES
 
@@ -130,9 +129,8 @@ enum Lexem : quint64 {
     lex_chain_poly_start = lex_chain | lex_poly | lex_start, // this chain support additional levels // if elseif ... else
 
     lex_conditional_chain_level = lex_chain | lex_conditional, // elseif() ...
-    lex_chain_level = lex_chain_end, // else ...
-
     lex_chain_end = lex_chain | lex_end,
+    lex_chain_level = lex_chain_end, // else ...
 };
 
 #endif // LEXEMS_H
