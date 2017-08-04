@@ -12,51 +12,53 @@ enum Lexem : quint64 {
     lex_poly = (1 << 1),
 
     lex_def = (1 << 2),
-    lex_obj = (1 << 3),
+    lex_obj = (1 << 3) | lex_var,
     lex_local = (1 << 4),
     lex_global = (1 << 5),
     lex_parametrized = (1 << 6),
+    lex_conditional = (1 << 7),
 
-    lex_start = (1 << 7),
-    lex_end = (1 << 8),
+    lex_start = (1 << 8),
+    lex_end = (1 << 9),
 
-    lex_operator = (1 << 9),
-    lex_method = (1 << 10),
-    lex_module = (1 << 11),
-    lex_class = (1 << 12),
-    lex_proc = (1 << 13),
-    lex_lambda = (1 << 14),
-    lex_block = (1 << 15),
-    lex_var = (1 << 16),
-    lex_commentary = (1 << 17),
-
-
-    lex_require = (1 << 18),
-    lex_inheritance = (1 << 19), // <
-
-    lex_scope_visibility = (1 << 20), // private, protected
-
-    lex_acess = (1 << 21),  // .
-
-    lex_comma = (1 << 22),  // ,
-
-    lex_wrap = (1 << 23), // ()
-
-    lex_arg = (1 << 24),
-
-    lex_const = (1 << 25),
-
-    lex_string = (1 << 26),
-    lex_number = (1 << 27),
-    lex_regexp = (1 << 28),
-    lex_hash = (1 << 29),
-    lex_array = (1 << 30),
-    lex_symb = (1 << 31),
+    lex_operator = (1 << 10),
+    lex_method = (1 << 11),
+    lex_module = (1 << 12),
+    lex_class = (1 << 13),
+    lex_proc = (1 << 14),
+    lex_lambda = (1 << 15),
+    lex_block = (1 << 16),
+    lex_var = (1 << 17),
+    lex_commentary = (1 << 18),
 
 
+    lex_require = (1 << 19),
+    lex_inheritance = (1 << 20), // <
+
+    lex_scope_visibility = (1 << 21), // private, protected
+
+    lex_access = (1 << 22),  // .
+    lex_chain = (1 << 23),  // ::
+    lex_ternary = (1 << 24), // ? :
+
+    lex_comma = (1 << 25),  // ,
+
+    lex_wrap = (1 << 26), // ()
+
+    lex_const = (1 << 27) | lex_var,
+
+    lex_string = (1 << 28) | lex_var,
+    lex_number = (1 << 29) | lex_var,
+    lex_regexp = (1 << 30) | lex_var,
+    lex_hash = (1 << 31) | lex_var,
+    lex_array = (1 << 32) | lex_var,
+    lex_symb = (1 << 33) | lex_var,
 
 
-    lex_undefined =(1 << 63),
+
+
+    lex_ignore =(1 << 61),
+    lex_undefined =(1 << 62),
 
     ////// MIXES
 
@@ -80,8 +82,8 @@ enum Lexem : quint64 {
     lex_wrap_start = lex_wrap | lex_start, // (
     lex_wrap_end = lex_wrap | lex_end, // )
 
-    lex_args_start = lex_arg | lex_start, // (
-    lex_args_end = lex_arg | lex_end, // )
+    lex_args_start = lex_wrap_start, // (
+    lex_args_end = lex_wrap_end, // )
 
     lex_block_requred = lex_block | lex_require,
     lex_param_block_requred = lex_block | lex_parametrized | lex_require,
@@ -107,31 +109,30 @@ enum Lexem : quint64 {
     lex_string_start = lex_string | lex_start,
     lex_string_end = lex_string | lex_end,
 
+    lex_heredoc_start = lex_string_start | lex_poly,
+    lex_heredoc_end = lex_string_end | lex_poly,
 
+    lex_regexp_start = lex_regexp | lex_start,
+    lex_regexp_end = lex_regexp | lex_end,
 
+    lex_array_start = lex_array | lex_start,
+    lex_array_end = lex_array | lex_end,
 
+    lex_hash_start = lex_hash | lex_start,
+    lex_hash_end = lex_hash | lex_end,
 
+    lex_chain_access = lex_chain | lex_access, // ModuleName::ClassName
 
+    lex_ternary_start = lex_ternary | lex_start,
+    lex_ternary_end = lex_ternary | lex_end,
 
-//    lex_local_variable,
-//    lex_global_variable,
-//    lex_instance_variable,
-//    lex_class_variable,
+    lex_chain_unary_start = lex_chain | lex_unary | lex_start, // this chain support only one additional level // if else
+    lex_chain_poly_start = lex_chain | lex_poly | lex_start, // this chain support additional levels // if elseif ... else
 
-//    lex_number,
-//    lex_quote_string,
-//    lex_double_quote_string,
+    lex_conditional_chain_level = lex_chain | lex_conditional, // elseif() ...
+    lex_chain_level = lex_chain_end, // else ...
 
-//    lex_const,
-//    lex_keyword,
-//    lex_reg_exp,
-//    lex_class,
-//    lex_method,
-//    lex_arg,
-//    lex_symbol,
-
-//    lex_sigle_comment,
-//    lex_multy_comment,
+    lex_chain_end = lex_chain | lex_end,
 };
 
 #endif // LEXEMS_H

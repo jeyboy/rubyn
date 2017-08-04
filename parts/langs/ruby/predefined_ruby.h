@@ -31,6 +31,9 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
     QHash<QByteArray, Lexem> keys;
 
     PredefinedRuby() {
+        keys.insert(QByteArrayLiteral("{"), lex_block_start);
+        keys.insert(QByteArrayLiteral("}"), lex_block_end);
+
         keys.insert(QByteArrayLiteral("__ENCODING__"), lex_const); // The script encoding of the current file
         keys.insert(QByteArrayLiteral("__LINE__"), lex_const); // The line number of this keyword in the current file
         keys.insert(QByteArrayLiteral("__FILE__"), lex_const); // The path to the current file.
@@ -54,14 +57,14 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("def"), les_def_method); // Defines a method
         keys.insert(QByteArrayLiteral("defined?"), lex_method); // Returns a string describing its argument
         keys.insert(QByteArrayLiteral("do"), lex_block_start); // Starts a block
-        keys.insert(QByteArrayLiteral("else"), lex_block_start); // The unhandled condition in case, if and unless expressions
-        keys.insert(QByteArrayLiteral("elsif"), lex_param_method_obj); // An alternate condition for an if expression
+        keys.insert(QByteArrayLiteral("else"), lex_chain_level); // The unhandled condition in case, if and unless expressions
+        keys.insert(QByteArrayLiteral("elsif"), lex_conditional_chain_level); // An alternate condition for an if expression
         keys.insert(QByteArrayLiteral("end"), lex_block_end); // The end of a syntax block. Used by classes, modules, methods, exception handling and control expressions
         keys.insert(QByteArrayLiteral("ensure"), lex_block_start); // Starts a section of code that is always run when an exception is raised
         keys.insert(QByteArrayLiteral("extend"), lex_param_method_obj);
         keys.insert(QByteArrayLiteral("false"), lex_var); // Boolean false
-        keys.insert(QByteArrayLiteral("for"), lex_param_block_start); // A loop that is similar to using the each method
-        keys.insert(QByteArrayLiteral("if"), lex_param_block_start); // Used for if and modifier if expressions
+        keys.insert(QByteArrayLiteral("for"), lex_param_method_obj); // A loop that is similar to using the each method
+        keys.insert(QByteArrayLiteral("if"), lex_chain_poly_start); // Used for if and modifier if expressions
         keys.insert(QByteArrayLiteral("in"), lex_param_method_obj); // Used to separate the iterable object and iterator variable in a for loop
         keys.insert(QByteArrayLiteral("include"), lex_param_method_obj);
         keys.insert(QByteArrayLiteral("lambda"), lex_def_lambda);
@@ -83,16 +86,55 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("return"), lex_method); // Exits a method
         keys.insert(QByteArrayLiteral("self"), lex_method); // The object the current method is attached to
         keys.insert(QByteArrayLiteral("super"), lex_method); // Calls the current method in a superclass
-        keys.insert(QByteArrayLiteral("then"), lex_block_start); // Indicates the end of conditional blocks in control structures
+        keys.insert(QByteArrayLiteral("then"), lex_ignore); // Indicates the end of conditional blocks in control structures
         keys.insert(QByteArrayLiteral("true"), lex_var); // Boolean true
         keys.insert(QByteArrayLiteral("undef"), lex_param_method_obj); // Prevents a class or module from responding to a method call
-        keys.insert(QByteArrayLiteral("unless"), lex_param_block_start); // Used for unless and modifier unless expressions
+        keys.insert(QByteArrayLiteral("unless"), lex_chain_unary_start); // Used for unless and modifier unless expressions
         keys.insert(QByteArrayLiteral("until"), lex_param_block_start); // Creates a loop that executes until the condition is true
         keys.insert(QByteArrayLiteral("when"), lex_param_method_obj); // A condition in a case expression
         keys.insert(QByteArrayLiteral("while"), lex_param_block_start); // Creates a loop that executes while the condition is true
         keys.insert(QByteArrayLiteral("yield"), lex_method); // Starts execution of the block sent to the current method
 
 
+
+        keys.insert(QByteArrayLiteral("+"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("-"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("*"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("/"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("%"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("**"), lex_binary_operator);
+
+        keys.insert(QByteArrayLiteral("+="), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("-="), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("*="), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("/="), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("%="), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("**="), lex_binary_operator);
+
+        keys.insert(QByteArrayLiteral("=="), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("!="), lex_binary_operator);
+        keys.insert(QByteArrayLiteral(">"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("<"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral(">="), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("<="), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("=="), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("<=>"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("==="), lex_binary_operator);
+        keys.insert(QByteArrayLiteral(".."), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("..."), lex_binary_operator);
+
+        keys.insert(QByteArrayLiteral("&"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("|"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("^"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("~"), lex_unary_operator);
+        keys.insert(QByteArrayLiteral("<<"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral(">>"), lex_binary_operator);
+
+        keys.insert(QByteArrayLiteral("!"), lex_unary_operator);
+        keys.insert(QByteArrayLiteral("&&"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral("||"), lex_binary_operator);
+
+        keys.insert(QByteArrayLiteral("||="), lex_binary_operator);
 
 
         keys.insert(QByteArrayLiteral("TRUE"), lex_const); // Synonym for true

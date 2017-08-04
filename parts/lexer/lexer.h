@@ -8,6 +8,12 @@
 #include "lexems.h"
 #include "scopes/scope.h"
 
+#define PREV_N_CHAR(w, offset) (*(w - offset))
+#define NEXT_N_CHAR(w, offset) (*(w + offset))
+
+#define PREV_CHAR(w) PREV_N_CHAR(w, 1)
+#define NEXT_CHAR(w) NEXT_N_CHAR(w, 1)
+
 class Lexer {
 protected:
 //    bool parseStr(const char * window) {
@@ -27,6 +33,8 @@ protected:
 
 //        return false;
 //    }
+
+    inline bool isDigit(const char & c) { return c >= '0' && c <= '9'; }
 
     //    inline bool isCtrl(const char & c) { return c >= 0 && c < 0x20 || c == 0x7f; }
     //    inline bool isBlank(const char & c) { return c == ' ' || c == '\t'; }

@@ -4,93 +4,6 @@
 #include "parts/lexer/lexer.h"
 #include "predefined_ruby.h"
 
-//$ ruby [ options ] [.] [ programfile ] [ arguments ... ]
-
-//-a
-//Used with -n or -p to split each line. Check -n and -p options.
-
-//-c
-//Checks syntax only, without executing program.
-
-//-C dir
-//Changes directory before executing (equivalent to -X).
-
-//-d
-//Enables debug mode (equivalent to -debug).
-
-//-F pat
-//Specifies pat as the default separator pattern ($;) used by split.
-
-//-e prog
-//Specifies prog as the program from the command line. Specify multiple -e options for multiline programs.
-
-//-h
-//Displays an overview of command-line options.
-
-//-i [ ext]
-//Overwrites the file contents with program output. The original file is saved with the extension ext. If ext isn't specified, the original file is deleted.
-
-//-I dir
-//Adds dir as the directory for loading libraries.
-
-//-K [ kcode]
-//Specifies the multibyte character set code (e or E for EUC (extended Unix code); s or S for SJIS (Shift-JIS); u or U for UTF8; and a, A, n, or N for ASCII).
-
-//-l
-//Enables automatic line-end processing. Chops a newline from input lines and appends a newline to output lines.
-
-//-n
-//Places code within an input loop (as in while gets; ... end).
-
-//-0[ octal]
-//Sets default record separator ($/) as an octal. Defaults to \0 if octal not specified.
-
-//-p
-//Places code within an input loop. Writes $_ for each iteration.
-
-//-r lib
-//Uses require to load lib as a library before executing.
-
-//-s
-//Interprets any arguments between the program name and filename arguments fitting the pattern -xxx as a switch and defines the corresponding variable.
-
-//-T [level]
-//Sets the level for tainting checks (1 if level not specified).
-
-//-v
-//Displays version and enables verbose mode.
-
-//-w
-//Enables verbose mode. If program file not specified, reads from STDIN.
-
-//-x [dir]
-//Strips text before #!ruby line. Changes directory to dir before executing if dir is specified.
-
-//-X dir
-//Changes directory before executing (equivalent to -C).
-
-//-y
-//Enables parser debug mode.
-
-//--copyright
-//Displays copyright notice.
-
-//--debug
-//Enables debug mode (equivalent to -d).
-
-//--help
-//Displays an overview of command-line options (equivalent to h).
-
-//--version
-//Displays version.
-
-//--verbose
-//Enables verbose mode (equivalent to -v). Sets $VERBOSE to true.
-
-//--yydebug
-//Enables parser debug mode (equivalent to -y).
-
-
 class LexerRuby : public Lexer {
     Lexem cutWord(Stack<Lexem> & stack, const char * window, const char *& prev, QByteArray & word, Lexem & lexem, Scope * scope, LexToken * root) {
         int word_length = window - prev;
@@ -116,6 +29,8 @@ protected:
         QByteArray word;
         LexToken * lexems = new LexToken();
 
+        int index = 0;
+
         char end_str_symb = 0;
         const char * prev = window;
 
@@ -127,6 +42,76 @@ protected:
 //        they indicate the continuation of a statement.
 
 //        Ruby identifier names may consist of alphanumeric characters and the underscore character ( _ ).
+
+//# INTEGERS
+
+//123                  # Fixnum decimal
+//1_234                # Fixnum decimal with underline
+//-500                 # Negative Fixnum
+//0377                 # octal
+//0xff                 # hexadecimal
+//0b1011               # binary
+//?a                   # character code for 'a'
+//?\n                  # code for a newline (0x0a)
+//12345678901234567890 # Bignum
+
+
+
+//# FLOATS
+
+//123.4                # floating point value
+//1.0e6                # scientific notation
+//4E20                 # dot not required
+//4e+20                # sign before exponential
+
+
+//        c = a + b
+//        a, b, c = 10, 20, 30
+
+//        c += a
+//        c -= a
+//        c *= a
+//        c /= a
+//        c %= a
+//        c **= a
+
+//        a + b = 23
+//        a - b = -10
+//        a * b = 2000
+//        b / a = 2
+//        b % a = 1
+//        a**b = 8
+
+//        (a == b)
+//        (a != b)
+//        (a > b)
+//        (a < b)
+//        (a >= b)
+//        (a <= b)
+//        (a <=> b) # Combined comparison operator. Returns 0 if first operand equals second, 1 if first operand is greater than the second and -1 if first operand is less than the second.
+//        (1...10) === 5 # Used to test equality within a when clause of a case statement
+//        1.eql?(1.0) == false  True if the receiver and argument have both the same type and equal values
+//        a.equal?b # True if the receiver and argument have the same object id
+
+//        a    = 60 # 0011 1100
+//        b    = 13 # 0000 1101
+//        -----------------
+//        a&b = 12 # =  0000 1100
+//        a|b = 61 # =  0011 1101
+//        a^b = 49 # =  0011 0001
+//        ~a = -61 # =  1100 0011
+//        a << 2 = 240 # = 1111 0000
+//        a >> 2 = 15 # = 0000 1111
+
+//        (a and b) == true
+//        (a or b) == true.
+//        not(a && b) == false.
+//        (a && b) == true.
+//        (a || b) == true.
+//        !(a && b) == false.
+
+//        a > b ? 1 : 0 # ternary
+
 
         while(window) {
             switch(*window) {
@@ -140,14 +125,33 @@ protected:
 
 
                 case '.': {
+                    char next_char = NEXT_CHAR(window);
+                    bool next_is_dot = next_char == '.';
+
+                    if (next_is_dot) { // is range
+                        ++window;
+
+                        if (NEXT_CHAR(window) == '.') // is range with exclusion
+                            ++window;
+                    } else {
+                        if (PREV_CHAR(window) == '$' || isDigit(next_char)) // is float or $.
+                            goto iterate;
+                    }
+
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
 
 
 
-                case ',': {
+                case ',': {                   
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
+
+                    if (stack.touch() == lex_comma)
+                        ; // raise error
+
+                    lex_state = stack.push(lex_comma);
+
                     qDebug() << (*window) << word;
                 break;}
 
@@ -170,7 +174,7 @@ protected:
                         }
                     } else {
                         end_str_symb = *window;
-                        stack.push(lex_string_start);
+                        lex_state = stack.push(lex_string_start);
                     }
 
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
@@ -180,6 +184,13 @@ protected:
 
 
                 case ':': {
+                    if (PREV_CHAR(window == '$'))
+                        window++;
+                    else if (NEXT_CHAR(window) == ':') {
+                        window++;
+                        lex_state = lex_chain_access;
+                    }
+
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
@@ -187,29 +198,50 @@ protected:
 
 
                 case '=': {
+
+
+
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
+
                 case '|': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
+
                 case '&': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
+
                 case '!': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
+
                 case '?': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
+
                 case '<': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
+
+
                 case '>': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
@@ -243,6 +275,7 @@ protected:
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
+
                 case '}': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
@@ -251,16 +284,36 @@ protected:
 
 
                 case '#': {
+                    if (end_str_symb && end_str_symb != '\'' && NEXT_CHAR(window) == '{') { // if string interpolation
+                        lex_state = stack.push(lex_block_start);
+                        goto iterate;
+                    }
+
+                    // if inline comment
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
+
+                    int offset = strlen(window) - index;
+
+                    word = QByteArray(prev, offset);
+                    qDebug() << word;
+                    window += offset - 1;
+                break;}
+
+
+
+                case '+':
+                case '-': {
+                    if (!isDigit(*(window + 1)) || (*(window - 1)) != 'e') {
+                        cutWord(stack, window, prev, word, lex_state, scope, lexems);
+                        qDebug() << (*window) << word;
+                    }
                 break;}
 
 
 
                 case '*':
-                case '/':
-                case '+':
-                case '-': {
+                case '/': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems);
                     qDebug() << (*window) << word;
                 break;}
@@ -308,6 +361,7 @@ protected:
             }
 
             iterate:
+                ++index;
                 ++window;
         }
 
