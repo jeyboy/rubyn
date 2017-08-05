@@ -5,6 +5,9 @@
 
 #include <qglobal.h>
 
+#define EXCLUDE_BIT(val, bit_num) val & ~(1 << bit_num)
+#define LEX(val, flag) (Lexem)(val | flag)
+
 enum Lexem : quint64 {
     lex_none = 0,
 
@@ -21,18 +24,19 @@ enum Lexem : quint64 {
     lex_var = (1 << 9),
     lex_commentary = (1 << 10),
 
-    lex_def = (1 << 11),
-    lex_obj = (1 << 12) | lex_var,
-    lex_local = (1 << 13),
-    lex_global = (1 << 14),
-    lex_parametrized = (1 << 15),
-    lex_conditional = (1 << 16),
+    lex_start = (1 << 11),
+    lex_end = (1 << 12),
 
-    lex_start = (1 << 17),
-    lex_end = (1 << 18),
+    lex_key = (1 << 13),
 
-    lex_require = (1 << 19),
-    lex_inheritance = (1 << 20), // <
+    lex_def = (1 << 14),
+    lex_obj = (1 << 15) | lex_var,
+    lex_local = (1 << 16),
+    lex_global = (1 << 17),
+    lex_parametrized = (1 << 18),
+    lex_conditional = (1 << 19),
+
+    lex_require = (1 << 20),
 
     lex_scope_visibility = (1 << 21), // private, protected
 
@@ -61,17 +65,23 @@ enum Lexem : quint64 {
 
     ////// MIXES
 
-    les_def_method = lex_def | lex_method, // def
-    lex_def_module = lex_def | lex_module, // module
-    lex_def_class = lex_def | lex_class, // class
-    lex_def_proc = lex_def | lex_proc, // proc
+//    les_def_method = lex_def | lex_method, // def
+//    lex_def_module = lex_def | lex_module, // module
+//    lex_def_class = lex_def | lex_class, // class
+
+    lex_method_start = lex_method | lex_start,
+    lex_module_start = lex_module | lex_start,
+    lex_class_start = lex_class | lex_start,
+
+    lex_def_end = lex_end | lex_method | lex_module | lex_class | lex_block,
+
+//    lex_def_proc = lex_def | lex_proc, // proc
     lex_def_lambda = lex_def | lex_lambda, // lambda, ->
+//    lex_class_obj = lex_obj | lex_class, // class name
+//    lex_module_obj = lex_obj | lex_module, // module name
+//    lex_method_obj = lex_obj | lex_method, // method name
 
-    lex_class_obj = lex_obj | lex_class, // class name
-    lex_module_obj = lex_obj | lex_module, // module name
-    lex_method_obj = lex_obj | lex_method, // method name
-
-    lex_param_method_obj = lex_method_obj | lex_parametrized,
+    lex_method_with_params = lex_method | lex_parametrized,
 
     lex_local_var = lex_var | lex_local, // local
     lex_global_var = lex_var | lex_global, // global
@@ -83,6 +93,10 @@ enum Lexem : quint64 {
 
     lex_args_start = lex_wrap_start, // (
     lex_args_end = lex_wrap_end, // )
+
+    lex_class_required = lex_class | lex_require,
+    lex_module_required = lex_module | lex_require,
+    lex_class_or_module_required = lex_class_required | lex_module_required,
 
     lex_block_requred = lex_block | lex_require,
     lex_param_block_requred = lex_block | lex_parametrized | lex_require,
@@ -120,7 +134,7 @@ enum Lexem : quint64 {
     lex_hash_start = lex_hash | lex_start,
     lex_hash_end = lex_hash | lex_end,
 
-    lex_chain_access = lex_chain | lex_access, // ModuleName::ClassName
+//    lex_resolution = lex_chain | lex_access, // ModuleName::ClassName
 
     lex_ternary_start = lex_ternary | lex_start,
     lex_ternary_end = lex_ternary | lex_end,

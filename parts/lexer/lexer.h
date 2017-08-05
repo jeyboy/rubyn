@@ -36,7 +36,7 @@ protected:
     inline bool isBDigit(const char & c) { return c == '0' || c == '1'; }
     inline bool isODigit(const char & c) { return c >= '0' && c <= '7'; }
     inline bool isDigit(const char & c) { return c >= '0' && c <= '9'; }
-    inline bool isHDigit(const char & c) { return isDigit(c) || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F'; }
+    inline bool isHDigit(const char & c) { return isDigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'); }
 
     inline bool isUpper(const char & c) { return c >= 'A' && c <= 'Z'; }
     inline bool isLower(const char & c) { return c >= 'a' && c <= 'z'; }
