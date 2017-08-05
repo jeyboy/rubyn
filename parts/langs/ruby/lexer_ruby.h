@@ -36,7 +36,7 @@ class LexerRuby : public Lexer {
         }
 
         if (lexem)
-            lexems -> next = new LexToken(EXCLUDE_BIT(lexem, lex_end | lex_start), index, word_length);
+            lexems -> next = new LexToken((lexem & lex_highlightable), index, word_length);
 
         prev = window;
     }
@@ -169,11 +169,21 @@ protected:
 
 
                 case '=': {
-                    if (NEXT_CHAR(window) == '=') // ==
-                        window++;
+                    if (NEXT_CHAR(window) == 'b') { // =begin
+                       if (NEXT_CHAR(window + 1) == 'e' && NEXT_CHAR(window + 2) == 'g' &&
+                            NEXT_CHAR(window + 3) == 'i' && NEXT_CHAR(window + 4) == 'n')
+                                window +=5;
+                    }
+                    else if (NEXT_CHAR(window) == 'e') { // =end
+                       if (NEXT_CHAR(window + 1) == 'n' && NEXT_CHAR(window + 2) == 'd')
+                                window +=3;
+                    } else {
+                        if (NEXT_CHAR(window) == '=') // ==
+                            window++;
 
-                    if (NEXT_CHAR(window) == '=') // ===
-                        window++;
+                        if (NEXT_CHAR(window) == '=') // ===
+                            window++;
+                    }
 
                     cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
                     qDebug() << (*window) << word;

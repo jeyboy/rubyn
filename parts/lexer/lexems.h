@@ -145,6 +145,10 @@ enum Lexem : quint64 {
     lex_conditional_chain_level = lex_chain | lex_conditional, // elseif() ...
     lex_chain_end = lex_chain | lex_end,
     lex_chain_level = lex_chain_end, // else ...
+
+
+    lex_highlightable = lex_var | lex_const | lex_key | lex_string | lex_number |
+        lex_regexp | lex_symb | lex_commentary,
 };
 
 #endif // LEXEMS_H
