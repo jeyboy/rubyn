@@ -66,7 +66,7 @@ public:
     }
 
     const T & push(const T & val) {
-        new StackCell<T>(root, val);
+        root = new StackCell<T>(root, val);
         return val;
     }
 };

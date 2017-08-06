@@ -84,7 +84,6 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("yield"), lex_method); // Starts execution of the block sent to the current method
 
 
-
         keys.insert(QByteArrayLiteral("+"), lex_binary_operator);
         keys.insert(QByteArrayLiteral("-"), lex_binary_operator);
         keys.insert(QByteArrayLiteral("*"), lex_binary_operator);

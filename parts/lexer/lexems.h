@@ -122,6 +122,8 @@ enum Lexem : quint64 {
     lex_string_start = lex_string | lex_start,
     lex_string_end = lex_string | lex_end,
 
+    lex_string_def_required = lex_string | lex_def | lex_require,
+
     lex_heredoc_start = lex_string_start | lex_poly,
     lex_heredoc_end = lex_string_end | lex_poly,
 
