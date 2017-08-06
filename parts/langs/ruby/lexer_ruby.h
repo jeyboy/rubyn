@@ -5,7 +5,7 @@
 #include "predefined_ruby.h"
 
 class LexerRuby : public Lexer {
-    void cutWord(Stack<Lexem> & stack, const char * window, const char *& prev,
+    bool cutWord(Stack<Lexem> & stack, const char * window, const char *& prev,
                 QByteArray & word, Lexem & lexem, Scope * scope, LexToken * lexems, const & index)
     {
         int word_length = window - prev;
@@ -13,7 +13,7 @@ class LexerRuby : public Lexer {
         if (word_length == 0) {
             lexem = lex_none;
             prev = window;
-            return word_length;
+            return true;
         }
 
         word = QByteArray(prev, word_length);
@@ -28,17 +28,19 @@ class LexerRuby : public Lexer {
                 stack.push(lexem);
             else if (lexem & lex_end) {
                 if (EXCLUDE_BIT(lexem, lex_end) == EXCLUDE_BIT(stack.touch(), lex_end)) {
-
+                    stack.drop();
                 } else {
-
+                    lexems -> next = new LexError(index, word_length, QByteArray::number(stack.touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(lexem) + QByteArrayLiteral(" received"));
+                    return false;
                 }
             }
         }
 
         if (lexem)
-            lexems -> next = new LexToken((lexem & lex_highlightable), index, word_length);
+            lexems -> next = new LexToken(Lexem(lexem & lex_highlightable), index, word_length);
 
         prev = window;
+        return true;
     }
 protected:
     LexToken * parse(const char * window, Lexem lex_state, Scope * scope) {
@@ -159,7 +161,6 @@ protected:
                         window++;
                     else if (NEXT_CHAR(window) == ':') {
                         window++;
-                        lex_state = lex_chain_access;
                     }
 
                     cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
