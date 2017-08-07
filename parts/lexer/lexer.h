@@ -4,7 +4,6 @@
 #include <qstring.h>
 #include <qdatetime.h>
 
-#include "misc/stack.h"
 #include "lexems.h"
 #include "scopes/scope.h"
 
@@ -44,7 +43,7 @@ protected:
     inline bool isAlphaNum(const char & c) { return isAlpha(c) || isDigit(c); }
 
     //    inline bool isCtrl(const char & c) { return c >= 0 && c < 0x20 || c == 0x7f; }
-    //    inline bool isBlank(const char & c) { return c == ' ' || c == '\t'; }
+    inline bool isBlank(const char & c) { return c == ' ' || c == '\t'; }
     //    inline bool isSpace(const char & c) { return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v'; }
         //template<typename ch_t> inline bool is_punct(ch_t c)   {   return c>='!' && c<='/' || c>=':' && c<='@' || c>='[' && c<='`' || c>='{' && c<='~';    }
         //template<typename ch_t> inline bool is_graph(ch_t c)   {   return c>='!' && c<='~';    }

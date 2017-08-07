@@ -7,38 +7,63 @@
 class LexerRuby : public Lexer {
     bool cutWord(Stack<Lexem> & stack, const char * window, const char *& prev,
                 QByteArray & word, Lexem & lexem, Scope * scope, LexToken * lexems,
-                 const & index, const Lexem & predefined_lexem = lex_undefined)
+                 const & index, Lexem & var_def_state, const Lexem & predefined_lexem = lex_none)
     {
         int word_length = window - prev;
 
-        if (word_length == 0) {
-            lexem = lex_none;
-            prev = window;
-            return true;
-        }
-
         word = QByteArray(prev, word_length);
 
-        lexem = predefined_lexem ? predefined_lexem : PredefinedRuby::obj().lexem(word);
+        Lexem & stack_top = stack.touch();
 
-        if (lexem == lex_undefined) {
-            if (scope -> hasVariable(word))
-                lexem = lex_var;
+        if (stack_top == lex_module_start || stack_top == lex_class_start || stack_top == lex_method_start) {
+            scope -> addVariable(word, 0); // new FilePoint() // TODO: write me
+        }
+        else lexem = predefined_lexem ? predefined_lexem : PredefinedRuby::obj().lexem(word);
+
+
+        if (lexem == lex_var_chain_end) {
+            scope -> clearUnregVar();
+            var_def_state = lex_none;
         } else {
-            if (lexem & lex_start)
-                stack.push(lexem);
-            else if (lexem & lex_end) {
-                if (EXCLUDE_BIT(lexem, lex_end) == EXCLUDE_BIT(stack.touch(), lex_start)) {
-                    stack.drop();
-                } else {
-                    lexems -> next = new LexError(index, word_length, QByteArray::number(stack.touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(lexem) + QByteArrayLiteral(" received"));
+            if (var_def_state && lexem != lex_undefined && lexem != lex_none) {
+                if (var_def_state == lexem) {
+                    lexems -> next = new LexError(index, word_length, QByteArrayLiteral("Error in variable def"));
                     return false;
+                }
+            }
+
+            if (lexem == lex_undefined) {
+                if (scope -> hasVariable(word))
+                    lexem = lex_var;
+                else {
+                    scope -> registerUnregVar(word, index);
+                    lexem = lex_var;
+
+                    if (var_def_state == lexem) {
+                        lexems -> next = new LexError(index, word_length, QByteArrayLiteral("Error in variable def"));
+                        return false;
+                    }
+
+                    var_def_state = lexem;
+                }
+            } else {
+                if (lexem & lex_start)
+                    stack.push(lexem);
+                else if (lexem & lex_end) {
+                    if (EXCLUDE_BIT(lexem, lex_end) == EXCLUDE_BIT(stack.touch(), lex_start)) {
+                        stack.drop();
+                    } else {
+                        lexems -> next = new LexError(index, word_length, QByteArray::number(stack.touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(lexem) + QByteArrayLiteral(" received"));
+                        return false;
+                    }
                 }
             }
         }
 
-        if (lexem)
-            lexems -> next = new LexToken(Lexem(lexem & lex_highlightable), index, word_length);
+        Lexem highlightable = Lexem(lexem & lex_highlightable);
+
+        if (highlightable)
+            lexems -> next = new LexToken(highlightable, index, word_length);
 
         prev = window;
         return true;
@@ -48,12 +73,12 @@ protected:
         Stack<Lexem> stack(lex_state);
         QByteArray word;
         LexToken * lexems = new LexToken();
+        Lexem var_def_state = lex_none;
 
         int index = 0;
 
         char end_str_symb;
         const char * prev = window;
-        bool prev_is_blank = true;
 
 //        a + b is interpreted as a+b ( Here a is a local variable)
 //        a  +b is interpreted as a(+b) ( Here a is a method call)
@@ -91,14 +116,7 @@ protected:
                 case '\v':
                 case '\t':
                 case ' ': {
-                    if (prev_is_blank) {
-                        prev++; // ignore blanks
-                        goto iterate;
-                    }
-
-                    prev_is_blank = true;
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
-                    prev++; // ignore blanks
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
@@ -118,20 +136,14 @@ protected:
                             goto iterate;
                     }
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
 
 
                 case ',': {                   
-                    if (lex_state == lex_comma)
-                        ; // raise error
-
-                    //                    lex_state = stack.push(lex_comma);
-
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
-
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
@@ -142,10 +154,9 @@ protected:
                 case '"': {
                     end_str_symb = *window;
                     lex_state = stack.push(lex_string_start);
+                    prev++;
 
                     handle_string:
-                        prev_is_blank = false;
-
                         while(++window) {
                             ++index;
 
@@ -160,16 +171,14 @@ protected:
                                 case '`':
                                 case '\'':
                                 case '"': {
-                                    if (PREV_CHAR(window) != '\\') {
-                                        window++;
+                                    if (PREV_CHAR(window) != '\\')
                                         goto end_str;
-                                    }
                                 }
                             }
                         }
 
                     end_str:
-                        cutWord(stack, window, prev, word, lex_state, scope, lexems, index, lex_string_end);
+                        cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state, lex_string_end);
                         qDebug() << word;
                 break;}
 
@@ -182,7 +191,7 @@ protected:
                         window++;
                     }
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
@@ -205,12 +214,12 @@ protected:
                             window++;
                     }
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
                 case '^': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
@@ -218,7 +227,7 @@ protected:
                     if (NEXT_CHAR(window) == '|')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
@@ -228,14 +237,14 @@ protected:
                     if (NEXT_CHAR(window) == '&')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
 
 
                 case '!': {
-                    if (!prev_is_blank)
+                    if (!isBlank(PREV_CHAR(window)))
                         goto iterate;
 
                     if (NEXT_CHAR(window) == '~')
@@ -243,7 +252,7 @@ protected:
                     else if (NEXT_CHAR(window) == '=')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
@@ -251,17 +260,17 @@ protected:
                     if (PREV_CHAR(window) == '=')
                         goto iterate;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
 
 
                 case '?': {
-                    if (!prev_is_blank)
+                    if (!isBlank(PREV_CHAR(window)))
                         goto iterate;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
@@ -277,7 +286,7 @@ protected:
                             window++;
                     }
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
@@ -289,41 +298,41 @@ protected:
                     else if (NEXT_CHAR(window) == '=')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
 
 
                 case '[': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
                 case ']': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
 
 
                 case '(': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
                 case ')': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
 
 
                 case '{': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
                 case '}': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
 
                     if (stack.touch() == lex_string_def_required) { // return to string after interpolation
@@ -336,7 +345,7 @@ protected:
 
                 case '#': {
                     // if inline comment
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
 
                     int offset = strlen(window) - index;
@@ -352,7 +361,7 @@ protected:
                     if (NEXT_CHAR(window) == '>') { // lambda
                         window++;
 
-                        cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                        cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                         qDebug() << word;
                     }
                 case '+': {
@@ -362,7 +371,7 @@ protected:
                     if (NEXT_CHAR(window) == '=')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
@@ -376,7 +385,7 @@ protected:
                         window++;
 
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
@@ -385,14 +394,14 @@ protected:
                     if (NEXT_CHAR(window) == '=')
                         window++;
 
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
                 break;}
 
 
 
                 case '@': {
-                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                     qDebug() << word;
 
                     if (NEXT_CHAR(window) == '@')
@@ -456,17 +465,17 @@ protected:
                     }
 
                     if (has_match) {
-                        cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+                        cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                         qDebug() << word;
                     }
                 break;}
 
 //                case '\\': {
-//                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index);
+//                    cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
 //                    qDebug() << word;
 //                break;}
 
-                default: prev_is_blank = false;
+                default:;
             }
 
             iterate:

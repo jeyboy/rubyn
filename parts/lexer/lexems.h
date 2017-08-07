@@ -59,7 +59,7 @@ enum Lexem : quint64 {
 
 
 
-
+//    lex_end_line
     lex_ignore =(1ULL << 61),
     lex_undefined =(1ULL << 62),
 
@@ -148,6 +148,10 @@ enum Lexem : quint64 {
     lex_chain_end = lex_chain | lex_end,
     lex_chain_level = lex_chain_end, // else ...
 
+
+    lex_var_chain_start = lex_start | lex_chain | lex_var,
+    lex_var_chain_end = lex_end | lex_chain | lex_var,
+//    lex_var_chain_sep = lex_comma | lex_chain | lex_var,
 
     lex_highlightable = lex_var | lex_const | lex_key | lex_string | lex_number |
         lex_regexp | lex_symb | lex_commentary,

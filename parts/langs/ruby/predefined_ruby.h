@@ -22,6 +22,17 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
 
         keys.insert(QByteArrayLiteral("->"), lex_def_lambda);
 
+        keys.insert(QByteArrayLiteral(","), lex_comma);
+        keys.insert(QByteArrayLiteral("="), lex_var_chain_end);
+
+        keys.insert(QByteArrayLiteral(";"), lex_ignore);
+        keys.insert(QByteArrayLiteral("\r"), lex_ignore);
+        keys.insert(QByteArrayLiteral("\n"), lex_ignore);
+        keys.insert(QByteArrayLiteral("\v"), lex_ignore);
+        keys.insert(QByteArrayLiteral("\t"), lex_none);
+        keys.insert(QByteArrayLiteral(" "), lex_none);
+
+
         keys.insert(QByteArrayLiteral("__ENCODING__"), lex_const); // The script encoding of the current file
         keys.insert(QByteArrayLiteral("__LINE__"), lex_const); // The line number of this keyword in the current file
         keys.insert(QByteArrayLiteral("__FILE__"), lex_const); // The path to the current file.
