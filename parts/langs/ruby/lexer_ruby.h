@@ -22,7 +22,7 @@ class LexerRuby : public Lexer {
             else lexem = predefined_lexem ? predefined_lexem : PredefinedRuby::obj().lexem(word);
 
             if (lexem != lex_ignore) {
-                if (lexem == lex_var_chain_end) {
+                if (var_def_state == lex_var_chain_end) {
                     scope -> clearUnregVar();
                     var_def_state = lex_none;
                 } else {
@@ -146,6 +146,7 @@ protected:
 
 
                 case ',': {                   
+//                    var_def_state = lex_comma;
                     cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                 break;}
 
@@ -216,6 +217,9 @@ protected:
                         if (NEXT_CHAR(window) == '=') // ===
                             window++;
                     }
+
+//                    if (window - prev == 1)
+//                        var_def_state == lex_var_chain_end;
 
                     cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                 break;}
@@ -299,18 +303,22 @@ protected:
 
 
                 case '[': {
+//                    var_def_state = lex_array_start;
                     cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                 break;}
                 case ']': {
+//                    var_def_state = lex_array_end;
                     cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                 break;}
 
 
 
                 case '(': {
+//                    var_def_state = lex_wrap_start;
                     cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                 break;}
                 case ')': {
+//                    var_def_state = lex_wrap_end;
                     cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
                 break;}
 

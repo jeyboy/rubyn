@@ -20,6 +20,12 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("{"), lex_block_start);
         keys.insert(QByteArrayLiteral("}"), lex_block_end);
 
+        keys.insert(QByteArrayLiteral("["), lex_array_start);
+        keys.insert(QByteArrayLiteral("]"), lex_array_end);
+
+        keys.insert(QByteArrayLiteral("("), lex_wrap_start);
+        keys.insert(QByteArrayLiteral(")"), lex_wrap_end);
+
         keys.insert(QByteArrayLiteral("->"), lex_def_lambda);
 
         keys.insert(QByteArrayLiteral(","), lex_comma);
