@@ -64,13 +64,12 @@ class LexerRuby : public Lexer {
 
                 if (highlightable)
                     lexems -> next = new LexToken(highlightable, index, word_length);
-            }
 
-            if (lexem != lex_ignore)
                 qDebug() << word;
+            }
         }
 
-        prev = window + 1;
+        prev = window;
         return true;
     }
 protected:
@@ -122,6 +121,7 @@ protected:
                 case '\t':
                 case ' ': {
                     cutWord(stack, window, prev, word, lex_state, scope, lexems, index, var_def_state);
+                    ++prev;
                 break;}
 
 
