@@ -11,66 +11,66 @@ class LexerRuby : public Lexer {
     {
         int word_length = window - prev;
 
-        word = QByteArray(prev, word_length);
+        if (word_length > 0) { // ignore empty words
+            word = QByteArray(prev, word_length);
 
-        Lexem & stack_top = stack.touch();
+            Lexem & stack_top = stack.touch();
 
-        if (stack_top == lex_module_start || stack_top == lex_class_start || stack_top == lex_method_start) {
-            scope -> addVariable(word, 0); // new FilePoint() // TODO: write me
-        }
-        else lexem = predefined_lexem ? predefined_lexem : PredefinedRuby::obj().lexem(word);
+            if (stack_top == lex_module_start || stack_top == lex_class_start || stack_top == lex_method_start) {
+                scope -> addVariable(word, 0); // new FilePoint() // TODO: write me
+            }
+            else lexem = predefined_lexem ? predefined_lexem : PredefinedRuby::obj().lexem(word);
 
-        if (lexem != lex_ignore) {
-            if (lexem == lex_var_chain_end) {
-                scope -> clearUnregVar();
-                var_def_state = lex_none;
-            } else {
-                if (var_def_state && lexem != lex_undefined && lexem != lex_none) {
-                    if (var_def_state == lexem) {
-                        lexems -> next = new LexError(index, word_length, QByteArrayLiteral("Error in variable def"));
-                        return false;
-                    }
-                }
-
-                if (lexem == lex_undefined) {
-                    if (scope -> hasVariable(word))
-                        lexem = lex_var;
-                    else {
-                        scope -> registerUnregVar(word, index);
-                        lexem = lex_var;
-
+            if (lexem != lex_ignore) {
+                if (lexem == lex_var_chain_end) {
+                    scope -> clearUnregVar();
+                    var_def_state = lex_none;
+                } else {
+                    if (var_def_state && lexem != lex_undefined && lexem != lex_none) {
                         if (var_def_state == lexem) {
                             lexems -> next = new LexError(index, word_length, QByteArrayLiteral("Error in variable def"));
                             return false;
                         }
-
-                        var_def_state = lexem;
                     }
-                } else {
-                    if (lexem & lex_start)
-                        stack.push(lexem);
-                    else if (lexem & lex_end) {
-                        if (EXCLUDE_BIT(lexem, lex_end) == EXCLUDE_BIT(stack.touch(), lex_start)) {
-                            stack.drop();
-                        } else {
-                            lexems -> next = new LexError(index, word_length, QByteArray::number(stack.touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(lexem) + QByteArrayLiteral(" received"));
-                            return false;
+
+                    if (lexem == lex_undefined) {
+                        lexem = lex_var;
+
+                        if (!scope -> hasVariable(word)) {
+                            scope -> registerUnregVar(word, index);
+
+                            if (var_def_state == lexem) {
+                                lexems -> next = new LexError(index, word_length, QByteArrayLiteral("Error in variable def"));
+                                return false;
+                            }
+
+                            var_def_state = lexem;
+                        }
+                    } else {
+                        if (lexem & lex_start)
+                            stack.push(lexem);
+                        else if (lexem & lex_end) {
+                            if (EXCLUDE_BIT(lexem, lex_end) == EXCLUDE_BIT(stack.touch(), lex_start)) {
+                                stack.drop();
+                            } else {
+                                lexems -> next = new LexError(index, word_length, QByteArray::number(stack.touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(lexem) + QByteArrayLiteral(" received"));
+                                return false;
+                            }
                         }
                     }
                 }
+
+                Lexem highlightable = Lexem(lexem & lex_highlightable);
+
+                if (highlightable)
+                    lexems -> next = new LexToken(highlightable, index, word_length);
             }
 
-            Lexem highlightable = Lexem(lexem & lex_highlightable);
-
-            if (highlightable)
-                lexems -> next = new LexToken(highlightable, index, word_length);
+            if (lexem != lex_ignore)
+                qDebug() << word;
         }
 
         prev = window + 1;
-
-        if (lexem != lex_ignore)
-            qDebug() << word;
-
         return true;
     }
 protected:
