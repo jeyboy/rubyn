@@ -26,6 +26,8 @@ class LexerRuby : public Lexer {
                 state -> lex_state = lex_var;
 
                 if (!state -> scope -> hasVar(state -> word)) {
+                    // TODO: determine type of word
+
                     state -> scope -> addUnregVar(state -> word, 0); // new FilePoint() // TODO: write me
 
                     if (state -> var_def_state == state -> lex_state) {
