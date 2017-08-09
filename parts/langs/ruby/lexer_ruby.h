@@ -16,59 +16,45 @@ class LexerRuby : public Lexer {
             Lexem & stack_top = state -> stack -> touch();
 
             if ((stack_top & lex_def_start) > lex_start) {
-                state -> scope -> addVariable(state -> word, 0); // new FilePoint() // TODO: write me
+                state -> scope -> addVar(state -> word, 0); // new FilePoint() // TODO: write me
             }
-            else
-                state -> lex_state = predefined_lexem ? predefined_lexem : PredefinedRuby::obj().lexem(state -> word);
+            else state -> lex_state =
+                predefined_lexem ? predefined_lexem : PredefinedRuby::obj().lexem(state -> word);
 
-            if (state -> lex_state != lex_ignore) {
-                if (state -> var_def_state == lex_var_chain_end) {
-                    state -> scope -> clearUnregVar();
-                    state -> var_def_state = lex_none;
-                } else {
-                    if (state -> var_def_state && state -> lex_state != lex_undefined && state -> lex_state != lex_none) {
-                        if (state -> var_def_state == state -> lex_state) {
-                            lexems -> next = new LexError(state -> index, word_length, QByteArrayLiteral("Error in variable def"));
-                            return false;
-                        }
+
+            if (state -> lex_state == lex_undefined) {
+                state -> lex_state = lex_var;
+
+                if (!state -> scope -> hasVar(state -> word)) {
+                    state -> scope -> addUnregVar(state -> word, 0); // new FilePoint() // TODO: write me
+
+                    if (state -> var_def_state == state -> lex_state) {
+                        lexems -> next = new LexError(state -> index, word_length, QByteArrayLiteral("Error in variable def"));
+                        return false;
                     }
 
-                    if (state -> lex_state == lex_undefined) {
-                        state -> lex_state = lex_var;
-
-                        if (!state -> scope -> hasVariable(state -> word)) {
-                            state -> scope -> registerUnregVar(state -> word, state -> index);
-
-                            if (state -> var_def_state == state -> lex_state) {
-                                lexems -> next = new LexError(state -> index, word_length, QByteArrayLiteral("Error in variable def"));
-                                return false;
-                            }
-
-                            state -> var_def_state = state -> lex_state;
-                        }
+                    state -> var_def_state = state -> lex_state;
+                }
+            } else {
+                if (state -> lex_state & lex_start)
+                    state -> stack -> push(state -> lex_state);
+                else if (state -> lex_state & lex_end) {
+                    if (EXCLUDE_BIT(state -> lex_state, lex_end) == EXCLUDE_BIT(state -> stack -> touch(), lex_start)) {
+                        state -> stack -> drop();
                     } else {
-                        if (state -> lex_state & lex_start)
-                            state -> stack -> push(state -> lex_state);
-                        else if (state -> lex_state & lex_end) {
-                            if (EXCLUDE_BIT(state -> lex_state, lex_end) == EXCLUDE_BIT(state -> stack -> touch(), lex_start)) {
-                                state -> stack -> drop();
-                            } else {
-                                lexems -> next = new LexError(state -> index, word_length, QByteArray::number(state -> stack -> touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(state -> lex_state) + QByteArrayLiteral(" received"));
-                                return false;
-                            }
-                        }
+                        lexems -> next = new LexError(state -> index, word_length, QByteArray::number(state -> stack -> touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(state -> lex_state) + QByteArrayLiteral(" received"));
+                        return false;
                     }
                 }
-
-                Lexem highlightable = Lexem(state -> lex_state & lex_highlightable);
-
-                if (highlightable)
-                    lexems -> next = new LexToken(highlightable, state -> index, word_length);
-
-                qDebug() << state -> word;
             }
-        }
 
+            Lexem highlightable = Lexem(state -> lex_state & lex_highlightable);
+
+            if (highlightable)
+                lexems -> next = new LexToken(highlightable, state -> index, word_length);
+
+            qDebug() << state -> word;
+        }
 
         // proc delimiter
         if (!predefined_lexem) {
@@ -78,6 +64,22 @@ class LexerRuby : public Lexer {
 
             state -> delimiter = QByteArray(prev, window - prev);
             state -> lex_control_state = PredefinedRuby::obj().lexem(state -> delimiter);
+
+            if (state -> var_def_state) {
+                if (state -> lex_control_state == lex_var_chain_end) {
+                    state -> scope -> clearUnregVar();
+                    state -> var_def_state = lex_none;
+                } else {
+                    if (state -> lex_control_state == state -> var_def_state &&
+                        (state -> var_def_state == lex_var || state -> var_def_state == lex_comma)
+                    ) {
+                        lexems -> next = new LexError(state -> index, word_length, QByteArrayLiteral("Error in variable def"));
+                        return false;
+                    }
+                    else if (state -> lex_control_state != lex_ignore)
+                        state -> var_def_state = state -> lex_control_state;
+                }
+            }
         }
 
         state -> next_offset = 1;

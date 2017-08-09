@@ -35,8 +35,8 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("\r"), lex_ignore);
         keys.insert(QByteArrayLiteral("\n"), lex_ignore);
         keys.insert(QByteArrayLiteral("\v"), lex_ignore);
-        keys.insert(QByteArrayLiteral("\t"), lex_none);
-        keys.insert(QByteArrayLiteral(" "), lex_none);
+        keys.insert(QByteArrayLiteral("\t"), lex_ignore);
+        keys.insert(QByteArrayLiteral(" "), lex_ignore);
 
 
         keys.insert(QByteArrayLiteral("__ENCODING__"), lex_const); // The script encoding of the current file

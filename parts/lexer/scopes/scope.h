@@ -9,30 +9,31 @@
 
 class Scope {
     QHash<QByteArray, FilePoint *> context_objs;
-    QHash<QByteArray, Chain<VarPoint> > inclusions;
-    QHash<QByteArray, int> unreg_vars;
+//    QHash<QByteArray, Chain<VarPoint> > inclusions;
+    QHash<QByteArray, FilePoint *> unreg_vars;
 public:
     ~Scope() {
         qDeleteAll(context_objs);
     }
 
-    inline bool hasVariable(const QByteArray & name) { return context_objs.contains(name); }
-    inline void addVariable(const QByteArray & name, FilePoint * fpoint) {
+    inline bool hasVar(const QByteArray & name) { return context_objs.contains(name); }
+    inline void addVar(const QByteArray & name, FilePoint * fpoint) {
         context_objs.insert(name, fpoint);
     }
 
-    inline void registerInclusion(const QByteArray & name, const VarPoint & val) {
-        if (!inclusions.contains(name))
-            inclusions[name] = Chain<VarPoint>();
+//    inline void registerInclusion(const QByteArray & name, const VarPoint & val) {
+//        if (!inclusions.contains(name))
+//            inclusions[name] = Chain<VarPoint>();
 
-        inclusions[name].add(val);
-    }
+//        inclusions[name].add(val);
+//    }
 
     inline void clearUnregVar() {
+        context_objs.unite(unreg_vars);
         unreg_vars.clear();
     }
-    inline void registerUnregVar(const QByteArray & name, const int & left) {
-        unreg_vars[name] = left;
+    inline void addUnregVar(const QByteArray & name, FilePoint * fpoint) {
+        unreg_vars[name] = fpoint;
     }
 };
 
