@@ -11,21 +11,21 @@
 enum Lexem : quint64 {
     lex_none = 0,
 
-    lex_unary = (1ULL << 0),
-    lex_poly = (1ULL << 1),
+    lex_start = (1ULL << 0),
+    lex_end = (1ULL << 1),
 
-    lex_operator = (1ULL << 2),
-    lex_method = (1ULL << 3),
-    lex_module = (1ULL << 4),
-    lex_class = (1ULL << 5),
-    lex_proc = (1ULL << 6),
-    lex_lambda = (1ULL << 7),
-    lex_block = (1ULL << 8),
-    lex_var = (1ULL << 9),
-    lex_commentary = (1ULL << 10),
+    lex_unary = (1ULL << 2),
+    lex_poly = (1ULL << 3),
 
-    lex_start = (1ULL << 11),
-    lex_end = (1ULL << 12),
+    lex_operator = (1ULL << 4),
+    lex_method = (1ULL << 5),
+    lex_module = (1ULL << 6),
+    lex_class = (1ULL << 7),
+    lex_proc = (1ULL << 8),
+    lex_lambda = (1ULL << 9),
+    lex_block = (1ULL << 10),
+    lex_var = (1ULL << 11),
+    lex_commentary = (1ULL << 12),
 
     lex_key = (1ULL << 13),
 
@@ -73,6 +73,7 @@ enum Lexem : quint64 {
     lex_module_start = lex_module | lex_start,
     lex_class_start = lex_class | lex_start,
 
+    lex_def_start = lex_method_start | lex_module_start | lex_class_start,
     lex_def_end = lex_end | lex_method | lex_module | lex_class | lex_block,
 
 //    lex_def_proc = lex_def | lex_proc, // proc
@@ -153,8 +154,8 @@ enum Lexem : quint64 {
     lex_var_chain_end = lex_end | lex_chain | lex_var,
 //    lex_var_chain_sep = lex_comma | lex_chain | lex_var,
 
-    lex_highlightable = lex_var | lex_const | lex_key | lex_string | lex_number |
-        lex_regexp | lex_symb | lex_commentary,
+    lex_highlightable = lex_module | lex_class | lex_method | lex_var | lex_const |
+        lex_key | lex_string | lex_number | lex_regexp | lex_symb | lex_commentary,
 };
 
 #endif // LEXEMS_H

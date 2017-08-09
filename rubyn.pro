@@ -68,7 +68,8 @@ HEADERS  += ide_window.h \
     parts/lexer/scopes/scope.h \
     parts/lexer/scopes/scope_item_types.h \
     misc/chain.h \
-    parts/langs/ruby/flags_ruby.h
+    parts/langs/ruby/flags_ruby.h \
+    parts/lexer/lexer_state.h
 
 FORMS    += ide_window.ui
 

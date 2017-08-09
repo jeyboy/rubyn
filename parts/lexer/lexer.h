@@ -4,8 +4,7 @@
 #include <qstring.h>
 #include <qdatetime.h>
 
-#include "lexems.h"
-#include "scopes/scope.h"
+#include "lexer_state.h"
 
 #define PREV_N_CHAR(w, offset) (*(w - offset))
 #define NEXT_N_CHAR(w, offset) (*(w + offset))
@@ -50,15 +49,15 @@ protected:
         //template<typename ch_t> inline bool is_print(ch_t c)   {   return c>=' ' && c<='~';    }
         //template<typename ch_t> inline bool is_crlf(ch_t c) { return c=='\r' || c=='\n'; }
 
-    virtual LexToken * parse(const char * window, Lexem lex_state, Scope * scope) = 0;
+    virtual LexToken * parse(const char * window, LexerState * state) = 0;
 
 public:
-    LexToken * analize(const QString & text, const Lexem & init = lex_none, Scope * scope = new Scope()) {
+    LexToken * analize(const QString & text, LexerState * state = new LexerState()) {
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();
 
         quint64 date = QDateTime::currentMSecsSinceEpoch();
-        LexToken * root = parse(window, init, scope);
+        LexToken * root = parse(window, state);
         qDebug() << (QDateTime::currentMSecsSinceEpoch() - date);
         return root;
     }
