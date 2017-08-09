@@ -50,14 +50,22 @@ enum Lexem : quint64 {
 
     lex_const = (1ULL << 27) | lex_var,
 
-    lex_string = (1ULL << 28) | lex_var,
-    lex_number = (1ULL << 29) | lex_var,
-    lex_regexp = (1ULL << 30) | lex_var,
-    lex_hash = (1ULL << 31) | lex_var,
-    lex_array = (1ULL << 32) | lex_var,
-    lex_symb = (1ULL << 33) | lex_var,
+    lex_bool = (1ULL << 28) | lex_var,
+    lex_string = (1ULL << 29) | lex_var,
+    lex_number = (1ULL << 30) | lex_var,
+    lex_regexp = (1ULL << 31) | lex_var,
+    lex_hash = (1ULL << 32) | lex_var,
+    lex_array = (1ULL << 33) | lex_var,
+    lex_symb = (1ULL << 34) | lex_var,
 
 
+
+    lex_float = (1ULL << 56) | lex_number,
+
+    lex_bin = (1ULL << 57) | lex_number,
+    lex_oct = (1ULL << 58) | lex_number,
+    lex_dec = (1ULL << 59) | lex_number,
+    lex_hex = (1ULL << 60) | lex_number,
 
 //    lex_end_line
     lex_ignore =(1ULL << 61),

@@ -41,6 +41,8 @@ protected:
     inline bool isAlpha(const char & c) { return isLower(c) || isUpper(c); }
     inline bool isAlphaNum(const char & c) { return isAlpha(c) || isDigit(c); }
 
+    inline bool isWord(const char & c) { return c == '_' || isAlpha(c) || isDigit(c); }
+
     //    inline bool isCtrl(const char & c) { return c >= 0 && c < 0x20 || c == 0x7f; }
     inline bool isBlank(const char & c) { return c == ' ' || c == '\t'; }
     //    inline bool isSpace(const char & c) { return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v'; }

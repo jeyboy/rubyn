@@ -8,6 +8,7 @@ struct LexerState {
     QByteArray word;
     QByteArray delimiter;
 
+//    Lexems word_type;
     Lexem lex_state;
     Lexem lex_control_state;
 

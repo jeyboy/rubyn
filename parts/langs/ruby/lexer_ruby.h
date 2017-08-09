@@ -59,7 +59,7 @@ class LexerRuby : public Lexer {
         }
 
         // proc delimiter
-        if (!predefined_lexem) {
+        if (predefined_lexem != lex_string_end) {
             prev = window;
             window += state -> next_offset;
             state -> index += state -> next_offset;
@@ -104,25 +104,6 @@ protected:
 //        they indicate the continuation of a statement.
 
 //        Ruby identifier names may consist of alphanumeric characters and the underscore character ( _ ).
-
-//# INTEGERS
-
-//123                  # Fixnum decimal
-//1_234                # Fixnum decimal with underline
-//-500                 # Negative Fixnum
-//0377                 # octal
-//0xff                 # hexadecimal
-//0b1011               # binary
-//?a                   # character code for 'a'
-//?\n                  # code for a newline (0x0a)
-//12345678901234567890 # Bignum
-
-//# FLOATS
-
-//123.4                # floating point value
-//1.0e6                # scientific notation
-//4E20                 # dot not required
-//4e+20                # sign before exponential
 
         while(window) {
             switch(*window) {
@@ -231,15 +212,16 @@ protected:
                         }
                     }
 
-//                    if (window - prev == 1)
-//                        var_def_state == lex_var_chain_end;
-
                     cutWord(window, prev, state, lexems);
                 break;}
+
+
 
                 case '^': {
                     cutWord(window, prev, state, lexems);
                 break;}
+
+
 
                 case '|': {
                     if (NEXT_CHAR(window) == '|')
@@ -269,6 +251,8 @@ protected:
                     cutWord(window, prev, state, lexems);
                 break;}
 
+
+
                 case '~': {
                     cutWord(window, prev, state, lexems);
                 break;}
@@ -281,6 +265,7 @@ protected:
 
                     cutWord(window, prev, state, lexems);
                 break;}
+
 
 
                 case '<': {
@@ -311,22 +296,18 @@ protected:
 
 
                 case '[': {
-//                    var_def_state = lex_array_start;
                     cutWord(window, prev, state, lexems);
                 break;}
                 case ']': {
-//                    var_def_state = lex_array_end;
                     cutWord(window, prev, state, lexems);
                 break;}
 
 
 
                 case '(': {
-//                    var_def_state = lex_wrap_start;
                     cutWord(window, prev, state, lexems);
                 break;}
                 case ')': {                    
-//                    var_def_state = lex_wrap_end;
                     cutWord(window, prev, state, lexems);
                 break;}
 
@@ -335,7 +316,6 @@ protected:
                 case '{': {
                     cutWord(window, prev, state, lexems);
                 break;}
-
                 case '}': {
                     cutWord(window, prev, state, lexems);
 
@@ -355,21 +335,140 @@ protected:
 
 
 
-                case '-':
-                    if (NEXT_CHAR(window) == '>') { // lambda
+                case '-': {
+                    if (NEXT_CHAR(window) == '>' || NEXT_CHAR(window) == '=') { // lambda
                         ++state -> next_offset;
-
-                        cutWord(window, prev, state, lexems);
                     }
-                case '+': {
-                    if (isDigit(NEXT_CHAR(window)) || PREV_CHAR(window) == 'e')
-                        goto iterate;
 
+                    cutWord(window, prev, state, lexems);
+                break;}
+
+                case '+': {
                     if (NEXT_CHAR(window) == '=')
                         ++state -> next_offset;
 
                     cutWord(window, prev, state, lexems);
                 break;}
+
+
+
+
+                //# INTEGERS
+
+                //123                  # Fixnum decimal
+                //1_234                # Fixnum decimal with underline
+                //-500                 # Negative Fixnum
+                //0377                 # octal
+                //0xff                 # hexadecimal
+                //0b1011               # binary
+                //12345678901234567890 # Bignum
+
+                //# FLOATS
+
+                //123.4                # floating point value
+                //1.0e6                # scientific notation
+                //4E20                 # dot not required
+                //4e+20                # sign before exponential
+
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9': {
+                    if (isWord(PREV_CHAR(window)))
+                        goto iterate;
+
+                    bool ended = false;
+                    Lexem predef = lex_none;
+
+                    if (*window == '0') {
+                        switch(NEXT_CHAR(window)) {
+                            case 'x': { predef = lex_hex; break; }
+                            case 'b': { predef = lex_bin; break; }
+                            default: predef = lex_oct;
+                        }
+                    }
+                    else predef = lex_dec;
+
+                    while(!ended && ++window) {
+                        ++state -> index;
+
+                        switch(*window) {
+//                            case 'e':
+//                            case 'E':
+                            case '+':
+                            case '-':
+                            case '.': {
+//                                if (preder & lex_float) {
+//                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number"));
+//                                }
+
+                                predef = lex_float;
+                            }
+
+                            case 'a':
+                            case 'A':
+                            case 'b':
+                            case 'B':
+                            case 'c':
+                            case 'C':
+                            case 'd':
+                            case 'D':
+                            case 'f':
+                            case 'F': {
+                                if (predef != lex_hex) {
+                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number"));
+                                    return lexems;
+                                }
+                            break;}
+
+                            case 'e':
+                            case 'E': {
+                                if (predef > lex_dec) {
+                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number"));
+                                    return lexems;
+                                }
+                            break;}
+
+                            case '8':
+                            case '9': {
+                                if (predef > lex_dec) {
+                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number"));
+                                    return lexems;
+                                }
+                            break;}
+
+
+
+                            case '2':
+                            case '3':
+                            case '4':
+                            case '5':
+                            case '6':
+                            case '7': {
+                                if (predef > lex_oct) {
+                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number"));
+                                    return lexems;
+                                }
+                            break;}
+
+                            case '_':
+                            case '0':
+                            case '1':
+                                { break;}
+
+                            default: ended = true;
+                        }
+                    }
+
+                    cutWord(window, prev, state, lexems, predef);
+                break;}
+
 
 
                 case '*': {
@@ -378,6 +477,8 @@ protected:
 
                     cutWord(window, prev, state, lexems);
                 break;}
+
+
 
                 case '%':
                 case '/': {
