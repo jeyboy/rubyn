@@ -21,12 +21,43 @@ enum HighlightFormat {
     format_numbers,
     format_regular_expresions,
     format_preprocessing,
-    format_datatype
+    format_datatype,
+
+    format_error,
+    format_warning,
+    format_spellcheck
 };
 
 class HighlightFormatFactory : public Singleton<HighlightFormatFactory> {
     QHash<HighlightFormat, QTextCharFormat> formats;
 protected:
+    void registerErrorFormat() {
+        QTextCharFormat errFormat;
+        errFormat.setFontUnderline(true);
+        errFormat.setUnderlineColor(QColor(Qt::red));
+        errFormat.setUnderlineStyle(QTextCharFormat::WaveUnderline);
+        errFormat.setFontItalic(true);
+        formats.insert(format_error, errFormat);
+    }
+
+    void registerWarningFormat() {
+        QTextCharFormat errFormat;
+        errFormat.setFontUnderline(true);
+        errFormat.setUnderlineColor(QColor(Qt::blue));
+        errFormat.setUnderlineStyle(QTextCharFormat::WaveUnderline);
+        errFormat.setFontItalic(true);
+        formats.insert(format_warning, errFormat);
+    }
+
+    void registerSpellcheckFormat() {
+        QTextCharFormat errFormat;
+        errFormat.setFontUnderline(true);
+        errFormat.setUnderlineColor(QColor(Qt::black));
+        errFormat.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
+        errFormat.setFontItalic(true);
+        formats.insert(format_spellcheck, errFormat);
+    }
+
     void registerKeywordFormat() {
         QTextCharFormat keywordFormat;
         keywordFormat.setForeground(Qt::darkBlue);
@@ -126,6 +157,10 @@ public:
         registerRegularExpresionsFormat();
         registerPreprocessingFormat();
         registerDatatypeFormat();
+
+        registerErrorFormat();
+        registerWarningFormat();
+        registerSpellcheckFormat();
     }
 
     const QTextCharFormat & getFormatFor(const HighlightFormat & format) { return formats[format]; }

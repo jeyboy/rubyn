@@ -385,6 +385,12 @@ protected:
                 //4E20                 # dot not required
                 //4e+20                # sign before exponential
 
+                //    +3
+                //    3.2e23
+                //    -4.70e+9
+                //    -.2E-4
+                //    -7.6603
+
                 case '0':
                 case '1':
                 case '2':
@@ -444,7 +450,7 @@ protected:
 
                             case 'e':
                             case 'E': {
-                                if (predef > lex_dec) {
+                                if (predef < lex_dec) {
                                     lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: exponent part available only for decimals"));
                                     return lexems;
                                 } else if (predef == lex_dec) {
@@ -462,7 +468,7 @@ protected:
 
                             case '8':
                             case '9': {
-                                if (predef > lex_dec) {
+                                if (predef < lex_dec) {
                                     lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: 0-7 literals only"));
                                     return lexems;
                                 }
@@ -476,7 +482,7 @@ protected:
                             case '5':
                             case '6':
                             case '7': {
-                                if (predef > lex_oct) {
+                                if (predef < lex_oct) {
                                     lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: 0,1 literals only"));
                                     return lexems;
                                 }

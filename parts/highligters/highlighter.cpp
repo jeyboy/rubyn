@@ -1,9 +1,13 @@
 #include "highlighter.h"
 
+#include <qdebug.h>
+
 Highlighter::Highlighter(QTextDocument * parent, IHighlightPreset * preset)
     : QSyntaxHighlighter(parent), preset(preset) {}
 
-void Highlighter::highlightBlock(const QString & text) {   
+void Highlighter::highlightBlock(const QString & text) {
+//    qDebug() << "*** " << currentBlock().firstLineNumber();
+
     const QVector<HighlightingRule> & highlightingRules = preset -> rules();
     for(QVector<HighlightingRule>::ConstIterator rule = highlightingRules.constBegin(); rule != highlightingRules.constEnd(); rule++) {
         QRegularExpressionMatchIterator i = (*rule).pattern.globalMatch(text);

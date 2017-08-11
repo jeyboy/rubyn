@@ -13,6 +13,10 @@ public:
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_keyword);
         highlighting_rules.append(rule);
 
+        rule.pattern = QRegularExpression("\\b(require)\\b");
+        rule.format = HighlightFormatFactory::obj().getFormatFor(format_spellcheck);
+        highlighting_rules.append(rule);
+
 
         rule.pattern = QRegularExpression("(\\$|@@|@)\\w+");
         rule.format = HighlightFormatFactory::obj().getFormatFor(format_variable);
