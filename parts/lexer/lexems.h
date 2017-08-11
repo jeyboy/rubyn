@@ -59,13 +59,13 @@ enum Lexem : quint64 {
     lex_symb = (1ULL << 34) | lex_var,
 
 
+    lex_bin = (1ULL << 55) | lex_number,
+    lex_oct = (1ULL << 56) | lex_number,
+    lex_dec = (1ULL << 57) | lex_number,
+    lex_hex = (1ULL << 58) | lex_number,
 
-    lex_float = (1ULL << 56) | lex_number,
-
-    lex_bin = (1ULL << 57) | lex_number,
-    lex_oct = (1ULL << 58) | lex_number,
-    lex_dec = (1ULL << 59) | lex_number,
-    lex_hex = (1ULL << 60) | lex_number,
+    lex_float = (1ULL << 59) | lex_dec,
+//    lex_double = (1ULL << 60) | lex_number,
 
 //    lex_end_line
     lex_ignore =(1ULL << 61),

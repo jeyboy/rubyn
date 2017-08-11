@@ -4,6 +4,18 @@
 #include "parts/lexer/lexer.h"
 #include "predefined_ruby.h"
 
+#define NEXTCHAR NEXT_CHAR(window)
+#define PREVCHAR PREV_CHAR(window)
+#define ITERATE {\
+        ++state -> index; \
+        ++window;\
+    }
+#define MOVE(offset) {\
+        state -> index += offset; \
+        window += offset; \
+    }
+
+
 class LexerRuby : public Lexer {
     bool cutWord(const char *& window, const char *& prev, LexerState * state,
                  LexToken * lexems, const Lexem & predefined_lexem = lex_none)
@@ -17,6 +29,7 @@ class LexerRuby : public Lexer {
 
             if ((stack_top & lex_def_start) > lex_start) {
                 state -> scope -> addVar(state -> word, 0); // new FilePoint() // TODO: write me
+                state -> lex_state = lex_block_requred;
             }
             else state -> lex_state =
                 predefined_lexem ? predefined_lexem : PredefinedRuby::obj().lexem(state -> word);
@@ -61,8 +74,8 @@ class LexerRuby : public Lexer {
         // proc delimiter
         if (predefined_lexem != lex_string_end) {
             prev = window;
-            window += state -> next_offset;
-            state -> index += state -> next_offset;
+
+            MOVE(state -> next_offset);
 
             state -> delimiter = QByteArray(prev, window - prev);
             state -> lex_control_state = PredefinedRuby::obj().lexem(state -> delimiter);
@@ -119,16 +132,16 @@ protected:
 
 
                 case '.': {
-                    char next_char = NEXT_CHAR(window);
+                    char next_char = NEXTCHAR;
                     bool next_is_dot = next_char == '.';
 
                     if (next_is_dot) { // is range
                         ++state -> next_offset;
 
-                        if (NEXT_CHAR(window) == '.') // is range with exclusion
+                        if (NEXTCHAR == '.') // is range with exclusion
                             ++state -> next_offset;
                     } else {
-                        if (PREV_CHAR(window) == '$' || isDigit(next_char)) // is float or $.
+                        if (PREVCHAR == '$' || isDigit(next_char)) // is float or $.
                             goto iterate;
                     }
 
@@ -152,12 +165,15 @@ protected:
 
                     handle_string:
                         bool ended = false;
-                        while(!ended && ++window) {
-                            ++state -> index;
+                        while(!ended) {
+                            ITERATE;
+
+                            if (!window)
+                                break;
 
                             switch(*window) {
                                 case '#': {
-                                    if (end_str_symb != '\'' && NEXT_CHAR(window) == '{') {
+                                    if (end_str_symb != '\'' && NEXTCHAR == '{') {
                                         state -> stack -> push(lex_string_def_required);
                                         ended = true;
                                     }
@@ -166,8 +182,8 @@ protected:
                                 case '`':
                                 case '\'':
                                 case '"': {
-                                    if (PREV_CHAR(window) != '\\') {
-                                        window++;
+                                    if (PREVCHAR != '\\') {
+                                        ITERATE;
                                         ended = true;
                                     }
                                 }
@@ -181,7 +197,7 @@ protected:
 
 
                 case ':': {
-                    if (NEXT_CHAR(window) == ':' || PREV_CHAR(window) == '$')
+                    if (NEXTCHAR == ':')
                         ++state -> next_offset;
 
                     cutWord(window, prev, state, lexems);
@@ -190,24 +206,24 @@ protected:
 
 
                 case '=': {
-                    if (NEXT_CHAR(window) == 'b') { // =begin
+                    if (NEXTCHAR == 'b') { // =begin
                        if (NEXT_CHAR(window + 1) == 'e' && NEXT_CHAR(window + 2) == 'g' &&
                             NEXT_CHAR(window + 3) == 'i' && NEXT_CHAR(window + 4) == 'n') {
                                 int offset = strlen(window) - state -> index;
-                                window += offset - 1;
+                                MOVE(offset - 1);
                        }
                     }
-                    else if (NEXT_CHAR(window) == 'e') { // =end
+                    else if (NEXTCHAR == 'e') { // =end
                        if (NEXT_CHAR(window + 1) == 'n' && NEXT_CHAR(window + 2) == 'd')
-                                window +=3;
+                            MOVE(3);
                     } else {
-                        if (NEXT_CHAR(window) == '~')
+                        if (NEXTCHAR == '~')
                             ++state -> next_offset;
                         else {
-                            if (NEXT_CHAR(window) == '=') // ==
+                            if (NEXTCHAR == '=') // ==
                                 ++state -> next_offset;
 
-                            if (NEXT_CHAR(window) == '=') // ===
+                            if (NEXTCHAR == '=') // ===
                                 ++state -> next_offset;
                         }
                     }
@@ -224,7 +240,7 @@ protected:
 
 
                 case '|': {
-                    if (NEXT_CHAR(window) == '|')
+                    if (NEXTCHAR == '|')
                         ++state -> next_offset;
 
                     cutWord(window, prev, state, lexems);
@@ -233,7 +249,7 @@ protected:
 
 
                 case '&': {
-                    if (NEXT_CHAR(window) == '&')
+                    if (NEXTCHAR == '&')
                         ++state -> next_offset;
 
                     cutWord(window, prev, state, lexems);
@@ -242,10 +258,10 @@ protected:
 
 
                 case '!': {
-                    if (!isBlank(PREV_CHAR(window)))
+                    if (!isBlank(PREVCHAR))
                         goto iterate;
 
-                    if (NEXT_CHAR(window) == '~' || NEXT_CHAR(window) == '=')
+                    if (NEXTCHAR == '~' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
                     cutWord(window, prev, state, lexems);
@@ -260,7 +276,7 @@ protected:
 
 
                 case '?': {
-                    if (!isBlank(PREV_CHAR(window)))
+                    if (!isBlank(PREVCHAR))
                         goto iterate;
 
                     cutWord(window, prev, state, lexems);
@@ -269,14 +285,15 @@ protected:
 
 
                 case '<': {
-                    if (NEXT_CHAR(window) == '<')
+                    if (NEXTCHAR == '<')
                         ++state -> next_offset;
                     else {
-                        if (NEXT_CHAR(window) == '=')
+                        if (NEXTCHAR == '=') {
                             ++state -> next_offset;
 
-                        if (NEXT_CHAR(window) == '>')
-                            ++state -> next_offset;
+                            if (NEXTCHAR == '>')
+                                ++state -> next_offset;
+                        }
                     }
 
                     cutWord(window, prev, state, lexems);
@@ -285,9 +302,7 @@ protected:
 
 
                 case '>': {
-                    if (NEXT_CHAR(window) == '>')
-                        ++state -> next_offset;
-                    else if (NEXT_CHAR(window) == '=')
+                    if (NEXTCHAR == '>' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
                     cutWord(window, prev, state, lexems);
@@ -329,14 +344,14 @@ protected:
 
                 case '#': { // inline comment
                     int offset = strlen(window) - state -> index;
-                    window += offset - 1;
+                    MOVE(offset - 1);
                     cutWord(window, prev, state, lexems);
                 break;}
 
 
 
                 case '-': {
-                    if (NEXT_CHAR(window) == '>' || NEXT_CHAR(window) == '=') { // lambda
+                    if (NEXTCHAR == '>' || NEXTCHAR == '=') { // lambda
                         ++state -> next_offset;
                     }
 
@@ -344,7 +359,7 @@ protected:
                 break;}
 
                 case '+': {
-                    if (NEXT_CHAR(window) == '=')
+                    if (NEXTCHAR == '=')
                         ++state -> next_offset;
 
                     cutWord(window, prev, state, lexems);
@@ -380,14 +395,14 @@ protected:
                 case '7':
                 case '8':
                 case '9': {
-                    if (isWord(PREV_CHAR(window)))
+                    if (isWord(PREVCHAR))
                         goto iterate;
 
-                    bool ended = false;
+                    bool ended = false, has_exp_part = false;
                     Lexem predef = lex_none;
 
                     if (*window == '0') {
-                        switch(NEXT_CHAR(window)) {
+                        switch(NEXTCHAR) {
                             case 'x': { predef = lex_hex; break; }
                             case 'b': { predef = lex_bin; break; }
                             default: predef = lex_oct;
@@ -395,18 +410,18 @@ protected:
                     }
                     else predef = lex_dec;
 
-                    while(!ended && ++window) {
-                        ++state -> index;
+                    while(!ended) {
+                        ITERATE;
+
+                        if (!window)
+                            break;
 
                         switch(*window) {
-//                            case 'e':
-//                            case 'E':
-                            case '+':
-                            case '-':
                             case '.': {
-//                                if (preder & lex_float) {
-//                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number"));
-//                                }
+                                if (predef & lex_float) {
+                                    ended = true;
+                                    break;
+                                }
 
                                 predef = lex_float;
                             }
@@ -422,7 +437,7 @@ protected:
                             case 'f':
                             case 'F': {
                                 if (predef != lex_hex) {
-                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number"));
+                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: wrong literal"));
                                     return lexems;
                                 }
                             break;}
@@ -430,15 +445,25 @@ protected:
                             case 'e':
                             case 'E': {
                                 if (predef > lex_dec) {
-                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number"));
+                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: exponent part available only for decimals"));
                                     return lexems;
+                                } else if (predef == lex_dec) {
+                                    if (has_exp_part) {
+                                        lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: double exponent part"));
+                                    } else {
+                                        has_exp_part = true;
+
+                                        if (NEXTCHAR == '-' || NEXTCHAR == '+') {
+                                            ITERATE;
+                                        }
+                                    }
                                 }
                             break;}
 
                             case '8':
                             case '9': {
                                 if (predef > lex_dec) {
-                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number"));
+                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: 0-7 literals only"));
                                     return lexems;
                                 }
                             break;}
@@ -452,7 +477,7 @@ protected:
                             case '6':
                             case '7': {
                                 if (predef > lex_oct) {
-                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number"));
+                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: 0,1 literals only"));
                                     return lexems;
                                 }
                             break;}
@@ -472,7 +497,7 @@ protected:
 
 
                 case '*': {
-                    if (NEXT_CHAR(window) == '*' || NEXT_CHAR(window) == '=')
+                    if (NEXTCHAR == '*' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
                     cutWord(window, prev, state, lexems);
@@ -482,7 +507,7 @@ protected:
 
                 case '%':
                 case '/': {
-                    if (NEXT_CHAR(window) == '=')
+                    if (NEXTCHAR == '=')
                         ++state -> next_offset;
 
                     cutWord(window, prev, state, lexems);
@@ -493,13 +518,13 @@ protected:
                 case '@': {
                     cutWord(window, prev, state, lexems);
 
-//                    if (NEXT_CHAR(window) == '@')
+//                    if (NEXTCHAR == '@')
 //                        window++;
                 break;}
 
                 case '$': {
                     bool has_match = false;
-                    char next_char = NEXT_CHAR(window);
+                    char next_char = NEXTCHAR;
 
                     switch(next_char) {
                         case '!':
@@ -559,8 +584,7 @@ protected:
 
                 default:
                     iterate:
-                        ++state -> index;
-                        ++window;
+                        ITERATE;
             }
         }
 
