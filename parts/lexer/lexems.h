@@ -13,50 +13,51 @@ enum Lexem : quint64 {
 
     lex_start = (1ULL << 0),
     lex_end = (1ULL << 1),
+    lex_continue = (1ULL << 2),
 
-    lex_unary = (1ULL << 2),
-    lex_poly = (1ULL << 3),
+    lex_unary = (1ULL << 3),
+    lex_poly = (1ULL << 4),
 
-    lex_operator = (1ULL << 4),
-    lex_method = (1ULL << 5),
-    lex_module = (1ULL << 6),
-    lex_class = (1ULL << 7),
-    lex_proc = (1ULL << 8),
-    lex_lambda = (1ULL << 9),
-    lex_block = (1ULL << 10),
-    lex_var = (1ULL << 11),
-    lex_commentary = (1ULL << 12),
+    lex_operator = (1ULL << 5),
+    lex_method = (1ULL << 6),
+    lex_module = (1ULL << 7),
+    lex_class = (1ULL << 8),
+    lex_proc = (1ULL << 9),
+    lex_lambda = (1ULL << 10),
+    lex_block = (1ULL << 11),
+    lex_var = (1ULL << 12),
+    lex_commentary = (1ULL << 13),
 
-    lex_key = (1ULL << 13),
+    lex_key = (1ULL << 14),
 
-    lex_def = (1ULL << 14),
-    lex_obj = (1ULL << 15) | lex_var,
-    lex_local = (1ULL << 16),
-    lex_global = (1ULL << 17),
-    lex_parametrized = (1ULL << 18),
-    lex_conditional = (1ULL << 19),
+    lex_def = (1ULL << 15),
+    lex_obj = (1ULL << 16) | lex_var,
+    lex_local = (1ULL << 17),
+    lex_global = (1ULL << 18),
+    lex_parametrized = (1ULL << 19),
+    lex_conditional = (1ULL << 20),
 
-    lex_require = (1ULL << 20),
+    lex_require = (1ULL << 21),
 
-    lex_scope_visibility = (1ULL << 21), // private, protected
+    lex_scope_visibility = (1ULL << 22), // private, protected
 
-    lex_access = (1ULL << 22),  // .
-    lex_chain = (1ULL << 23),  // ::
-    lex_ternary = (1ULL << 24), // ? :
+    lex_access = (1ULL << 23),  // .
+    lex_chain = (1ULL << 24),  // ::
+    lex_ternary = (1ULL << 25), // ? :
 
-    lex_comma = (1ULL << 25),  // ,
+    lex_comma = (1ULL << 26),  // ,
 
-    lex_wrap = (1ULL << 26), // ()
+    lex_wrap = (1ULL << 27), // ()
 
-    lex_const = (1ULL << 27) | lex_var,
+    lex_const = (1ULL << 28) | lex_var,
 
-    lex_bool = (1ULL << 28) | lex_var,
-    lex_string = (1ULL << 29) | lex_var,
-    lex_number = (1ULL << 30) | lex_var,
-    lex_regexp = (1ULL << 31) | lex_var,
-    lex_hash = (1ULL << 32) | lex_var,
-    lex_array = (1ULL << 33) | lex_var,
-    lex_symb = (1ULL << 34) | lex_var,
+    lex_bool = (1ULL << 29) | lex_var,
+    lex_string = (1ULL << 30) | lex_var,
+    lex_number = (1ULL << 31) | lex_var,
+    lex_regexp = (1ULL << 32) | lex_var,
+    lex_hash = (1ULL << 33) | lex_var,
+    lex_array = (1ULL << 34) | lex_var,
+    lex_symb = (1ULL << 35) | lex_var,
 
 
     lex_bin = (1ULL << 55) | lex_number,
@@ -127,14 +128,17 @@ enum Lexem : quint64 {
 
     lex_multiline_commentary_start = lex_commentary | lex_poly | lex_start, // =begin
     lex_multiline_commentary_end = lex_commentary | lex_poly | lex_end, // =end
+    lex_multiline_commentary_continious = lex_multiline_commentary_start | lex_continue, // if row continues at next row
 
     lex_string_start = lex_string | lex_start,
     lex_string_end = lex_string | lex_end,
+    lex_string_continious = lex_string_start | lex_continue, // if row continues at next row
 
     lex_string_def_required = lex_string | lex_def | lex_require,
 
     lex_heredoc_start = lex_string_start | lex_poly,
     lex_heredoc_end = lex_string_end | lex_poly,
+    lex_heredoc_continious = lex_heredoc_start | lex_require, // if row continues at next row
 
     lex_regexp_start = lex_regexp | lex_start,
     lex_regexp_end = lex_regexp | lex_end,

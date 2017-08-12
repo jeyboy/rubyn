@@ -6,6 +6,7 @@
 
 #define NEXTCHAR NEXT_CHAR(window)
 #define PREVCHAR PREV_CHAR(window)
+// TODO: use ++state -> index && *(++window)
 #define ITERATE {\
         ++state -> index; \
         ++window;\
@@ -29,7 +30,7 @@ class LexerRuby : public Lexer {
 
             if ((stack_top & lex_def_start) > lex_start) {
                 state -> scope -> addVar(state -> word, 0); // new FilePoint() // TODO: write me
-                state -> lex_state = lex_block_requred;
+                state -> lex_state = LEX(lex_block_requred, EXCLUDE_BIT(stack_top, lex_def_start));
             }
             else state -> lex_state =
                 predefined_lexem ? predefined_lexem : PredefinedRuby::obj().lexem(state -> word);
@@ -51,7 +52,16 @@ class LexerRuby : public Lexer {
                     state -> var_def_state = state -> lex_state;
                 }
             } else {
-                if (state -> lex_state & lex_start)
+                if (state -> lex_state & lex_continue) { // TODO: check me
+                    StackCell<Lexem> * top = state -> stack -> touchLevel();
+
+                    if (top -> obj == state -> lex_state || top -> obj == EXCLUDE_BIT(state -> lex_state, lex_continue)) {
+                        top -> obj = state -> lex_state;
+                    } else {
+                        lexems -> next = new LexError(state -> index, word_length, QByteArrayLiteral("Wrong state!!!"));
+                        return false;
+                    }
+                } else if (state -> lex_state & lex_start)
                     state -> stack -> push(state -> lex_state);
                 else if (state -> lex_state & lex_end) {
                     if (EXCLUDE_BIT(state -> lex_state, lex_end) == EXCLUDE_BIT(state -> stack -> touch(), lex_start)) {
@@ -118,6 +128,12 @@ protected:
 
 //        Ruby identifier names may consist of alphanumeric characters and the underscore character ( _ ).
 
+        switch(state -> stack -> touch()) {
+            case lex_string_continious: goto handle_string;
+            case lex_multiline_commentary_continious: goto handle_multiline_comment;
+            default:;
+        };
+
         while(window) {
             switch(*window) {
                 case ';':
@@ -165,11 +181,10 @@ protected:
 
                     handle_string:
                         bool ended = false;
-                        while(!ended) {
-                            ITERATE;
+                        bool out_req = false;
 
-                            if (!window)
-                                break;
+                        while(!ended && !out_req) {
+                            ITERATE;
 
                             switch(*window) {
                                 case '#': {
@@ -187,11 +202,14 @@ protected:
                                         ended = true;
                                     }
                                 }
+                                case 0: {
+                                    out_req = true;
+                                break;}
                             }
                         }
 
 
-                    cutWord(window, prev, state, lexems, lex_string_end);
+                    cutWord(window, prev, state, lexems, out_req ? lex_string_continious : lex_string_end);
                 break;}
 
 
@@ -209,13 +227,32 @@ protected:
                     if (NEXTCHAR == 'b') { // =begin
                        if (NEXT_CHAR(window + 1) == 'e' && NEXT_CHAR(window + 2) == 'g' &&
                             NEXT_CHAR(window + 3) == 'i' && NEXT_CHAR(window + 4) == 'n') {
-                                int offset = strlen(window) - state -> index;
-                                MOVE(offset - 1);
+                                MOVE(4);
+
+                                handle_multiline_comment:
+                                    bool ended = false;
+                                    bool out_req = false;
+                                    state -> lex_state = state -> stack -> push(lex_multiline_commentary_start);
+
+                                    while(!ended && !out_req) {
+                                        ITERATE;
+
+                                        switch(*window) {
+                                            case '=': {
+                                                if (NEXTCHAR == 'e' && NEXT_CHAR(window + 1) == 'n' && NEXT_CHAR(window + 2) == 'd')
+                                                    ended = true;
+                                            break;}
+
+                                            case 0: {
+                                                out_req = true;
+                                                cutWord(window, prev, state, lexems, lex_multiline_commentary_continious);
+                                                goto go_out;
+                                            break;}
+
+                                            default:;
+                                        }
+                                    }
                        }
-                    }
-                    else if (NEXTCHAR == 'e') { // =end
-                       if (NEXT_CHAR(window + 1) == 'n' && NEXT_CHAR(window + 2) == 'd')
-                            MOVE(3);
                     } else {
                         if (NEXTCHAR == '~')
                             ++state -> next_offset;
@@ -343,9 +380,27 @@ protected:
 
 
                 case '#': { // inline comment
-                    int offset = strlen(window) - state -> index;
-                    MOVE(offset - 1);
-                    cutWord(window, prev, state, lexems);
+                    bool ended = false;
+                    bool out_req = false;
+                    state -> lex_state = state -> stack -> push(lex_inline_commentary_start);
+
+                    while(!ended && !out_req) {
+                        ITERATE;
+
+                        switch(*window) {
+                            case '\n': {
+                                ended = true;
+                            break;}
+
+                            case 0: {
+                                out_req = true;
+                            break;}
+
+                            default:;
+                        }
+                    }
+
+                    cutWord(window, prev, state, lexems, lex_inline_commentary_end);
                 break;}
 
 
@@ -419,7 +474,7 @@ protected:
                     while(!ended) {
                         ITERATE;
 
-                        if (!window)
+                        if (!*window)
                             break;
 
                         switch(*window) {
@@ -594,7 +649,8 @@ protected:
             }
         }
 
-        return lexems;
+        go_out:
+            return lexems;
     }
 };
 

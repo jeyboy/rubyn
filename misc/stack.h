@@ -36,7 +36,7 @@ public:
         return root -> obj;
     }
 
-    inline StackCell<T> touchLevel() {
+    inline StackCell<T> * touchLevel() {
         return root;
     }
 
