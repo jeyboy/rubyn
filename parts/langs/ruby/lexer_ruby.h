@@ -233,6 +233,7 @@ protected:
                     handle_string:
                         bool ended = false;
                         bool out_req = false;
+                        bool def_required = false;
 
                         while(!ended && !out_req) {
                             ITERATE;
@@ -240,8 +241,7 @@ protected:
                             switch(*window) {
                                 case '#': {
                                     if (end_str_symb != '\'' && NEXTCHAR == '{') {
-                                        state -> stack -> push(lex_string_def_required);
-                                        ended = true;
+                                        def_required = ended = true;
                                     }
                                 break;}
 
@@ -262,6 +262,9 @@ protected:
 
 
                     cutWord(window, prev, state, lexems_cursor, out_req ? lex_string_continious : lex_string_end);
+
+                    if (def_required) // INFO: patch for interpolation
+                        state -> stack -> push(lex_string_def_required);
                 break;}
 
 
