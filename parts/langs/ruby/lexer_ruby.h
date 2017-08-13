@@ -49,7 +49,8 @@ class LexerRuby : public Lexer {
 
             if ((stack_top & lex_def_start) > lex_start) {
                 state -> scope -> addVar(state -> word, 0); // new FilePoint() // TODO: write me
-                state -> lex_state = LEX(lex_block_requred, EXCLUDE_BIT(stack_top, lex_def_start));
+                state -> stack -> replace(lex_block_start);
+                state -> lex_state = lex_var; // TODO: maybe change to something else
             }
             else state -> lex_state =
                 predefined_lexem ? predefined_lexem : PredefinedRuby::obj().lexem(state -> word);
@@ -184,7 +185,7 @@ protected:
             default:;
         };
 
-        while(window) {
+        while(*window) {
             switch(*window) {
                 case ';':
                 case '\r':
@@ -539,18 +540,13 @@ protected:
                     while(!ended) {
                         ITERATE;
 
-                        if (!*window)
-                            break;
-
                         switch(*window) {
                             case '.': {
-                                if (predef & lex_float) {
+                                if ((predef & lex_float) == lex_float)
                                     ended = true;
-                                    break;
-                                }
-
-                                predef = lex_float;
-                            }
+                                else
+                                    predef = lex_float;
+                            break;}
 
                             case 'a':
                             case 'A':
@@ -610,8 +606,7 @@ protected:
 
                             case '_':
                             case '0':
-                            case '1':
-                                { break;}
+                            case '1': { break;}
 
                             default: ended = true;
                         }

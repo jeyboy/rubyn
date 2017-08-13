@@ -60,6 +60,28 @@ enum Lexem : quint64 {
     lex_symb = (1ULL << 35) | lex_var,
 
 
+    // lex_ = (1ULL << 36),
+    // lex_ = (1ULL << 37),
+    // lex_ = (1ULL << 38),
+    // lex_ = (1ULL << 39),
+    // lex_ = (1ULL << 40),
+    // lex_ = (1ULL << 41),
+    // lex_ = (1ULL << 42),
+    // lex_ = (1ULL << 43),
+    // lex_ = (1ULL << 44),
+    // lex_ = (1ULL << 45),
+    // lex_ = (1ULL << 46),
+    // lex_ = (1ULL << 47),
+    // lex_ = (1ULL << 48),
+    // lex_ = (1ULL << 49),
+    // lex_ = (1ULL << 50),
+    // lex_ = (1ULL << 51),
+    // lex_ = (1ULL << 52),
+    // lex_ = (1ULL << 53),
+    // lex_ = (1ULL << 54),
+
+
+
     lex_bin = (1ULL << 55) | lex_number,
     lex_oct = (1ULL << 56) | lex_number,
     lex_dec = (1ULL << 57) | lex_number,
@@ -111,11 +133,9 @@ enum Lexem : quint64 {
     lex_block_requred = lex_block | lex_require,
     lex_param_block_requred = lex_block | lex_parametrized | lex_require,
 
+    lex_param_block_start = lex_block | lex_start | lex_parametrized,
     lex_block_start = lex_block | lex_start,
     lex_block_end = lex_block | lex_end,
-
-    lex_param_block_start = lex_block | lex_start | lex_parametrized,
-    lex_param_block_end = lex_block | lex_end | lex_parametrized,
 
     lex_block_args_start = lex_block | lex_args_start , // |
     lex_block_args_end = lex_block | lex_args_end, // |
