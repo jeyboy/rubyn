@@ -18,8 +18,27 @@
 
 
 class LexerRuby : public Lexer {
+    bool checkStack(const Lexem & lex_flag, LexerState * state, LexToken *& lexems, const int & word_length) {
+        if (lex_flag & lex_start)
+            state -> stack -> push(lex_flag);
+        else if (lex_flag & lex_end) {
+            if (EXCLUDE_BIT(lex_flag, lex_end) == EXCLUDE_BIT(state -> stack -> touch(), lex_start)) {
+                state -> stack -> drop();
+            } else {
+                lexems -> next =
+                    new LexError(
+                        state -> index, word_length,
+                        QByteArray::number(state -> stack -> touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(lex_flag) + QByteArrayLiteral(" received")
+                    );
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     bool cutWord(const char *& window, const char *& prev, LexerState * state,
-                 LexToken * lexems, const Lexem & predefined_lexem = lex_none)
+                 LexToken *& lexems_cursor, const Lexem & predefined_lexem = lex_none)
     {
         int word_length = window - prev;
 
@@ -42,10 +61,20 @@ class LexerRuby : public Lexer {
                 if (!state -> scope -> hasVar(state -> word)) {
                     // TODO: determine type of word
 
+                    if (!state -> var_def_state)
+                         state -> stack -> push(lex_var_chain_start);
+
                     state -> scope -> addUnregVar(state -> word, 0); // new FilePoint() // TODO: write me
 
                     if (state -> var_def_state == state -> lex_state) {
-                        lexems -> next = new LexError(state -> index, word_length, QByteArrayLiteral("Error in variable def"));
+                        lexems_cursor = (
+                            lexems_cursor -> next =
+                                new LexError(
+                                    state -> index,
+                                    word_length,
+                                    QByteArrayLiteral("Error in variable def")
+                                )
+                        );
                         return false;
                     }
 
@@ -58,25 +87,32 @@ class LexerRuby : public Lexer {
                     if (top -> obj == state -> lex_state || top -> obj == EXCLUDE_BIT(state -> lex_state, lex_continue)) {
                         top -> obj = state -> lex_state;
                     } else {
-                        lexems -> next = new LexError(state -> index, word_length, QByteArrayLiteral("Wrong state!!!"));
-                        return false;
-                    }
-                } else if (state -> lex_state & lex_start)
-                    state -> stack -> push(state -> lex_state);
-                else if (state -> lex_state & lex_end) {
-                    if (EXCLUDE_BIT(state -> lex_state, lex_end) == EXCLUDE_BIT(state -> stack -> touch(), lex_start)) {
-                        state -> stack -> drop();
-                    } else {
-                        lexems -> next = new LexError(state -> index, word_length, QByteArray::number(state -> stack -> touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(state -> lex_state) + QByteArrayLiteral(" received"));
+                        lexems_cursor = (
+                            lexems_cursor -> next =
+                                new LexError(
+                                    state -> index,
+                                    word_length,
+                                    QByteArrayLiteral("Wrong state!!!")
+                                )
+                        );
                         return false;
                     }
                 }
+                else if (!checkStack(state -> lex_state, state, lexems_cursor, word_length))
+                        return false;
             }
 
             Lexem highlightable = Lexem(state -> lex_state & lex_highlightable);
 
             if (highlightable)
-                lexems -> next = new LexToken(highlightable, state -> index, word_length);
+                lexems_cursor = (
+                    lexems_cursor -> next =
+                        new LexToken(
+                            highlightable,
+                            state -> index,
+                            word_length
+                        )
+                );
 
             qDebug() << state -> word;
         }
@@ -90,6 +126,11 @@ class LexerRuby : public Lexer {
             state -> delimiter = QByteArray(prev, window - prev);
             state -> lex_control_state = PredefinedRuby::obj().lexem(state -> delimiter);
 
+            word_length = window - prev;
+
+            if (!checkStack(state -> lex_control_state, state, lexems_cursor, word_length))
+                return false;
+
             if (state -> var_def_state) {
                 if (state -> lex_control_state == lex_var_chain_end) {
                     state -> scope -> clearUnregVar();
@@ -98,7 +139,15 @@ class LexerRuby : public Lexer {
                     if (state -> lex_control_state == state -> var_def_state &&
                         (state -> var_def_state == lex_var || state -> var_def_state == lex_comma)
                     ) {
-                        lexems -> next = new LexError(state -> index, word_length, QByteArrayLiteral("Error in variable def"));
+                        lexems_cursor = (
+                            lexems_cursor -> next =
+                                new LexError(
+                                    state -> index,
+                                    word_length,
+                                    QByteArrayLiteral("Error in variable def")
+                                    )
+                        );
+
                         return false;
                     }
                     else if (state -> lex_control_state != lex_ignore)
@@ -115,6 +164,7 @@ class LexerRuby : public Lexer {
 protected:
     LexToken * parse(const char * window, LexerState * state) {
         LexToken * lexems = new LexToken();
+        LexToken * lexems_cursor = lexems;
 
         char end_str_symb;
         const char * prev = window;
@@ -142,7 +192,7 @@ protected:
                 case '\v':
                 case '\t':
                 case ' ': {
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
@@ -161,13 +211,13 @@ protected:
                             goto iterate;
                     }
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
 
                 case ',': {                   
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
@@ -201,7 +251,8 @@ protected:
                                         ITERATE;
                                         ended = true;
                                     }
-                                }
+                                break;}
+
                                 case 0: {
                                     out_req = true;
                                 break;}
@@ -209,7 +260,7 @@ protected:
                         }
 
 
-                    cutWord(window, prev, state, lexems, out_req ? lex_string_continious : lex_string_end);
+                    cutWord(window, prev, state, lexems_cursor, out_req ? lex_string_continious : lex_string_end);
                 break;}
 
 
@@ -218,7 +269,7 @@ protected:
                     if (NEXTCHAR == ':')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
@@ -245,7 +296,7 @@ protected:
 
                                             case 0: {
                                                 out_req = true;
-                                                cutWord(window, prev, state, lexems, lex_multiline_commentary_continious);
+                                                cutWord(window, prev, state, lexems_cursor, lex_multiline_commentary_continious);
                                                 goto go_out;
                                             break;}
 
@@ -265,13 +316,13 @@ protected:
                         }
                     }
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
 
                 case '^': {
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
@@ -280,7 +331,7 @@ protected:
                     if (NEXTCHAR == '|')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
@@ -289,7 +340,7 @@ protected:
                     if (NEXTCHAR == '&')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
@@ -301,13 +352,13 @@ protected:
                     if (NEXTCHAR == '~' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
 
                 case '~': {
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
@@ -316,7 +367,7 @@ protected:
                     if (!isBlank(PREVCHAR))
                         goto iterate;
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
@@ -333,7 +384,7 @@ protected:
                         }
                     }
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
@@ -342,34 +393,34 @@ protected:
                     if (NEXTCHAR == '>' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
 
                 case '[': {
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
                 case ']': {
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
 
                 case '(': {
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
                 case ')': {                    
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
 
                 case '{': {
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
                 case '}': {
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
 
                     if (state -> stack -> touch() == lex_string_def_required) { // return to string after interpolation
                         state -> stack -> drop();
@@ -400,7 +451,7 @@ protected:
                         }
                     }
 
-                    cutWord(window, prev, state, lexems, lex_inline_commentary_end);
+                    cutWord(window, prev, state, lexems_cursor, lex_inline_commentary_end);
                 break;}
 
 
@@ -410,14 +461,14 @@ protected:
                         ++state -> next_offset;
                     }
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
                 case '+': {
                     if (NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
@@ -466,8 +517,22 @@ protected:
                         switch(NEXTCHAR) {
                             case 'x': { predef = lex_hex; break; }
                             case 'b': { predef = lex_bin; break; }
-                            default: predef = lex_oct;
+                            case '1':
+                            case '2':
+                            case '3':
+                            case '4':
+                            case '5':
+                            case '6':
+                            case '7':
+                            case '8':
+                            case '9': { predef = lex_oct; break; }
+                            default: {
+                                ended = true;
+                                predef = lex_dec;
+                            }
                         }
+
+                        ITERATE;
                     }
                     else predef = lex_dec;
 
@@ -552,7 +617,7 @@ protected:
                         }
                     }
 
-                    cutWord(window, prev, state, lexems, predef);
+                    cutWord(window, prev, state, lexems_cursor, predef);
                 break;}
 
 
@@ -561,7 +626,7 @@ protected:
                     if (NEXTCHAR == '*' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
@@ -571,13 +636,13 @@ protected:
                     if (NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
                 break;}
 
 
 
                 case '@': {
-                    cutWord(window, prev, state, lexems);
+                    cutWord(window, prev, state, lexems_cursor);
 
 //                    if (NEXTCHAR == '@')
 //                        window++;
@@ -640,7 +705,7 @@ protected:
                     }
 
                     if (has_match)
-                        cutWord(window, prev, state, lexems);
+                        cutWord(window, prev, state, lexems_cursor);
                 break;}
 
                 default:
