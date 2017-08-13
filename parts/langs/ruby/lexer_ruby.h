@@ -120,7 +120,7 @@ class LexerRuby : public Lexer {
         }
 
         // proc delimiter
-        if (predefined_lexem != lex_string_end && CURRCHAR != '}' || (CURRCHAR == '}' && word_length == 0)) {
+        if (predefined_lexem != lex_string_end && (CURRCHAR != '}' || (CURRCHAR == '}' && word_length == 0))) {
             prev = window;
 
             MOVE(state -> next_offset);
@@ -177,8 +177,6 @@ protected:
 //        Ruby interprets semicolons and newline characters as the ending of a statement.
 //        However, if Ruby encounters operators, such as +, −, or backslash at the end of a line,
 //        they indicate the continuation of a statement.
-
-//        Ruby identifier names may consist of alphanumeric characters and the underscore character ( _ ).
 
         switch(state -> stack -> touch()) {
             case lex_string_continious: goto handle_string;
@@ -239,7 +237,7 @@ protected:
                         while(!ended && !out_req) {
                             ITERATE;
 
-                            switch(*window) {
+                            switch(CURRCHAR) {
                                 case '#': {
                                     if (end_str_symb != '\'' && NEXTCHAR == '{') {
                                         def_required = ended = true;
@@ -294,7 +292,7 @@ protected:
                                     while(!ended && !out_req) {
                                         ITERATE;
 
-                                        switch(*window) {
+                                        switch(CURRCHAR) {
                                             case '=': {
                                                 if (NEXTCHAR == 'e' && NEXT_CHAR(window + 1) == 'n' && NEXT_CHAR(window + 2) == 'd')
                                                     ended = true;
@@ -429,7 +427,7 @@ protected:
                     cutWord(window, prev, state, lexems_cursor);
 
                     if (state -> stack -> touch() == lex_string_def_required) { // return to string after interpolation
-                        state -> stack -> drop();
+                        state -> stack -> replace(lex_string_start);
                         MOVE(-1);
                         goto handle_string;
                     }
@@ -701,6 +699,9 @@ protected:
 
                 default:
                     iterate:
+                        // Ruby identifier names may consist of alphanumeric characters and the
+                        //  underscore character ( _ ).
+                        // check if word isWord(*window)
                         ITERATE;
             }
         }
