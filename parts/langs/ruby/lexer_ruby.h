@@ -4,6 +4,7 @@
 #include "parts/lexer/lexer.h"
 #include "predefined_ruby.h"
 
+#define CURRCHAR CURR_CHAR(window)
 #define NEXTCHAR NEXT_CHAR(window)
 #define PREVCHAR PREV_CHAR(window)
 // TODO: use ++state -> index && *(++window)
@@ -119,7 +120,7 @@ class LexerRuby : public Lexer {
         }
 
         // proc delimiter
-        if (predefined_lexem != lex_string_end) {
+        if (predefined_lexem != lex_string_end && CURRCHAR != '}' || (CURRCHAR == '}' && word_length == 0)) {
             prev = window;
 
             MOVE(state -> next_offset);
@@ -185,8 +186,8 @@ protected:
             default:;
         };
 
-        while(*window) {
-            switch(*window) {
+        while(CURRCHAR) {
+            switch(CURRCHAR) {
                 case ';':
                 case '\r':
                 case '\n':
@@ -263,8 +264,9 @@ protected:
 
                     cutWord(window, prev, state, lexems_cursor, out_req ? lex_string_continious : lex_string_end);
 
-                    if (def_required) // INFO: patch for interpolation
+                    if (def_required) { // INFO: patch for interpolation
                         state -> stack -> push(lex_string_def_required);
+                    }
                 break;}
 
 
@@ -428,6 +430,7 @@ protected:
 
                     if (state -> stack -> touch() == lex_string_def_required) { // return to string after interpolation
                         state -> stack -> drop();
+                        MOVE(-1);
                         goto handle_string;
                     }
                 break;}
@@ -435,27 +438,35 @@ protected:
 
 
                 case '#': { // inline comment
-                    bool ended = false;
-                    bool out_req = false;
-                    state -> lex_state = state -> stack -> push(lex_inline_commentary_start);
+                    Lexem predef = lex_none;
 
-                    while(!ended && !out_req) {
+                    if (NEXTCHAR == '{' && state -> stack -> touch() == lex_string_def_required) {
                         ITERATE;
+                        predef = lex_block_requred;
+                    } else {
+                        bool ended = false;
+                        bool out_req = false;
+                        state -> lex_state = state -> stack -> push(lex_inline_commentary_start);
+                        predef = lex_inline_commentary_end;
 
-                        switch(*window) {
-                            case '\n': {
-                                ended = true;
-                            break;}
+                        while(!ended && !out_req) {
+                            ITERATE;
 
-                            case 0: {
-                                out_req = true;
-                            break;}
+                            switch(*window) {
+                                case '\n': {
+                                    ended = true;
+                                break;}
 
-                            default:;
+                                case 0: {
+                                    out_req = true;
+                                break;}
+
+                                default:;
+                            }
                         }
                     }
 
-                    cutWord(window, prev, state, lexems_cursor, lex_inline_commentary_end);
+                    cutWord(window, prev, state, lexems_cursor, predef);
                 break;}
 
 
@@ -476,24 +487,6 @@ protected:
                 break;}
 
 
-
-
-                //# INTEGERS
-
-                //123                  # Fixnum decimal
-                //1_234                # Fixnum decimal with underline
-                //-500                 # Negative Fixnum
-                //0377                 # octal
-                //0xff                 # hexadecimal
-                //0b1011               # binary
-                //12345678901234567890 # Bignum
-
-                //# FLOATS
-
-                //123.4                # floating point value
-                //1.0e6                # scientific notation
-                //4E20                 # dot not required
-                //4e+20                # sign before exponential
 
                 //    +3
                 //    3.2e23

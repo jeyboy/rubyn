@@ -9,6 +9,7 @@
 #define PREV_N_CHAR(w, offset) (*(w - offset))
 #define NEXT_N_CHAR(w, offset) (*(w + offset))
 
+#define CURR_CHAR(w) (*w)
 #define PREV_CHAR(w) PREV_N_CHAR(w, 1)
 #define NEXT_CHAR(w) NEXT_N_CHAR(w, 1)
 
