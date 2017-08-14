@@ -31,10 +31,10 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral(","), lex_comma);
         keys.insert(QByteArrayLiteral("="), lex_var_chain_end);
 
-        keys.insert(QByteArrayLiteral(";"), lex_ignore);
-        keys.insert(QByteArrayLiteral("\r"), lex_ignore);
-        keys.insert(QByteArrayLiteral("\n"), lex_ignore);
-        keys.insert(QByteArrayLiteral("\v"), lex_ignore);
+        keys.insert(QByteArrayLiteral(";"), lex_end_line);
+        keys.insert(QByteArrayLiteral("\r"), lex_end_line);
+        keys.insert(QByteArrayLiteral("\n"), lex_end_line);
+        keys.insert(QByteArrayLiteral("\v"), lex_end_line);
         keys.insert(QByteArrayLiteral("\t"), lex_ignore);
         keys.insert(QByteArrayLiteral(" "), lex_ignore);
 

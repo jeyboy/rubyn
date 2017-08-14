@@ -18,6 +18,17 @@
     }
 
 
+#define APPEND_ERR(err) \
+    lexems_cursor = (\
+        lexems_cursor -> next =\
+            new LexError(\
+                state -> index,\
+                word_length,\
+                err\
+            )\
+    );
+
+
 class LexerRuby : public Lexer {
     bool checkStack(const Lexem & lex_flag, LexerState * state, LexToken *& lexems, const int & word_length) {
         if (lex_flag & lex_start)
@@ -46,7 +57,7 @@ class LexerRuby : public Lexer {
         if (word_length > 0) {
             state -> word = QByteArray(prev, word_length);
 
-            Lexem & stack_top = state -> stack -> touch();
+             Lexem & stack_top = state -> stack -> touch();
 
             if ((stack_top & lex_def_start) > lex_start) {
                 state -> scope -> addVar(state -> word, 0); // new FilePoint() // TODO: write me
@@ -58,10 +69,17 @@ class LexerRuby : public Lexer {
 
 
             if (state -> lex_state == lex_undefined) {
-                state -> lex_state = lex_var;
-
                 if (!state -> scope -> hasVar(state -> word)) {
-                    // TODO: determine type of word
+                    switch(*prev) { // INFO: determine type of word
+                        case '$': { state -> lex_state = lex_global_var; break;}
+                        case '@': {
+                            if (*(prev + 1) == '@')
+                                state -> lex_state = lex_class_var;
+                            else
+                                state -> lex_state = lex_instance_var;
+                        break;}
+                        default: state -> lex_state = lex_local_var;
+                    }
 
                     if (!state -> var_def_state)
                          state -> stack -> push(lex_var_chain_start);
@@ -69,19 +87,14 @@ class LexerRuby : public Lexer {
                     state -> scope -> addUnregVar(state -> word, 0); // new FilePoint() // TODO: write me
 
                     if (state -> var_def_state == state -> lex_state) {
-                        lexems_cursor = (
-                            lexems_cursor -> next =
-                                new LexError(
-                                    state -> index,
-                                    word_length,
-                                    QByteArrayLiteral("Error in variable def")
-                                )
-                        );
+                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
                         return false;
                     }
 
                     state -> var_def_state = state -> lex_state;
                 }
+                else state -> lex_state = lex_var;
+
             } else {
                 if (state -> lex_state & lex_continue) { // TODO: check me
                     StackCell<Lexem> * top = state -> stack -> touchLevel();
@@ -89,14 +102,7 @@ class LexerRuby : public Lexer {
                     if (top -> obj == state -> lex_state || top -> obj == EXCLUDE_BIT(state -> lex_state, lex_continue)) {
                         top -> obj = state -> lex_state;
                     } else {
-                        lexems_cursor = (
-                            lexems_cursor -> next =
-                                new LexError(
-                                    state -> index,
-                                    word_length,
-                                    QByteArrayLiteral("Wrong state!!!")
-                                )
-                        );
+                        APPEND_ERR(QByteArrayLiteral("Wrong state!!!"));
                         return false;
                     }
                 }
@@ -138,18 +144,19 @@ class LexerRuby : public Lexer {
                     state -> scope -> clearUnregVar();
                     state -> var_def_state = lex_none;
                 } else {
-                    if (state -> lex_control_state == state -> var_def_state &&
-                        (state -> var_def_state == lex_var || state -> var_def_state == lex_comma)
+                    if (
+                            (
+                                state -> lex_control_state == state -> var_def_state &&
+                                (
+                                    state -> var_def_state == lex_var ||
+                                    state -> var_def_state == lex_comma
+                                )
+                            )
+                            || state -> lex_control_state == lex_end_line
+                            || state -> lex_control_state == lex_binary_operator
                     ) {
-                        lexems_cursor = (
-                            lexems_cursor -> next =
-                                new LexError(
-                                    state -> index,
-                                    word_length,
-                                    QByteArrayLiteral("Error in variable def")
-                                    )
-                        );
 
+                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
                         return false;
                     }
                     else if (state -> lex_control_state != lex_ignore)
@@ -192,7 +199,8 @@ protected:
                 case '\v':
                 case '\t':
                 case ' ': {
-                    cutWord(window, prev, state, lexems_cursor);
+                    if(!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
@@ -211,13 +219,15 @@ protected:
                             goto iterate;
                     }
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
 
                 case ',': {                   
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
@@ -260,7 +270,8 @@ protected:
                         }
 
 
-                    cutWord(window, prev, state, lexems_cursor, out_req ? lex_string_continious : lex_string_end);
+                    if (!cutWord(window, prev, state, lexems_cursor, out_req ? lex_string_continious : lex_string_end))
+                        goto exit;
 
                     if (def_required) { // INFO: patch for interpolation
                         state -> stack -> push(lex_string_def_required);
@@ -273,7 +284,8 @@ protected:
                     if (NEXTCHAR == ':')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
@@ -301,7 +313,7 @@ protected:
                                             case 0: {
                                                 out_req = true;
                                                 cutWord(window, prev, state, lexems_cursor, lex_multiline_commentary_continious);
-                                                goto go_out;
+                                                goto exit;
                                             break;}
 
                                             default:;
@@ -320,13 +332,15 @@ protected:
                         }
                     }
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
 
                 case '^': {
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
@@ -335,7 +349,8 @@ protected:
                     if (NEXTCHAR == '|')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
@@ -344,7 +359,8 @@ protected:
                     if (NEXTCHAR == '&')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
@@ -356,13 +372,15 @@ protected:
                     if (NEXTCHAR == '~' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
 
                 case '~': {
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
@@ -371,7 +389,8 @@ protected:
                     if (!isBlank(PREVCHAR))
                         goto iterate;
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
@@ -388,7 +407,8 @@ protected:
                         }
                     }
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
@@ -397,34 +417,41 @@ protected:
                     if (NEXTCHAR == '>' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
 
                 case '[': {
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
                 case ']': {
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
 
                 case '(': {
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
                 case ')': {                    
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
 
                 case '{': {
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
                 case '}': {
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
 
                     if (state -> stack -> touch() == lex_string_def_required) { // return to string after interpolation
                         state -> stack -> replace(lex_string_start);
@@ -464,7 +491,8 @@ protected:
                         }
                     }
 
-                    cutWord(window, prev, state, lexems_cursor, predef);
+                    if (!cutWord(window, prev, state, lexems_cursor, predef))
+                        goto exit;
                 break;}
 
 
@@ -474,14 +502,16 @@ protected:
                         ++state -> next_offset;
                     }
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
                 case '+': {
                     if (NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
@@ -606,7 +636,8 @@ protected:
                         }
                     }
 
-                    cutWord(window, prev, state, lexems_cursor, predef);
+                    if (!cutWord(window, prev, state, lexems_cursor, predef))
+                        goto exit;
                 break;}
 
 
@@ -615,7 +646,8 @@ protected:
                     if (NEXTCHAR == '*' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
@@ -625,17 +657,18 @@ protected:
                     if (NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    cutWord(window, prev, state, lexems_cursor);
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
                 break;}
 
 
 
-                case '@': {
-                    cutWord(window, prev, state, lexems_cursor);
+//                case '@': {
+//                    cutWord(window, prev, state, lexems_cursor);
 
-//                    if (NEXTCHAR == '@')
-//                        window++;
-                break;}
+////                    if (NEXTCHAR == '@')
+////                        window++;
+//                break;}
 
                 case '$': {
                     bool has_match = false;
@@ -693,8 +726,11 @@ protected:
                         }
                     }
 
-                    if (has_match)
-                        cutWord(window, prev, state, lexems_cursor);
+                    if (has_match) {
+                        if (!cutWord(window, prev, state, lexems_cursor))
+                            goto exit;
+                    } else
+                        goto iterate;
                 break;}
 
                 default:
@@ -706,7 +742,7 @@ protected:
             }
         }
 
-        go_out:
+        exit:
             return lexems;
     }
 };
