@@ -28,6 +28,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
 
         keys.insert(QByteArrayLiteral("->"), lex_def_lambda);
 
+        keys.insert(QByteArrayLiteral("."), lex_access);
         keys.insert(QByteArrayLiteral(","), lex_comma);
         keys.insert(QByteArrayLiteral("="), lex_var_chain_end);
 
@@ -64,7 +65,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("do"), lex_block_start); // Starts a block
         keys.insert(QByteArrayLiteral("else"), lex_chain_level); // The unhandled condition in case, if and unless expressions
         keys.insert(QByteArrayLiteral("elsif"), lex_conditional_chain_level); // An alternate condition for an if expression
-        keys.insert(QByteArrayLiteral("end"), lex_def_end); // The end of a syntax block. Used by classes, modules, methods, exception handling and control expressions
+        keys.insert(QByteArrayLiteral("end"), lex_block_end); // The end of a syntax block. Used by classes, modules, methods, exception handling and control expressions
         keys.insert(QByteArrayLiteral("ensure"), lex_block_start); // Starts a section of code that is always run when an exception is raised
         keys.insert(QByteArrayLiteral("extend"), lex_method_with_params);
         keys.insert(QByteArrayLiteral("false"), lex_var); // Boolean false

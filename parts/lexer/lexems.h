@@ -104,7 +104,7 @@ enum Lexem : quint64 {
     lex_class_start = lex_class | lex_start,
 
     lex_def_start = lex_method_start | lex_module_start | lex_class_start,
-    lex_def_end = lex_end | lex_method | lex_module | lex_class | lex_block,
+//    lex_def_end = lex_end | lex_method | lex_module | lex_class | lex_block,
 
 //    lex_def_proc = lex_def | lex_proc, // proc
     lex_def_lambda = lex_def | lex_lambda, // lambda, ->
