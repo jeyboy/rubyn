@@ -114,6 +114,7 @@ enum Lexem : quint64 {
 
     lex_method_with_params = lex_method | lex_parametrized,
 
+    lex_block_var = lex_var | lex_block, // local
     lex_local_var = lex_var | lex_local, // local
     lex_global_var = lex_var | lex_global, // global
     lex_instance_var = lex_var | lex_obj, // instance

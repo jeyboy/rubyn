@@ -39,7 +39,7 @@ class LexerRuby : public Lexer {
             } else {
                 lexems -> next =
                     new LexError(
-                        state -> index, word_length,
+                        state -> index, qMax(word_length, 1),
                         QByteArray::number(state -> stack -> touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(lex_flag) + QByteArrayLiteral(" received")
                     );
                 return false;
@@ -81,17 +81,19 @@ class LexerRuby : public Lexer {
                         default: state -> lex_state = lex_local_var;
                     }
 
-                    if (!state -> var_def_state)
-                         state -> stack -> push(lex_var_chain_start);
+                    state -> scope -> addVar(state -> word, 0); // new FilePoint() // TODO: write me
 
-                    state -> scope -> addUnregVar(state -> word, 0); // new FilePoint() // TODO: write me
+//                    if (!state -> var_def_state)
+//                         state -> stack -> push(lex_var_chain_start);
 
-                    if (state -> var_def_state == state -> lex_state) {
-                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
-                        return false;
-                    }
+//                    state -> scope -> addUnregVar(state -> word, 0); // new FilePoint() // TODO: write me
 
-                    state -> var_def_state = state -> lex_state;
+//                    if (state -> var_def_state == state -> lex_state) {
+//                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
+//                        return false;
+//                    }
+
+//                    state -> var_def_state = state -> lex_state;
                 }
                 else state -> lex_state = lex_var;
 
@@ -123,6 +125,11 @@ class LexerRuby : public Lexer {
                 );
 
             qDebug() << state -> word;
+        } else if (predefined_lexem) {
+            state -> lex_state = predefined_lexem;
+
+            if (!checkStack(state -> lex_state, state, lexems_cursor, word_length))
+                return false;
         }
 
         // proc delimiter
@@ -139,30 +146,30 @@ class LexerRuby : public Lexer {
             if (!checkStack(state -> lex_control_state, state, lexems_cursor, word_length))
                 return false;
 
-            if (state -> var_def_state) {
-                if (state -> lex_control_state == lex_var_chain_end) {
-                    state -> scope -> clearUnregVar();
-                    state -> var_def_state = lex_none;
-                } else {
-                    if (
-                            (
-                                state -> lex_control_state == state -> var_def_state &&
-                                (
-                                    state -> var_def_state == lex_var ||
-                                    state -> var_def_state == lex_comma
-                                )
-                            )
-                            || state -> lex_control_state == lex_end_line
-                            || state -> lex_control_state == lex_binary_operator
-                    ) {
+//            if (state -> var_def_state) {
+//                if (state -> lex_control_state == lex_var_chain_end) {
+//                    state -> scope -> clearUnregVar();
+//                    state -> var_def_state = lex_none;
+//                } else {
+//                    if (
+//                            (
+//                                state -> lex_control_state == state -> var_def_state &&
+//                                (
+//                                    state -> var_def_state == lex_var ||
+//                                    state -> var_def_state == lex_comma
+//                                )
+//                            )
+//                            || state -> lex_control_state == lex_end_line
+//                            || state -> lex_control_state == lex_binary_operator
+//                    ) {
 
-                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
-                        return false;
-                    }
-                    else if (state -> lex_control_state != lex_ignore)
-                        state -> var_def_state = state -> lex_control_state;
-                }
-            }
+//                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
+//                        return false;
+//                    }
+//                    else if (state -> lex_control_state != lex_ignore)
+//                        state -> var_def_state = state -> lex_control_state;
+//                }
+//            }
         }
 
         state -> next_offset = 1;

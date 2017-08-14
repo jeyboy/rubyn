@@ -30,7 +30,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
 
         keys.insert(QByteArrayLiteral("."), lex_access);
         keys.insert(QByteArrayLiteral(","), lex_comma);
-        keys.insert(QByteArrayLiteral("="), lex_var_chain_end);
+        keys.insert(QByteArrayLiteral("="), lex_binary_operator /*lex_var_chain_end*/);
 
         keys.insert(QByteArrayLiteral(";"), lex_end_line);
         keys.insert(QByteArrayLiteral("\r"), lex_end_line);
