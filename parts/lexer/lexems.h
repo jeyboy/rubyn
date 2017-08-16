@@ -174,12 +174,15 @@ enum Lexem : quint64 {
     lex_ternary_start = lex_ternary | lex_start,
     lex_ternary_end = lex_ternary | lex_end,
 
-    lex_chain_unary_start = lex_chain | lex_unary | lex_start, // this chain support only one additional level // if else
-    lex_chain_poly_start = lex_chain | lex_poly | lex_start, // this chain support additional levels // if elseif ... else
 
-    lex_conditional_chain_level = lex_chain | lex_conditional, // elseif() ...
-    lex_chain_end = lex_chain | lex_end,
-    lex_chain_level = lex_chain_end, // else ...
+    lex_chain_block = lex_chain | lex_block,
+
+    lex_chain_unary_start = lex_chain_block | lex_unary | lex_start, // this chain support only one additional level // if else
+    lex_chain_poly_start = lex_chain_block | lex_poly | lex_start, // this chain support additional levels // if elseif ... else
+
+    lex_conditional_chain_level = lex_chain_block | lex_conditional, // elseif() ...
+    lex_chain_level = lex_chain_block, // else ...
+//    lex_chain_end = lex_chain | lex_end,
 
 
     lex_var_chain_start = lex_start | lex_chain | lex_var,

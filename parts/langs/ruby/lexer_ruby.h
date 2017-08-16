@@ -30,20 +30,36 @@
 
 
 class LexerRuby : public Lexer {
-    bool checkStack(const Lexem & lex_flag, LexerState * state, LexToken *& lexems, const int & word_length) {
-        if (lex_flag & lex_start)
-            state -> stack -> push(lex_flag);
-        else if (lex_flag & lex_end) {
-            if (EXCLUDE_BIT(lex_flag, lex_end) == EXCLUDE_BIT(state -> stack -> touch(), lex_start)) {
+    bool checkStack(const Lexem & lex_flag, LexerState * state, LexToken *& lexems_cursor, const int & word_length) {
+        if (lex_flag & lex_start) {
+            if ((lex_flag & lex_chain_block) == lex_chain_block) {
+                // INFO: if line is not empty then we have deal with inline branching
+                if (state -> new_line_state == lex_none)
+                    state -> stack -> push(lex_flag);
+            } else
+                state -> stack -> push(lex_flag);
+        } else if (lex_flag & lex_end) {
+            Lexem stack_top = state -> stack -> touch();
+            bool condition =
+                stack_top & lex_block ?
+                    lex_flag & lex_block
+                :
+                    EXCLUDE_BIT(lex_flag, lex_end) == EXCLUDE_BIT(stack_top, lex_start);
+
+
+            if (condition) {
                 state -> stack -> drop();
             } else {
-                lexems -> next =
-                    new LexError(
-                        state -> index, qMax(word_length, 1),
-                        QByteArray::number(state -> stack -> touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(lex_flag) + QByteArrayLiteral(" received")
-                    );
+                APPEND_ERR(QByteArray::number(state -> stack -> touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(lex_flag) + QByteArrayLiteral(" received"));
                 return false;
             }
+        } else if (lex_flag & lex_chain_block) {
+            Lexem stack_top = state -> stack -> touch();
+
+            if (stack_top & lex_chain_block)
+                state -> stack -> replace(lex_flag);
+            else
+                APPEND_ERR(QByteArrayLiteral("Error in condition logic"));
         }
 
         return true;
@@ -140,6 +156,12 @@ class LexerRuby : public Lexer {
 
             state -> delimiter = QByteArray(prev, window - prev);
             state -> lex_control_state = PredefinedRuby::obj().lexem(state -> delimiter);
+
+            if (state -> lex_control_state == lex_end_line)
+                state -> new_line_state = lex_none;
+            else if (state -> lex_control_state != lex_ignore)
+                state -> new_line_state = state -> lex_control_state;
+
 
             word_length = window - prev;
 
@@ -356,6 +378,9 @@ protected:
                     if (NEXTCHAR == '|')
                         ++state -> next_offset;
 
+                    if (NEXTCHAR == '=')
+                        ++state -> next_offset;
+
                     if (!cutWord(window, prev, state, lexems_cursor))
                         goto exit;
                 break;}
@@ -473,8 +498,7 @@ protected:
                     Lexem predef = lex_none;
 
                     if (NEXTCHAR == '{' && state -> stack -> touch() == lex_string_def_required) {
-                        ITERATE;
-                        predef = lex_block_requred;
+                        ++state -> next_offset;
                     } else {
                         bool ended = false;
                         bool out_req = false;

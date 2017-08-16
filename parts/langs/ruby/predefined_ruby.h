@@ -17,6 +17,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
     QHash<QByteArray, Lexem> keys;
 
     PredefinedRuby() {
+        keys.insert(QByteArrayLiteral("#{"), lex_block_start);
         keys.insert(QByteArrayLiteral("{"), lex_block_start);
         keys.insert(QByteArrayLiteral("}"), lex_block_end);
 
