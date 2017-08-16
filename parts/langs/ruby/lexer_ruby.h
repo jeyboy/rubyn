@@ -148,6 +148,9 @@ class LexerRuby : public Lexer {
                 return false;
         }
 
+        if (state -> lex_state != lex_ignore)
+            state -> new_line_state = state -> lex_state;
+
         // proc delimiter
         if (predefined_lexem != lex_string_end && (CURRCHAR != '}' || (CURRCHAR == '}' && word_length == 0))) {
             prev = window;
