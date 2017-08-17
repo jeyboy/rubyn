@@ -219,11 +219,14 @@ protected:
 
         switch(state -> stack -> touch()) {
             case lex_string_continious: goto handle_string;
+            case lex_regexp_continious: goto handle_regexp;
             case lex_multiline_commentary_continious: goto handle_multiline_comment;
             default:;
         };
 
         while(CURRCHAR) {
+            next_step:
+
             switch(CURRCHAR) {
                 case ';':
                 case '\r':
@@ -540,6 +543,8 @@ protected:
                         goto exit;
                 break;}
 
+
+
                 case '+': {
                     if (NEXTCHAR == '=')
                         ++state -> next_offset;
@@ -686,10 +691,93 @@ protected:
 
 
 
-                case '%':
+                case '%': {
+                    if (NEXTCHAR == '=')
+                        ++state -> next_offset;
+
+                    if (!cutWord(window, prev, state, lexems_cursor))
+                        goto exit;
+                break;}
+
+
+
                 case '/': {
                     if (NEXTCHAR == '=')
                         ++state -> next_offset;
+                    else {
+                        switch(state -> new_line_state) {
+                            case lex_method: {
+
+                            }
+
+                            case lex_unary_operator:
+                            case lex_binary_operator:
+                            case lex_none: {
+                                state -> lex_state = state -> stack -> push(lex_regexp_start);
+
+                                handle_regexp:
+                                    bool ended = false;
+                                    bool out_req = false;
+                                    bool def_required = false;
+
+                                    while(!ended && !out_req) {
+                                        ITERATE;
+
+                                        switch(CURRCHAR) {
+                                            case '#': {
+                                                if (NEXTCHAR == '{') {
+                                                    def_required = ended = true;
+                                                }
+                                            break;}
+
+                                            case '/': {
+                                                if (PREVCHAR != '\\') {
+                                                    ITERATE;
+                                                    ended = true;
+                                                }
+                                            break;}
+
+                                            case 0: {
+                                                out_req = true;
+                                            break;}
+                                        }
+                                    }
+
+
+                                if (!cutWord(window, prev, state, lexems_cursor, out_req ? lex_string_continious : lex_string_end))
+                                    goto exit;
+
+                                if (def_required) { // INFO: patch for interpolation
+                                    state -> stack -> push(lex_regexp_def_required);
+                                }
+
+                                goto next_step;
+                            break;}
+                        }
+
+//                        var = "Value|a|test"
+//                        str = "a test Value"
+//                        str.gsub( /#{var}/, 'foo' ) # => "foo foo foo"
+//                        However, if your search string contains metacharacters and you do not want them interpreted as metacharacters, then use Regexp.escape like this:
+
+//                        var = "*This*"
+//                        str = "*This* is a string"
+//                        p str.gsub( /#{Regexp.escape(var)}/, 'foo' )
+//                        # => "foo is a string"
+//                        Or just give gsub a string instead of a regular expression. In MRI >= 1.8.7, gsub will treat a string replacement argument as a plain string, not a regular expression:
+
+//                        var = "*This*"
+//                        str = "*This* is a string"
+//                        p str.gsub(var, 'foo' ) # => "foo is a string"
+//                        (It used to be that a string replacement argument to gsub was automatically converted to a regular expression. I know it was that way in 1.6. I don't recall which version introduced the change).
+
+//                        As noted in other answers, you can use Regexp.new as an alternative to interpolation:
+
+//                        var = "*This*"
+//                        str = "*This* is a string"
+//                        p str.gsub(Regexp.new(Regexp.escape(var)), 'foo' )
+//                        # => "foo is a string"
+                    }
 
                     if (!cutWord(window, prev, state, lexems_cursor))
                         goto exit;

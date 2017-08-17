@@ -15,23 +15,6 @@
 
 class Lexer {
 protected:
-//    bool parseStr(const char * window) {
-//        const char & end_cmb = *window;
-
-//        while(*++window) {
-//            switch(*window) {
-//                case '"':
-//                case '\'': {
-//                    if (*window == end_cmb && *(window - 1) != '\\')
-//                        return true;
-//                break;}
-
-//                default:;
-//            }
-//        }
-
-//        return false;
-//    }
     inline bool isBDigit(const char & c) { return c == '0' || c == '1'; }
     inline bool isODigit(const char & c) { return c >= '0' && c <= '7'; }
     inline bool isDigit(const char & c) { return c >= '0' && c <= '9'; }
@@ -61,7 +44,7 @@ public:
 
         quint64 date = QDateTime::currentMSecsSinceEpoch();
         LexToken * root = parse(window, state);
-        qDebug() << (QDateTime::currentMSecsSinceEpoch() - date);
+        qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
         return root;
     }
 };

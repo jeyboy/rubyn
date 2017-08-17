@@ -153,7 +153,6 @@ enum Lexem : quint64 {
     lex_string_start = lex_string | lex_start,
     lex_string_end = lex_string | lex_end,
     lex_string_continious = lex_string_start | lex_continue, // if row continues at next row
-
     lex_string_def_required = lex_string | lex_def | lex_require,
 
     lex_heredoc_start = lex_string_start | lex_poly,
@@ -162,6 +161,8 @@ enum Lexem : quint64 {
 
     lex_regexp_start = lex_regexp | lex_start,
     lex_regexp_end = lex_regexp | lex_end,
+    lex_regexp_continious = lex_regexp_start | lex_continue, // if row continues at next row
+    lex_regexp_def_required = lex_regexp | lex_def | lex_require,
 
     lex_array_start = lex_array | lex_start,
     lex_array_end = lex_array | lex_end,
