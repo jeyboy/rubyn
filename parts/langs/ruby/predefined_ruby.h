@@ -136,6 +136,9 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("<<"), lex_binary_operator);
         keys.insert(QByteArrayLiteral(">>"), lex_binary_operator);
 
+        keys.insert(QByteArrayLiteral("=>"), lex_binary_operator);
+        keys.insert(QByteArrayLiteral(":"), lex_binary_operator);
+
         keys.insert(QByteArrayLiteral("!"), lex_unary_operator);
         keys.insert(QByteArrayLiteral("&&"), lex_binary_operator);
         keys.insert(QByteArrayLiteral("||"), lex_binary_operator);

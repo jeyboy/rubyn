@@ -147,8 +147,9 @@ class LexerRuby : public Lexer {
             if (!checkStack(state -> lex_state, state, lexems_cursor, word_length))
                 return false;
         }
+        else state -> lex_state = lex_ignore;
 
-        if (state -> lex_state != lex_ignore)
+        if (state -> lex_state < lex_ignore)
             state -> new_line_state = state -> lex_state;
 
         // proc delimiter
@@ -162,7 +163,7 @@ class LexerRuby : public Lexer {
 
             if (state -> lex_control_state == lex_end_line)
                 state -> new_line_state = lex_none;
-            else if (state -> lex_control_state != lex_ignore)
+            else if (state -> lex_control_state < lex_ignore)
                 state -> new_line_state = state -> lex_control_state;
 
 
@@ -710,6 +711,7 @@ protected:
 
                             }
 
+                            case lex_wrap_start:
                             case lex_unary_operator:
                             case lex_binary_operator:
                             case lex_none: {
@@ -753,6 +755,7 @@ protected:
 
                                 goto next_step;
                             break;}
+                            default:;
                         }
 
 //                        var = "Value|a|test"
