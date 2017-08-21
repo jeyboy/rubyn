@@ -7,6 +7,7 @@
 #define CURRCHAR CURR_CHAR(window)
 #define NEXTCHAR NEXT_CHAR(window)
 #define PREVCHAR PREV_CHAR(window)
+
 // TODO: use ++state -> index && *(++window)
 #define ITERATE {\
         ++state -> index; \
@@ -73,7 +74,7 @@ class LexerRuby : public Lexer {
         if (word_length > 0) {
             state -> word = QByteArray(prev, word_length);
 
-             Lexem & stack_top = state -> stack -> touch();
+            Lexem & stack_top = state -> stack -> touch();
 
             if ((stack_top & lex_def_start) > lex_start) {
                 state -> scope -> addVar(state -> word, 0); // new FilePoint() // TODO: write me
@@ -81,12 +82,17 @@ class LexerRuby : public Lexer {
                 state -> lex_state = lex_var; // TODO: maybe change to something else
             }
             else state -> lex_state =
-                predefined_lexem ? predefined_lexem : PredefinedRuby::obj().lexem(state -> word);
+                predefined_lexem
+                    ?
+                        predefined_lexem
+                    :
+                        PredefinedRuby::obj().lexem(state -> word);
 
 
             if (state -> lex_state == lex_undefined) {
                 if (!state -> scope -> hasVar(state -> word)) {
                     switch(*prev) { // INFO: determine type of word
+                        case ':': { state -> lex_state = lex_key; break;}
                         case '$': { state -> lex_state = lex_global_var; break;}
                         case '@': {
                             if (*(prev + 1) == '@')
@@ -94,7 +100,14 @@ class LexerRuby : public Lexer {
                             else
                                 state -> lex_state = lex_instance_var;
                         break;}
-                        default: state -> lex_state = lex_local_var;
+                        default: {
+                            state -> lex_state =
+                                (PREVCHAR == ':')
+                                    ?
+                                        lex_key
+                                    :
+                                        lex_local_var;
+                        }
                     }
 
                     state -> scope -> addVar(state -> word, 0); // new FilePoint() // TODO: write me
@@ -149,53 +162,59 @@ class LexerRuby : public Lexer {
         }
         else state -> lex_state = lex_ignore;
 
-        if (state -> lex_state < lex_ignore)
+        if (state -> lex_state < lex_end_line)
             state -> new_line_state = state -> lex_state;
 
-        // proc delimiter
-        if (predefined_lexem != lex_string_end && (CURRCHAR != '}' || (CURRCHAR == '}' && word_length == 0))) {
-            prev = window;
-
-            MOVE(state -> next_offset);
-
-            state -> delimiter = QByteArray(prev, window - prev);
-            state -> lex_control_state = PredefinedRuby::obj().lexem(state -> delimiter);
-
-            if (state -> lex_control_state == lex_end_line)
-                state -> new_line_state = lex_none;
-            else if (state -> lex_control_state < lex_ignore)
-                state -> new_line_state = state -> lex_control_state;
 
 
-            word_length = window - prev;
+        if (state -> next_offset) {
+            // proc delimiter
+            bool is_close_block = CURRCHAR == '}';
 
-            if (!checkStack(state -> lex_control_state, state, lexems_cursor, word_length))
-                return false;
+            if (predefined_lexem != lex_string_end && (!is_close_block || (is_close_block && word_length == 0))) {
+                prev = window;
 
-//            if (state -> var_def_state) {
-//                if (state -> lex_control_state == lex_var_chain_end) {
-//                    state -> scope -> clearUnregVar();
-//                    state -> var_def_state = lex_none;
-//                } else {
-//                    if (
-//                            (
-//                                state -> lex_control_state == state -> var_def_state &&
-//                                (
-//                                    state -> var_def_state == lex_var ||
-//                                    state -> var_def_state == lex_comma
-//                                )
-//                            )
-//                            || state -> lex_control_state == lex_end_line
-//                            || state -> lex_control_state == lex_binary_operator
-//                    ) {
+                MOVE(state -> next_offset);
 
-//                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
-//                        return false;
-//                    }
-//                    else if (state -> lex_control_state != lex_ignore)
-//                        state -> var_def_state = state -> lex_control_state;
-//                }
-//            }
+                state -> delimiter = QByteArray(prev, window - prev);
+                state -> lex_state = PredefinedRuby::obj().lexem(state -> delimiter);
+
+                if (state -> lex_state == lex_end_line)
+                    state -> new_line_state = lex_none;
+                else if (state -> lex_state < lex_end_line)
+                    state -> new_line_state = state -> lex_state;
+
+
+                word_length = window - prev;
+
+                if (!checkStack(state -> lex_state, state, lexems_cursor, word_length))
+                    return false;
+
+    //            if (state -> var_def_state) {
+    //                if (state -> lex_state == lex_var_chain_end) {
+    //                    state -> scope -> clearUnregVar();
+    //                    state -> var_def_state = lex_none;
+    //                } else {
+    //                    if (
+    //                            (
+    //                                state -> lex_state == state -> var_def_state &&
+    //                                (
+    //                                    state -> var_def_state == lex_var ||
+    //                                    state -> var_def_state == lex_comma
+    //                                )
+    //                            )
+    //                            || state -> lex_state == lex_end_line
+    //                            || state -> lex_state == lex_binary_operator
+    //                    ) {
+
+    //                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
+    //                        return false;
+    //                    }
+    //                    else if (state -> lex_state != lex_ignore)
+    //                        state -> var_def_state = state -> lex_state;
+    //                }
+    //            }
+            }
         }
 
         state -> next_offset = 1;
@@ -273,7 +292,7 @@ protected:
                 case '\'':
                 case '"': {
                     end_str_symb = *window;
-                    state -> lex_state = state -> stack -> push(lex_string_start);
+                    state -> stack -> push(lex_string_start);
 
                     handle_string:
                         bool ended = false;
@@ -319,6 +338,15 @@ protected:
                 case ':': {
                     if (NEXTCHAR == ':')
                         ++state -> next_offset;
+                    else { // if we have deal with symbol
+                        if (isWord(PREVCHAR)) {
+                            ITERATE;
+                            state -> next_offset = 0;
+                        }
+                        else if (state -> lex_state > lex_undefined) {
+                            goto iterate;
+                        }
+                    }
 
                     if (!cutWord(window, prev, state, lexems_cursor))
                         goto exit;
@@ -335,7 +363,7 @@ protected:
                                 handle_multiline_comment:
                                     bool ended = false;
                                     bool out_req = false;
-                                    state -> lex_state = state -> stack -> push(lex_multiline_commentary_start);
+                                    state -> stack -> push(lex_multiline_commentary_start);
 
                                     while(!ended && !out_req) {
                                         ITERATE;
@@ -509,7 +537,7 @@ protected:
                     } else {
                         bool ended = false;
                         bool out_req = false;
-                        state -> lex_state = state -> stack -> push(lex_inline_commentary_start);
+                        state -> stack -> push(lex_inline_commentary_start);
                         predef = lex_inline_commentary_end;
 
                         while(!ended && !out_req) {
@@ -706,16 +734,16 @@ protected:
                     if (NEXTCHAR == '=')
                         ++state -> next_offset;
                     else {
-                        switch(state -> new_line_state) {
+                        switch(state -> new_line_state) {                       
                             case lex_method: {
 
                             }
-
+                            case lex_key:
                             case lex_wrap_start:
                             case lex_unary_operator:
                             case lex_binary_operator:
                             case lex_none: {
-                                state -> lex_state = state -> stack -> push(lex_regexp_start);
+                                state -> stack -> push(lex_regexp_start);
 
                                 handle_regexp:
                                     bool ended = false;
@@ -746,7 +774,27 @@ protected:
                                     }
 
 
-                                if (!cutWord(window, prev, state, lexems_cursor, out_req ? lex_string_continious : lex_string_end))
+                                    ended = false;
+
+                                    while(!ended && !out_req) {
+                                        ITERATE;
+
+                                        switch(CURRCHAR) {
+                                            case 'm':
+                                            case 'i':
+                                            case 'x':
+                                            case 'o': {
+                                                ended = true;
+                                            break;}
+                                            case 0: {
+                                                out_req = true;
+                                            break;}
+                                            default: ended = true;
+                                        }
+                                    }
+
+
+                                if (!cutWord(window, prev, state, lexems_cursor, out_req ? lex_regexp_continious : lex_regexp_end))
                                     goto exit;
 
                                 if (def_required) { // INFO: patch for interpolation

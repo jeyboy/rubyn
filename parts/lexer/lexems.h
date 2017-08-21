@@ -89,9 +89,9 @@ enum Lexem : quint64 {
     lex_float = (1ULL << 58) | lex_dec,
 //    lex_double = (1ULL << 59) | lex_number,
 
-    lex_end_line = (1ULL << 60),
-    lex_ignore =(1ULL << 61),
-    lex_undefined =(1ULL << 62),
+    lex_undefined =(1ULL << 60),
+    lex_end_line = (1ULL << 61),
+    lex_ignore =(1ULL << 62),
 
     ////// MIXES
 
