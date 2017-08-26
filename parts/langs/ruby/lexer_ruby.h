@@ -4,32 +4,6 @@
 #include "parts/lexer/lexer.h"
 #include "predefined_ruby.h"
 
-#define CURRCHAR CURR_CHAR(window)
-#define NEXTCHAR NEXT_CHAR(window)
-#define PREVCHAR PREV_CHAR(window)
-
-// TODO: use ++state -> index && *(++window)
-#define ITERATE {\
-        ++state -> index; \
-        ++window;\
-    }
-#define MOVE(offset) {\
-        state -> index += offset; \
-        window += offset; \
-    }
-
-
-#define APPEND_ERR(err) \
-    lexems_cursor = (\
-        lexems_cursor -> next =\
-            new LexError(\
-                state -> index,\
-                word_length,\
-                err\
-            )\
-    );
-
-
 class LexerRuby : public Lexer {
     bool checkStack(const Lexem & lex_flag, LexerState * state, LexToken *& lexems_cursor, const int & word_length) {
         if (lex_flag & lex_start) {
@@ -730,6 +704,7 @@ protected:
 
 
 
+
                 case '/': {
                     if (NEXTCHAR == '=')
                         ++state -> next_offset;
@@ -780,12 +755,15 @@ protected:
                                         ITERATE;
 
                                         switch(CURRCHAR) {
-                                            case 'm':
-                                            case 'i':
-                                            case 'x':
-                                            case 'o': {
-                                                ended = true;
-                                            break;}
+                                            case 'm': // Treat a newline as a character matched by .
+                                            case 'i': // Ignore case
+                                            case 'x': // Ignore whitespace and comments in the pattern
+                                            case 'o': // Perform #{} interpolation only once
+                                            case 'u': // encoding:  UTF-8
+                                            case 'e': // encoding:  EUC-JP
+                                            case 's': // encoding:  Windows-31J
+                                            case 'n': // encoding:  ASCII-8BIT
+                                                { break;}
                                             case 0: {
                                                 out_req = true;
                                             break;}
@@ -805,29 +783,6 @@ protected:
                             break;}
                             default:;
                         }
-
-//                        var = "Value|a|test"
-//                        str = "a test Value"
-//                        str.gsub( /#{var}/, 'foo' ) # => "foo foo foo"
-//                        However, if your search string contains metacharacters and you do not want them interpreted as metacharacters, then use Regexp.escape like this:
-
-//                        var = "*This*"
-//                        str = "*This* is a string"
-//                        p str.gsub( /#{Regexp.escape(var)}/, 'foo' )
-//                        # => "foo is a string"
-//                        Or just give gsub a string instead of a regular expression. In MRI >= 1.8.7, gsub will treat a string replacement argument as a plain string, not a regular expression:
-
-//                        var = "*This*"
-//                        str = "*This* is a string"
-//                        p str.gsub(var, 'foo' ) # => "foo is a string"
-//                        (It used to be that a string replacement argument to gsub was automatically converted to a regular expression. I know it was that way in 1.6. I don't recall which version introduced the change).
-
-//                        As noted in other answers, you can use Regexp.new as an alternative to interpolation:
-
-//                        var = "*This*"
-//                        str = "*This* is a string"
-//                        p str.gsub(Regexp.new(Regexp.escape(var)), 'foo' )
-//                        # => "foo is a string"
                     }
 
                     if (!cutWord(window, prev, state, lexems_cursor))

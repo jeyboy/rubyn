@@ -13,6 +13,31 @@
 #define PREV_CHAR(w) PREV_N_CHAR(w, 1)
 #define NEXT_CHAR(w) NEXT_N_CHAR(w, 1)
 
+#define CURRCHAR CURR_CHAR(window)
+#define NEXTCHAR NEXT_CHAR(window)
+#define PREVCHAR PREV_CHAR(window)
+
+// TODO: use ++state -> index && *(++window)
+#define ITERATE {\
+        ++state -> index; \
+        ++window;\
+    }
+#define MOVE(offset) {\
+        state -> index += offset; \
+        window += offset; \
+    }
+
+
+#define APPEND_ERR(err) \
+    lexems_cursor = (\
+        lexems_cursor -> next =\
+            new LexError(\
+                state -> index,\
+                word_length,\
+                err\
+            )\
+    );
+
 class Lexer {
 protected:
     inline bool isBDigit(const char & c) { return c == '0' || c == '1'; }
