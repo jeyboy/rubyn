@@ -1,6 +1,6 @@
 #include "idocument.h"
 #include "documents_types.h"
-#include "parts/formats/iformat.h"
+#include "parts/lexer/lexer_factory.h"
 #include "parts/highligters/highlighter.h"
 
 IDocument * IDocument::create(const QUrl & url) {
@@ -9,20 +9,20 @@ IDocument * IDocument::create(const QUrl & url) {
 
     QString name;
     QIODevice * device = 0;
-    IFormat * f;
+    Lexer * f;
 
     if (isLocal)
         name = path.section('/', -1, -1);
     else
         name = path;
 
-    bool res = IFormat::determine(name, f);
+    bool res = LexerFatory::determine(name, f);
 
     if (!res) {
         //TODO: ask user about preffered type of file
     }
 
-    FormatType format = f -> formatType();
+    FormatType format = f -> format();
 
     bool is_text = format & ft_text, is_bynary = format & ft_bynary;
 
@@ -57,13 +57,11 @@ IDocument * IDocument::create(const QUrl & url) {
     return 0;
 }
 
-IDocument::IDocument(const QString & path, const QString & name, QIODevice * device, IFormat * def_format) :
-    _path(path), _name(name), _device(device), _format(def_format), fully_readed(true) {
+IDocument::IDocument(const QString & path, const QString & name, QIODevice * device, Lexer * lexer) :
+    _path(path), _name(name), _device(device), fully_readed(true) {
 
-    IHighlightPreset * preset = _format -> highlightPreset();
-
-    if (preset)
-        new Highlighter(this, preset);
+    if (lexer)
+        new Highlighter(this, lexer);
 }
 
 IDocument::~IDocument() {

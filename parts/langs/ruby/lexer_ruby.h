@@ -873,6 +873,9 @@ protected:
         exit:
             return lexems;
     }
+
+public:
+    inline FormatType format() const { return ft_rb; }
 };
 
 #endif // LEXER_RUBY_H

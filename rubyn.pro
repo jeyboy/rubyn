@@ -18,9 +18,9 @@ SOURCES += main.cpp\
     parts/highligters/highlighter.cpp \
     parts/langs/ruby/format_ruby.cpp \
     parts/document_types/idocument.cpp \
-    parts/formats/iformat.cpp \
     parts/editor_parts/project.cpp \
-    parts/editor_parts/file.cpp
+    parts/editor_parts/file.cpp \
+    parts/lexer/lexer_factory.cpp
 
 HEADERS  += ide_window.h \
     parts/code_editor.h \
@@ -35,14 +35,10 @@ HEADERS  += ide_window.h \
     parts/document_types/text_document.h \
     parts/document_types/image_document.h \
     parts/document_types/documents_types.h \
-    parts/langs/ruby/format_ruby.h \
-    parts/formats/iformat.h \
     parts/formats/format_types.h \
     parts/langs/c_plus_preset.h \
     parts/langs/c_preset.h \
     parts/langs/java_preset.h \
-    parts/formats/format_text.h \
-    parts/formats/format_image.h \
     parts/editor_parts/extra_area.h \
     parts/document_types/binary_document.h \
     parts/editor_parts/block_user_data.h \
@@ -70,7 +66,8 @@ HEADERS  += ide_window.h \
     misc/chain.h \
     parts/langs/ruby/flags_ruby.h \
     parts/lexer/lexer_state.h \
-    parts/langs/ruby/lexer_ruby_regexp.h
+    parts/langs/ruby/lexer_ruby_regexp.h \
+    parts/lexer/lexer_factory.h
 
 FORMS    += ide_window.ui
 

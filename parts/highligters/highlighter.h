@@ -3,16 +3,17 @@
 
 #include <qsyntaxhighlighter.h>
 
-#include "ihighlight_preset.h"
+class Lexer;
 
 class Highlighter : public QSyntaxHighlighter {
     Q_OBJECT
 protected:
     void highlightBlock(const QString & text) Q_DECL_OVERRIDE;
 
-    IHighlightPreset * preset;
+    Lexer * lexer;
 public:
-    Highlighter(QTextDocument * parent, IHighlightPreset * preset);
+    Highlighter(QTextDocument * parent, Lexer * lexer);
+    ~Highlighter() { delete lexer; }
 };
 
 #endif // IHIGHLIGHTER_H

@@ -5,6 +5,7 @@
 #include <qdatetime.h>
 
 #include "lexer_state.h"
+#include "parts/formats/format_types.h"
 
 #define PREV_N_CHAR(w, offset) (*(w - offset))
 #define NEXT_N_CHAR(w, offset) (*(w + offset))
@@ -72,6 +73,8 @@ public:
         qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
         return root;
     }
+
+    virtual FormatType format() const = 0;
 };
 
 #endif // LEXER_H

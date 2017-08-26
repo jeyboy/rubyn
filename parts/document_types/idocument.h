@@ -5,22 +5,20 @@
 #include <qtextdocument>
 #include <qurl.h>
 #include <qfile>
-#include <qdebug.h>
 
-#include "parts/formats/format_text.h"
+class Lexer;
 
 class IDocument : public QTextDocument {
 protected:
     QString _path;
     QString _name;
     QIODevice * _device;
-    IFormat * _format;
 
     bool fully_readed;
 public:
     static IDocument * create(const QUrl & url);
 
-    IDocument(const QString & path, const QString & name, QIODevice * device, IFormat * def_format = &FormatText::obj());
+    IDocument(const QString & path, const QString & name, QIODevice * device, Lexer * lexer = 0);
     virtual ~IDocument();
 
     inline QString name() const { return _name; }

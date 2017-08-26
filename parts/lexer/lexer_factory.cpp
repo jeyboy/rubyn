@@ -1,10 +1,8 @@
-#include "iformat.h"
+#include "lexer_factory.h"
 
-#include "parts/formats/format_text.h"
-#include "parts/formats/format_image.h"
-#include "parts/langs/ruby/format_ruby.h"
+#include "parts/langs/ruby/lexer_ruby.h"
 
-QHash<QByteArray, FormatType> IFormat::types = {
+QHash<QByteArray, FormatType> LexerFactory::types = {
     { QByteArrayLiteral("rb"), ft_rb },
     { QByteArrayLiteral("sql"), ft_sql },
     { QByteArrayLiteral("html"), ft_html },
@@ -30,14 +28,14 @@ QHash<QByteArray, FormatType> IFormat::types = {
 //    { QByteArrayLiteral("vb"), ft_vb },
 };
 
-QHash<FormatType, IFormat *> IFormat::formats = {
-    { ft_text, &FormatText::obj() },
-    { ft_image, &FormatImage::obj() },
+//QHash<FormatType, IFormat *> IFormat::formats = {
+//    { ft_text, &FormatText::obj() },
+//    { ft_image, &FormatImage::obj() },
 
-    { ft_rb, &FormatRuby::obj() },
-};
+//    { ft_rb, &FormatRuby::obj() },
+//};
 
-bool IFormat::determine(const QString & path, IFormat *& iformat) {
+bool LexerFactory::determine(const QString & path, Lexer *& lexer) {
     QByteArray ch_arr = path.toUtf8();
     const char * str = ch_arr.constData();
     const char * iter = str, * sub = 0;
@@ -65,7 +63,10 @@ bool IFormat::determine(const QString & path, IFormat *& iformat) {
     }
 
     exit:
-        iformat = formats[format_type];
+        switch(format_type) {
+            case ft_rb: { lexer = new LexerRuby(); break;}
+            default: lexer = 0;
+        }
 
-        return iformat && format_type == ft_unknown;
+        return !!lexer;
 }
