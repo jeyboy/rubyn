@@ -4,6 +4,7 @@
 #include <qsyntaxhighlighter.h>
 
 class Lexer;
+class LexerState;
 
 class Highlighter : public QSyntaxHighlighter {
     Q_OBJECT
@@ -11,6 +12,7 @@ protected:
     void highlightBlock(const QString & text) Q_DECL_OVERRIDE;
 
     Lexer * lexer;
+    LexerState * lexer_state;
 public:
     Highlighter(QTextDocument * parent, Lexer * lexer);
     ~Highlighter() { delete lexer; }

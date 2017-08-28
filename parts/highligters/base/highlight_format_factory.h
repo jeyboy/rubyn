@@ -4,32 +4,33 @@
 #include <qtextformat.h>
 #include <qhash.h>
 
+#include "parts/lexer/lexems.h"
 #include "misc/singleton.h"
 
-enum HighlightFormat {
-    format_keyword = 1,
-    format_variable,
-    format_symbol,
-    format_class,
-    format_const,
-    format_single_quotation,
-    format_double_quotation,
-    format_func,
-    format_signle_line_comment,
-    format_multy_line_comment,
-    format_heredoc,
-    format_numbers,
-    format_regular_expresions,
-    format_preprocessing,
-    format_datatype,
+//enum HighlightFormat {
+//    format_keyword = 1,
+//    format_variable,
+//    format_symbol,
+//    format_class,
+//    format_const,
+//    format_single_quotation,
+//    format_double_quotation,
+//    format_func,
+//    format_signle_line_comment,
+//    format_multy_line_comment,
+//    format_heredoc,
+//    format_numbers,
+//    format_regular_expresions,
+//    format_preprocessing,
+//    format_datatype,
 
-    format_error,
-    format_warning,
-    format_spellcheck
-};
+//    format_error,
+//    format_warning,
+//    format_spellcheck
+//};
 
 class HighlightFormatFactory : public Singleton<HighlightFormatFactory> {
-    QHash<HighlightFormat, QTextCharFormat> formats;
+    QHash<Lexem, QTextCharFormat> formats;
 protected:
     void registerErrorFormat() {
         QTextCharFormat errFormat;
@@ -37,7 +38,7 @@ protected:
         errFormat.setUnderlineColor(QColor(Qt::red));
         errFormat.setUnderlineStyle(QTextCharFormat::WaveUnderline);
         errFormat.setFontItalic(true);
-        formats.insert(format_error, errFormat);
+        formats.insert(lex_error, errFormat);
     }
 
     void registerWarningFormat() {
@@ -46,7 +47,7 @@ protected:
         errFormat.setUnderlineColor(QColor(Qt::blue));
         errFormat.setUnderlineStyle(QTextCharFormat::WaveUnderline);
         errFormat.setFontItalic(true);
-        formats.insert(format_warning, errFormat);
+        formats.insert(lex_warning, errFormat);
     }
 
     void registerSpellcheckFormat() {
@@ -55,7 +56,7 @@ protected:
         errFormat.setUnderlineColor(QColor(Qt::black));
         errFormat.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
         errFormat.setFontItalic(true);
-        formats.insert(format_spellcheck, errFormat);
+        formats.insert(lex_notice, errFormat);
     }
 
     void registerKeywordFormat() {
@@ -63,82 +64,75 @@ protected:
         keywordFormat.setForeground(Qt::darkBlue);
         keywordFormat.setBackground(QColor::fromRgb(0, 0, 255, 16));
         keywordFormat.setFontWeight(QFont::Black);
-        formats.insert(format_keyword, keywordFormat);
+        formats.insert(lex_key, keywordFormat);
     }
     void registerVariableFormat() {
         QTextCharFormat variableFormat;
         variableFormat.setFontWeight(QFont::Bold);
         variableFormat.setForeground(Qt::darkYellow);
-        formats.insert(format_variable, variableFormat);
+        formats.insert(lex_var, variableFormat);
     }
     void registerSymbolFormat() {
         QTextCharFormat symbolFormat;
         symbolFormat.setFontWeight(QFont::Bold);
         symbolFormat.setForeground(Qt::darkCyan);
-        formats.insert(format_symbol, symbolFormat);
+        formats.insert(lex_symb, symbolFormat);
     }
     void registerClassFormat() {
         QTextCharFormat classFormat;
         classFormat.setFontWeight(QFont::Bold);
         classFormat.setForeground(Qt::darkMagenta);
-        formats.insert(format_class, classFormat);
+        formats.insert(lex_class, classFormat);
+        formats.insert(lex_module, classFormat);
+        formats.insert(lex_method, classFormat);
     }
     void registerConstFormat() {
         QTextCharFormat constFormat;
         constFormat.setFontWeight(QFont::Bold);
         constFormat.setForeground(Qt::darkMagenta);
-        formats.insert(format_const, constFormat);
+        formats.insert(lex_const, constFormat);
     }
-    void registerSingleQuotationFormat() {
+    void registerQuotationFormat() {
         QTextCharFormat singleQuotationFormat;
         singleQuotationFormat.setForeground(Qt::darkGreen);
-        formats.insert(format_single_quotation, singleQuotationFormat);
-    }
-    void registerDoubleQuotationFormat() {
-        QTextCharFormat doubleQuotationFormat;
-        doubleQuotationFormat.setForeground(Qt::darkGreen);
-        formats.insert(format_double_quotation, doubleQuotationFormat);
+        formats.insert(lex_string, singleQuotationFormat);
     }
     void registerFuncFormat() {
         QTextCharFormat functionFormat;
         functionFormat.setFontItalic(true);
         functionFormat.setForeground(Qt::blue);
-        formats.insert(format_func, functionFormat);
+        formats.insert(lex_method, functionFormat);
     }
-    void registerSingleLineCommentFormat() {
+    void registerCommentFormat() {
         QTextCharFormat commentFormat;
         commentFormat.setForeground(Qt::red); // gray
-        formats.insert(format_signle_line_comment, commentFormat);
+        formats.insert(lex_commentary, commentFormat);
     }
-    void registerMultyLineCommentFormat() {
-        QTextCharFormat commentFormat;
-        commentFormat.setForeground(Qt::red); // gray
-        formats.insert(format_multy_line_comment, commentFormat);
-    }
+
     void registerHeredocFormat() {
         QTextCharFormat heredocFormat;
         heredocFormat.setForeground(Qt::green);
-        formats.insert(format_heredoc, heredocFormat);
+        formats.insert(lex_heredoc, heredocFormat);
     }
     void registerNumbersFormat() {
         QTextCharFormat numbersFormat;
         numbersFormat.setForeground(Qt::blue);
-        formats.insert(format_numbers, numbersFormat);
+        formats.insert(lex_number, numbersFormat);
     }
     void registerRegularExpresionsFormat() {
         QTextCharFormat regularExpFormat;
         regularExpFormat.setBackground(QColor::fromRgb(0, 255, 0, 32));
-        formats.insert(format_regular_expresions, regularExpFormat);
+        formats.insert(lex_regexp, regularExpFormat);
     }
-    void registerPreprocessingFormat() {
-        QTextCharFormat preprocessingFormat;
-        preprocessingFormat.setForeground(QColor::fromRgb(0, 255, 0, 164));
-        formats.insert(format_preprocessing, preprocessingFormat);
-    }
+//    void registerPreprocessingFormat() {
+//        QTextCharFormat preprocessingFormat;
+//        preprocessingFormat.setForeground(QColor::fromRgb(0, 255, 0, 164));
+//        formats.insert(format_preprocessing, preprocessingFormat);
+//    }
     void registerDatatypeFormat() {
         QTextCharFormat datatypeFormat;
         datatypeFormat.setForeground(QColor::fromRgb(0, 0, 255, 164));
-        formats.insert(format_datatype, datatypeFormat);
+        formats.insert(lex_datatype, datatypeFormat);
     }
 public:
     HighlightFormatFactory() {
@@ -147,15 +141,13 @@ public:
         registerSymbolFormat();
         registerClassFormat();
         registerConstFormat();
-        registerSingleQuotationFormat();
-        registerDoubleQuotationFormat();
+        registerQuotationFormat();
         registerFuncFormat();
-        registerSingleLineCommentFormat();
-        registerMultyLineCommentFormat();
+        registerCommentFormat();
         registerHeredocFormat();
         registerNumbersFormat();
         registerRegularExpresionsFormat();
-        registerPreprocessingFormat();
+//        registerPreprocessingFormat();
         registerDatatypeFormat();
 
         registerErrorFormat();

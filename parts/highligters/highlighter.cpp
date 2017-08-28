@@ -5,14 +5,14 @@
 #include <qdebug.h>
 
 Highlighter::Highlighter(QTextDocument * parent, Lexer * lexer)
-    : QSyntaxHighlighter(parent), lexer(lexer) {}
+    : QSyntaxHighlighter(parent), lexer(lexer), lexer_state(new LexerState()) {}
 
 void Highlighter::highlightBlock(const QString & text) {
 //    qDebug() << "*** " << currentBlock().firstLineNumber();
 
-    currentBlock().userData()
+//    currentBlock().userData();
 
-    lexer -> analize(text, )
+    LexToken * lexems = lexer -> analize(text, lexer_state);
 
 //    const QVector<HighlightingRule> & highlightingRules = preset -> rules();
 //    for(QVector<HighlightingRule>::ConstIterator rule = highlightingRules.constBegin(); rule != highlightingRules.constEnd(); rule++) {
