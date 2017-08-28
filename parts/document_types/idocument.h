@@ -24,7 +24,7 @@ public:
 
     inline QString name() const { return _name; }
     inline QString path() const { return _path; }
-    inline FormatType mime() const { return _lexer -> format(); }
+    inline FormatType mime() const { return _lexer ? _lexer -> format() : ft_unknown; }
     inline bool isFullyReaded() const { return fully_readed; }
 
     inline bool isText() const { return mime() & ft_text; }
