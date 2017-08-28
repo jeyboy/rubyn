@@ -1,6 +1,5 @@
 #include "idocument.h"
 #include "documents_types.h"
-#include "parts/lexer/lexer_factory.h"
 #include "parts/highligters/highlighter.h"
 
 IDocument * IDocument::create(const QUrl & url) {
@@ -16,7 +15,7 @@ IDocument * IDocument::create(const QUrl & url) {
     else
         name = path;
 
-    bool res = LexerFatory::determine(name, f);
+    bool res = LexerFactory::determine(name, f);
 
     if (!res) {
         //TODO: ask user about preffered type of file
@@ -58,7 +57,7 @@ IDocument * IDocument::create(const QUrl & url) {
 }
 
 IDocument::IDocument(const QString & path, const QString & name, QIODevice * device, Lexer * lexer) :
-    _path(path), _name(name), _device(device), fully_readed(true) {
+    _path(path), _name(name), _device(device), _lexer(lexer), fully_readed(true) {
 
     if (lexer)
         new Highlighter(this, lexer);

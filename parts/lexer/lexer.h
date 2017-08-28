@@ -3,6 +3,7 @@
 
 #include <qstring.h>
 #include <qdatetime.h>
+#include <qdebug.h>
 
 #include "lexer_state.h"
 #include "parts/formats/format_types.h"
@@ -73,6 +74,8 @@ public:
         qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
         return root;
     }
+
+    virtual ~Lexer() {}
 
     virtual FormatType format() const = 0;
 };

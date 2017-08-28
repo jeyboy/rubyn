@@ -3,8 +3,6 @@
 
 #include "idocument.h"
 
-#include "parts/formats/format_image.h"
-
 //For example, you can add an image as a resource in order to reference it from within the document:
 
 //    document->addResource(QTextDocument::ImageResource,
@@ -22,8 +20,8 @@
 
 class ImageDocument : public IDocument {
 public:
-    ImageDocument(const QString & path, const QString & name, QIODevice * device, IFormat * format)
-        : IDocument(path, name, device, format) {}
+    ImageDocument(const QString & path, const QString & name, QIODevice * device, Lexer * lexer = 0)
+        : IDocument(path, name, device, lexer) {}
 };
 
 #endif // IMAGE_DOCUMENT

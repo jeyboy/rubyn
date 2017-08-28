@@ -3,15 +3,16 @@
 
 #include <qhash.h>
 
+#include "parts/lexer/lexer.h"
+#include "parts/formats/format_types.h"
+
 #define IDENT_FORMAT(iter, sub, format) \
     {\
         FormatType nft = types.value(QByteArray(sub, iter - sub), ft_unknown);\
         format = (FormatType)(format | nft);\
     }
 
-class Lexer;
-
-class LexerFatory {
+class LexerFactory {
     static QHash<QByteArray, FormatType> types;
 public:
     static bool determine(const QString & path, Lexer *& lexer);

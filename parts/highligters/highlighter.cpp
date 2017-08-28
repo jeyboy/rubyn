@@ -1,11 +1,12 @@
 #include "highlighter.h"
 
 #include "parts/lexer/lexer.h"
-
-#include <qdebug.h>
+#include "highlight_format_factory.h"
 
 Highlighter::Highlighter(QTextDocument * parent, Lexer * lexer)
     : QSyntaxHighlighter(parent), lexer(lexer), lexer_state(new LexerState()) {}
+
+Highlighter::~Highlighter() { delete lexer; }
 
 void Highlighter::highlightBlock(const QString & text) {
 //    qDebug() << "*** " << currentBlock().firstLineNumber();
@@ -13,6 +14,15 @@ void Highlighter::highlightBlock(const QString & text) {
 //    currentBlock().userData();
 
     LexToken * lexems = lexer -> analize(text, lexer_state);
+
+    while(lexems) {
+        LexToken * curr = lexems;
+        lexems = lexems -> next;
+
+        setFormat(curr -> left, curr -> length, HighlightFormatFactory::obj().getFormatFor(curr -> lexem));
+
+        delete curr;
+    }
 
 //    const QVector<HighlightingRule> & highlightingRules = preset -> rules();
 //    for(QVector<HighlightingRule>::ConstIterator rule = highlightingRules.constBegin(); rule != highlightingRules.constEnd(); rule++) {

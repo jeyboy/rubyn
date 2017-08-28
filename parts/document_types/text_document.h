@@ -13,8 +13,8 @@
 
 class TextDocument : public IDocument {
 public:
-    TextDocument(const QString & path, const QString & name, QIODevice * device, IFormat * format)
-        : IDocument(path, name, device, format) {
+    TextDocument(const QString & path, const QString & name, QIODevice * device, Lexer * lexer = 0)
+        : IDocument(path, name, device, lexer) {
 
         setDocumentLayout(new QPlainTextDocumentLayout(this));
 

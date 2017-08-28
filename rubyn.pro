@@ -25,10 +25,8 @@ SOURCES += main.cpp\
 HEADERS  += ide_window.h \
     parts/code_editor.h \
     misc/singleton.h \
-    parts/highligters/base/highlighter_rule.h \
-    parts/highligters/base/highlight_format_factory.h \
+    parts/highligters/highlight_format_factory.h \
     parts/highligters/highlighter.h \
-    parts/highligters/ihighlight_preset.h \
     dock_widgets.h \
     parts/documents.h \
     parts/document_types/idocument.h \

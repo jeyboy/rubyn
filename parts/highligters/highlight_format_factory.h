@@ -7,28 +7,6 @@
 #include "parts/lexer/lexems.h"
 #include "misc/singleton.h"
 
-//enum HighlightFormat {
-//    format_keyword = 1,
-//    format_variable,
-//    format_symbol,
-//    format_class,
-//    format_const,
-//    format_single_quotation,
-//    format_double_quotation,
-//    format_func,
-//    format_signle_line_comment,
-//    format_multy_line_comment,
-//    format_heredoc,
-//    format_numbers,
-//    format_regular_expresions,
-//    format_preprocessing,
-//    format_datatype,
-
-//    format_error,
-//    format_warning,
-//    format_spellcheck
-//};
-
 class HighlightFormatFactory : public Singleton<HighlightFormatFactory> {
     QHash<Lexem, QTextCharFormat> formats;
 protected:
@@ -155,7 +133,7 @@ public:
         registerSpellcheckFormat();
     }
 
-    const QTextCharFormat & getFormatFor(const HighlightFormat & format) { return formats[format]; }
+    const QTextCharFormat & getFormatFor(const Lexem & lexem) { return formats[lexem]; }
 };
 
 #endif // HIGHLIGHT_FORMAT_FACTORY

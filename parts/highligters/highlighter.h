@@ -15,7 +15,7 @@ protected:
     LexerState * lexer_state;
 public:
     Highlighter(QTextDocument * parent, Lexer * lexer);
-    ~Highlighter() { delete lexer; }
+    ~Highlighter();
 };
 
 #endif // IHIGHLIGHTER_H

@@ -29,7 +29,7 @@ struct LexError : public LexToken {
     QString err;
 
     LexError(const int & left, const int & length, const QString & err)
-        : LexToken(lex_undefined, left, length), err(err) {}
+        : LexToken(lex_error, left, length), err(err) {}
 
     QString error() const { return err; }
 };
