@@ -6,7 +6,7 @@
 #include <qdebug.h>
 
 #include "idocument.h"
-#include "parts/langs/ruby/lexer_ruby.h"
+//#include "parts/langs/ruby/lexer_ruby.h"
 
 
 #define READ_LIMIT (qint64)(512000) // ~512 kb
@@ -20,7 +20,7 @@ public:
 
         QByteArray ar = _device -> readAll();
 
-        LexerRuby().analize(QString(ar));
+//        LexerRuby().analize(QString(ar));
 
         if (_device -> size() < READ_LIMIT)
             setPlainText(ar);

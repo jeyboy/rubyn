@@ -2,18 +2,41 @@
 
 #include "parts/lexer/lexer.h"
 #include "highlight_format_factory.h"
+#include "parts/editor_parts/block_user_data.h"
 
 Highlighter::Highlighter(QTextDocument * parent, Lexer * lexer)
-    : QSyntaxHighlighter(parent), lexer(lexer), lexer_state(new LexerState()) {}
+    : QSyntaxHighlighter(parent), lexer(lexer) {}
 
 Highlighter::~Highlighter() { delete lexer; }
 
 void Highlighter::highlightBlock(const QString & text) {
 //    qDebug() << "*** " << currentBlock().firstLineNumber();
 
-//    currentBlock().userData();
+    if (text.trimmed().isEmpty()) // INFO: ignore empty str
+        return;
 
-    LexToken * lexems = lexer -> analize(text, lexer_state);
+    QTextBlock block = currentBlock();
+    QTextBlock prev_block = block.previous();
+
+    BlockUserData * udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
+    LexerState * state = 0;
+
+    if (!udata)
+        state = new LexerState();
+    else
+        state = new LexerState(*udata -> state);
+
+    LexToken * lexems = lexer -> analize(text, state);
+
+    BlockUserData * cdata = reinterpret_cast<BlockUserData *>(block.userData());
+
+    state -> index = 0;
+    if (!cdata)
+        cdata = new BlockUserData(false, false, state);
+    else
+        cdata -> state = state;
+
+    block.setUserData(cdata);
 
     while(lexems) {
         LexToken * curr = lexems;
@@ -23,40 +46,4 @@ void Highlighter::highlightBlock(const QString & text) {
 
         delete curr;
     }
-
-//    const QVector<HighlightingRule> & highlightingRules = preset -> rules();
-//    for(QVector<HighlightingRule>::ConstIterator rule = highlightingRules.constBegin(); rule != highlightingRules.constEnd(); rule++) {
-//        QRegularExpressionMatchIterator i = (*rule).pattern.globalMatch(text);
-
-//        while (i.hasNext()) {
-//            QRegularExpressionMatch match = i.next();
-//            setFormat(match.capturedStart(), match.capturedLength(), (*rule).format);
-//        }
-//    }
-//    setCurrentBlockState(0);
-
-//    if (!preset -> commentStartExpression().isValid()) return;
-
-//    int startIndex = 0;
-//    while(true) {
-//        if (startIndex > 0 || (startIndex == 0 && previousBlockState() != 1)) {
-//            QRegularExpressionMatch startMatch = preset -> commentStartExpression().match(text, startIndex);
-//            if (!startMatch.hasMatch()) return;
-//            startIndex = startMatch.capturedStart();
-//        }
-
-//        QRegularExpressionMatch endMatch = preset -> commentEndExpression().match(text, startIndex);
-//        int commentLength;
-
-//        if (!endMatch.hasMatch()) {
-//            setCurrentBlockState(1);
-//            commentLength = text.length() - startIndex;
-//        }
-//        else commentLength = endMatch.capturedEnd() - startIndex;
-
-//        setFormat(startIndex, commentLength, HighlightFormatFactory::obj().getFormatFor(format_multy_line_comment));
-
-//        if (!endMatch.hasMatch()) return;
-//        startIndex = endMatch.capturedEnd();
-//    }
 }

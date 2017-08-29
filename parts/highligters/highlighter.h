@@ -12,7 +12,6 @@ protected:
     void highlightBlock(const QString & text) Q_DECL_OVERRIDE;
 
     Lexer * lexer;
-    LexerState * lexer_state;
 public:
     Highlighter(QTextDocument * parent, Lexer * lexer);
     ~Highlighter();

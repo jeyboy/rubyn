@@ -22,6 +22,8 @@ struct LexToken {
     LexToken(const Lexem & lexem = lex_none, const int & left = 0, const int & length = 0)
         : next(0), lexem(lexem), left(left), length(length) {}
 
+    virtual ~LexToken() {}
+
     virtual QString error() const { return QString(); }
 };
 

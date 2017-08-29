@@ -122,7 +122,7 @@ class LexerRuby : public Lexer {
                     lexems_cursor -> next =
                         new LexToken(
                             highlightable,
-                            state -> index,
+                            state -> index - word_length,
                             word_length
                         )
                 );
@@ -218,7 +218,7 @@ protected:
             default:;
         };
 
-        while(CURRCHAR) {
+        while(true) {
             next_step:
 
             switch(CURRCHAR) {
@@ -791,12 +791,14 @@ protected:
 
 
 
-//                case '@': {
-//                    cutWord(window, prev, state, lexems_cursor);
+                case '@': {
+                    cutWord(window, prev, state, lexems_cursor);
 
-////                    if (NEXTCHAR == '@')
-////                        window++;
-//                break;}
+                    if (NEXTCHAR == '@')
+                        ITERATE;
+                break;}
+
+
 
                 case '$': {
                     bool has_match = false;
@@ -860,6 +862,13 @@ protected:
                     } else
                         goto iterate;
                 break;}
+
+
+                case 0: {
+                    cutWord(window, prev, state, lexems_cursor);
+                    goto exit;
+                break;}
+
 
                 default:
                     iterate:
