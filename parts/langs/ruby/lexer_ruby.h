@@ -737,7 +737,6 @@ protected:
 
                                             case '/': {
                                                 if (PREVCHAR != '\\') {
-                                                    ITERATE;
                                                     ended = true;
                                                 }
                                             break;}
@@ -767,7 +766,9 @@ protected:
                                             case 0: {
                                                 out_req = true;
                                             break;}
-                                            default: ended = true;
+                                            default: {
+                                                ended = true;
+                                            }
                                         }
                                     }
 

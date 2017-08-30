@@ -194,7 +194,7 @@ enum Lexem : quint64 {
     lex_var_chain_end = lex_end | lex_chain | lex_var,
 //    lex_var_chain_sep = lex_comma | lex_chain | lex_var,
 
-    lex_highlightable = lex_module | lex_class | lex_method | lex_var | lex_const |
+    lex_highlightable = lex_module | lex_class | lex_method | lex_const | //lex_var |
         lex_key | lex_string | lex_number | lex_regexp | lex_symb | lex_commentary,
 };
 
