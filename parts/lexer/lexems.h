@@ -55,15 +55,15 @@ enum Lexem : quint64 {
 
     lex_datatype = lex_def | lex_obj,
 
-    lex_const = (1ULL << 31) | lex_var,
+    lex_const = (1ULL << 31),
 
-    lex_bool = (1ULL << 32) | lex_var,
-    lex_string = (1ULL << 33) | lex_var,
-    lex_number = (1ULL << 34) | lex_var,
-    lex_regexp = (1ULL << 35) | lex_var,
-    lex_hash = (1ULL << 36) | lex_var,
-    lex_array = (1ULL << 37) | lex_var,
-    lex_symb = (1ULL << 38) | lex_var,
+    lex_bool = (1ULL << 32),
+    lex_string = (1ULL << 33),
+    lex_number = (1ULL << 34),
+    lex_regexp = (1ULL << 35),
+    lex_hash = (1ULL << 36),
+    lex_array = (1ULL << 37),
+    lex_symb = (1ULL << 38),
 
 
     // lex_ = (1ULL << 39),
@@ -194,7 +194,7 @@ enum Lexem : quint64 {
     lex_var_chain_end = lex_end | lex_chain | lex_var,
 //    lex_var_chain_sep = lex_comma | lex_chain | lex_var,
 
-    lex_highlightable = lex_module | lex_class | lex_method | lex_const | //lex_var |
+    lex_highlightable = lex_def | lex_module | lex_class | lex_method | lex_const | //lex_var |
         lex_key | lex_string | lex_number | lex_regexp | lex_symb | lex_commentary,
 };
 

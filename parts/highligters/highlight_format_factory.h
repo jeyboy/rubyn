@@ -47,8 +47,9 @@ protected:
     void registerVariableFormat() {
         QTextCharFormat variableFormat;
         variableFormat.setFontWeight(QFont::Bold);
-        variableFormat.setForeground(Qt::darkYellow);
+        variableFormat.setForeground(QColor::fromRgb(0, 92, 197));
         formats.insert(lex_var, variableFormat);
+        formats.insert(lex_def, variableFormat);
     }
     void registerSymbolFormat() {
         QTextCharFormat symbolFormat;
@@ -78,12 +79,12 @@ protected:
     void registerFuncFormat() {
         QTextCharFormat functionFormat;
         functionFormat.setFontItalic(true);
-        functionFormat.setForeground(Qt::blue);
+        functionFormat.setForeground(QColor::fromRgb(215, 58, 73));
         formats.insert(lex_method, functionFormat);
     }
     void registerCommentFormat() {
         QTextCharFormat commentFormat;
-        commentFormat.setForeground(Qt::red); // gray
+        commentFormat.setForeground(QColor::fromRgb(128, 128, 128, 192));
         formats.insert(lex_commentary, commentFormat);
     }
 

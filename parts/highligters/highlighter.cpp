@@ -26,7 +26,7 @@ void Highlighter::highlightBlock(const QString & text) {
     else
         state = new LexerState(*udata -> state);
 
-    LexToken * lexems = lexer -> analize(text, state);
+    LexToken * lexems = lexer -> analize(text, state) -> next; // ignore
 
     BlockUserData * cdata = reinterpret_cast<BlockUserData *>(block.userData());
 

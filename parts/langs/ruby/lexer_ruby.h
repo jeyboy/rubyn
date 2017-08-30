@@ -53,7 +53,7 @@ class LexerRuby : public Lexer {
             if ((stack_top & lex_def_start) > lex_start) {
                 state -> scope -> addVar(state -> word, 0); // new FilePoint() // TODO: write me
                 state -> stack -> replace(lex_block_start);
-                state -> lex_state = lex_var; // TODO: maybe change to something else
+                state -> lex_state = lex_def; // TODO: maybe change to something else
             }
             else state -> lex_state =
                 predefined_lexem
