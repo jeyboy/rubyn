@@ -123,7 +123,7 @@ public:
             int curr_pos = size;
 
             size = (int)(size * 1.5);
-            start = data = (T)realloc(data, size + 1);
+            start = data = (T*)realloc(data, size + 1);
             end = &data[size];
             curr = &data[curr_pos];
         }

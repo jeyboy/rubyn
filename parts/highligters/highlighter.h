@@ -18,6 +18,10 @@ protected:
 public:
     Highlighter(QTextDocument * parent, Lexer * lexer);
     ~Highlighter();
+
+    inline void setFormat(const int & start, const int & count, const QTextCharFormat & format) {
+        QSyntaxHighlighter::setFormat(start, count, format);
+    }
 };
 
 #endif // IHIGHLIGHTER_H

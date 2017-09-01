@@ -5,7 +5,7 @@
 #include "predefined_ruby.h"
 
 class LexerRuby : public Lexer {
-    bool checkStack(const Lexem & lex_flag, LexerState * state, LexToken *& lexems_cursor, const int & word_length) {
+    bool checkStack(const Lexem & lex_flag, LexerState * state, Highlighter * lighter, const int & word_length) {
         if (lex_flag & lex_start) {
             if ((lex_flag & lex_chain_block) == lex_chain_block) {
                 // INFO: if line is not empty then we have deal with inline branching
@@ -25,7 +25,13 @@ class LexerRuby : public Lexer {
             if (condition) {
                 state -> stack -> drop();
             } else {
-                APPEND_ERR(QByteArray::number(state -> stack -> touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(lex_flag) + QByteArrayLiteral(" received"));
+                lighter -> setFormat(\
+                    state -> index - word_length,\
+                    word_length,\
+                    HighlightFormatFactory::obj().getFormatFor(lex_error)\
+                );
+//                APPEND_ERR(QByteArray::number(state -> stack -> touch()) + QByteArrayLiteral(" required, but ") + QByteArray::number(lex_flag) + QByteArrayLiteral(" received"));
+
                 return false;
             }
         } else if (lex_flag & lex_chain_block) {
@@ -34,24 +40,30 @@ class LexerRuby : public Lexer {
             if (stack_top & lex_chain_block)
                 state -> stack -> replace(lex_flag);
             else
-                APPEND_ERR(QByteArrayLiteral("Error in condition logic"));
+                lighter -> setFormat(\
+                    state -> index - word_length,\
+                    word_length,\
+                    HighlightFormatFactory::obj().getFormatFor(lex_error)\
+                );
+
+//                APPEND_ERR(QByteArrayLiteral("Error in condition logic"));
         }
 
         return true;
     }
 
     bool cutWord(const char *& window, const char *& prev, LexerState * state,
-                 LexToken *& lexems_cursor, const Lexem & predefined_lexem = lex_none)
+                 Highlighter * lighter, const Lexem & predefined_lexem = lex_none)
     {
         int word_length = window - prev;
 
         if (word_length > 0) {
-            state -> word = QByteArray(prev, word_length);
+            QByteArray word = QByteArray(prev, word_length);
 
             Lexem & stack_top = state -> stack -> touch();
 
             if (stack_top & lex_def) {
-                state -> scope -> addVar(state -> word, 0); // new FilePoint() // TODO: write me
+                state -> scope -> addVar(word, 0); // new FilePoint() // TODO: write me
                 state -> stack -> replace(lex_block_start);
                 state -> lex_state = lex_def; // TODO: maybe change to something else
             }
@@ -60,11 +72,11 @@ class LexerRuby : public Lexer {
                     ?
                         predefined_lexem
                     :
-                        PredefinedRuby::obj().lexem(state -> word);
+                        PredefinedRuby::obj().lexem(word);
 
 
             if (state -> lex_state == lex_undefined) {
-                if (!state -> scope -> hasVar(state -> word)) {
+                if (!state -> scope -> hasVar(word)) {
                     switch(*prev) { // INFO: determine type of word
                         case ':': { state -> lex_state = lex_key; break;}
                         case '$': { state -> lex_state = lex_global_var; break;}
@@ -84,7 +96,7 @@ class LexerRuby : public Lexer {
                         }
                     }
 
-                    state -> scope -> addVar(state -> word, 0); // new FilePoint() // TODO: write me
+                    state -> scope -> addVar(word, 0); // new FilePoint() // TODO: write me
 
 //                    if (!state -> var_def_state)
 //                         state -> stack -> push(lex_var_chain_start);
@@ -102,16 +114,21 @@ class LexerRuby : public Lexer {
 
             } else {
                 if (state -> lex_state & lex_continue) { // TODO: check me
-                    StackCell<Lexem> * top = state -> stack -> touchLevel();
+                    Lexem top = state -> stack -> touch();
 
-                    if (top -> obj == state -> lex_state || top -> obj == EXCLUDE_BIT(state -> lex_state, lex_continue)) {
-                        top -> obj = state -> lex_state;
+                    if (top == state -> lex_state || top == EXCLUDE_BIT(state -> lex_state, lex_continue)) {
+                        top = state -> lex_state;
                     } else {
-                        APPEND_ERR(QByteArrayLiteral("Wrong state!!!"));
+                        lighter -> setFormat(
+                            state -> index - word_length,
+                            word_length,
+                            HighlightFormatFactory::obj().getFormatFor(lex_error)
+                        );
+//                        APPEND_ERR(QByteArrayLiteral("Wrong state!!!"));
                         return false;
                     }
                 }
-                else if (!checkStack(state -> lex_state, state, lexems_cursor, word_length))
+                else if (!checkStack(state -> lex_state, state, lighter, word_length))
                         return false;
             }
 
@@ -125,11 +142,11 @@ class LexerRuby : public Lexer {
                 );
             }
 
-            qDebug() << state -> word;
+            qDebug() << word;
         } else if (predefined_lexem) {
             state -> lex_state = predefined_lexem;
 
-            if (!checkStack(state -> lex_state, state, lexems_cursor, word_length))
+            if (!checkStack(state -> lex_state, state, lighter, word_length))
                 return false;
         }
         else state -> lex_state = lex_ignore;
@@ -148,8 +165,8 @@ class LexerRuby : public Lexer {
 
                 MOVE(state -> next_offset);
 
-                state -> delimiter = QByteArray(prev, window - prev);
-                state -> lex_state = PredefinedRuby::obj().lexem(state -> delimiter);
+                QByteArray delimiter = QByteArray(prev, window - prev);
+                state -> lex_state = PredefinedRuby::obj().lexem(delimiter);
 
                 if (state -> lex_state == lex_end_line)
                     state -> new_line_state = lex_none;
@@ -159,7 +176,7 @@ class LexerRuby : public Lexer {
 
                 word_length = window - prev;
 
-                if (!checkStack(state -> lex_state, state, lexems_cursor, word_length))
+                if (!checkStack(state -> lex_state, state, lighter, word_length))
                     return false;
 
     //            if (state -> var_def_state) {
@@ -207,11 +224,11 @@ protected:
 //        they indicate the continuation of a statement.
 
         switch(state -> stack -> touch()) {
-            case lex_string_continue:
-            case lex_estring_continue: goto handle_string;
+            case lex_string_continious:
+//            case lex_estring_continue: goto handle_string;
 //            case lex_heredoc_continue: goto handle_heredoc;
-            case lex_regexp_continue: goto handle_regexp;
-            case lex_multiline_commentary_continue: goto handle_multiline_comment;
+            case lex_regexp_continious: goto handle_regexp;
+            case lex_multiline_commentary_continious: goto handle_multiline_comment;
             default:;
         };
 
@@ -225,7 +242,7 @@ protected:
                 case '\v':
                 case '\t':
                 case ' ': {
-                    if(!cutWord(window, prev, state, lexems_cursor))
+                    if(!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -245,14 +262,14 @@ protected:
                             goto iterate;
                     }
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
 
 
                 case ',': {                   
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -296,7 +313,7 @@ protected:
                         }
 
 
-                    if (!cutWord(window, prev, state, lexems_cursor, out_req ? lex_string_continious : lex_string_end))
+                    if (!cutWord(window, prev, state, lighter, out_req ? lex_string_continious : lex_string_end))
                         goto exit;
 
                     if (def_required) { // INFO: patch for interpolation
@@ -319,7 +336,7 @@ protected:
                         }
                     }
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -347,7 +364,7 @@ protected:
 
                                             case 0: {
                                                 out_req = true;
-                                                cutWord(window, prev, state, lexems_cursor, lex_multiline_commentary_continious);
+                                                cutWord(window, prev, state, lighter, lex_multiline_commentary_continious);
                                                 goto exit;
                                             break;}
 
@@ -367,14 +384,14 @@ protected:
                         }
                     }
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
 
 
                 case '^': {
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -387,7 +404,7 @@ protected:
                     if (NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -397,7 +414,7 @@ protected:
                     if (NEXTCHAR == '&')
                         ++state -> next_offset;
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -410,14 +427,14 @@ protected:
                     if (NEXTCHAR == '~' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
 
 
                 case '~': {
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -427,7 +444,7 @@ protected:
                     if (!isBlank(PREVCHAR))
                         goto iterate;
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -445,7 +462,7 @@ protected:
                         }
                     }
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -455,40 +472,40 @@ protected:
                     if (NEXTCHAR == '>' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
 
 
                 case '[': {
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
                 case ']': {
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
 
 
                 case '(': {
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
                 case ')': {                    
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
 
 
                 case '{': {
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
                 case '}': {
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
 
                     if (state -> stack -> touch() == lex_string_def_required) { // return to string after interpolation
@@ -528,7 +545,7 @@ protected:
                         }
                     }
 
-                    if (!cutWord(window, prev, state, lexems_cursor, predef))
+                    if (!cutWord(window, prev, state, lighter, predef))
                         goto exit;
                 break;}
 
@@ -539,7 +556,7 @@ protected:
                         ++state -> next_offset;
                     }
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -549,7 +566,7 @@ protected:
                     if (NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -622,19 +639,37 @@ protected:
                             case 'f':
                             case 'F': {
                                 if (predef != lex_hex) {
-                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: wrong literal"));
-                                    return lexems;
+                                    int word_length = window - prev;
+                                    lighter -> setFormat(
+                                        state -> index - word_length,
+                                        word_length,
+                                        HighlightFormatFactory::obj().getFormatFor(lex_error)
+                                    );
+//                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: wrong literal"));
+                                    goto exit;
                                 }
                             break;}
 
                             case 'e':
                             case 'E': {
                                 if (predef < lex_dec) {
-                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: exponent part available only for decimals"));
-                                    return lexems;
+                                    int word_length = window - prev;
+                                    lighter -> setFormat(
+                                        state -> index - word_length,
+                                        word_length,
+                                        HighlightFormatFactory::obj().getFormatFor(lex_error)
+                                    );
+//                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: exponent part available only for decimals"));
+                                    goto exit;
                                 } else if (predef == lex_dec) {
                                     if (has_exp_part) {
-                                        lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: double exponent part"));
+                                        int word_length = window - prev;
+                                        lighter -> setFormat(
+                                            state -> index - word_length,
+                                            word_length,
+                                            HighlightFormatFactory::obj().getFormatFor(lex_error)
+                                        );
+//                                        lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: double exponent part"));
                                     } else {
                                         has_exp_part = true;
 
@@ -648,8 +683,15 @@ protected:
                             case '8':
                             case '9': {
                                 if (predef < lex_dec) {
-                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: 0-7 literals only"));
-                                    return lexems;
+                                    int word_length = window - prev;
+                                    lighter -> setFormat(
+                                        state -> index - word_length,
+                                        word_length,
+                                        HighlightFormatFactory::obj().getFormatFor(lex_error)
+                                    );
+
+//                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: 0-7 literals only"));
+                                    goto exit;
                                 }
                             break;}
 
@@ -662,8 +704,15 @@ protected:
                             case '6':
                             case '7': {
                                 if (predef < lex_oct) {
-                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: 0,1 literals only"));
-                                    return lexems;
+                                    int word_length = window - prev;
+                                    lighter -> setFormat(
+                                        state -> index - word_length,
+                                        word_length,
+                                        HighlightFormatFactory::obj().getFormatFor(lex_error)
+                                    );
+
+//                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: 0,1 literals only"));
+                                    goto exit;
                                 }
                             break;}
 
@@ -675,7 +724,7 @@ protected:
                         }
                     }
 
-                    if (!cutWord(window, prev, state, lexems_cursor, predef))
+                    if (!cutWord(window, prev, state, lighter, predef))
                         goto exit;
                 break;}
 
@@ -685,7 +734,7 @@ protected:
                     if (NEXTCHAR == '*' || NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -695,7 +744,7 @@ protected:
                     if (NEXTCHAR == '=')
                         ++state -> next_offset;
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
@@ -770,7 +819,7 @@ protected:
                                     }
 
 
-                                if (!cutWord(window, prev, state, lexems_cursor, out_req ? lex_regexp_continious : lex_regexp_end))
+                                if (!cutWord(window, prev, state, lighter, out_req ? lex_regexp_continious : lex_regexp_end))
                                     goto exit;
 
                                 if (def_required) { // INFO: patch for interpolation
@@ -783,14 +832,14 @@ protected:
                         }
                     }
 
-                    if (!cutWord(window, prev, state, lexems_cursor))
+                    if (!cutWord(window, prev, state, lighter))
                         goto exit;
                 break;}
 
 
 
                 case '@': {
-                    cutWord(window, prev, state, lexems_cursor);
+                    cutWord(window, prev, state, lighter);
 
                     if (NEXTCHAR == '@')
                         ITERATE;
@@ -855,7 +904,7 @@ protected:
                     }
 
                     if (has_match) {
-                        if (!cutWord(window, prev, state, lexems_cursor))
+                        if (!cutWord(window, prev, state, lighter))
                             goto exit;
                     } else
                         goto iterate;
@@ -863,7 +912,7 @@ protected:
 
 
                 case 0: {
-                    cutWord(window, prev, state, lexems_cursor);
+                    cutWord(window, prev, state, lighter);
                     goto exit;
                 break;}
 
@@ -877,8 +926,7 @@ protected:
             }
         }
 
-        exit:
-            return lexems;
+        exit: return;
     }
 
 public:

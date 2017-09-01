@@ -32,17 +32,6 @@
         window += offset; \
     }
 
-
-#define APPEND_ERR(err) \
-    lexems_cursor = (\
-        lexems_cursor -> next =\
-            new LexError(\
-                state -> index,\
-                word_length,\
-                err\
-            )\
-    );
-
 class Lexer {
 protected:
     inline bool isBDigit(const char & c) { return c == '0' || c == '1'; }

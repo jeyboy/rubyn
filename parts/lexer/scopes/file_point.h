@@ -12,31 +12,6 @@ class File;
 #define DEF_LINE -1
 #define DEF_LINE_END -2
 
-struct LexToken {
-    LexToken * next;
-
-    Lexem lexem;
-    int left;
-    int length;
-
-    LexToken(const Lexem & lexem = lex_none, const int & left = 0, const int & length = 0)
-        : next(0), lexem(lexem), left(left), length(length) {}
-
-    virtual ~LexToken() {}
-
-    virtual QString error() const { return QString(); }
-};
-
-struct LexError : public LexToken {
-    QString err;
-
-    LexError(const int & left, const int & length, const QString & err)
-        : LexToken(lex_error, left, length), err(err) {}
-
-    QString error() const { return err; }
-};
-
-
 struct VarPoint {
     ScopeItemType stype;
     int line_start;
