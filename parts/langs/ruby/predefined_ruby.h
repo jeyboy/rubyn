@@ -17,21 +17,21 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
     QHash<QByteArray, Lexem> keys;
 
     PredefinedRuby() {
-        keys.insert(QByteArrayLiteral("#{"), lex_block_start);
-        keys.insert(QByteArrayLiteral("{"), lex_block_start);
+        keys.insert(QByteArrayLiteral("#{"), lex_block);
+        keys.insert(QByteArrayLiteral("{"), lex_block);
         keys.insert(QByteArrayLiteral("}"), lex_block_end);
 
-        keys.insert(QByteArrayLiteral("["), lex_array_start);
+        keys.insert(QByteArrayLiteral("["), lex_array);
         keys.insert(QByteArrayLiteral("]"), lex_array_end);
 
-        keys.insert(QByteArrayLiteral("("), lex_wrap_start);
+        keys.insert(QByteArrayLiteral("("), lex_wrap);
         keys.insert(QByteArrayLiteral(")"), lex_wrap_end);
 
         keys.insert(QByteArrayLiteral("->"), lex_def_lambda);
 
         keys.insert(QByteArrayLiteral("."), lex_access);
         keys.insert(QByteArrayLiteral(","), lex_comma);
-        keys.insert(QByteArrayLiteral("="), lex_binary_operator /*lex_var_chain_end*/);
+        keys.insert(QByteArrayLiteral("="), lex_binary_operator);
 
         keys.insert(QByteArrayLiteral(";"), lex_end_line);
         keys.insert(QByteArrayLiteral("\r"), lex_end_line);
@@ -44,63 +44,63 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("__ENCODING__"), lex_const); // The script encoding of the current file
         keys.insert(QByteArrayLiteral("__LINE__"), lex_const); // The line number of this keyword in the current file
         keys.insert(QByteArrayLiteral("__FILE__"), lex_const); // The path to the current file.
-        keys.insert(QByteArrayLiteral("__END__"), lex_none); // Denotes the end of the regular source code section of a program file. Lines below __END__ will not be executed
+        keys.insert(QByteArrayLiteral("__END__"), lex_const); // Denotes the end of the regular source code section of a program file. Lines below __END__ will not be executed
         keys.insert(QByteArrayLiteral("__method__"), lex_const); // Name of current method
 
 
-        keys.insert(QByteArrayLiteral("=begin"), lex_multiline_commentary_start); // Start of multiline comment
+        keys.insert(QByteArrayLiteral("=begin"), lex_multiline_commentary); // Start of multiline comment
         keys.insert(QByteArrayLiteral("=end"), lex_multiline_commentary_end); // End of multiline comment
 
-        keys.insert(QByteArrayLiteral("BEGIN"), lex_block_requred); // Runs before any other code in the current file
-        keys.insert(QByteArrayLiteral("END"), lex_block_requred); // Runs after any other code in the current file
+        keys.insert(QByteArrayLiteral("BEGIN"), lex_key); // Runs before any other code in the current file
+        keys.insert(QByteArrayLiteral("END"), lex_key); // Runs after any other code in the current file
 
-        keys.insert(QByteArrayLiteral("alias"), lex_method_with_params); // Creates an alias between two methods (and other things)
+        keys.insert(QByteArrayLiteral("alias"), lex_method); // Creates an alias between two methods (and other things)
         keys.insert(QByteArrayLiteral("and"), lex_binary_operator); // Short-circuit Boolean and with lower precedence than &&
 
-        keys.insert(QByteArrayLiteral("begin"), lex_block_start); // Starts an exception handling block
-        keys.insert(QByteArrayLiteral("break"), lex_method); // Leaves a block early
-        keys.insert(QByteArrayLiteral("case"), lex_method_with_params); // Starts a case expression
-        keys.insert(QByteArrayLiteral("class"), lex_class_start); // Creates or opens a class
-        keys.insert(QByteArrayLiteral("def"), lex_method_start); // Defines a method
-        keys.insert(QByteArrayLiteral("defined?"), lex_method_with_params); // Returns a string describing its argument
-        keys.insert(QByteArrayLiteral("do"), lex_block_start); // Starts a block
-        keys.insert(QByteArrayLiteral("else"), lex_chain_level); // The unhandled condition in case, if and unless expressions
-        keys.insert(QByteArrayLiteral("elsif"), lex_conditional_chain_level); // An alternate condition for an if expression
+        keys.insert(QByteArrayLiteral("begin"), lex_block | lex_key); // Starts an exception handling block
+        keys.insert(QByteArrayLiteral("break"), lex_key); // Leaves a block early
+        keys.insert(QByteArrayLiteral("case"), lex_key); // Starts a case expression
+        keys.insert(QByteArrayLiteral("class"), lex_def_class); // Creates or opens a class
+        keys.insert(QByteArrayLiteral("def"), lex_def_method); // Defines a method
+        keys.insert(QByteArrayLiteral("defined?"), lex_method); // Returns a string describing its argument
+        keys.insert(QByteArrayLiteral("do"), lex_block); // Starts a block
+        keys.insert(QByteArrayLiteral("else"), lex_branch_last_level); // The unhandled condition in case, if and unless expressions
+        keys.insert(QByteArrayLiteral("elsif"), lex_poly_branch_level); // An alternate condition for an if expression
         keys.insert(QByteArrayLiteral("end"), lex_block_end); // The end of a syntax block. Used by classes, modules, methods, exception handling and control expressions
-        keys.insert(QByteArrayLiteral("ensure"), lex_block_start); // Starts a section of code that is always run when an exception is raised
-        keys.insert(QByteArrayLiteral("extend"), lex_method_with_params);
-        keys.insert(QByteArrayLiteral("false"), lex_var); // Boolean false
-        keys.insert(QByteArrayLiteral("for"), lex_method_with_params); // A loop that is similar to using the each method
-        keys.insert(QByteArrayLiteral("if"), lex_chain_poly_start); // Used for if and modifier if expressions
-        keys.insert(QByteArrayLiteral("in"), lex_method_with_params); // Used to separate the iterable object and iterator variable in a for loop
-        keys.insert(QByteArrayLiteral("include"), lex_method_with_params);
-        keys.insert(QByteArrayLiteral("lambda"), lex_param_block_requred);
-        keys.insert(QByteArrayLiteral("module"), lex_module_start); // Creates or opens a module
-        keys.insert(QByteArrayLiteral("next"), lex_method); // Skips the rest of the block
-        keys.insert(QByteArrayLiteral("new"), lex_method);
-        keys.insert(QByteArrayLiteral("nil"), lex_var); // A false value usually indicating “no value” or “unknown”
+        keys.insert(QByteArrayLiteral("ensure"), lex_key | lex_block); // Starts a section of code that is always run when an exception is raised
+        keys.insert(QByteArrayLiteral("extend"), lex_extend);
+        keys.insert(QByteArrayLiteral("false"), lex_expression); // Boolean false
+        keys.insert(QByteArrayLiteral("for"), lex_key); // A loop that is similar to using the each method
+        keys.insert(QByteArrayLiteral("if"), lex_poly_branch); // Used for if and modifier if expressions
+        keys.insert(QByteArrayLiteral("in"), lex_key); // Used to separate the iterable object and iterator variable in a for loop
+        keys.insert(QByteArrayLiteral("include"), lex_include);
+        keys.insert(QByteArrayLiteral("lambda"), lex_def_lambda);
+        keys.insert(QByteArrayLiteral("module"), lex_def_module); // Creates or opens a module
+        keys.insert(QByteArrayLiteral("next"), lex_key); // Skips the rest of the block
+        keys.insert(QByteArrayLiteral("new"), lex_key);
+        keys.insert(QByteArrayLiteral("nil"), lex_expression); // A false value usually indicating “no value” or “unknown”
         keys.insert(QByteArrayLiteral("not"), lex_unary_operator); // Inverts the following boolean expression
         keys.insert(QByteArrayLiteral("or"), lex_binary_operator); // Boolean or with lower precedence than ||
-        keys.insert(QByteArrayLiteral("private"), lex_scope_visibility);
-        keys.insert(QByteArrayLiteral("proc"), lex_param_block_requred);
-        keys.insert(QByteArrayLiteral("protected"), lex_scope_visibility);
-        keys.insert(QByteArrayLiteral("public"), lex_scope_visibility);
-        keys.insert(QByteArrayLiteral("raise"), lex_method);
-        keys.insert(QByteArrayLiteral("redo"), lex_method); // Restarts execution in the current block
-        keys.insert(QByteArrayLiteral("require"), lex_method_with_params);
-        keys.insert(QByteArrayLiteral("rescue"), lex_method); // Starts an exception section of code in a begin block
-        keys.insert(QByteArrayLiteral("retry"), lex_method); // Retries an exception block
-        keys.insert(QByteArrayLiteral("return"), lex_method); // Exits a method
-        keys.insert(QByteArrayLiteral("self"), lex_method); // The object the current method is attached to
-        keys.insert(QByteArrayLiteral("super"), lex_method); // Calls the current method in a superclass
+        keys.insert(QByteArrayLiteral("private"), lex_scope);
+        keys.insert(QByteArrayLiteral("proc"), lex_def_proc);
+        keys.insert(QByteArrayLiteral("protected"), lex_scope);
+        keys.insert(QByteArrayLiteral("public"), lex_scope);
+        keys.insert(QByteArrayLiteral("raise"), lex_key);
+        keys.insert(QByteArrayLiteral("redo"), lex_key); // Restarts execution in the current block
+        keys.insert(QByteArrayLiteral("require"), lex_require);
+        keys.insert(QByteArrayLiteral("rescue"), lex_key); // Starts an exception section of code in a begin block
+        keys.insert(QByteArrayLiteral("retry"), lex_key); // Retries an exception block
+        keys.insert(QByteArrayLiteral("return"), lex_key); // Exits a method
+        keys.insert(QByteArrayLiteral("self"), lex_expression); // The object the current method is attached to
+        keys.insert(QByteArrayLiteral("super"), lex_expression); // Calls the current method in a superclass
         keys.insert(QByteArrayLiteral("then"), lex_ignore); // Indicates the end of conditional blocks in control structures
-        keys.insert(QByteArrayLiteral("true"), lex_var); // Boolean true
-        keys.insert(QByteArrayLiteral("undef"), lex_method_with_params); // Prevents a class or module from responding to a method call
-        keys.insert(QByteArrayLiteral("unless"), lex_chain_unary_start); // Used for unless and modifier unless expressions
-        keys.insert(QByteArrayLiteral("until"), lex_param_block_start); // Creates a loop that executes until the condition is true
-        keys.insert(QByteArrayLiteral("when"), lex_method_with_params); // A condition in a case expression
-        keys.insert(QByteArrayLiteral("while"), lex_param_block_start); // Creates a loop that executes while the condition is true
-        keys.insert(QByteArrayLiteral("yield"), lex_method); // Starts execution of the block sent to the current method
+        keys.insert(QByteArrayLiteral("true"), lex_expression); // Boolean true
+        keys.insert(QByteArrayLiteral("undef"), lex_key); // Prevents a class or module from responding to a method call
+        keys.insert(QByteArrayLiteral("unless"), lex_unary_branch); // Used for unless and modifier unless expressions
+        keys.insert(QByteArrayLiteral("until"), lex_key); // Creates a loop that executes until the condition is true
+        keys.insert(QByteArrayLiteral("when"), lex_key); // A condition in a case expression
+        keys.insert(QByteArrayLiteral("while"), lex_key); // Creates a loop that executes while the condition is true
+        keys.insert(QByteArrayLiteral("yield"), lex_expression); // Starts execution of the block sent to the current method
 
 
         keys.insert(QByteArrayLiteral("+"), lex_binary_operator);

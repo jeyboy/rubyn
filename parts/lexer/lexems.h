@@ -13,11 +13,10 @@
 enum Lexem : quint16 {
     lex_none = 0,
 
-    lex_key = 1 << 6,
-    lex_expression = 1 << 7,
-    lex_number = 1 << 8,
-//    lex_key = 1 << 9,
-//    lex_key = 1 << 10,
+    lex_key = 1 << 7,
+    lex_expression = 1 << 8,
+    lex_number = 1 << 9 | lex_expression,
+    lex_def = 1 << 10,
 //    lex_key = 1 << 11,
 //    lex_key = 1 << 12,
 //    lex_key = 1 << 13,
@@ -36,7 +35,6 @@ enum Lexem : quint16 {
     lex_multiline_commentary_continue,
     lex_multiline_commentary_end = lex_multiline_commentary | lex_end,
 
-    lex_key,
     lex_const,
 //    lex_var,
 
@@ -106,14 +104,26 @@ enum Lexem : quint16 {
     lex_block_args,
     lex_block_args_end = lex_block_args | lex_end,
 
-    lex_include, // include some source
+
+
+    lex_require, // require some source
+    lex_include, // include some obj
+    lex_extend, // extend some obj
     lex_scope, // public, private etc
 
-    lex_def_proc,
-    lex_def_lambda,
-    lex_def_class,
-    lex_def_module,
-    lex_def_method,
+
+
+    lex_proc,
+    lex_lambda,
+    lex_class,
+    lex_module,
+    lex_method,
+
+    lex_def_proc = lex_proc | lex_def,
+    lex_def_lambda = lex_lambda | lex_def,
+    lex_def_class = lex_class | lex_def,
+    lex_def_module = lex_module | lex_def,
+    lex_def_method = lex_method | lex_def,
 
 
     lex_access,  // .
@@ -131,60 +141,22 @@ enum Lexem : quint16 {
     lex_wrap_end = lex_wrap | lex_end, // ()
 
 
-    lex_branch_start, // if unless etc
-    lex_branch_condition,
-    lex_branch_level, // elsif
+    lex_unary_branch, // unless
+    lex_unary_branch_condition,
+
+    lex_poly_branch, // if
+    lex_poly_branch_condition,
+    lex_poly_branch_level, // elsif
+
     lex_branch_last_level, // else
-    lex_branch_block = lex_block,
+
+    lex_undefined = lex_key - 3,
+    lex_end_line = lex_key - 2,
+    lex_ignore = lex_key - 1,
 
 
-    lex_undefined = 61,
-    lex_end_line = 62,
-    lex_ignore = 63,
-
-    ////// MIXES
-
-////    les_def_method = lex_def | lex_method, // def
-////    lex_def_module = lex_def | lex_module, // module
-////    lex_def_class = lex_def | lex_class, // class
-
-//    lex_method_start = lex_method | lex_start,
-//    lex_module_start = lex_module | lex_start,
-//    lex_class_start = lex_class | lex_start,
-
-//    lex_def_start = lex_method_start | lex_module_start | lex_class_start,
-////    lex_def_end = lex_end | lex_method | lex_module | lex_class | lex_block,
-
-////    lex_def_proc = lex_def | lex_proc, // proc
-//    lex_def_lambda = lex_def | lex_lambda, // lambda, ->
-////    lex_class_obj = lex_obj | lex_class, // class name
-////    lex_module_obj = lex_obj | lex_module, // module name
-////    lex_method_obj = lex_obj | lex_method, // method name
-
-//    lex_method_with_params = lex_method | lex_parametrized,
-
-//    lex_block_var = lex_var | lex_block, // local
-//    lex_local_var = lex_var | lex_local, // local
-//    lex_global_var = lex_var | lex_global, // global
-//    lex_instance_var = lex_var | lex_obj, // instance
-//    lex_class_var = lex_var | lex_def, // class or module
-
-//    lex_chain_block = lex_chain | lex_block,
-
-//    lex_chain_unary_start = lex_chain_block | lex_unary | lex_start, // this chain support only one additional level // if else
-//    lex_chain_poly_start = lex_chain_block | lex_poly | lex_start, // this chain support additional levels // if elseif ... else
-
-//    lex_conditional_chain_level = lex_chain_block | lex_conditional, // elseif() ...
-//    lex_chain_level = lex_chain_block, // else ...
-////    lex_chain_end = lex_chain | lex_end,
-
-
-//    lex_var_chain_start = lex_start | lex_chain | lex_var,
-//    lex_var_chain_end = lex_end | lex_chain | lex_var,
-////    lex_var_chain_sep = lex_comma | lex_chain | lex_var,
-
-    lex_highlightable = lex_def | lex_module | lex_class | lex_method | lex_const | //lex_var |
-        lex_key | lex_string | lex_estring | lex_number | lex_regexp | lex_symb |
+    lex_highlightable = lex_def | lex_method | lex_const | lex_symb | //lex_var |
+        lex_key | lex_string | lex_estring | lex_number | lex_regexp |
         lex_inline_commentary | lex_multiline_commentary,
 };
 
