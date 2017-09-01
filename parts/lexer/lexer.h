@@ -8,6 +8,9 @@
 #include "lexer_state.h"
 #include "parts/formats/format_types.h"
 
+#include "parts/highligters/highlighter.h"
+#include "parts/highligters/highlight_format_factory.h"
+
 #define PREV_N_CHAR(w, offset) (*(w - offset))
 #define NEXT_N_CHAR(w, offset) (*(w + offset))
 
@@ -62,17 +65,44 @@ protected:
         //template<typename ch_t> inline bool is_print(ch_t c)   {   return c>=' ' && c<='~';    }
         //template<typename ch_t> inline bool is_crlf(ch_t c) { return c=='\r' || c=='\n'; }
 
-    virtual LexToken * parse(const char * window, LexerState * state) = 0;
+    virtual void handle(const char * window, LexerState * state, Highlighter * lighter = 0) = 0;
 
 public:
-    LexToken * analize(const QString & text, LexerState * state = new LexerState()) {
+    void handle(const QString & text, Highlighter * lighter) {
+        LexerState * state = 0;
+
+        if (lighter) {
+            QTextBlock block = lighter -> currentBlock();
+            QTextBlock prev_block = block.previous();
+
+            BlockUserData * udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
+
+            if (!udata)
+                state = new LexerState();
+            else
+                state = new LexerState(*udata -> state);
+        }
+        else state = new LexerState();
+
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();
 
         quint64 date = QDateTime::currentMSecsSinceEpoch();
-        LexToken * root = parse(window, state);
+        handle(window, state, lighter);
         qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
-        return root;
+
+        if (lighter) {
+            QTextBlock block = lighter -> currentBlock();
+            BlockUserData * cdata = reinterpret_cast<BlockUserData *>(block.userData());
+
+            state -> index = 0;
+            if (!cdata)
+                cdata = new BlockUserData(false, false, state);
+            else
+                cdata -> state = state;
+
+            block.setUserData(cdata);
+        }
     }
 
     virtual ~Lexer() {}

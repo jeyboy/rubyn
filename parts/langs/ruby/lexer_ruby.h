@@ -117,15 +117,13 @@ class LexerRuby : public Lexer {
 
             Lexem highlightable = Lexem(state -> lex_state & lex_highlightable);
 
-            if (highlightable)
-                lexems_cursor = (
-                    lexems_cursor -> next =
-                        new LexToken(
-                            highlightable,
-                            state -> index - word_length,
-                            word_length
-                        )
+            if (highlightable) {
+                lighter -> setFormat(
+                    state -> index - word_length,
+                    word_length,
+                    HighlightFormatFactory::obj().getFormatFor(highlightable)
                 );
+            }
 
             qDebug() << state -> word;
         } else if (predefined_lexem) {
@@ -197,10 +195,7 @@ class LexerRuby : public Lexer {
         return true;
     }
 protected:
-    LexToken * parse(const char * window, LexerState * state) {
-        LexToken * lexems = new LexToken();
-        LexToken * lexems_cursor = lexems;
-
+    void handle(const char * window, LexerState * state, Highlighter * lighter = 0) {
         char end_str_symb;
         const char * prev = window;
 
@@ -212,9 +207,11 @@ protected:
 //        they indicate the continuation of a statement.
 
         switch(state -> stack -> touch()) {
-            case lex_string_continious: goto handle_string;
-            case lex_regexp_continious: goto handle_regexp;
-            case lex_multiline_commentary_continious: goto handle_multiline_comment;
+            case lex_string_continue:
+            case lex_estring_continue: goto handle_string;
+//            case lex_heredoc_continue: goto handle_heredoc;
+            case lex_regexp_continue: goto handle_regexp;
+            case lex_multiline_commentary_continue: goto handle_multiline_comment;
             default:;
         };
 

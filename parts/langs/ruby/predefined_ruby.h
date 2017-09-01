@@ -11,12 +11,18 @@
 //http://www.rubymagic.org/posts/ruby-and-rails-reserved-words
 //https://www.tutorialspoint.com/ruby/ruby_regular_expressions.htm
 
-// [ ] [ ]= 	Element reference, element set
-
 class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
     QHash<QByteArray, Lexem> keys;
 
     PredefinedRuby() {
+        keys.insert(QByteArrayLiteral(";"), lex_end_line);
+        keys.insert(QByteArrayLiteral("\r"), lex_end_line);
+        keys.insert(QByteArrayLiteral("\n"), lex_end_line);
+        keys.insert(QByteArrayLiteral("\v"), lex_end_line);
+        keys.insert(QByteArrayLiteral("\t"), lex_ignore);
+        keys.insert(QByteArrayLiteral(" "), lex_ignore);
+
+
         keys.insert(QByteArrayLiteral("#{"), lex_block);
         keys.insert(QByteArrayLiteral("{"), lex_block);
         keys.insert(QByteArrayLiteral("}"), lex_block_end);
@@ -33,13 +39,6 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral(","), lex_comma);
         keys.insert(QByteArrayLiteral("="), lex_binary_operator);
 
-        keys.insert(QByteArrayLiteral(";"), lex_end_line);
-        keys.insert(QByteArrayLiteral("\r"), lex_end_line);
-        keys.insert(QByteArrayLiteral("\n"), lex_end_line);
-        keys.insert(QByteArrayLiteral("\v"), lex_end_line);
-        keys.insert(QByteArrayLiteral("\t"), lex_ignore);
-        keys.insert(QByteArrayLiteral(" "), lex_ignore);
-
 
         keys.insert(QByteArrayLiteral("__ENCODING__"), lex_const); // The script encoding of the current file
         keys.insert(QByteArrayLiteral("__LINE__"), lex_const); // The line number of this keyword in the current file
@@ -48,7 +47,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("__method__"), lex_const); // Name of current method
 
 
-        keys.insert(QByteArrayLiteral("=begin"), lex_multiline_commentary); // Start of multiline comment
+        keys.insert(QByteArrayLiteral("=begin"), lex_multiline_commentary_start); // Start of multiline comment
         keys.insert(QByteArrayLiteral("=end"), lex_multiline_commentary_end); // End of multiline comment
 
         keys.insert(QByteArrayLiteral("BEGIN"), lex_key); // Runs before any other code in the current file
@@ -57,7 +56,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("alias"), lex_method); // Creates an alias between two methods (and other things)
         keys.insert(QByteArrayLiteral("and"), lex_binary_operator); // Short-circuit Boolean and with lower precedence than &&
 
-        keys.insert(QByteArrayLiteral("begin"), lex_block | lex_key); // Starts an exception handling block
+        keys.insert(QByteArrayLiteral("begin"), LEX(lex_block, lex_key)); // Starts an exception handling block
         keys.insert(QByteArrayLiteral("break"), lex_key); // Leaves a block early
         keys.insert(QByteArrayLiteral("case"), lex_key); // Starts a case expression
         keys.insert(QByteArrayLiteral("class"), lex_def_class); // Creates or opens a class
@@ -67,7 +66,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("else"), lex_branch_last_level); // The unhandled condition in case, if and unless expressions
         keys.insert(QByteArrayLiteral("elsif"), lex_poly_branch_level); // An alternate condition for an if expression
         keys.insert(QByteArrayLiteral("end"), lex_block_end); // The end of a syntax block. Used by classes, modules, methods, exception handling and control expressions
-        keys.insert(QByteArrayLiteral("ensure"), lex_key | lex_block); // Starts a section of code that is always run when an exception is raised
+        keys.insert(QByteArrayLiteral("ensure"), LEX(lex_key, lex_block)); // Starts a section of code that is always run when an exception is raised
         keys.insert(QByteArrayLiteral("extend"), lex_extend);
         keys.insert(QByteArrayLiteral("false"), lex_expression); // Boolean false
         keys.insert(QByteArrayLiteral("for"), lex_key); // A loop that is similar to using the each method
@@ -145,7 +144,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
 
         keys.insert(QByteArrayLiteral("||="), lex_binary_operator);
 
-        keys.insert(QByteArrayLiteral("::"), lex_class_or_module_required);
+        keys.insert(QByteArrayLiteral("::"), lex_resolution);
 
 
         keys.insert(QByteArrayLiteral("TRUE"), lex_const); // Synonym for true
@@ -163,59 +162,59 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("STDOUT"), lex_const); // Standard output stream. Default value of $stdout
         keys.insert(QByteArrayLiteral("TOPLEVEL_BINDING"), lex_const); // A binding object at Ruby's top level.
 
-        keys.insert(QByteArrayLiteral("$!"), lex_var); // The last exception object raised. The exception object can also be accessed using => in rescue clause.
-        keys.insert(QByteArrayLiteral("$@"), lex_var); // The stack backtrace for the last exception raised. The stack backtrace information can retrieved by Exception#backtrace method of the last exception.
-        keys.insert(QByteArrayLiteral("$/"), lex_var); // The input record separator (newline by default). gets, readline, etc., take their input record separator as optional argument.
-        keys.insert(QByteArrayLiteral("$\\"), lex_var); // The output record separator (nil by default).
-        keys.insert(QByteArrayLiteral("$,"), lex_var); // The output separator between the arguments to print and Array#join (nil by default). You can specify separator explicitly to Array#join.
-        keys.insert(QByteArrayLiteral("$;"), lex_var); // The default separator for split (nil by default). You can specify separator explicitly for String#split.
-        keys.insert(QByteArrayLiteral("$."), lex_var); // The number of the last line read from the current input file. Equivalent to ARGF.lineno.
-        keys.insert(QByteArrayLiteral("$<"), lex_var); // Synonym for ARGF.
-        keys.insert(QByteArrayLiteral("$>"), lex_var); // Synonym for $defout.
-        keys.insert(QByteArrayLiteral("$0"), lex_var); // The name of the current Ruby program being executed.
+        keys.insert(QByteArrayLiteral("$!"), lex_expression); // The last exception object raised. The exception object can also be accessed using => in rescue clause.
+        keys.insert(QByteArrayLiteral("$@"), lex_expression); // The stack backtrace for the last exception raised. The stack backtrace information can retrieved by Exception#backtrace method of the last exception.
+        keys.insert(QByteArrayLiteral("$/"), lex_expression); // The input record separator (newline by default). gets, readline, etc., take their input record separator as optional argument.
+        keys.insert(QByteArrayLiteral("$\\"), lex_expression); // The output record separator (nil by default).
+        keys.insert(QByteArrayLiteral("$,"), lex_expression); // The output separator between the arguments to print and Array#join (nil by default). You can specify separator explicitly to Array#join.
+        keys.insert(QByteArrayLiteral("$;"), lex_expression); // The default separator for split (nil by default). You can specify separator explicitly for String#split.
+        keys.insert(QByteArrayLiteral("$."), lex_expression); // The number of the last line read from the current input file. Equivalent to ARGF.lineno.
+        keys.insert(QByteArrayLiteral("$<"), lex_expression); // Synonym for ARGF.
+        keys.insert(QByteArrayLiteral("$>"), lex_expression); // Synonym for $defout.
+        keys.insert(QByteArrayLiteral("$0"), lex_expression); // The name of the current Ruby program being executed.
 
-        keys.insert(QByteArrayLiteral("$$"), lex_var); // The process pid of the current Ruby program being executed.
-        keys.insert(QByteArrayLiteral("$?"), lex_var); // The exit status of the last process terminated.
-        keys.insert(QByteArrayLiteral("$:"), lex_var); // Synonym for $LOAD_PATH.
-        keys.insert(QByteArrayLiteral("$DEBUG"), lex_var); // True if the -d or --debug command-line option is specified.
-        keys.insert(QByteArrayLiteral("$defout"), lex_var); // The destination output for print and printf ($stdout by default).
-        keys.insert(QByteArrayLiteral("$F"), lex_var); // The variable that receives the output from split when -a is specified. This variable is set if the -a command-line option is specified along with the -p or -n option.
-        keys.insert(QByteArrayLiteral("$FILENAME"), lex_var); // The name of the file currently being read from ARGF. Equivalent to ARGF.filename.
-        keys.insert(QByteArrayLiteral("$LOAD_PATH"), lex_var); // An array holding the directories to be searched when loading files with the load and require methods.
-        keys.insert(QByteArrayLiteral("$SAFE"), lex_var); // The security level
+        keys.insert(QByteArrayLiteral("$$"), lex_expression); // The process pid of the current Ruby program being executed.
+        keys.insert(QByteArrayLiteral("$?"), lex_expression); // The exit status of the last process terminated.
+        keys.insert(QByteArrayLiteral("$:"), lex_expression); // Synonym for $LOAD_PATH.
+        keys.insert(QByteArrayLiteral("$DEBUG"), lex_expression); // True if the -d or --debug command-line option is specified.
+        keys.insert(QByteArrayLiteral("$defout"), lex_expression); // The destination output for print and printf ($stdout by default).
+        keys.insert(QByteArrayLiteral("$F"), lex_expression); // The variable that receives the output from split when -a is specified. This variable is set if the -a command-line option is specified along with the -p or -n option.
+        keys.insert(QByteArrayLiteral("$FILENAME"), lex_expression); // The name of the file currently being read from ARGF. Equivalent to ARGF.filename.
+        keys.insert(QByteArrayLiteral("$LOAD_PATH"), lex_expression); // An array holding the directories to be searched when loading files with the load and require methods.
+        keys.insert(QByteArrayLiteral("$SAFE"), lex_expression); // The security level
         //    0 → No checks are performed on externally supplied (tainted) data. (default)
         //    1 → Potentially dangerous operations using tainted data are forbidden.
         //    2 → Potentially dangerous operations on processes and files are forbidden.
         //    3 → All newly created objects are considered tainted.
         //    4 → Modification of global data is forbidden.
 
-        keys.insert(QByteArrayLiteral("$stdin"), lex_var); // Standard input (STDIN by default).
-        keys.insert(QByteArrayLiteral("$stdout"), lex_var); // Standard output (STDOUT by default).
-        keys.insert(QByteArrayLiteral("$stderr"), lex_var); // Standard error (STDERR by default).
-        keys.insert(QByteArrayLiteral("$VERBOSE"), lex_var); // True if the -v, -w, or --verbose command-line option is specified.
+        keys.insert(QByteArrayLiteral("$stdin"), lex_expression); // Standard input (STDIN by default).
+        keys.insert(QByteArrayLiteral("$stdout"), lex_expression); // Standard output (STDOUT by default).
+        keys.insert(QByteArrayLiteral("$stderr"), lex_expression); // Standard error (STDERR by default).
+        keys.insert(QByteArrayLiteral("$VERBOSE"), lex_expression); // True if the -v, -w, or --verbose command-line option is specified.
 
         // $- x // The value of interpreter option -x (x=0, a, d, F, i, K, l, p, v). These options are listed below
-        keys.insert(QByteArrayLiteral("$-0"), lex_var); // The value of interpreter option -x and alias of $/.
-        keys.insert(QByteArrayLiteral("$-a"), lex_var); // The value of interpreter option -x and true if option -a is set. Read-only.
-        keys.insert(QByteArrayLiteral("$-d"), lex_var); // The value of interpreter option -x and alias of $DEBUG
-        keys.insert(QByteArrayLiteral("$-F"), lex_var); // The value of interpreter option -x and alias of $;.
-        keys.insert(QByteArrayLiteral("$-i"), lex_var); // The value of interpreter option -x and in in-place-edit mode, holds the extension, otherwise nil. Can enable or disable in-place-edit mode.
-        keys.insert(QByteArrayLiteral("$-K"), lex_var); // The value of interpreter option -x and alias of $:.
-        keys.insert(QByteArrayLiteral("$-l"), lex_var); // The value of interpreter option -x and true if option -lis set. Read-only.
-        keys.insert(QByteArrayLiteral("$-p"), lex_var); // The value of interpreter option -x and true if option -pis set. Read-only.
-        keys.insert(QByteArrayLiteral("$-v"), lex_var); //
+        keys.insert(QByteArrayLiteral("$-0"), lex_expression); // The value of interpreter option -x and alias of $/.
+        keys.insert(QByteArrayLiteral("$-a"), lex_expression); // The value of interpreter option -x and true if option -a is set. Read-only.
+        keys.insert(QByteArrayLiteral("$-d"), lex_expression); // The value of interpreter option -x and alias of $DEBUG
+        keys.insert(QByteArrayLiteral("$-F"), lex_expression); // The value of interpreter option -x and alias of $;.
+        keys.insert(QByteArrayLiteral("$-i"), lex_expression); // The value of interpreter option -x and in in-place-edit mode, holds the extension, otherwise nil. Can enable or disable in-place-edit mode.
+        keys.insert(QByteArrayLiteral("$-K"), lex_expression); // The value of interpreter option -x and alias of $:.
+        keys.insert(QByteArrayLiteral("$-l"), lex_expression); // The value of interpreter option -x and true if option -lis set. Read-only.
+        keys.insert(QByteArrayLiteral("$-p"), lex_expression); // The value of interpreter option -x and true if option -pis set. Read-only.
+        keys.insert(QByteArrayLiteral("$-v"), lex_expression); //
 
-        keys.insert(QByteArrayLiteral("$_"), lex_var); // The local variable, last string read by gets or readline in the current scope.
-        keys.insert(QByteArrayLiteral("$~"), lex_var); // The local variable, MatchData relating to the last match. Regex#match method returns the last match information.
+        keys.insert(QByteArrayLiteral("$_"), lex_expression); // The local variable, last string read by gets or readline in the current scope.
+        keys.insert(QByteArrayLiteral("$~"), lex_expression); // The local variable, MatchData relating to the last match. Regex#match method returns the last match information.
 
         // $ n ($1, $2, $3...) // The string matched in the nth group of the last pattern match. Equivalent to m[n], where m is a MatchData object.
         for(int i = 1; i < 100; i++)
-            keys.insert('$' + QByteArray::number(i), lex_var);
+            keys.insert('$' + QByteArray::number(i), lex_expression);
 
-        keys.insert(QByteArrayLiteral("$&"), lex_var); // The string matched in the last pattern match. Equivalent to m[0], where m is a MatchData object.
-        keys.insert(QByteArrayLiteral("$`"), lex_var); // The string preceding the match in the last pattern match. Equivalent to m.pre_match, where m is a MatchData object.
-        keys.insert(QByteArrayLiteral("$'"), lex_var); // The string following the match in the last pattern match. Equivalent to m.post_match, where m is a MatchData object.
-        keys.insert(QByteArrayLiteral("$+"), lex_var); // The string corresponding to the last successfully matched group in the last pattern match.
+        keys.insert(QByteArrayLiteral("$&"), lex_expression); // The string matched in the last pattern match. Equivalent to m[0], where m is a MatchData object.
+        keys.insert(QByteArrayLiteral("$`"), lex_expression); // The string preceding the match in the last pattern match. Equivalent to m.pre_match, where m is a MatchData object.
+        keys.insert(QByteArrayLiteral("$'"), lex_expression); // The string following the match in the last pattern match. Equivalent to m.post_match, where m is a MatchData object.
+        keys.insert(QByteArrayLiteral("$+"), lex_expression); // The string corresponding to the last successfully matched group in the last pattern match.
 
         //        keys.insert(QByteArrayLiteral("attr"), true);
         //        keys.insert(QByteArrayLiteral("attr_accessor"), true);

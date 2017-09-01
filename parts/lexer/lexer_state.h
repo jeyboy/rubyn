@@ -5,9 +5,6 @@
 #include "scopes/scope.h"
 
 struct LexerState {
-    QByteArray word;
-    QByteArray delimiter;
-
     Lexem lex_state;
     Lexem new_line_state;
 //    Lexem var_def_state;

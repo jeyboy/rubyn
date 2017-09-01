@@ -83,12 +83,10 @@ class Stack {
 
     int size;
 public:
-    Stack(const int & default_size = 64) : size(default_size)
-    {
+    Stack(const int & default_size = 64) : size(default_size) {
         data = new T[default_size + 1];
-        data[0] = 0;
         curr = start = data;
-        end = data[default_size];
+        end = &data[default_size];
     }
 
     ~Stack() {
@@ -122,9 +120,12 @@ public:
 
     const T & push(const T & val) {
         if (curr == end) {
+            int curr_pos = size;
+
             size = (int)(size * 1.5);
-            data = (T) realloc(data, size + 1);
-            end = data[size];
+            start = data = (T)realloc(data, size + 1);
+            end = &data[size];
+            curr = &data[curr_pos];
         }
 
         *(++curr) = val;
