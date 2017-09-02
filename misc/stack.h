@@ -80,13 +80,13 @@ class Stack {
     T * start, * end;
     T * curr;
 
-
-    int size;
+    uint size;
 public:
-    Stack(const int & default_size = 64) : size(default_size) {
-        data = new T[default_size + 1];
+    Stack(const T default_val, const uint & default_size = 2) : size(default_size == 0 ? 64 : default_size) {
+        data = new T[size];
         curr = start = data;
-        end = &data[default_size];
+        *start = default_val;
+        end = &data[size];
     }
 
     ~Stack() {
@@ -122,10 +122,15 @@ public:
         if (curr == end) {
             int curr_pos = size;
 
-            size = (int)(size * 1.5);
-            start = data = (T*)realloc(data, size + 1);
+            T * old_data = data;
+            size = (int)(size * (size < 20 ? 2 : 1.5));
+
+            start = data = new T[size + 1];
+            memcpy(data, old_data, (curr_pos + 1) * sizeof(T));
+
             end = &data[size];
             curr = &data[curr_pos];
+            delete [] old_data;
         }
 
         *(++curr) = val;

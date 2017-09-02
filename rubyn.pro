@@ -16,7 +16,6 @@ SOURCES += main.cpp\
     ide_window.cpp \
     parts/code_editor.cpp \
     parts/highligters/highlighter.cpp \
-    parts/langs/ruby/format_ruby.cpp \
     parts/document_types/idocument.cpp \
     parts/editor_parts/project.cpp \
     parts/editor_parts/file.cpp \
