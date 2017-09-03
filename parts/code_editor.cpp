@@ -135,11 +135,41 @@ void CodeEditor::highlightCurrentLine() {
 //        QColor lineColor = QColor(Qt::yellow).lighter(160);
         QColor lineColor = QColor::fromRgb(128, 128, 128, 24);
 
+        QTextCursor cursor = textCursor();
+        QTextBlock origin_block = cursor.block();
+
         selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-        selection.cursor = textCursor();
+
+        selection.cursor = cursor;
         selection.cursor.clearSelection();
         extraSelections.append(selection);
+
+        if (wordWrapMode() != QTextOption::NoWrap) {
+            int offset = 0;
+
+            while(true) {
+                if (cursor.movePosition(QTextCursor::Down) && origin_block == cursor.block()) {
+                    ++offset;
+                    selection.cursor = cursor;
+                    selection.cursor.clearSelection();
+                    extraSelections.append(selection);
+                }
+                else break;
+            }
+
+            if (offset != 0)
+                cursor.movePosition(QTextCursor::Up, QTextCursor::MoveAnchor, offset);
+
+            while(true) {
+                if (cursor.movePosition(QTextCursor::Up) && origin_block == cursor.block()) {
+                    selection.cursor = cursor;
+                    selection.cursor.clearSelection();
+                    extraSelections.append(selection);
+                }
+                else break;
+            }
+        }
     }
 
     setExtraSelections(extraSelections);
