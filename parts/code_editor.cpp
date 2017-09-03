@@ -152,7 +152,6 @@ void CodeEditor::highlightCurrentLine() {
                 if (cursor.movePosition(QTextCursor::Down) && origin_block == cursor.block()) {
                     ++offset;
                     selection.cursor = cursor;
-                    selection.cursor.clearSelection();
                     extraSelections.append(selection);
                 }
                 else break;
@@ -164,11 +163,19 @@ void CodeEditor::highlightCurrentLine() {
             while(true) {
                 if (cursor.movePosition(QTextCursor::Up) && origin_block == cursor.block()) {
                     selection.cursor = cursor;
-                    selection.cursor.clearSelection();
                     extraSelections.append(selection);
                 }
                 else break;
             }
+        }
+
+        for(QTextBlock::iterator it = origin_block.begin(); it != origin_block.end(); it++) {
+            QTextFragment fragment = it.fragment();
+
+            selection.cursor.setPosition(fragment.position());
+            selection.cursor.setPosition(fragment.position() + fragment.length(), QTextCursor::KeepAnchor);
+            selection.format = fragment.charFormat();
+            extraSelections.append(selection);
         }
     }
 
