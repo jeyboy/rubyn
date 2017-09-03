@@ -365,6 +365,9 @@ protected:
                                             case 0: {
                                                 out_req = true;
                                                 cutWord(window, prev, state, lighter, lex_multiline_commentary_continious);
+
+//                                                lighter -> rehighlightBlock(lighter -> nextBlock());
+
                                                 goto exit;
                                             break;}
 

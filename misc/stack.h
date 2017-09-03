@@ -83,7 +83,7 @@ class Stack {
     uint size;
 public:
     Stack(const T default_val, const uint & default_size = 2) : size(default_size == 0 ? 64 : default_size) {
-        data = new T[size];
+        data = new T[size + 1];
         curr = start = data;
         *start = default_val;
         end = &data[size];

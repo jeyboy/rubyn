@@ -36,6 +36,7 @@ public:
 
     void openDocument(IDocument * doc);
 protected:
+    bool event(QEvent * event);
     void resizeEvent(QResizeEvent * event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;

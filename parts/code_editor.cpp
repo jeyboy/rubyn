@@ -8,6 +8,8 @@
 #include <qfile.h>
 #include <qscrollbar.h>
 
+#include <qtooltip.h>
+
 #include "document_types/idocument.h"
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), folding_y(NO_FOLDING), folding_click(false) {
@@ -29,6 +31,8 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), folding_y(NO_
     //    ui->textEdit->selectAll();
     //    ui->textEdit->setFontPointSize(32);
     //    ui->textEdit->setTextCursor( cursor );
+
+    setMouseTracking(true);
 }
 
 void CodeEditor::openDocument(IDocument * doc) {
@@ -70,6 +74,22 @@ void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
 
     if (rect.contains(viewport() -> rect()))
         updateExtraAreaWidth(0);
+}
+
+bool CodeEditor::event(QEvent * event) {
+    if (event -> type() == QEvent::ToolTip) {
+        QHelpEvent * helpEvent = static_cast<QHelpEvent*>(event);
+        QTextCursor cursor = cursorForPosition(helpEvent -> pos());
+        cursor.select(QTextCursor::WordUnderCursor);
+
+        if (!cursor.selectedText().isEmpty())
+            QToolTip::showText(helpEvent -> globalPos(), /*your text*/QString("%1 %2").arg(cursor.selectedText()).arg(cursor.selectedText().length()));
+        else
+            QToolTip::hideText();
+        return true;
+    }
+
+    return QPlainTextEdit::event(event);
 }
 
 void CodeEditor::resizeEvent(QResizeEvent * e) {

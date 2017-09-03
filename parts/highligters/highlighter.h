@@ -19,9 +19,25 @@ public:
     Highlighter(QTextDocument * parent, Lexer * lexer);
     ~Highlighter();
 
+    QTextBlock prevBlock() const {
+        return QSyntaxHighlighter::currentBlock().previous();
+    }
+
+    QTextBlock currentBlock() const {
+        return QSyntaxHighlighter::currentBlock();
+    }
+
+    QTextBlock nextBlock() const {
+        return QSyntaxHighlighter::currentBlock().next();
+    }
+
     inline void setFormat(const int & start, const int & count, const QTextCharFormat & format) {
         QSyntaxHighlighter::setFormat(start, count, format);
     }
+
+signals:
+
+    void forceBlockRehighlightion(const QTextBlock &);
 };
 
 #endif // IHIGHLIGHTER_H

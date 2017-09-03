@@ -57,7 +57,15 @@ IDocument * IDocument::create(const QUrl & url) {
 }
 
 IDocument::IDocument(const QString & path, const QString & name, QIODevice * device, Lexer * lexer) :
-    _path(path), _name(name), _device(device), _lexer(lexer), fully_readed(true) {
+    _path(path), _name(name), _device(device), _lexer(lexer), fully_readed(true)
+{
+
+    QTextOption option =  defaultTextOption();
+    option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
+//    else
+//        option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
+    option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
+    setDefaultTextOption(option);
 
     if (lexer)
         new Highlighter(this, lexer);
