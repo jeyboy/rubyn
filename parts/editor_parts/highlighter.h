@@ -45,6 +45,9 @@ protected:
         }
         return false;
     }
+    static bool byStartOfRange(const QTextLayout::FormatRange & range, const QTextLayout::FormatRange & other) {
+        return range.start < other.start;
+    }
 
     void reformatBlocks(int from, int charsRemoved, int charsAdded);
     void reformatBlock(const QTextBlock & block, int from, int charsRemoved, int charsAdded);

@@ -21,7 +21,7 @@ void Highlighter::setDocument(IDocument * new_doc) {
     doc = new_doc;
     if (doc) {
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
-        sconnect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
+        connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
 //            d->rehighlightPending = true;
 //            QTimer::singleShot(0, this, &SyntaxHighlighter::delayedRehighlight);
 //        }
@@ -30,7 +30,7 @@ void Highlighter::setDocument(IDocument * new_doc) {
 }
 
 Highlighter::Highlighter(IDocument * doc, Lexer * lexer)
-    : QObject(doc), doc(0), lexer(lexer)
+    : QObject(doc), lexer(lexer), doc(0)
 {
     setDocument(doc);
 }
@@ -136,15 +136,11 @@ void Highlighter::setCurrentBlockUserData(QTextBlockUserData * data) {
     current_block.setUserData(data);
 }
 
-QTextBlockUserData *SyntaxHighlighter::currentBlockUserData() const {
+QTextBlockUserData * Highlighter::currentBlockUserData() const {
     if (!current_block.isValid())
         return 0;
 
     return current_block.userData();
-}
-
-static bool byStartOfRange(const QTextLayout::FormatRange & range, const QTextLayout::FormatRange & other) {
-    return range.start < other.start;
 }
 
 void Highlighter::setExtraFormats(const QTextBlock & block, QVector<QTextLayout::FormatRange> & formats) {
@@ -155,7 +151,7 @@ void Highlighter::setExtraFormats(const QTextBlock & block, QVector<QTextLayout:
 
     Utils::sort(formats, byStartOfRange);
 
-    const QVector<QTextLayout::FormatRange> all = block.layout()->formats();
+    const QVector<QTextLayout::FormatRange> all = block.layout() -> formats();
     QVector<QTextLayout::FormatRange> previousSemanticFormats;
     QVector<QTextLayout::FormatRange> formatsToApply;
     previousSemanticFormats.reserve(all.size());
@@ -248,11 +244,11 @@ void Highlighter::reformatBlock(const QTextBlock & block, int from, int charsRem
 
 void Highlighter::applyFormatChanges(int from, int charsRemoved, int charsAdded) {
     QVector<QTextLayout::FormatRange> old_ranges;
-    QTextLayout * layout = currentBlock.layout();
+    QTextLayout * layout = current_block.layout();
     QVector<QTextLayout::FormatRange> ranges = layout -> formats();
 
     bool formatsChanged = false;
-    bool doAdjustRange = currentBlock.contains(from);
+    bool doAdjustRange = current_block.contains(from);
 
     if (!ranges.isEmpty()) {
         auto it = ranges.begin();
@@ -260,7 +256,7 @@ void Highlighter::applyFormatChanges(int from, int charsRemoved, int charsAdded)
             if (it -> format.property(QTextFormat::UserProperty).toBool()) {
                 if (doAdjustRange)
                     formatsChanged =
-                        adjustRange(*it, from - currentBlock.position(), charsRemoved, charsAdded)
+                        adjustRange(*it, from - current_block.position(), charsRemoved, charsAdded)
                             || formatsChanged;
                 ++it;
             } else {
@@ -305,6 +301,6 @@ void Highlighter::applyFormatChanges(int from, int charsRemoved, int charsAdded)
     if (formatsChanged) {
         ranges.append(new_ranges);
         layout -> setFormats(ranges);
-        doc -> markContentsDirty(currentBlock.position(), currentBlock.length());
+        doc -> markContentsDirty(current_block.position(), current_block.length());
     }
 }
