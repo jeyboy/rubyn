@@ -62,7 +62,7 @@ public:
 
         if (lighter) {
             QTextBlock block = lighter -> currentBlock();
-            QTextBlock prev_block = block.previous();
+            QTextBlock prev_block = lighter -> prevBlock();
 
             BlockUserData * udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
 

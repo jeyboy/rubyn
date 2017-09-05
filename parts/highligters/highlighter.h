@@ -6,6 +6,7 @@
 
 class Lexer;
 class LexerState;
+class IDocument;
 
 class Highlighter : public QSyntaxHighlighter {
     Q_OBJECT
@@ -16,7 +17,7 @@ protected:
 
     friend class Lexer;
 public:
-    Highlighter(QTextDocument * parent, Lexer * lexer);
+    Highlighter(IDocument * doc, Lexer * lexer);
     ~Highlighter();
 
     QTextBlock prevBlock() const {
@@ -34,10 +35,6 @@ public:
     inline void setFormat(const int & start, const int & count, const QTextCharFormat & format) {
         QSyntaxHighlighter::setFormat(start, count, format);
     }
-
-signals:
-
-    void forceBlockRehighlightion(const QTextBlock &);
 };
 
 #endif // IHIGHLIGHTER_H

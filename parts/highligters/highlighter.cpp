@@ -1,11 +1,12 @@
 #include "highlighter.h"
 
 #include "parts/lexer/lexer.h"
+#include "parts/document_types/idocument.h"
 
-Highlighter::Highlighter(QTextDocument * parent, Lexer * lexer)
-    : QSyntaxHighlighter(parent), lexer(lexer)
+Highlighter::Highlighter(IDocument * doc, Lexer * lexer)
+    : QSyntaxHighlighter(doc), lexer(lexer)
 {
-    connect(this, SIGNAL(forceBlockRehighlightion(QTextBlock)), this, SLOT(rehighlightBlock(QTextBlock)));
+
 }
 
 Highlighter::~Highlighter() { delete lexer; }
