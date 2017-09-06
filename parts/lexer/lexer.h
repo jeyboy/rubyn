@@ -8,7 +8,7 @@
 #include "lexer_state.h"
 #include "parts/formats/format_types.h"
 
-#include "parts/highligters/highlighter.h"
+#include "parts/editor_parts/highlighter.h"
 #include "parts/highligters/highlight_format_factory.h"
 
 #define PREV_N_CHAR(w, offset) (*(w - offset))
@@ -61,7 +61,6 @@ public:
         LexerState * state = 0;
 
         if (lighter) {
-            QTextBlock block = lighter -> currentBlock();
             QTextBlock prev_block = lighter -> prevBlock();
 
             BlockUserData * udata = reinterpret_cast<BlockUserData *>(prev_block.userData());

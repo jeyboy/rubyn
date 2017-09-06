@@ -21,7 +21,10 @@
 class ImageDocument : public IDocument {
 public:
     ImageDocument(const QString & path, const QString & name, QIODevice * device, Lexer * lexer = 0)
-        : IDocument(path, name, device, lexer) {}
+        : IDocument(path, name, device, lexer)
+    {
+        _device -> close();
+    }
 };
 
 #endif // IMAGE_DOCUMENT

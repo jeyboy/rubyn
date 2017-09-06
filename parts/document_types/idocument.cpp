@@ -1,6 +1,5 @@
 #include "idocument.h"
 #include "documents_types.h"
-#include "parts/highligters/highlighter.h"
 
 IDocument * IDocument::create(const QUrl & url) {
     bool isLocal = url.isLocalFile();
@@ -66,9 +65,6 @@ IDocument::IDocument(const QString & path, const QString & name, QIODevice * dev
 //        option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
     option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
     setDefaultTextOption(option);
-
-    if (lexer)
-        new Highlighter(this, lexer);
 }
 
 IDocument::~IDocument() {

@@ -16,7 +16,6 @@ SOURCES += main.cpp\
     parts/editor_parts/highlighter.cpp \
     ide_window.cpp \
     parts/code_editor.cpp \
-#    parts/highligters/highlighter.cpp \
     parts/document_types/idocument.cpp \
     parts/editor_parts/project.cpp \
     parts/editor_parts/file.cpp \
@@ -27,7 +26,6 @@ HEADERS  += ide_window.h \
     parts/code_editor.h \
     misc/singleton.h \
     parts/highligters/highlight_format_factory.h \
-#    parts/highligters/highlighter.h \
     dock_widgets.h \
     parts/documents.h \
     parts/document_types/idocument.h \

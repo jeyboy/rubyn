@@ -3,6 +3,8 @@
 
 //#include <qobject.h>
 
+#include <qpointer.h>
+
 #include "parts/editor_parts/block_user_data.h"
 
 class Lexer;
@@ -15,7 +17,7 @@ protected:
     void highlightBlock(const QString & text);
 
     Lexer * lexer;
-    IDocument * doc;
+    QPointer<IDocument> doc;
     QTextBlock current_block;
 
     QVector<QTextCharFormat> formats;
@@ -30,9 +32,21 @@ public:
     QTextBlock currentBlock() const { return current_block; }
     QTextBlock nextBlock() const { return current_block.next(); }
 
-//    inline void setFormat(const int & start, const int & count, const QTextCharFormat & format) {
-//        QSyntaxHighlighter::setFormat(start, count, format);
-//    }
+    QTextCharFormat format(int pos) const;
+
+    void setFormat(int start, int count, const QTextCharFormat & format);
+    void setFormat(int start, int count, const QColor & color);
+    void setFormat(int start, int count, const QFont & font);
+
+    int previousBlockState() const;
+
+    int currentBlockState() const;
+    void setCurrentBlockState(const int & new_state);
+
+    void setCurrentBlockUserData(QTextBlockUserData * data);
+    QTextBlockUserData * currentBlockUserData() const;
+
+    void setExtraFormats(const QTextBlock & block, QVector<QTextLayout::FormatRange> & formats);
 
 protected:
     static bool adjustRange(QTextLayout::FormatRange & range, int from, int charsRemoved, int charsAdded) {
@@ -49,7 +63,6 @@ protected:
         return range.start < other.start;
     }
 
-    void reformatBlocks(int from, int charsRemoved, int charsAdded);
     void reformatBlock(const QTextBlock & block, int from, int charsRemoved, int charsAdded);
 
     inline void rehighlight(QTextCursor & cursor, QTextCursor::MoveOperation operation) {
@@ -62,8 +75,6 @@ protected:
 
     void applyFormatChanges(int from, int charsRemoved, int charsAdded);
 //    void updateFormats(const FontSettings &fontSettings);
-
-    void reformatBlock(const QTextBlock & block, int from, int charsRemoved, int charsAdded);
 
 public slots:
     void rehighlight();

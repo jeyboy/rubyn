@@ -6,6 +6,7 @@
 #include <qdebug.h>
 
 #include "idocument.h"
+#include "parts/editor_parts/highlighter.h"
 //#include "parts/langs/ruby/lexer_ruby.h"
 
 
@@ -19,14 +20,18 @@ public:
         setDocumentLayout(new QPlainTextDocumentLayout(this));
 
         QByteArray ar = _device -> readAll();
+        setPlainText(ar);
+        _device -> close();
 
-//        LexerRuby().analize(QString(ar));
+//        if (_device -> size() < READ_LIMIT)
+//            setPlainText(ar);
+//        else {
+//            fully_readed = false;
+//            readNextBlock();
+//        }
 
-        if (_device -> size() < READ_LIMIT)
-            setPlainText(ar);
-        else
-            fully_readed = false;
-            readNextBlock();
+        if (lexer)
+            new Highlighter(this, lexer);
     }
 
     void readNextBlock() {

@@ -4,12 +4,15 @@
 #include "parts/document_types/idocument.h"
 #include "parts/lexer/lexer.h"
 
+#include <qtimer.h>
+
 void Highlighter::setDocument(IDocument * new_doc) {
     if (doc) {
         disconnect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         disconnect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
 
         QTextCursor cursor(doc);
+
         cursor.beginEditBlock();
 
         for (QTextBlock blk = doc -> begin(); blk.isValid(); blk = blk.next())
@@ -23,7 +26,8 @@ void Highlighter::setDocument(IDocument * new_doc) {
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
 //            d->rehighlightPending = true;
-//            QTimer::singleShot(0, this, &SyntaxHighlighter::delayedRehighlight);
+//        QTimer::singleShot(0, this, SLOT(rehighlight()));
+        rehighlight();
 //        }
 //        d->foldValidator.setup(qobject_cast<TextDocumentLayout *>(doc->documentLayout()));
     }
@@ -69,12 +73,6 @@ void Highlighter::rehighlightBlock(const QTextBlock & block) {
     QTextCursor cursor(block);
     rehighlight(cursor, QTextCursor::EndOfBlock);
 }
-
-//void Highlighter::cursorPositionChanged(const QTextCursor & cursor) {
-
-//}
-
-
 
 void Highlighter::setFormat(int start, int count, const QTextCharFormat & format) {
     if (start < 0 || start >= formatChanges.count())
@@ -303,4 +301,8 @@ void Highlighter::applyFormatChanges(int from, int charsRemoved, int charsAdded)
         layout -> setFormats(ranges);
         doc -> markContentsDirty(current_block.position(), current_block.length());
     }
+}
+
+void Highlighter::cursorPositionChanged(const QTextCursor & cursor) {
+
 }
