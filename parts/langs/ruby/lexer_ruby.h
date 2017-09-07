@@ -96,7 +96,8 @@ class LexerRuby : public Lexer {
                         }
                     }
 
-                    state -> scope -> addVar(word, 0); // new FilePoint() // TODO: write me
+                    if (state -> lex_state != lex_key)
+                        state -> scope -> addVar(word, 0); // new FilePoint() // TODO: write me
 
 //                    if (!state -> var_def_state)
 //                         state -> stack -> push(lex_var_chain_start);
