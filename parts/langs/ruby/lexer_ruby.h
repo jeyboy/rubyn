@@ -368,6 +368,7 @@ protected:
                                             case '=': {
                                                 if (NEXTCHAR == 'e' && NEXT_CHAR(window + 1) == 'n' && NEXT_CHAR(window + 2) == 'd')
                                                     ended = true;
+                                                    MOVE(4);
                                             break;}
 
                                             case 0: {
@@ -383,6 +384,9 @@ protected:
                                         }
                                     }
                        }
+                    } else if (NEXTCHAR == 'e' && NEXT_CHAR(window + 1) == 'n' && NEXT_CHAR(window + 2) == 'd') {
+                        MOVE(4);
+                        state -> next_offset = 0;
                     } else {
                         if (NEXTCHAR == '~')
                             ++state -> next_offset;
