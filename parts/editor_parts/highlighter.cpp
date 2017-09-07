@@ -303,6 +303,6 @@ void Highlighter::applyFormatChanges(int from, int charsRemoved, int charsAdded)
     }
 }
 
-void Highlighter::cursorPositionChanged(const QTextCursor & cursor) {
+void Highlighter::cursorPositionChanged(const QTextCursor & /*cursor*/) {
 
 }

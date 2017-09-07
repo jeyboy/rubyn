@@ -100,15 +100,11 @@ enum Lexem : quint64 {
 
     ////// MIXES
 
-//    les_def_method = lex_def | lex_method, // def
-//    lex_def_module = lex_def | lex_module, // module
-//    lex_def_class = lex_def | lex_class, // class
+    les_def_method = lex_def | lex_method, // def
+    lex_def_module = lex_def | lex_module, // module
+    lex_def_class = lex_def | lex_class, // class
 
-    lex_method_start = lex_method | lex_start,
-    lex_module_start = lex_module | lex_start,
-    lex_class_start = lex_class | lex_start,
-
-    lex_def_start = lex_method_start | lex_module_start | lex_class_start,
+    lex_def_encapsulation = les_def_method | lex_def_module | lex_def_class,
 //    lex_def_end = lex_end | lex_method | lex_module | lex_class | lex_block,
 
 //    lex_def_proc = lex_def | lex_proc, // proc
@@ -139,8 +135,8 @@ enum Lexem : quint64 {
     lex_param_block_requred = lex_block | lex_parametrized | lex_require,
 
     lex_param_block_start = lex_block | lex_start | lex_parametrized,
-    lex_block_start = lex_block | lex_start,
-    lex_block_end = lex_block | lex_end,
+    lex_block_start = lex_block | lex_start | lex_method,
+    lex_block_end = lex_block | lex_end | lex_method,
 
     lex_block_args_start = lex_block | lex_args_start , // |
     lex_block_args_end = lex_block | lex_args_end, // |

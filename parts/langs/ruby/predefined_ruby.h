@@ -58,8 +58,8 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("begin"), lex_block_start); // Starts an exception handling block
         keys.insert(QByteArrayLiteral("break"), lex_method); // Leaves a block early
         keys.insert(QByteArrayLiteral("case"), lex_method_with_params); // Starts a case expression
-        keys.insert(QByteArrayLiteral("class"), lex_class_start); // Creates or opens a class
-        keys.insert(QByteArrayLiteral("def"), lex_method_start); // Defines a method
+        keys.insert(QByteArrayLiteral("class"), lex_def_class); // Creates or opens a class
+        keys.insert(QByteArrayLiteral("def"), les_def_method); // Defines a method
         keys.insert(QByteArrayLiteral("defined?"), lex_method_with_params); // Returns a string describing its argument
         keys.insert(QByteArrayLiteral("do"), lex_block_start); // Starts a block
         keys.insert(QByteArrayLiteral("else"), lex_chain_level); // The unhandled condition in case, if and unless expressions
@@ -73,7 +73,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("in"), lex_method_with_params); // Used to separate the iterable object and iterator variable in a for loop
         keys.insert(QByteArrayLiteral("include"), lex_method_with_params);
         keys.insert(QByteArrayLiteral("lambda"), lex_param_block_requred);
-        keys.insert(QByteArrayLiteral("module"), lex_module_start); // Creates or opens a module
+        keys.insert(QByteArrayLiteral("module"), lex_def_module); // Creates or opens a module
         keys.insert(QByteArrayLiteral("next"), lex_method); // Skips the rest of the block
         keys.insert(QByteArrayLiteral("new"), lex_method);
         keys.insert(QByteArrayLiteral("nil"), lex_var); // A false value usually indicating “no value” or “unknown”

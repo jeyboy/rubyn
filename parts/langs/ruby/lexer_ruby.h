@@ -47,7 +47,8 @@ class LexerRuby : public Lexer {
                 );
 
 //                APPEND_ERR(QByteArrayLiteral("Error in condition logic"));
-        }
+        } else if (lex_flag & lex_def)
+            state -> stack -> push(lex_flag);
 
         return true;
     }
@@ -60,14 +61,7 @@ class LexerRuby : public Lexer {
         if (word_length > 0) {
             QByteArray word = QByteArray(prev, word_length);
 
-            Lexem & stack_top = state -> stack -> touch();
-
-            if ((stack_top & lex_def_start) > lex_start) {
-                state -> scope -> addVar(word, 0); // new FilePoint() // TODO: write me
-                state -> stack -> replace(lex_block_start);
-                state -> lex_state = lex_def; // TODO: maybe change to something else
-            }
-            else state -> lex_state =
+            state -> lex_state =
                 predefined_lexem
                     ?
                         predefined_lexem
@@ -76,7 +70,14 @@ class LexerRuby : public Lexer {
 
 
             if (state -> lex_state == lex_undefined) {
-                if (!state -> scope -> hasVar(word)) {
+                Lexem & stack_top = state -> stack -> touch();
+
+                if ((stack_top & lex_def_encapsulation) & lex_def) {
+                    state -> scope -> addVar(word, 0); // new FilePoint() // TODO: write me
+                    state -> stack -> replace(lex_block_start);
+                    state -> lex_state = lex_def; // TODO: maybe change to something else
+                }
+                else if (!state -> scope -> hasVar(word)) {
                     switch(*prev) { // INFO: determine type of word
                         case ':': { state -> lex_state = lex_key; break;}
                         case '$': { state -> lex_state = lex_global_var; break;}
