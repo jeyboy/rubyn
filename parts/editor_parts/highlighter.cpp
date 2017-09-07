@@ -47,8 +47,8 @@ Highlighter::~Highlighter() {
 void Highlighter::highlightBlock(const QString & text) {
 //    qDebug() << "*** " << currentBlock().firstLineNumber();
 
-    if (text.trimmed().isEmpty()) // INFO: ignore empty str
-        return;
+//    if (text.trimmed().isEmpty()) // INFO: ignore empty str
+//        return;
 
     lexer -> handle(text, this);
 

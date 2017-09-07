@@ -117,7 +117,7 @@ class LexerRuby : public Lexer {
                     Lexem top = state -> stack -> touch();
 
                     if (top == state -> lex_state || top == EXCLUDE_BIT(state -> lex_state, lex_continue)) {
-                        top = state -> lex_state;
+                        state -> stack -> push(state -> lex_state);
                     } else {
                         lighter -> setFormat(
                             state -> index - word_length,
@@ -212,9 +212,10 @@ class LexerRuby : public Lexer {
         return true;
     }
 protected:
-    void handle(const char * window, LexerState * state, Highlighter * lighter = 0) {
+    LexerStatus handle(const char * window, LexerState * state, Highlighter * lighter = 0) {
         char end_str_symb;
         const char * prev = window;
+        LexerStatus status = ls_none;
 
 //        a + b is interpreted as a+b ( Here a is a local variable)
 //        a  +b is interpreted as a(+b) ( Here a is a method call)
@@ -223,14 +224,21 @@ protected:
 //        However, if Ruby encounters operators, such as +, −, or backslash at the end of a line,
 //        they indicate the continuation of a statement.
 
-        switch(state -> stack -> touch()) {
-            case lex_string_continious:
-//            case lex_estring_continue: goto handle_string;
-//            case lex_heredoc_continue: goto handle_heredoc;
-            case lex_regexp_continious: goto handle_regexp;
-            case lex_multiline_commentary_continious: goto handle_multiline_comment;
-            default:;
-        };
+        Lexem top = state -> stack -> touch();
+
+        if (top & lex_continue) {
+            state -> stack -> drop();
+            MOVE(-1);
+
+            switch(top) {
+                case lex_string_continious:
+    //            case lex_estring_continue: goto handle_string;
+    //            case lex_heredoc_continue: goto handle_heredoc;
+                case lex_regexp_continious: goto handle_regexp;
+                case lex_multiline_commentary_continious: goto handle_multiline_comment;
+                default:;
+            };
+        }
 
         while(true) {
             next_step:
@@ -366,7 +374,7 @@ protected:
                                                 out_req = true;
                                                 cutWord(window, prev, state, lighter, lex_multiline_commentary_continious);
 
-                                                lighter -> currentBlock().setUserState(1);
+                                                status = ls_comment;
 
                                                 goto exit;
                                             break;}
@@ -929,7 +937,7 @@ protected:
             }
         }
 
-        exit: return;
+        exit: return status;
     }
 
 public:
