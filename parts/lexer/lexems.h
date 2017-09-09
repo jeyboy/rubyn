@@ -20,6 +20,7 @@ enum Lexem : quint8 {
     lex_heredoc,
     lex_regexp,
     lex_method,
+    lex_class,
 
 //    lex_unary_operator,
 //    lex_binary_operator,
@@ -190,7 +191,7 @@ enum Lexem : quint8 {
     lex_return,
 
 
-//    lex_undefined,
+    lex_undefined,
     lex_end_line,
     lex_ignore,
 

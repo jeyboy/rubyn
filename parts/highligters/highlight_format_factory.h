@@ -44,39 +44,37 @@ protected:
         keywordFormat.setFontWeight(QFont::Black);
         formats.insert(lex_key, keywordFormat);
     }
-    void registerVariableFormat() {
-        QTextCharFormat variableFormat;
-        variableFormat.setFontWeight(QFont::Bold);
-        variableFormat.setForeground(QColor::fromRgb(0, 92, 197));
-//        formats.insert(lex_var, variableFormat);
-//        formats.insert(lex_def, variableFormat);
-    }
+//    void registerVariableFormat() {
+//        QTextCharFormat variableFormat;
+//        variableFormat.setFontWeight(QFont::Bold);
+//        variableFormat.setForeground(QColor::fromRgb(0, 92, 197));
+////        formats.insert(lex_var, variableFormat);
+//    }
     void registerSymbolFormat() {
         QTextCharFormat symbolFormat;
         symbolFormat.setFontWeight(QFont::Bold);
         symbolFormat.setForeground(Qt::darkCyan);
-//        formats.insert(lex_name_symbol, symbolFormat);
+        formats.insert(lex_name_symbol, symbolFormat);
     }
     void registerClassFormat() {
         QTextCharFormat classFormat;
         classFormat.setFontWeight(QFont::Bold);
         classFormat.setForeground(Qt::darkMagenta);
         formats.insert(lex_class, classFormat);
-        formats.insert(lex_module, classFormat);
         formats.insert(lex_method, classFormat);
     }
     void registerConstFormat() {
         QTextCharFormat constFormat;
         constFormat.setFontWeight(QFont::Bold);
         constFormat.setForeground(Qt::darkMagenta);
-//        formats.insert(lex_name_const, constFormat);
+        formats.insert(lex_name_const, constFormat);
     }
     void registerQuotationFormat() {
         QTextCharFormat singleQuotationFormat;
         singleQuotationFormat.setForeground(Qt::darkGreen);
         formats.insert(lex_string, singleQuotationFormat);
     }
-    void registerFuncFormat() {
+    void registerMethodFormat() {
         QTextCharFormat functionFormat;
         functionFormat.setFontItalic(true);
         functionFormat.setForeground(QColor::fromRgb(215, 58, 73));
@@ -108,26 +106,26 @@ protected:
 //        preprocessingFormat.setForeground(QColor::fromRgb(0, 255, 0, 164));
 //        formats.insert(format_preprocessing, preprocessingFormat);
 //    }
-    void registerDatatypeFormat() {
-        QTextCharFormat datatypeFormat;
-        datatypeFormat.setForeground(QColor::fromRgb(0, 0, 255, 164));
+//    void registerDatatypeFormat() {
+//        QTextCharFormat datatypeFormat;
+//        datatypeFormat.setForeground(QColor::fromRgb(0, 0, 255, 164));
 //        formats.insert(lex_datatype, datatypeFormat);
-    }
+//    }
 public:
     HighlightFormatFactory() {
         registerKeywordFormat();
-        registerVariableFormat();
+//        registerVariableFormat();
         registerSymbolFormat();
         registerClassFormat();
         registerConstFormat();
         registerQuotationFormat();
-        registerFuncFormat();
+        registerMethodFormat();
         registerCommentFormat();
         registerHeredocFormat();
         registerNumbersFormat();
         registerRegularExpresionsFormat();
 //        registerPreprocessingFormat();
-        registerDatatypeFormat();
+//        registerDatatypeFormat();
 
         registerErrorFormat();
         registerWarningFormat();
