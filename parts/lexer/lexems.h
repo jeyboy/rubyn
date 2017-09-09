@@ -3,53 +3,107 @@
 
 #pragma once
 
-#include <qglobal.h>
+//#include <qglobal.h>
+#include <qbytearray.h>
 
-enum Lexem : quint8 {
+
+//    lex_key = 1 << 7,
+//    lex_expression = 1 << 8,
+//    lex_number = 1 << 9 | lex_expression,
+//    lex_def = 1 << 10,
+////    lex_key = 1 << 11,
+////    lex_key = 1 << 12,
+////    lex_key = 1 << 13,
+////    lex_key = 1 << 14,
+//    lex_end = 1 << 15,
+
+ // = (1ULL << 1),
+enum Lexem : quint32 {
     lex_none = 0,
 
-    lex_error, // = (1ULL << 1),
-    lex_warning, // = (1ULL << 2),
-    lex_notice, // = (1ULL << 3),
+    //    1 << 9,
 
-    lex_key, // = (1ULL << 0),
-    lex_null, // nil, undefined
-    lex_bool,
-    lex_commentary,
-    lex_string,
-    lex_heredoc,
-    lex_regexp,
-    lex_method,
-    lex_class,
+    lex_start = 1 << 17,
+    lex_continue = 1 << 18,
+    lex_end = 1 << 19,
 
-//    lex_unary_operator,
-//    lex_binary_operator,
+    //    lex_unary_operator,
+    //    lex_binary_operator,
 
-    lex_number,
-    lex_number_bin,
-    lex_number_oct,
-    lex_number_dec,
-    lex_number_hex,
-    lex_number_float,
-    lex_number_double,
+    lex_key = 1 << 20,
+    lex_null = 1 << 21, // nil, undefined
+    lex_bool = 1 << 22,
+    lex_commentary = 1 << 23,
+    lex_string = 1 << 24,
+    lex_estring = 1 << 25,
+    lex_heredoc = 1 << 26,
+    lex_regexp = 1 << 27,
+    lex_method = 1 << 28,
+    lex_class = 1 << 29,
+    lex_number = 1 << 30,
+    lex_name = 1 << 31,
 
-    lex_name,
-    lex_name_symbol,
-    lex_name_const,
-    lex_name_scoped, // variables in blocks and etc // |a, b|
-    lex_name_local,
-    lex_name_instance,
-    lex_name_object,
-    lex_name_global,
 
-    lex_require, // require some source
-    lex_include, // include some obj
-    lex_extend, // extend some obj
-    lex_undef, // undef method
-    lex_visibility, // public, private etc // use one space pad in format // https://fabiokung.com/2010/04/05/ruby-indentation-for-access-modifiers-and-their-sections/
-    lex_alias,
-    lex_self,
-    lex_super,
+    lex_number_bin = 1 | lex_number,
+    lex_number_oct = 2 | lex_number,
+    lex_number_dec = 3 | lex_number,
+    lex_number_hex = 4 | lex_number,
+    lex_number_float = 5 | lex_number,
+    lex_number_double = 6 | lex_number,
+
+    lex_name_symbol = 7 | lex_name,
+    lex_name_const = 8 | lex_name,
+    lex_name_scoped = 9 | lex_name, // variables in blocks and etc // |a, b|
+    lex_name_local = 10 | lex_name,
+    lex_name_instance = 11 | lex_name,
+    lex_name_object = 12 | lex_name,
+    lex_name_global = 13 | lex_name,
+
+    lex_require = 14 | lex_method, // require some source
+    lex_include = 15 | lex_method, // include some obj
+    lex_extend = 16 | lex_method, // extend some obj
+    lex_undef = 17 | lex_method, // undef method
+    lex_visibility = 18 | lex_method, // public, private etc // use one space pad in format // https://fabiokung.com/2010/04/05/ruby-indentation-for-access-modifiers-and-their-sections/
+    lex_alias = 19 | lex_method,
+    lex_self = 20 | lex_method,
+    lex_super = 21 | lex_method,
+
+    lex_class_def = 22 | lex_key,
+    lex_class_def_name = 23,
+
+    lex_module_def = 24 | lex_key,
+    lex_module_def_name = 25,
+
+    lex_method_def = 26 | lex_key,
+    lex_method_def_static_flag = 27,
+    lex_method_def_name = 28,
+
+    lex_lambda_def = 29 | lex_key, // -> // Lambda.new // lambda
+    lex_lambda_vars_start = 30, // (
+
+    lex_proc_def = 31 | lex_key, // Proc.new // proc
+
+    lex_inline_commentary = 32 | lex_commentary,
+
+    lex_commentary_start = lex_commentary | lex_start,
+    lex_commentary_continue = lex_commentary | lex_continue,
+    lex_commentary_end = lex_commentary | lex_end,
+
+    lex_string_start = lex_string | lex_start, // '
+    lex_string_continue = lex_string | lex_continue,
+    lex_string_end = 38 | lex_string | lex_end,
+
+    lex_estring_start = lex_estring | lex_start, // "
+    lex_estring_continue = lex_estring | lex_continue,
+    lex_estring_end = lex_estring | lex_end,
+
+    lex_heredoc_start = lex_heredoc | lex_start, // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
+    lex_heredoc_continue = lex_heredoc | lex_continue,
+    lex_heredoc_end = lex_heredoc | lex_end,
+
+    lex_regexp_start = lex_regexp | lex_start, // /\a+/
+    lex_regexp_continue = lex_regexp | lex_continue,
+    lex_regexp_end = lex_regexp | lex_end,
 
     lex_global_pre_hook,
     lex_global_post_hook,
@@ -106,21 +160,6 @@ enum Lexem : quint8 {
     lex_inheritance, // <
     lex_interpolation, // #{
 
-    lex_class_def,
-    lex_class_def_name,
-
-    lex_module_def,
-    lex_module_def_name,
-
-    lex_method_def,
-    lex_method_def_static_flag,
-    lex_method_def_name,
-
-    lex_lambda_def, // -> // Lambda.new // lambda
-    lex_lambda_vars_start, // (
-
-    lex_proc_def, // Proc.new // proc
-
     lex_inline_block_start, // {
     lex_inline_block_end, // }
 
@@ -128,34 +167,11 @@ enum Lexem : quint8 {
     lex_block_end, // end
 
     lex_block_vars_start,
-    lex_block_var,
+//    lex_block_var,
     lex_block_vars_end,
-
-
-    lex_inline_commentary,
-
-    lex_commentary_start,
-    lex_commentary_continue,
-    lex_commentary_end,
 
     lex_wrap_start, // (
     lex_wrap_end, // )
-
-    lex_string_start, // '
-    lex_string_continue,
-    lex_string_end,
-
-    lex_estring_start, // "
-    lex_estring_continue,
-    lex_estring_end,
-
-    lex_heredoc_start, // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
-    lex_heredoc_continue,
-    lex_heredoc_end,
-
-    lex_regexp_start, // /\a+/
-    lex_regexp_continue,
-    lex_regexp_end,
 
     lex_hash_start,
     lex_hash_end,
@@ -190,6 +206,9 @@ enum Lexem : quint8 {
 
     lex_return,
 
+    lex_error,
+    lex_warning,
+    lex_notice,
 
     lex_undefined,
     lex_end_line,
@@ -201,6 +220,22 @@ enum Lexem : quint8 {
     lex_max
 };
 
+
+namespace Lexems {
+    QByteArray lexemToStr(const Lexem & lexem) {
+        switch(lexem) {
+            default: return QByteArrayLiteral("Undefined");
+        }
+    }
+
+//    Lexem lexemToHighlight(const Lexem & lexem) {
+//        switch(lexem) {
+
+
+//            default: return lex_none;
+//        }
+//    }
+}
 
 
 //#define LEX(val, flag) (Lexem)(val | flag)

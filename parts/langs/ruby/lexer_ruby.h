@@ -235,11 +235,10 @@ protected:
             MOVE(-1);
 
             switch(top) {
-                case lex_string_continious:
-    //            case lex_estring_continue: goto handle_string;
-    //            case lex_heredoc_continue: goto handle_heredoc;
-                case lex_regexp_continious: goto handle_regexp;
-                case lex_multiline_commentary_continious: goto handle_multiline_comment;
+                case lex_estring_continue: goto handle_string;
+                case lex_heredoc_continue: goto handle_heredoc;
+                case lex_regexp_continue: goto handle_regexp;
+                case lex_commentary_continue: goto handle_multiline_comment;
                 default:;
             };
         }
