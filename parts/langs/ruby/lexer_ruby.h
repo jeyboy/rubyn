@@ -219,6 +219,8 @@ protected:
         const char * prev = window;
         LexerStatus status = ls_none;
 
+//        a + b is interpreted as a.+(b)
+
 //        a + b is interpreted as a+b ( Here a is a local variable)
 //        a  +b is interpreted as a(+b) ( Here a is a method call)
 

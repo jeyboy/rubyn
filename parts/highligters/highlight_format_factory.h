@@ -48,14 +48,14 @@ protected:
         QTextCharFormat variableFormat;
         variableFormat.setFontWeight(QFont::Bold);
         variableFormat.setForeground(QColor::fromRgb(0, 92, 197));
-        formats.insert(lex_var, variableFormat);
-        formats.insert(lex_def, variableFormat);
+//        formats.insert(lex_var, variableFormat);
+//        formats.insert(lex_def, variableFormat);
     }
     void registerSymbolFormat() {
         QTextCharFormat symbolFormat;
         symbolFormat.setFontWeight(QFont::Bold);
         symbolFormat.setForeground(Qt::darkCyan);
-        formats.insert(lex_symb, symbolFormat);
+//        formats.insert(lex_name_symbol, symbolFormat);
     }
     void registerClassFormat() {
         QTextCharFormat classFormat;
@@ -69,7 +69,7 @@ protected:
         QTextCharFormat constFormat;
         constFormat.setFontWeight(QFont::Bold);
         constFormat.setForeground(Qt::darkMagenta);
-        formats.insert(lex_const, constFormat);
+//        formats.insert(lex_name_const, constFormat);
     }
     void registerQuotationFormat() {
         QTextCharFormat singleQuotationFormat;
@@ -111,7 +111,7 @@ protected:
     void registerDatatypeFormat() {
         QTextCharFormat datatypeFormat;
         datatypeFormat.setForeground(QColor::fromRgb(0, 0, 255, 164));
-        formats.insert(lex_datatype, datatypeFormat);
+//        formats.insert(lex_datatype, datatypeFormat);
     }
 public:
     HighlightFormatFactory() {
