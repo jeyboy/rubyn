@@ -7,7 +7,7 @@
 class LexerRuby : public Lexer {
     bool checkStack(const Lexem & lex_flag, LexerState * state, Highlighter * lighter, const int & word_length) {
         if (lex_flag & lex_start) {
-            if ((lex_flag & lex_chain_block) == lex_chain_block) {
+            if (lex_flag & lex_chain) {
                 // INFO: if line is not empty then we have deal with inline branching
                 if (state -> new_line_state == lex_none)
                     state -> stack -> push(lex_flag);

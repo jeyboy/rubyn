@@ -6,16 +6,8 @@
 //#include <qglobal.h>
 #include <qbytearray.h>
 
-
-//    lex_key = 1 << 7,
-//    lex_expression = 1 << 8,
-//    lex_number = 1 << 9 | lex_expression,
-//    lex_def = 1 << 10,
-////    lex_key = 1 << 11,
-////    lex_key = 1 << 12,
-////    lex_key = 1 << 13,
-////    lex_key = 1 << 14,
-//    lex_end = 1 << 15,
+//#define LEX(val, flag) (Lexem)(val | flag)
+#define EXCLUDE_BIT(val, flag) (Lexem)(val & ~flag)
 
  // = (1ULL << 1),
 enum Lexem : quint32 {
@@ -23,25 +15,27 @@ enum Lexem : quint32 {
 
     //    1 << 9,
 
-    lex_start = 1 << 17,
-    lex_continue = 1 << 18,
-    lex_end = 1 << 19,
+    lex_operator = 1 << 12,
+    lex_unary_operator = 1 << 13 | lex_operator,
+    lex_binary_operator = 1 << 14 | lex_operator,
+    lex_chain = 1 << 15,
 
-    //    lex_unary_operator,
-    //    lex_binary_operator,
+    lex_start = 1 << 16,
+    lex_continue = 1 << 17,
+    lex_end = 1 << 18,
 
-    lex_key = 1 << 20,
-    lex_null = 1 << 21, // nil, undefined
-    lex_bool = 1 << 22,
-    lex_commentary = 1 << 23,
-    lex_string = 1 << 24,
-    lex_estring = 1 << 25,
-    lex_heredoc = 1 << 26,
-    lex_regexp = 1 << 27,
-    lex_method = 1 << 28,
-    lex_class = 1 << 29,
-    lex_number = 1 << 30,
-    lex_name = 1 << 31,
+    lex_key = 1 << 19,
+    lex_null = 1 << 20, // nil, undefined
+    lex_bool = 1 << 21,
+    lex_commentary = 1 << 22,
+    lex_string = 1 << 23,
+    lex_estring = 1 << 24,
+    lex_heredoc = 1 << 25,
+    lex_regexp = 1 << 26,
+    lex_method = 1 << 27,
+    lex_class = 1 << 28,
+    lex_number = 1 << 29,
+    lex_name = 1 << 30,
 
 
     lex_number_bin = 1 | lex_number,
@@ -83,7 +77,13 @@ enum Lexem : quint32 {
 
     lex_proc_def = 31 | lex_key, // Proc.new // proc
 
-    lex_inline_commentary = 32 | lex_commentary,
+    lex_unless = 32 | lex_chain,
+    lex_if = 33 | lex_chain,
+    lex_then = 34,
+    lex_elsif = 35,
+    lex_else = 36,
+
+    lex_inline_commentary = 37 | lex_commentary,
 
     lex_commentary_start = lex_commentary | lex_start,
     lex_commentary_continue = lex_commentary | lex_continue,
@@ -105,49 +105,54 @@ enum Lexem : quint32 {
     lex_regexp_continue = lex_regexp | lex_continue,
     lex_regexp_end = lex_regexp | lex_end,
 
+    lex_operator_assigment = 39 | lex_binary_operator, // =
+    lex_operator_comparison = 40 | lex_binary_operator, // ==
+    lex_operator_equality = 41 | lex_binary_operator, // ===
+    lex_operator_not_equal = 42 | lex_binary_operator, // !=
+
+    lex_operator_less = 43 | lex_binary_operator, // <
+    lex_operator_less_eql = 44 | lex_binary_operator, // <=
+    lex_operator_great = 45 | lex_binary_operator, // >
+    lex_operator_great_eql = 46 | lex_binary_operator, // >=
+
+    lex_operator_sort = 47 | lex_binary_operator, // <=>
+
+    lex_operator_addition = 48 | lex_binary_operator, // +
+    lex_operator_addition_assigment = 49 | lex_binary_operator, // +=
+    lex_operator_increase = 50 | lex_unary_operator, // ++
+    lex_operator_substraction = 51 | lex_binary_operator, // -
+    lex_operator_substraction_assigment = 52 | lex_binary_operator, // -=
+    lex_operator_decrease = 53 | lex_unary_operator, // --
+    lex_operator_multiplication = 54 | lex_binary_operator, // *
+    lex_operator_multiplication_assigment = 55 | lex_binary_operator, // *=
+    lex_operator_division = 56 | lex_binary_operator, // /
+    lex_operator_division_assigment = 57 | lex_binary_operator, // /=
+    lex_operator_exponentiation = 58 | lex_binary_operator, // **
+    lex_operator_exponentiation_assigment = 59 | lex_binary_operator, // **=
+    lex_operator_modulus = 60 | lex_binary_operator, // %
+    lex_operator_modulus_assigment = 61 | lex_binary_operator, // %=
+
+    lex_safe_navigation = 62 | lex_binary_operator, // &. // ruby 2.3+
+    // 63
+    // 64
+    // 65
+
+    lex_operator_bit_and = 66 | lex_binary_operator, // &
+    lex_operator_bit_or = 67 | lex_binary_operator, // |
+    lex_operator_bit_exclusive_or = 68 | lex_binary_operator, // ^
+    lex_operator_bit_not = 69 | lex_unary_operator, // ~
+    lex_operator_bit_left_shift = 70 | lex_binary_operator, // <<
+    lex_operator_bit_right_shift = 71 | lex_binary_operator, // >>
+
+    lex_operator_and = 72 | lex_binary_operator, // &&
+    lex_operator_or = 73 | lex_binary_operator, // ||
+    lex_operator_or_assigment = 74 | lex_binary_operator, // ||=
+    lex_operator_not = 75 | lex_unary_operator, // !
+
     lex_global_pre_hook,
     lex_global_post_hook,
     lex_end_of_code,
     lex_expression, // abstract
-
-    lex_operator_assigment, // =
-    lex_operator_comparison, // ==
-    lex_operator_equality, // ===
-    lex_operator_not_equal, // !=
-
-    lex_operator_less, // <
-    lex_operator_less_eql, // <=
-    lex_operator_great, // >
-    lex_operator_great_eql, // >=
-
-    lex_operator_sort, // <=>
-
-    lex_operator_addition, // +
-    lex_operator_addition_assigment, // +=
-    lex_operator_increase, // ++
-    lex_operator_substraction, // -
-    lex_operator_substraction_assigment, // -=
-    lex_operator_decrease, // --
-    lex_operator_multiplication, // *
-    lex_operator_multiplication_assigment, // *=
-    lex_operator_division, // /
-    lex_operator_division_assigment, // /=
-    lex_operator_exponentiation, // **
-    lex_operator_exponentiation_assigment, // **=
-    lex_operator_modulus , // %
-    lex_operator_modulus_assigment , // %=
-
-    lex_operator_bit_and, // &
-    lex_operator_bit_or, // |
-    lex_operator_bit_exclusive_or, // ^
-    lex_operator_bit_not, // ~
-    lex_operator_bit_left_shift, // <<
-    lex_operator_bit_right_shift, // >>
-
-    lex_operator_and, // &&
-    lex_operator_or, // ||
-    lex_operator_or_assigment, // ||=
-    lex_operator_not, // !
 
     lex_dot,  // .
     lex_dot_dot,  // ..
@@ -186,12 +191,6 @@ enum Lexem : quint32 {
     lex_case,
     lex_when,
 
-    lex_unless,
-    lex_if,
-    lex_then,
-    lex_elsif,
-    lex_else,
-
     lex_while,
     lex_until,
     lex_for,
@@ -215,6 +214,8 @@ enum Lexem : quint32 {
     lex_ignore,
 
 
+    lex_highlightable = lex_key | lex_method | lex_name | lex_commentary |
+        lex_string | lex_estring | lex_heredoc | lex_number | lex_regexp,
 
 
     lex_max

@@ -50,29 +50,30 @@ protected:
 //        variableFormat.setForeground(QColor::fromRgb(0, 92, 197));
 ////        formats.insert(lex_var, variableFormat);
 //    }
-    void registerSymbolFormat() {
-        QTextCharFormat symbolFormat;
-        symbolFormat.setFontWeight(QFont::Bold);
-        symbolFormat.setForeground(Qt::darkCyan);
-        formats.insert(lex_name_symbol, symbolFormat);
+    void registerNameFormat() {
+        QTextCharFormat nameFormat;
+        nameFormat.setFontWeight(QFont::Bold);
+        nameFormat.setForeground(Qt::darkCyan);
+        formats.insert(lex_name, nameFormat);
     }
-    void registerClassFormat() {
-        QTextCharFormat classFormat;
-        classFormat.setFontWeight(QFont::Bold);
-        classFormat.setForeground(Qt::darkMagenta);
-        formats.insert(lex_class, classFormat);
-        formats.insert(lex_method, classFormat);
-    }
-    void registerConstFormat() {
-        QTextCharFormat constFormat;
-        constFormat.setFontWeight(QFont::Bold);
-        constFormat.setForeground(Qt::darkMagenta);
-        formats.insert(lex_name_const, constFormat);
-    }
+//    void registerClassFormat() {
+//        QTextCharFormat classFormat;
+//        classFormat.setFontWeight(QFont::Bold);
+//        classFormat.setForeground(Qt::darkMagenta);
+//        formats.insert(lex_class, classFormat);
+//        formats.insert(lex_method, classFormat);
+//    }
+//    void registerConstFormat() {
+//        QTextCharFormat constFormat;
+//        constFormat.setFontWeight(QFont::Bold);
+//        constFormat.setForeground(Qt::darkMagenta);
+//        formats.insert(lex_name_const, constFormat);
+//    }
     void registerQuotationFormat() {
         QTextCharFormat singleQuotationFormat;
         singleQuotationFormat.setForeground(Qt::darkGreen);
         formats.insert(lex_string, singleQuotationFormat);
+        formats.insert(lex_estring, singleQuotationFormat);
     }
     void registerMethodFormat() {
         QTextCharFormat functionFormat;
@@ -115,9 +116,9 @@ public:
     HighlightFormatFactory() {
         registerKeywordFormat();
 //        registerVariableFormat();
-        registerSymbolFormat();
-        registerClassFormat();
-        registerConstFormat();
+        registerNameFormat();
+//        registerClassFormat();
+//        registerConstFormat();
         registerQuotationFormat();
         registerMethodFormat();
         registerCommentFormat();
