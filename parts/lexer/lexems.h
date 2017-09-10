@@ -6,10 +6,11 @@
 //#include <qglobal.h>
 #include <qbytearray.h>
 
-//#define LEX(val, flag) (Lexem)(val | flag)
+#define LEX(val, flag) (Lexem)(val | flag)
 #define EXCLUDE_BIT(val, flag) (Lexem)(val & ~flag)
 
  // = (1ULL << 1),
+
 enum Lexem : quint32 {
     lex_none = 0,
 
@@ -67,6 +68,8 @@ enum Lexem : quint32 {
 
     lex_module_def = 24 | lex_key,
     lex_module_def_name = 25,
+
+    lex_def = lex_class_def | lex_module_def,
 
     lex_method_def = 26 | lex_key,
     lex_method_def_static_flag = 27,
@@ -221,22 +224,13 @@ enum Lexem : quint32 {
     lex_max
 };
 
-
-namespace Lexems {
-    QByteArray lexemToStr(const Lexem & lexem) {
+struct Lexems {
+    QByteArray toStr(const Lexem & lexem) {
         switch(lexem) {
             default: return QByteArrayLiteral("Undefined");
         }
     }
-
-//    Lexem lexemToHighlight(const Lexem & lexem) {
-//        switch(lexem) {
-
-
-//            default: return lex_none;
-//        }
-//    }
-}
+};
 
 
 //#define LEX(val, flag) (Lexem)(val | flag)

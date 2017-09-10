@@ -20,6 +20,7 @@ public:
     inline void addVar(const QByteArray & name, FilePoint * fpoint) {
         context_objs.insert(name, fpoint);
     }
+    inline Lexem varType(const QByteArray & name) { return context_objs[name] -> stype; }
 
 //    inline void registerInclusion(const QByteArray & name, const VarPoint & val) {
 //        if (!inclusions.contains(name))

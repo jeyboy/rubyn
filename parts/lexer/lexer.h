@@ -20,6 +20,7 @@
 
 #define CURRCHAR CURR_CHAR(window)
 #define NEXTCHAR NEXT_CHAR(window)
+#define NEXTCHAR2 NEXT_N_CHAR(window, 2)
 #define PREVCHAR PREV_CHAR(window)
 
 // TODO: use ++state -> index && *(++window)
