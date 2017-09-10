@@ -2,7 +2,9 @@
 #define BLOCK_USER_DATA_H
 
 #include <QTextBlockUserData>
-#include "parts/lexer/lexer_state.h"
+//#include "parts/lexer/lexer_state.h"
+
+class LexerState;
 
 struct BlockUserData : public QTextBlockUserData {
     bool has_folding;

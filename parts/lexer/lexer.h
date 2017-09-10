@@ -8,19 +8,15 @@
 #include "lexer_state.h"
 #include "parts/formats/format_types.h"
 
-#include "parts/highligters/highlight_format_factory.h"
 
-#define PREV_N_CHAR(w, offset) (*(w - offset))
-#define NEXT_N_CHAR(w, offset) (*(w + offset))
+//unsigned int hCount(0);
+//for(QString::const_iterator itr(str.begin()); itr != str.end(); ++itr)
+//    if(*itr == '#') ++hCount;
 
-#define CURR_CHAR(w) (*w)
-#define PREV_CHAR(w) PREV_N_CHAR(w, 1)
-#define NEXT_CHAR(w) NEXT_N_CHAR(w, 1)
+//C++11
 
-#define CURRCHAR CURR_CHAR(state -> buffer)
-#define NEXTCHAR NEXT_CHAR(state -> buffer)
-#define NEXTCHAR2 NEXT_N_CHAR(state -> buffer, 2)
-#define PREVCHAR PREV_CHAR(state -> buffer)
+//unsigned int hCount{0}; for(const auto& c : str) if(c == '#') ++hCount;
+
 
 class Lexer {
 protected:
@@ -50,7 +46,7 @@ protected:
         //template<typename ch_t> inline bool is_print(ch_t c)   {   return c>=' ' && c<='~';    }
         //template<typename ch_t> inline bool is_crlf(ch_t c) { return c=='\r' || c=='\n'; }
 
-    virtual LexerStatus handle(const char * window, LexerState * state, Highlighter * lighter = 0) = 0;
+    virtual LexerStatus handle(LexerState * state) = 0;
 
 public:
     void handle(const QString & text, Highlighter * lighter) {
@@ -73,14 +69,13 @@ public:
         state -> setBuffer(window);
 
         quint64 date = QDateTime::currentMSecsSinceEpoch();
-        LexerStatus lex_status = handle(state, lighter);
+        LexerStatus lex_status = handle(state);
         qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
 
         if (lighter) {
             QTextBlock block = lighter -> currentBlock();
             BlockUserData * cdata = reinterpret_cast<BlockUserData *>(block.userData());
 
-            state -> index = 0;
             if (!cdata)
                 cdata = new BlockUserData(false, false, state);
             else
