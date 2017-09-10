@@ -8,7 +8,6 @@
 #include "lexer_state.h"
 #include "parts/formats/format_types.h"
 
-#include "parts/editor_parts/highlighter.h"
 #include "parts/highligters/highlight_format_factory.h"
 
 #define PREV_N_CHAR(w, offset) (*(w - offset))
@@ -18,20 +17,10 @@
 #define PREV_CHAR(w) PREV_N_CHAR(w, 1)
 #define NEXT_CHAR(w) NEXT_N_CHAR(w, 1)
 
-#define CURRCHAR CURR_CHAR(window)
-#define NEXTCHAR NEXT_CHAR(window)
-#define NEXTCHAR2 NEXT_N_CHAR(window, 2)
-#define PREVCHAR PREV_CHAR(window)
-
-// TODO: use ++state -> index && *(++window)
-#define ITERATE {\
-        ++state -> index; \
-        ++window;\
-    }
-#define MOVE(offset) {\
-        state -> index += offset; \
-        window += offset; \
-    }
+#define CURRCHAR CURR_CHAR(state -> buffer)
+#define NEXTCHAR NEXT_CHAR(state -> buffer)
+#define NEXTCHAR2 NEXT_N_CHAR(state -> buffer, 2)
+#define PREVCHAR PREV_CHAR(state -> buffer)
 
 class Lexer {
 protected:
@@ -73,17 +62,18 @@ public:
             BlockUserData * udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
 
             if (!udata)
-                state = new LexerState();
+                state = new LexerState(lighter);
             else
                 state = new LexerState(*udata -> state);
         }
-        else state = new LexerState();
+        else state = new LexerState(lighter);
 
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();
+        state -> setBuffer(window);
 
         quint64 date = QDateTime::currentMSecsSinceEpoch();
-        LexerStatus lex_status = handle(window, state, lighter);
+        LexerStatus lex_status = handle(state, lighter);
         qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
 
         if (lighter) {
@@ -98,11 +88,6 @@ public:
 
             block.setUserData(cdata);
             block.setUserState(lex_status);
-
-//            if ((lex_status == ls_comment) && block.userState() != ls_comment)
-//                block.setUserState(lex_status);
-//            else if (lex_status == ls_none && block.userState() != lex_status)
-//                block.setUserState(lex_status);
         }
     }
 

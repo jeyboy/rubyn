@@ -16,6 +16,8 @@ enum Lexem : quint32 {
 
     //    1 << 9,
 
+    lex_variation = 1 << 11,
+
     lex_operator = 1 << 12,
     lex_unary_operator = 1 << 13 | lex_operator,
     lex_binary_operator = 1 << 14 | lex_operator,

@@ -5,7 +5,7 @@
 #include "predefined_ruby.h"
 
 class LexerRuby : public Lexer {
-    bool checkStack(const Lexem & lex_flag, LexerState * state, Highlighter * lighter, const int & word_length) {
+    bool checkStack(const Lexem & lex_flag, LexerState * state, const int & word_length) {
 //        if (lex_flag & lex_start) {
 //            if (lex_flag & lex_chain) {
 //                // INFO: if line is not empty then we have deal with inline branching
@@ -53,12 +53,10 @@ class LexerRuby : public Lexer {
         return true;
     }
 
-    bool cutWord(const char *& window, const char *& prev, LexerState * state,
-                 Highlighter * lighter, const Lexem & predefined_lexem = lex_none)
-    {
+    bool cutWord(LexerState * state, const Lexem & predefined_lexem = lex_none) {
         int word_length = window - prev;
 
-        if (word_length > 0) {
+        if (word_length > 0) {           
             QByteArray word = QByteArray(prev, word_length);
 
             state -> lex_state =
@@ -141,7 +139,7 @@ class LexerRuby : public Lexer {
                         return false;
                     }
                 }
-                else if (!checkStack(state -> lex_state, state, lighter, word_length))
+                else if (!checkStack(state -> lex_state, state, word_length))
                         return false;
             }
 
@@ -225,9 +223,8 @@ class LexerRuby : public Lexer {
         return true;
     }
 protected:
-    LexerStatus handle(const char * window, LexerState * state, Highlighter * lighter = 0) {
+    LexerStatus handle(LexerState * state, Highlighter * lighter = 0) {
         char end_str_symb;
-        const char * prev = window;
         LexerStatus status = ls_none;
 
 //        a + b is interpreted as a.+(b)
@@ -244,7 +241,7 @@ protected:
 
             if (top & lex_continue) {
                 state -> stack -> drop();
-                MOVE(-1);
+                --state -> buffer;
 
                 switch(top) {
                     case lex_estring_continue: goto handle_string;
@@ -270,7 +267,7 @@ protected:
                 case '~':
                 case '(':
                 case ')': {
-                    if(!cutWord(window, prev, state, lighter))
+                    if(!cutWord(state))
                         goto exit;
                 break;}
 
@@ -531,18 +528,24 @@ protected:
 
 
                 case '#': { // inline comment
-                    bool ended = false;
+                    Lexem predef = lex_none;
 
-                    while(!ended) {
-                        ITERATE;
+                    if (NEXTCHAR == '{' && state -> stack -> touch() == lex_string_continue) {
+                        ++state -> next_offset;
+                    } else {
+                        bool ended = false;
+                        predef = lex_inline_commentary;
 
-                        switch(*window) {
-                            case 0: { ended = true; break;}
-//                            default:;
+                        while(!ended) {
+                            ++state -> buffer;
+
+                            switch(CURRCHAR) {
+                                case 0: { ended = true; break;}
+                            }
                         }
                     }
 
-                    if (!cutWord(window, prev, state, lighter, lex_inline_commentary))
+                    if (!cutWord(state, predef))
                         goto exit;
                 break;}
 
