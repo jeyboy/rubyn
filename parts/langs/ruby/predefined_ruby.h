@@ -79,7 +79,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("lambda"), lex_lambda_def);
         keys.insert(QByteArrayLiteral("module"), lex_module_def); // Creates or opens a module
         keys.insert(QByteArrayLiteral("next"), lex_next); // Skips the rest of the block
-        keys.insert(QByteArrayLiteral("new"), lex_method);
+        keys.insert(QByteArrayLiteral("new"), lex_key);
         keys.insert(QByteArrayLiteral("nil"), lex_null); // A false value usually indicating “no value” or “unknown”
         keys.insert(QByteArrayLiteral("not"), lex_operator_not); // Inverts the following boolean expression
         keys.insert(QByteArrayLiteral("or"), lex_operator_or); // Boolean or with lower precedence than ||
@@ -87,7 +87,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("proc"), lex_proc_def);
         keys.insert(QByteArrayLiteral("protected"), lex_visibility);
         keys.insert(QByteArrayLiteral("public"), lex_visibility);
-        keys.insert(QByteArrayLiteral("raise"), lex_method);
+        keys.insert(QByteArrayLiteral("raise"), lex_key);
         keys.insert(QByteArrayLiteral("redo"), lex_redo); // Restarts execution in the current block
         keys.insert(QByteArrayLiteral("require"), lex_require);
         keys.insert(QByteArrayLiteral("rescue"), lex_rescue); // Starts an exception section of code in a begin block
@@ -102,7 +102,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("until"), lex_until); // Creates a loop that executes until the condition is true
         keys.insert(QByteArrayLiteral("when"), lex_when); // A condition in a case expression
         keys.insert(QByteArrayLiteral("while"), lex_while); // Creates a loop that executes while the condition is true
-        keys.insert(QByteArrayLiteral("yield"), lex_method); // Starts execution of the block sent to the current method
+        keys.insert(QByteArrayLiteral("yield"), lex_key); // Starts execution of the block sent to the current method
 
 
         keys.insert(QByteArrayLiteral("+"), lex_operator_addition);

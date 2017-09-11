@@ -32,8 +32,8 @@ enum Lexem : quint32 {
     lex_bool = 1 << 21,
     lex_commentary = 1 << 22,
     lex_string = 1 << 23,
-    lex_estring = 1 << 24,
-    lex_heredoc = 1 << 25,
+//    lex_estring = 1 << 24,
+    lex_symbol = 1 << 25,
     lex_regexp = 1 << 26,
     lex_method = 1 << 27,
     lex_class = 1 << 28,
@@ -48,22 +48,22 @@ enum Lexem : quint32 {
     lex_number_float = 5 | lex_number,
     lex_number_double = 6 | lex_number,
 
-    lex_name_symbol = 7 | lex_name,
+    lex_name_symbol = 7 | lex_symbol,
     lex_name_const = 8 | lex_name,
     lex_name_scoped = 9 | lex_name, // variables in blocks and etc // |a, b|
-    lex_name_local = 10 | lex_name,
+    lex_name_local = 10, // | lex_name,
     lex_name_instance = 11 | lex_name,
     lex_name_object = 12 | lex_name,
     lex_name_global = 13 | lex_name,
 
-    lex_require = 14 | lex_method, // require some source
-    lex_include = 15 | lex_method, // include some obj
-    lex_extend = 16 | lex_method, // extend some obj
-    lex_undef = 17 | lex_method, // undef method
-    lex_visibility = 18 | lex_method, // public, private etc // use one space pad in format // https://fabiokung.com/2010/04/05/ruby-indentation-for-access-modifiers-and-their-sections/
-    lex_alias = 19 | lex_method,
-    lex_self = 20 | lex_method,
-    lex_super = 21 | lex_method,
+    lex_require = 14 | lex_key, // require some source
+    lex_include = 15 | lex_key, // include some obj
+    lex_extend = 16 | lex_key, // extend some obj
+    lex_undef = 17 | lex_key, // undef method
+    lex_visibility = 18 | lex_key, // public, private etc // use one space pad in format // https://fabiokung.com/2010/04/05/ruby-indentation-for-access-modifiers-and-their-sections/
+    lex_alias = 19 | lex_key,
+    lex_self = 20 | lex_key,
+    lex_super = 21 | lex_key,
 
     lex_class_def = 22 | lex_key,
     lex_class_def_name = 23,
@@ -98,66 +98,88 @@ enum Lexem : quint32 {
     lex_string_continue = lex_string | lex_continue,
     lex_string_end = 38 | lex_string | lex_end,
 
-    lex_estring_start = lex_estring | lex_start, // "
-    lex_estring_continue = lex_estring | lex_continue,
-    lex_estring_end = lex_estring | lex_end,
+    lex_estring_start = 39 | lex_string | lex_start, // "
+    lex_estring_continue = 40 | lex_string | lex_continue,
+    lex_estring_end = 41 | lex_string | lex_end,
 
-    lex_heredoc_start = lex_heredoc | lex_start, // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
-    lex_heredoc_continue = lex_heredoc | lex_continue,
-    lex_heredoc_end = lex_heredoc | lex_end,
+    lex_heredoc_start = 42 | lex_string | lex_start, // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
+    lex_heredoc_continue = 43 | lex_string | lex_continue,
+    lex_heredoc_end = 44 | lex_string | lex_end,
 
     lex_regexp_start = lex_regexp | lex_start, // /\a+/
     lex_regexp_continue = lex_regexp | lex_continue,
     lex_regexp_end = lex_regexp | lex_end,
 
-    lex_operator_assigment = 39 | lex_binary_operator, // =
-    lex_operator_comparison = 40 | lex_binary_operator, // ==
-    lex_operator_equality = 41 | lex_binary_operator, // ===
-    lex_operator_not_equal = 42 | lex_binary_operator, // !=
+    lex_operator_assigment = 45 | lex_binary_operator, // =
+    lex_operator_comparison = 46 | lex_binary_operator, // ==
+    lex_operator_equality = 47 | lex_binary_operator, // ===
+    lex_operator_not_equal = 48 | lex_binary_operator, // !=
 
-    lex_operator_less = 43 | lex_binary_operator, // <
-    lex_operator_less_eql = 44 | lex_binary_operator, // <=
-    lex_operator_great = 45 | lex_binary_operator, // >
-    lex_operator_great_eql = 46 | lex_binary_operator, // >=
+    lex_operator_less = 49 | lex_binary_operator, // <
+    lex_operator_less_eql = 50 | lex_binary_operator, // <=
+    lex_operator_great = 51 | lex_binary_operator, // >
+    lex_operator_great_eql = 52 | lex_binary_operator, // >=
 
-    lex_operator_sort = 47 | lex_binary_operator, // <=>
+    lex_operator_sort = 53 | lex_binary_operator, // <=>
 
-    lex_operator_addition = 48 | lex_binary_operator, // +
-    lex_operator_addition_assigment = 49 | lex_binary_operator, // +=
-    lex_operator_increase = 50 | lex_unary_operator, // ++
-    lex_operator_substraction = 51 | lex_binary_operator, // -
-    lex_operator_substraction_assigment = 52 | lex_binary_operator, // -=
-    lex_operator_decrease = 53 | lex_unary_operator, // --
-    lex_operator_multiplication = 54 | lex_binary_operator, // *
-    lex_operator_multiplication_assigment = 55 | lex_binary_operator, // *=
-    lex_operator_division = 56 | lex_binary_operator, // /
-    lex_operator_division_assigment = 57 | lex_binary_operator, // /=
-    lex_operator_exponentiation = 58 | lex_binary_operator, // **
-    lex_operator_exponentiation_assigment = 59 | lex_binary_operator, // **=
-    lex_operator_modulus = 60 | lex_binary_operator, // %
-    lex_operator_modulus_assigment = 61 | lex_binary_operator, // %=
+    lex_operator_addition = 54 | lex_binary_operator, // +
+    lex_operator_addition_assigment = 55 | lex_binary_operator, // +=
+    lex_operator_increase = 56 | lex_unary_operator, // ++
+    lex_operator_substraction = 57 | lex_binary_operator, // -
+    lex_operator_substraction_assigment = 58 | lex_binary_operator, // -=
+    lex_operator_decrease = 59 | lex_unary_operator, // --
+    lex_operator_multiplication = 60 | lex_binary_operator, // *
+    lex_operator_multiplication_assigment = 61 | lex_binary_operator, // *=
+    lex_operator_division = 62 | lex_binary_operator, // /
+    lex_operator_division_assigment = 63 | lex_binary_operator, // /=
+    lex_operator_exponentiation = 64 | lex_binary_operator, // **
+    lex_operator_exponentiation_assigment = 65 | lex_binary_operator, // **=
+    lex_operator_modulus = 66 | lex_binary_operator, // %
+    lex_operator_modulus_assigment = 67 | lex_binary_operator, // %=
 
-    lex_safe_navigation = 62 | lex_binary_operator, // &. // ruby 2.3+
-    // 63
-    // 64
-    // 65
+    lex_safe_navigation = 68 | lex_binary_operator, // &. // ruby 2.3+
 
-    lex_operator_bit_and = 66 | lex_binary_operator, // &
-    lex_operator_bit_or = 67 | lex_binary_operator, // |
-    lex_operator_bit_exclusive_or = 68 | lex_binary_operator, // ^
-    lex_operator_bit_not = 69 | lex_unary_operator, // ~
-    lex_operator_bit_left_shift = 70 | lex_binary_operator, // <<
-    lex_operator_bit_right_shift = 71 | lex_binary_operator, // >>
+    lex_operator_bit_and = 69 | lex_binary_operator, // &
+    lex_operator_bit_or = 70 | lex_binary_operator, // |
+    lex_operator_bit_exclusive_or = 71 | lex_binary_operator, // ^
+    lex_operator_bit_not = 72 | lex_unary_operator, // ~
+    lex_operator_bit_left_shift = 73 | lex_binary_operator, // <<
+    lex_operator_bit_right_shift = 74 | lex_binary_operator, // >>
 
-    lex_operator_and = 72 | lex_binary_operator, // &&
-    lex_operator_or = 73 | lex_binary_operator, // ||
-    lex_operator_or_assigment = 74 | lex_binary_operator, // ||=
-    lex_operator_not = 75 | lex_unary_operator, // !
+    lex_operator_and = 75 | lex_binary_operator, // &&
+    lex_operator_or = 76 | lex_binary_operator, // ||
+    lex_operator_or_assigment = 77 | lex_binary_operator, // ||=
+    lex_operator_not = 78 | lex_unary_operator, // !
 
-    lex_global_pre_hook,
-    lex_global_post_hook,
-    lex_end_of_code,
-    lex_expression, // abstract
+    lex_global_pre_hook = 79 | lex_key,
+    lex_global_post_hook = 80 | lex_key,
+    lex_end_of_code = 81 | lex_key,
+
+    lex_block_start = 82 | lex_key, // begin
+    lex_block_end = 83 | lex_key, // end
+
+//    lex_switch = 84 | lex_key,
+    lex_case = 85 | lex_key,
+    lex_when = 86 | lex_key,
+
+    lex_while = 87 | lex_key,
+    lex_until = 88 | lex_key,
+    lex_for = 89 | lex_key,
+    lex_in = 90 | lex_key,
+
+    lex_break = 91 | lex_key,
+    lex_retry = 92 | lex_key,
+    lex_redo = 93 | lex_key,
+    lex_next = 94 | lex_key,
+    lex_rescue = 95 | lex_key,
+    lex_ensure = 96 | lex_key,
+
+    lex_return = 97 | lex_key,
+
+
+
+
+    lex_expression = 98, // abstract
 
     lex_dot,  // .
     lex_dot_dot,  // ..
@@ -172,9 +194,6 @@ enum Lexem : quint32 {
 
     lex_inline_block_start, // {
     lex_inline_block_end, // }
-
-    lex_block_start, // begin
-    lex_block_end, // end
 
     lex_block_vars_start,
 //    lex_block_var,
@@ -192,24 +211,6 @@ enum Lexem : quint32 {
     lex_ternary_main_branch, // ? :
     lex_ternary_alt_branch, // ? :
 
-//    lex_switch,
-    lex_case,
-    lex_when,
-
-    lex_while,
-    lex_until,
-    lex_for,
-    lex_in,
-
-    lex_break,
-    lex_retry,
-    lex_redo,
-    lex_next,
-    lex_rescue,
-    lex_ensure,
-
-    lex_return,
-
     lex_error,
     lex_warning,
     lex_notice,
@@ -220,7 +221,7 @@ enum Lexem : quint32 {
 
 
     lex_highlightable = lex_key | lex_method | lex_name | lex_commentary |
-        lex_string | lex_estring | lex_heredoc | lex_number | lex_regexp,
+        lex_string | lex_number | lex_regexp | lex_symbol,
 
 
     lex_max
