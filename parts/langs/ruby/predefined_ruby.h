@@ -70,7 +70,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("equal?"), lex_operator_equality); // receiver and argument have the same object id
 
         keys.insert(QByteArrayLiteral("extend"), lex_extend);
-        keys.insert(QByteArrayLiteral("false"), lex_bool); // Boolean false
+        keys.insert(QByteArrayLiteral("false"), lex_predefined); // Boolean false
         keys.insert(QByteArrayLiteral("for"), lex_for); // A loop that is similar to using the each method
         keys.insert(QByteArrayLiteral("if"), lex_if); // Used for if and modifier if expressions
         keys.insert(QByteArrayLiteral("in"), lex_in); // Used to separate the iterable object and iterator variable in a for loop
@@ -80,7 +80,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("module"), lex_module_def); // Creates or opens a module
         keys.insert(QByteArrayLiteral("next"), lex_next); // Skips the rest of the block
         keys.insert(QByteArrayLiteral("new"), lex_key);
-        keys.insert(QByteArrayLiteral("nil"), lex_null); // A false value usually indicating “no value” or “unknown”
+        keys.insert(QByteArrayLiteral("nil"), lex_predefined); // A false value usually indicating “no value” or “unknown”
         keys.insert(QByteArrayLiteral("not"), lex_operator_not); // Inverts the following boolean expression
         keys.insert(QByteArrayLiteral("or"), lex_operator_or); // Boolean or with lower precedence than ||
         keys.insert(QByteArrayLiteral("private"), lex_visibility);
@@ -96,7 +96,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("self"), lex_self); // The object the current method is attached to
         keys.insert(QByteArrayLiteral("super"), lex_super); // Calls the current method in a superclass
         keys.insert(QByteArrayLiteral("then"), lex_then); // Indicates the end of conditional blocks in control structures
-        keys.insert(QByteArrayLiteral("true"), lex_bool); // Boolean true
+        keys.insert(QByteArrayLiteral("true"), lex_predefined); // Boolean true
         keys.insert(QByteArrayLiteral("undef"), lex_undef); // Prevents a class or module from responding to a method call
         keys.insert(QByteArrayLiteral("unless"), lex_unless); // Used for unless and modifier unless expressions
         keys.insert(QByteArrayLiteral("until"), lex_until); // Creates a loop that executes until the condition is true
@@ -151,9 +151,9 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("::"), lex_resolution);
 
 
-        keys.insert(QByteArrayLiteral("TRUE"), lex_bool); // Synonym for true
-        keys.insert(QByteArrayLiteral("FALSE"), lex_bool); // Synonym for false
-        keys.insert(QByteArrayLiteral("NIL"), lex_null); // Synonym for nil
+        keys.insert(QByteArrayLiteral("TRUE"), lex_predefined); // Synonym for true
+        keys.insert(QByteArrayLiteral("FALSE"), lex_predefined); // Synonym for false
+        keys.insert(QByteArrayLiteral("NIL"), lex_predefined); // Synonym for nil
         keys.insert(QByteArrayLiteral("ARGF"), lex_name_const); // An object providing access to virtual concatenation of files passed as command-line arguments or standard input if there are no command-line arguments. A synonym for $<
         keys.insert(QByteArrayLiteral("ARGV"), lex_name_const); // An array containing the command-line arguments passed to the program. A synonym for $*
         keys.insert(QByteArrayLiteral("DATA"), lex_name_const); // An input stream for reading the lines of code following the __END__ directive. Not defined if __END__ isn't present in code.

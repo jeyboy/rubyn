@@ -78,7 +78,7 @@ class LexerRuby : public Lexer {
                             )
                         );
                         state -> stack -> replace(lex_block_start);
-                        state -> lex_state = lex_def; // TODO: maybe change to something else
+                        state -> lex_state = lex_def_name;
                     }
                     else {
                         switch(SCHAR0) { // INFO: determine type of word

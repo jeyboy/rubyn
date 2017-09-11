@@ -49,6 +49,8 @@ protected:
         format.setFontWeight(QFont::Bold);
         format.setForeground(QColor::fromRgb(0, 92, 197));
 //        formats.insert(lex_var, format);
+
+        formats.insert(lex_def_name, format);
         formats.insert(lex_symbol, format);
     }
 
@@ -89,10 +91,10 @@ protected:
         formats.insert(lex_commentary, format);
     }
 
-    void registerNumbersFormat() {
+    void registerPredefinedsFormat() {
         QTextCharFormat format;
         format.setForeground(Qt::blue);
-        formats.insert(lex_number, format);
+        formats.insert(lex_predefined, format);
     }
     void registerRegularExpresionsFormat() {
         QTextCharFormat format;
@@ -119,7 +121,7 @@ public:
         registerStringFormat();
         registerMethodFormat();
         registerCommentFormat();
-        registerNumbersFormat();
+        registerPredefinedsFormat();
         registerRegularExpresionsFormat();
 //        registerPreprocessingFormat();
 //        registerDatatypeFormat();
