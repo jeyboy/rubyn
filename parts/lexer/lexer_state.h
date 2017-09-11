@@ -79,7 +79,7 @@ struct LexerState {
 
         lighter -> setFormat(
             bufferPos(),
-            cached_length,
+            cached_length > 0 ? cached_length : 1,
             HighlightFormatFactory::obj().getFormatFor(lexem)
         );
     }

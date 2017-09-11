@@ -266,6 +266,7 @@ protected:
                 break;}
 
 
+
                 case '`':
                 case '\'':
                 case '"': {
@@ -384,7 +385,6 @@ protected:
                     if (!cutWord(state))
                         goto exit;
                 break;}
-
 
 
 
@@ -529,9 +529,8 @@ protected:
 
 
                 case '-': {
-                    if (ECHAR1 == '>' || ECHAR1 == '=') { // lambda
+                    if (ECHAR1 == '>' || ECHAR1 == '=')
                         ++state -> next_offset;
-                    }
 
                     if (!cutWord(state))
                         goto exit;
@@ -575,15 +574,23 @@ protected:
                         switch(ECHAR1) {
                             case 'x': { predef = lex_number_hex; break; }
                             case 'b': { predef = lex_number_bin; break; }
+                            case '0':
                             case '1':
                             case '2':
                             case '3':
                             case '4':
                             case '5':
                             case '6':
-                            case '7':
+                            case '7': { predef = lex_number_oct; break; }
                             case '8':
-                            case '9': { predef = lex_number_oct; break; }
+                            case '9': {
+                                state -> cacheAndLightWithMessage(
+                                    lex_error,
+                                    QByteArrayLiteral("Error in number: wrong literal for octal")
+                                );
+
+                                goto exit;
+                            }
                             default: {
                                 ended = true;
                                 predef = lex_number_dec;
