@@ -50,7 +50,6 @@ protected:
         format.setForeground(QColor::fromRgb(0, 92, 197));
 //        formats.insert(lex_var, format);
 
-        formats.insert(lex_def_name, format);
         formats.insert(lex_symbol, format);
     }
 
@@ -60,13 +59,14 @@ protected:
         format.setForeground(Qt::darkCyan);
         formats.insert(lex_name, format);
     }
-//    void registerClassFormat() {
-//        QTextCharFormat format;
-//        format.setFontWeight(QFont::Bold);
-//        format.setForeground(Qt::darkMagenta);
-//        formats.insert(lex_class, format);
-//        formats.insert(lex_method, format);
-//    }
+
+    void registerDefNameFormat() {
+        QTextCharFormat format;
+        format.setFontWeight(QFont::Bold);
+        format.setForeground(Qt::darkMagenta);
+        formats.insert(lex_def_name, format);
+    }
+
 //    void registerConstFormat() {
 //        QTextCharFormat format;
 //        format.setFontWeight(QFont::Bold);
@@ -116,7 +116,7 @@ public:
         registerKeywordFormat();
         registerAssigmentFormat();
         registerNameFormat();
-//        registerClassFormat();
+        registerDefNameFormat();
 //        registerConstFormat();
         registerStringFormat();
         registerMethodFormat();
