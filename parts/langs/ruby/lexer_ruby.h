@@ -54,27 +54,24 @@ class LexerRuby : public Lexer {
     }
 
     bool cutWord(LexerState * state, const Lexem & predefined_lexem = lex_none) {
-        state -> cachingStrLength();
+        state -> cachingPredicate();
 
-        if (state -> cached_str_length) {
-            QByteArray word;
-            state -> getStr(word);
-
+        if (state -> cached_length) {
             state -> lex_state =
                 predefined_lexem
                     ?
                         predefined_lexem
                     :
-                        PredefinedRuby::obj().lexem(word);
+                        PredefinedRuby::obj().lexem(state -> cached);
 
 
             if (state -> lex_state == lex_undefined) {
-                if (!state -> scope -> hasVar(word)) {
+                if (!state -> scope -> hasVar(state -> cached)) {
                     Lexem & stack_top = state -> stack -> touch();
 
                     if ((stack_top & lex_def) > lex_key) {
                         state -> scope -> addVar(
-                            word,
+                            state -> cached,
                             new FilePoint(
                                 stack_top == lex_class_def ? lex_class_def_name : lex_module_def_name,
                                 0, 0, state -> bufferPos()
@@ -105,14 +102,14 @@ class LexerRuby : public Lexer {
 
                         if (state -> lex_state != lex_name_symbol)
                             state -> scope -> addVar(
-                                word,
+                                state -> cached,
                                 new FilePoint(state -> lex_state, 0, 0, state -> bufferPos())
                             );
 
     //                    if (!state -> var_def_state)
     //                         state -> stack -> push(lex_var_chain_start);
 
-    //                    state -> scope -> addUnregVar(state -> word, 0); // new FilePoint() // TODO: write me
+    //                    state -> scope -> addUnregVar(state -> state -> cached, 0); // new FilePoint() // TODO: write me
 
     //                    if (state -> var_def_state == state -> lex_state) {
     //                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
@@ -122,7 +119,7 @@ class LexerRuby : public Lexer {
     //                    state -> var_def_state = state -> lex_state;
                     }
                 }
-                else state -> lex_state = state -> scope -> varType(word);
+                else state -> lex_state = state -> scope -> varType(state -> cached);
 
             } else {
                 if (state -> lex_state & lex_continue) { // TODO: check me
@@ -143,7 +140,7 @@ class LexerRuby : public Lexer {
             if (highlightable)
                 state -> light(highlightable);
 
-            qDebug() << word;
+            qDebug() << state -> cached;
         } else if (predefined_lexem) {
             if (!checkStack(state -> lex_state, state))
                 return false;
@@ -159,12 +156,9 @@ class LexerRuby : public Lexer {
             // proc delimiter
             bool is_close_block = RCHAR == '}';
 
-            if (predefined_lexem != lex_string_end && (!is_close_block || (is_close_block && state -> cached_str_length == 0))) {
-                state -> lockToDelimiter();
-
-                QByteArray delimiter;
-                state -> getStr(delimiter);
-                state -> lex_state = PredefinedRuby::obj().lexem(delimiter);
+            if (predefined_lexem != lex_string_end && (!is_close_block || (is_close_block && state -> cached_length == 0))) {
+                state -> cachingDelimiter();
+                state -> lex_state = PredefinedRuby::obj().lexem(state -> cached);
 
                 if (state -> lex_state == lex_end_line)
                     state -> new_line_state = lex_none;
@@ -201,7 +195,7 @@ class LexerRuby : public Lexer {
             }
         }
 
-        state -> dropStr();
+        state -> dropCached();
 
         return true;
     }

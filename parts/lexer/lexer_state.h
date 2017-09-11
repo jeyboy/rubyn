@@ -26,6 +26,8 @@
 struct LexerState {
     Highlighter * lighter;
 
+    QByteArray cached;
+
     Lexem lex_state;
     Lexem new_line_state;
 //    Lexem var_def_state;
@@ -35,7 +37,7 @@ struct LexerState {
     quint8 next_offset;
 
 //    LEXER_INT_TYPE cached_str_pos;
-    LEXER_INT_TYPE cached_str_length;
+    LEXER_INT_TYPE cached_length;
 
     const char * start;
     const char * buffer;
@@ -43,26 +45,23 @@ struct LexerState {
 
     LexerState(Highlighter * lighter = 0) : lighter(lighter), new_line_state(lex_none),
         /*var_def_state(lex_none),*/ scope(new Scope()),
-        stack(new Stack<Lexem>(lex_none)), next_offset(1), cached_str_length(0) { }
+        stack(new Stack<Lexem>(lex_none)), next_offset(1), cached_length(0) { }
 
     inline void setBuffer(const char * buff) { prev = start = buffer = buff; }
 
-    inline void cachingStrLength() {
+    inline void cachingPredicate() {
 //        cached_str_pos = bufferPos();
-        cached_str_length = strLength();
+        cached_length = strLength();
+        cached.setRawData(prev, cached_length);
     }
 
-    inline void getStr(QByteArray & str) {
-        str = QByteArray(prev, cached_str_length);
-    }
-
-    inline void lockToDelimiter() {
+    inline void cachingDelimiter() {
         prev = buffer;
         buffer += next_offset;
-        cachingStrLength();
+        cachingPredicate();
     }
 
-    inline void dropStr() {
+    inline void dropCached() {
         next_offset = 1;
         prev = buffer;
     }
@@ -75,7 +74,7 @@ struct LexerState {
     inline void light(const Lexem & lexem) {
         lighter -> setFormat(
             bufferPos(),
-            cached_str_length,
+            cached_length,
             HighlightFormatFactory::obj().getFormatFor(lexem)
         );
     }
