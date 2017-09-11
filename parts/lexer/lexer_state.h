@@ -12,14 +12,17 @@
 #define STREAM_PREV_CHAR(w) STREAM_N_CHAR(w, -1)
 #define STREAM_NEXT_CHAR(w) STREAM_N_CHAR(w, 1)
 
-#define RCHAR STREAM_CURR_CHAR(state -> buffer)
-#define RCHAR2 STREAM_NEXT_CHAR(state -> buffer)
-#define RCHAR3 STREAM_N_CHAR(state -> buffer, 2)
-#define RCHAR_PREV STREAM_PREV_CHAR(state -> buffer)
+#define ECHAR0 STREAM_CURR_CHAR(state -> buffer)
+#define ECHAR1 STREAM_NEXT_CHAR(state -> buffer)
+#define ECHAR2 STREAM_N_CHAR(state -> buffer, 2)
+#define ECHAR3 STREAM_N_CHAR(state -> buffer, 3)
+#define ECHAR4 STREAM_N_CHAR(state -> buffer, 4)
+#define ECHAR5 STREAM_N_CHAR(state -> buffer, 5)
+#define ECHAR_PREV1 STREAM_PREV_CHAR(state -> buffer)
 
-#define LCHAR STREAM_CURR_CHAR(state -> prev)
-#define LCHAR2 STREAM_NEXT_CHAR(state -> prev)
-#define LCHAR3 STREAM_N_CHAR(state -> prev, 2)
+#define SCHAR0 STREAM_CURR_CHAR(state -> prev)
+#define SCHAR1 STREAM_NEXT_CHAR(state -> prev)
+#define SCHAR2 STREAM_N_CHAR(state -> prev, 2)
 
 #define LEXER_INT_TYPE quint32
 
@@ -77,6 +80,11 @@ struct LexerState {
             cached_length,
             HighlightFormatFactory::obj().getFormatFor(lexem)
         );
+    }
+
+    inline void cacheAndLightWithMessage(const Lexem & lexem, const QByteArray & msg) {
+        cachingPredicate();
+        lightWithMessage(lexem, msg);
     }
 
     inline void lightWithMessage(const Lexem & lexem, const QByteArray & /*msg*/) {

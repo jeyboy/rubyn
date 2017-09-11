@@ -81,18 +81,18 @@ class LexerRuby : public Lexer {
                         state -> lex_state = lex_def; // TODO: maybe change to something else
                     }
                     else {
-                        switch(LCHAR) { // INFO: determine type of word
+                        switch(SCHAR0) { // INFO: determine type of word
                             case ':': { state -> lex_state = lex_name_symbol; break;}
                             case '$': { state -> lex_state = lex_name_global; break;}
                             case '@': {
-                                if (LCHAR2 == '@')
+                                if (SCHAR1 == '@')
                                     state -> lex_state = lex_name_object;
                                 else
                                     state -> lex_state = lex_name_instance;
                             break;}
                             default: {
                                 state -> lex_state =
-                                    (RCHAR_PREV == ':')
+                                    (ECHAR_PREV1 == ':')
                                         ?
                                             lex_name_symbol
                                         :
@@ -154,7 +154,7 @@ class LexerRuby : public Lexer {
 
         if (state -> next_offset) {
             // proc delimiter
-            bool is_close_block = RCHAR == '}';
+            bool is_close_block = ECHAR0 == '}';
 
             if (predefined_lexem != lex_string_end && (!is_close_block || (is_close_block && state -> cached_length == 0))) {
                 state -> cachingDelimiter();
@@ -232,7 +232,7 @@ protected:
         while(true) {
             next_step:
 
-            switch(RCHAR) {
+            switch(ECHAR0) {
                 case ';':
                 case '\r':
                 case '\n':
@@ -251,10 +251,10 @@ protected:
 
 
                 case '.': {
-                    if (RCHAR2 == '.') { // is range
+                    if (ECHAR1 == '.') { // is range
                         ++state -> next_offset;
 
-                        if (RCHAR3 == '.') // is range with exclusion
+                        if (ECHAR2 == '.') // is range with exclusion
                             ++state -> next_offset;
                     } /*else {
                         if (PREVCHAR == '$' || isDigit(next_char)) // is float or $.
@@ -269,7 +269,7 @@ protected:
                 case '`':
                 case '\'':
                 case '"': {
-                    end_str_symb = RCHAR;
+                    end_str_symb = ECHAR0;
                     state -> stack -> push(lex_string_start);
 
                     handle_string:
@@ -280,9 +280,9 @@ protected:
                         while(!ended && !out_req) {
                             ++state -> buffer;
 
-                            switch(RCHAR) {
+                            switch(ECHAR0) {
                                 case '#': {
-                                    if (end_str_symb != '\'' && RCHAR2 == '{') {
+                                    if (end_str_symb != '\'' && ECHAR1 == '{') {
                                         def_required = ended = true;
                                     }
                                 break;}
@@ -290,7 +290,7 @@ protected:
                                 case '`':
                                 case '\'':
                                 case '"': {
-                                    if (RCHAR_PREV != '\\') {
+                                    if (ECHAR_PREV1 != '\\') {
                                         ++state -> buffer;
                                         ended = true;
                                     }
@@ -314,10 +314,10 @@ protected:
 
 
                 case ':': {
-                    if (RCHAR2 == ':')
+                    if (ECHAR1 == ':')
                         ++state -> next_offset;
                     else { // if we have deal with symbol
-                        if (isWord(RCHAR_PREV)) {
+                        if (isWord(ECHAR_PREV1)) {
                             ++state -> buffer;
                             state -> next_offset = 0;
                         }
@@ -333,10 +333,10 @@ protected:
 
 
                 case '=': {
-                    if (NEXTCHAR == 'b') { // =begin
-                       if (NEXT_CHAR(window + 1) == 'e' && NEXT_CHAR(window + 2) == 'g' &&
-                            NEXT_CHAR(window + 3) == 'i' && NEXT_CHAR(window + 4) == 'n') {
-                                MOVE(4);
+                    if (ECHAR1 == 'b') { // =begin
+                       if (ECHAR2 == 'e' && ECHAR3 == 'g' &&
+                            ECHAR4 == 'i' && ECHAR5 == 'n') {
+                                state -> buffer += 4;
 
                                 handle_multiline_comment:
                                     bool ended = false;
@@ -346,11 +346,11 @@ protected:
                                     while(!ended && !out_req) {
                                         ++state -> buffer;
 
-                                        switch(CURRCHAR) {
+                                        switch(ECHAR0) {
                                             case '=': {
-                                                if (NEXTCHAR == 'e' && NEXT_CHAR(window + 1) == 'n' && NEXT_CHAR(window + 2) == 'd')
+                                                if (ECHAR1 == 'e' && ECHAR2 == 'n' && ECHAR3 == 'd')
                                                     ended = true;
-                                                    MOVE(4);
+                                                    state -> buffer += 4;
                                             break;}
 
                                             case 0: {
@@ -366,17 +366,17 @@ protected:
                                         }
                                     }
                        }
-                    } else if (NEXTCHAR == 'e' && NEXT_CHAR(window + 1) == 'n' && NEXT_CHAR(window + 2) == 'd') {
-                        MOVE(4);
+                    } else if (ECHAR1 == 'e' && ECHAR2 == 'n' && ECHAR3 == 'd') {
+                        state -> buffer += 4;
                         state -> next_offset = 0;
                     } else {
-                        if (NEXTCHAR == '~')
+                        if (ECHAR1 == '~')
                             ++state -> next_offset;
                         else {
-                            if (NEXTCHAR == '=') // ==
+                            if (ECHAR1 == '=') // ==
                                 ++state -> next_offset;
 
-                            if (NEXTCHAR == '=') // ===
+                            if (ECHAR1 == '=') // ===
                                 ++state -> next_offset;
                         }
                     }
@@ -389,10 +389,10 @@ protected:
 
 
                 case '|': {
-                    if (NEXTCHAR == '|')
+                    if (ECHAR1 == '|')
                         ++state -> next_offset;
 
-                    if (NEXTCHAR == '=')
+                    if (ECHAR1 == '=')
                         ++state -> next_offset;
 
                     if (!cutWord(state))
@@ -402,7 +402,7 @@ protected:
 
 
                 case '&': {
-                    if (NEXTCHAR == '&' || NEXTCHAR == '.')
+                    if (ECHAR1 == '&' || ECHAR1 == '.')
                         ++state -> next_offset;                   
 
                     if (!cutWord(state))
@@ -412,10 +412,10 @@ protected:
 
 
                 case '!': {
-                    if (!isBlank(PREVCHAR))
+                    if (!isBlank(ECHAR_PREV1))
                         goto iterate;
 
-                    if (NEXTCHAR == '~' || NEXTCHAR == '=')
+                    if (ECHAR1 == '~' || ECHAR1 == '=')
                         ++state -> next_offset;
 
                     if (!cutWord(state))
@@ -425,7 +425,7 @@ protected:
 
 
                 case '?': {
-                    if (!isBlank(PREVCHAR))
+                    if (!isBlank(ECHAR_PREV1))
                         goto iterate;
 
                     if (!cutWord(state))
@@ -435,19 +435,19 @@ protected:
 
 
                 case '<': {
-                    if (NEXTCHAR == '<')
+                    if (ECHAR1 == '<')
                         ++state -> next_offset;
 
-                        if (isUpper(NEXTCHAR2)) {
+                        if (isUpper(ECHAR2)) {
                             handle_heredoc:
                                 ;
                                 //TODO: realize heredoc
                         }
                     else {
-                        if (NEXTCHAR == '=') {
+                        if (ECHAR1 == '=') {
                             ++state -> next_offset;
 
-                            if (NEXTCHAR == '>')
+                            if (ECHAR2 == '>')
                                 ++state -> next_offset;
                         }
                     }
@@ -459,7 +459,7 @@ protected:
 
 
                 case '>': {
-                    if (NEXTCHAR == '>' || NEXTCHAR == '=')
+                    if (ECHAR1 == '>' || ECHAR1 == '=')
                         ++state -> next_offset;
 
                     if (!cutWord(state))
@@ -507,7 +507,7 @@ protected:
                 case '#': { // inline comment
                     Lexem predef = lex_none;
 
-                    if (NEXTCHAR == '{' && state -> stack -> touch() == lex_string_continue) {
+                    if (ECHAR1 == '{' && state -> stack -> touch() == lex_string_continue) {
                         ++state -> next_offset;
                     } else {
                         bool ended = false;
@@ -516,7 +516,7 @@ protected:
                         while(!ended) {
                             ++state -> buffer;
 
-                            switch(CURRCHAR) {
+                            switch(ECHAR0) {
                                 case 0: { ended = true; break;}
                             }
                         }
@@ -529,7 +529,7 @@ protected:
 
 
                 case '-': {
-                    if (NEXTCHAR == '>' || NEXTCHAR == '=') { // lambda
+                    if (ECHAR1 == '>' || ECHAR1 == '=') { // lambda
                         ++state -> next_offset;
                     }
 
@@ -540,7 +540,7 @@ protected:
 
 
                 case '+': {
-                    if (NEXTCHAR == '=')
+                    if (ECHAR1 == '=')
                         ++state -> next_offset;
 
                     if (!cutWord(state))
@@ -565,14 +565,14 @@ protected:
                 case '7':
                 case '8':
                 case '9': {
-                    if (isWord(PREVCHAR))
+                    if (isWord(ECHAR_PREV1))
                         goto iterate;
 
                     bool ended = false, has_exp_part = false;
                     Lexem predef = lex_none;
 
-                    if (*window == '0') {
-                        switch(NEXTCHAR) {
+                    if (ECHAR0 == '0') {
+                        switch(ECHAR1) {
                             case 'x': { predef = lex_number_hex; break; }
                             case 'b': { predef = lex_number_bin; break; }
                             case '1':
@@ -598,7 +598,7 @@ protected:
                     while(!ended) {
                         ++state -> buffer;
 
-                        switch(*window) {
+                        switch(ECHAR0) {
                             case '.': {
                                 if ((predef & lex_number_float) == lex_number_float)
                                     ended = true;
@@ -617,13 +617,11 @@ protected:
                             case 'f':
                             case 'F': {
                                 if (predef != lex_number_hex) {
-                                    int word_length = window - prev;
-                                    lighter -> setFormat(
-                                        state -> index - word_length,
-                                        word_length,
-                                        HighlightFormatFactory::obj().getFormatFor(lex_error)
+                                    state -> cacheAndLightWithMessage(
+                                        lex_error,
+                                        QByteArrayLiteral("Error in number: wrong literal")
                                     );
-//                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: wrong literal"));
+
                                     goto exit;
                                 } else is_valid = true;
                             break;}
@@ -631,27 +629,22 @@ protected:
                             case 'e':
                             case 'E': {
                                 if (predef < lex_number_dec) {
-                                    int word_length = window - prev;
-                                    lighter -> setFormat(
-                                        state -> index - word_length,
-                                        word_length,
-                                        HighlightFormatFactory::obj().getFormatFor(lex_error)
+                                    state -> cacheAndLightWithMessage(
+                                        lex_error,
+                                        QByteArrayLiteral("Error in number: exponent part available only for decimals")
                                     );
-//                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: exponent part available only for decimals"));
+
                                     goto exit;
                                 } else if (predef == lex_number_dec) {
                                     if (has_exp_part) {
-                                        int word_length = window - prev;
-                                        lighter -> setFormat(
-                                            state -> index - word_length,
-                                            word_length,
-                                            HighlightFormatFactory::obj().getFormatFor(lex_error)
+                                        state -> cacheAndLightWithMessage(
+                                            lex_error,
+                                            QByteArrayLiteral("Error in number: double exponent part")
                                         );
-//                                        lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: double exponent part"));
                                     } else {
                                         has_exp_part = true;
 
-                                        if (NEXTCHAR == '-' || NEXTCHAR == '+') {
+                                        if (ECHAR1 == '-' || ECHAR1 == '+') {
                                             ++state -> buffer;
                                         }
                                     }
@@ -662,14 +655,11 @@ protected:
                             case '8':
                             case '9': {
                                 if (predef < lex_number_dec) {
-                                    int word_length = window - prev;
-                                    lighter -> setFormat(
-                                        state -> index - word_length,
-                                        word_length,
-                                        HighlightFormatFactory::obj().getFormatFor(lex_error)
+                                    state -> cacheAndLightWithMessage(
+                                        lex_error,
+                                        QByteArrayLiteral("Error in number: 0-7 literals only")
                                     );
 
-//                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: 0-7 literals only"));
                                     goto exit;
                                 }
                             break;}
@@ -682,14 +672,11 @@ protected:
                             case '6':
                             case '7': {
                                 if (predef < lex_number_oct) {
-                                    int word_length = window - prev;
-                                    lighter -> setFormat(
-                                        state -> index - word_length,
-                                        word_length,
-                                        HighlightFormatFactory::obj().getFormatFor(lex_error)
+                                    state -> cacheAndLightWithMessage(
+                                        lex_error,
+                                        QByteArrayLiteral("Error in number: 0,1 literals only")
                                     );
 
-//                                    lexems -> next = new LexError(state -> index, window - prev, QByteArrayLiteral("Error in number: 0,1 literals only"));
                                     goto exit;
                                 }
                             break;}
@@ -703,11 +690,9 @@ protected:
                     }
 
                     if (!is_valid) { // if is hex or is bin and does not have any value: 0x or 0b
-                        int word_length = window - prev;
-                        lighter -> setFormat(
-                            state -> index - word_length,
-                            word_length,
-                            HighlightFormatFactory::obj().getFormatFor(lex_error)
+                        state -> cacheAndLightWithMessage(
+                            lex_error,
+                            QByteArrayLiteral("Error in number: must have value")
                         );
                     }
 
@@ -718,7 +703,7 @@ protected:
 
 
                 case '*': {
-                    if (NEXTCHAR == '*' || NEXTCHAR == '=')
+                    if (ECHAR1 == '*' || ECHAR1 == '=')
                         ++state -> next_offset;
 
                     if (!cutWord(state))
@@ -728,7 +713,7 @@ protected:
 
 
                 case '%': {
-                    if (NEXTCHAR == '=')
+                    if (ECHAR1 == '=')
                         ++state -> next_offset;
 
                     if (!cutWord(state))
@@ -739,7 +724,7 @@ protected:
 
 
                 case '/': {
-                    if (NEXTCHAR == '=')
+                    if (ECHAR1 == '=')
                         ++state -> next_offset;
                     else {
                         switch(state -> new_line_state) {                       
@@ -761,15 +746,15 @@ protected:
                                     while(!ended && !out_req) {
                                         ++state -> buffer;
 
-                                        switch(CURRCHAR) {
+                                        switch(ECHAR0) {
                                             case '#': {
-                                                if (NEXTCHAR == '{') {
+                                                if (ECHAR1 == '{') {
                                                     def_required = ended = true;
                                                 }
                                             break;}
 
                                             case '/': {
-                                                if (PREVCHAR != '\\') {
+                                                if (ECHAR_PREV1 != '\\') {
                                                     ended = true;
                                                 }
                                             break;}
@@ -786,7 +771,7 @@ protected:
                                     while(!ended && !out_req) {
                                         ++state -> buffer;
 
-                                        switch(CURRCHAR) {
+                                        switch(ECHAR0) {
                                             case 'm': // Treat a newline as a character matched by .
                                             case 'i': // Ignore case
                                             case 'x': // Ignore whitespace and comments in the pattern
@@ -826,7 +811,7 @@ protected:
 
 
                 case '@': {
-                    if (NEXTCHAR == '@')
+                    if (ECHAR1 == '@')
                         ++state -> buffer;
 
                     cutWord(state);
@@ -836,7 +821,7 @@ protected:
 
                 case '$': {
                     bool has_match = false;
-                    char next_char = NEXTCHAR;
+                    char next_char = ECHAR1;
 
                     switch(next_char) {
                         case '!':
@@ -862,7 +847,7 @@ protected:
                         break; }
 
                         default: {
-                            const char & n1_char = NEXT_CHAR(window + 1);
+                            const char & n1_char = ECHAR2;
 
                             if (next_char == '-') {
                                 switch(n1_char) {
