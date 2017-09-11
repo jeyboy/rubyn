@@ -28,7 +28,7 @@ enum Lexem : quint32 {
     lex_end = 1 << 18,
 
     lex_key = 1 << 19,
-//    lex_null = 1 << 20, // nil, undefined
+    lex_block = 1 << 20, // nil, undefined
     lex_def = 1 << 21,
     lex_commentary = 1 << 22,
     lex_string = 1 << 23,
@@ -96,9 +96,9 @@ enum Lexem : quint32 {
     lex_string_continue = lex_string | lex_continue,
     lex_string_end = 38 | lex_string | lex_end,
 
-    lex_estring_start = 39 | lex_string | lex_start, // "
-    lex_estring_continue = 40 | lex_string | lex_continue,
-    lex_estring_end = 41 | lex_string | lex_end,
+//    lex_estring_start = 39 | lex_string | lex_start, // "
+//    lex_estring_continue = 40 | lex_string | lex_continue,
+//    lex_estring_end = 41 | lex_string | lex_end,
 
     lex_heredoc_start = 42 | lex_string | lex_start, // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
     lex_heredoc_continue = 43 | lex_string | lex_continue,
@@ -174,12 +174,10 @@ enum Lexem : quint32 {
 
     lex_return = 97 | lex_key,
 
-
-
-
     lex_expression = 98, // abstract
+    lex_interpolation = 99 | lex_block_start, // #{
 
-    lex_dot,  // .
+    lex_dot = 100,  // .
     lex_dot_dot,  // ..
     lex_dot_dot_dot,  // ...
     lex_rocket,  // =>
@@ -188,10 +186,12 @@ enum Lexem : quint32 {
     lex_resolution,  // ::
     lex_comma,  // ,
     lex_inheritance, // <
-    lex_interpolation, // #{
 
-    lex_inline_block_start, // {
-    lex_inline_block_end, // }
+    lex_inline_block_start = lex_block | lex_start,
+    lex_inline_block_end = lex_block | lex_end,
+
+//    lex_inline_block_start, // {
+//    lex_inline_block_end, // }
 
     lex_block_vars_start,
 //    lex_block_var,

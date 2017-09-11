@@ -222,7 +222,7 @@ protected:
                 --state -> buffer;
 
                 switch(top) {
-                    case lex_estring_continue: goto handle_string;
+                    case lex_string_continue: goto handle_string;
                     case lex_heredoc_continue: goto handle_heredoc;
                     case lex_regexp_continue: goto handle_regexp;
                     case lex_commentary_continue: goto handle_multiline_comment;
@@ -498,7 +498,8 @@ protected:
                         );
 
                         state -> stack -> push(top);
-
+                        ++state -> buffer;
+                        state -> dropCached();
                         goto continue_mark;
                     }
                 break;}
