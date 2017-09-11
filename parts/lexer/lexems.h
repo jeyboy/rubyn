@@ -14,7 +14,7 @@
 enum Lexem : quint32 {
     lex_none = 0,
 
-    //    1 << 9,
+    //    1 << 8,
 
     lex_variation = 1 << 11,
 
@@ -94,7 +94,9 @@ enum Lexem : quint32 {
 
     lex_string_start = lex_string | lex_start, // '
     lex_string_continue = lex_string | lex_continue,
-    lex_string_end = 38 | lex_string | lex_end,
+    lex_string_end = lex_string | lex_end,
+
+    // 38
 
 //    lex_estring_start = 39 | lex_string | lex_start, // "
 //    lex_estring_continue = 40 | lex_string | lex_continue,
@@ -178,51 +180,49 @@ enum Lexem : quint32 {
     lex_interpolation = 99 | lex_block_start, // #{
 
     lex_dot = 100,  // .
-    lex_dot_dot,  // ..
-    lex_dot_dot_dot,  // ...
-    lex_rocket,  // =>
-    lex_colon,  // :
-    lex_semicolon,  // ;
-    lex_resolution,  // ::
-    lex_comma,  // ,
-    lex_inheritance, // <
+    lex_dot_dot = 101,  // ..
+    lex_dot_dot_dot = 102,  // ...
+    lex_rocket = 103,  // =>
+    lex_colon = 104,  // :
+    lex_semicolon = 105,  // ;
+    lex_resolution = 106,  // ::
+    lex_comma = 107,  // ,
+    lex_inheritance = 108, // <
 
-    lex_inline_block_start = lex_block | lex_start,
-    lex_inline_block_end = lex_block | lex_end,
+    lex_inline_block_start = 109 | lex_block | lex_start,
+    lex_inline_block_end = 109 | lex_block | lex_end,
 
-//    lex_inline_block_start, // {
-//    lex_inline_block_end, // }
+    // 110
 
-    lex_block_vars_start,
-//    lex_block_var,
-    lex_block_vars_end,
+    lex_block_vars_start = 111,
+//    lex_block_var = 112,
+    lex_block_vars_end = 113,
 
-    lex_wrap_start, // (
-    lex_wrap_end, // )
+    lex_wrap_start = 114, // (
+    lex_wrap_end = 115, // )
 
-    lex_hash_start,
-    lex_hash_end,
+    lex_hash_start = 116,
+    lex_hash_end = 117,
 
-    lex_array_start,
-    lex_array_end,
+    lex_array_start = 118,
+    lex_array_end = 119,
 
-    lex_ternary_main_branch, // ? :
-    lex_ternary_alt_branch, // ? :
+    lex_ternary_main_branch = 120, // ? :
+    lex_ternary_alt_branch = 121, // ? :
 
-    lex_error,
-    lex_warning,
-    lex_notice,
+    lex_error = 122,
+    lex_warning = 123,
+    lex_notice = 124,
 
-    lex_undefined,
-    lex_end_line,
-    lex_ignore,
+    lex_undefined = 125,
+    lex_end_line = 125,
+    lex_ignore = 126,
 
+
+    lex_max = 255,
 
     lex_highlightable = lex_key | lex_method | lex_name | lex_commentary |
         lex_string | lex_predefined | lex_regexp | lex_symbol | lex_def_name,
-
-
-    lex_max
 };
 
 struct Lexems {

@@ -6,6 +6,20 @@
 
 class LexerRuby : public Lexer {
     bool checkStack(const Lexem & lex_flag, LexerState * state) {
+        if (state -> lex_state & lex_def || state -> lex_state & lex_start)
+            state -> stack -> push(state -> lex_state);
+        else if (state -> lex_state & lex_end) {
+            Lexem stack_top = state -> stack -> touch();
+
+            if (EXCLUDE_BIT(lex_flag, lex_end) == EXCLUDE_BIT(stack_top, lex_start))
+                state -> stack -> drop();
+            else {
+                state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
+                return false;
+            }
+        }
+
+
 //        if (lex_flag & lex_start) {
 //            if (lex_flag & lex_chain) {
 //                // INFO: if line is not empty then we have deal with inline branching
@@ -47,9 +61,7 @@ class LexerRuby : public Lexer {
 //                );
 
 ////                APPEND_ERR(QByteArrayLiteral("Error in condition logic"));
-//        } else
-        if (lex_flag & lex_def)
-            state -> stack -> push(lex_flag);
+//        }
 
         return true;
     }
@@ -123,18 +135,19 @@ class LexerRuby : public Lexer {
                 else state -> lex_state = state -> scope -> varType(state -> cached);
 
             } else {
-                if (state -> lex_state & lex_continue) { // TODO: check me
-                    Lexem top = state -> stack -> touch();
 
-                    if (top == state -> lex_state || top == EXCLUDE_BIT(state -> lex_state, lex_continue)) {
-                        state -> stack -> push(state -> lex_state);
-                    } else {
-                        state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
-                        return false;
-                    }
-                }
-                else if (!checkStack(state -> lex_state, state))
-                        return false;
+//                if (state -> lex_state & lex_continue) { // TODO: check me
+//                    Lexem top = state -> stack -> touch();
+
+//                    if (top == state -> lex_state || top == EXCLUDE_BIT(state -> lex_state, lex_continue)) {
+//                        state -> stack -> push(state -> lex_state);
+//                    } else {
+//                        state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
+//                        return false;
+//                    }
+//                } else
+                if (!checkStack(state -> lex_state, state))
+                    return false;
             }
 
             Lexem highlightable = Lexem(state -> lex_state & lex_highlightable);
@@ -152,48 +165,42 @@ class LexerRuby : public Lexer {
             state -> new_line_state = state -> lex_state;
 
 
-
         if (state -> next_offset) {
-            // proc delimiter
-            bool is_close_block = ECHAR0 == '}';
+            state -> cachingDelimiter();
+            state -> lex_state = PredefinedRuby::obj().lexem(state -> cached);
 
-            if (predefined_lexem != lex_string_end && (!is_close_block || (is_close_block && state -> cached_length == 0))) {
-                state -> cachingDelimiter();
-                state -> lex_state = PredefinedRuby::obj().lexem(state -> cached);
+            if (state -> lex_state == lex_end_line)
+                state -> new_line_state = lex_none;
+            else if (state -> lex_state < lex_end_line)
+                state -> new_line_state = state -> lex_state;
 
-                if (state -> lex_state == lex_end_line)
-                    state -> new_line_state = lex_none;
-                else if (state -> lex_state < lex_end_line)
-                    state -> new_line_state = state -> lex_state;
+            if (!checkStack(state -> lex_state, state))
+                return false;
 
-                if (!checkStack(state -> lex_state, state))
-                    return false;
+//            if (state -> var_def_state) {
+//                if (state -> lex_state == lex_var_chain_end) {
+//                    state -> scope -> clearUnregVar();
+//                    state -> var_def_state = lex_none;
+//                } else {
+//                    if (
+//                            (
+//                                state -> lex_state == state -> var_def_state &&
+//                                (
+//                                    state -> var_def_state == lex_var ||
+//                                    state -> var_def_state == lex_comma
+//                                )
+//                            )
+//                            || state -> lex_state == lex_end_line
+//                            || state -> lex_state == lex_binary_operator
+//                    ) {
 
-    //            if (state -> var_def_state) {
-    //                if (state -> lex_state == lex_var_chain_end) {
-    //                    state -> scope -> clearUnregVar();
-    //                    state -> var_def_state = lex_none;
-    //                } else {
-    //                    if (
-    //                            (
-    //                                state -> lex_state == state -> var_def_state &&
-    //                                (
-    //                                    state -> var_def_state == lex_var ||
-    //                                    state -> var_def_state == lex_comma
-    //                                )
-    //                            )
-    //                            || state -> lex_state == lex_end_line
-    //                            || state -> lex_state == lex_binary_operator
-    //                    ) {
-
-    //                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
-    //                        return false;
-    //                    }
-    //                    else if (state -> lex_state != lex_ignore)
-    //                        state -> var_def_state = state -> lex_state;
-    //                }
-    //            }
-            }
+//                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
+//                        return false;
+//                    }
+//                    else if (state -> lex_state != lex_ignore)
+//                        state -> var_def_state = state -> lex_state;
+//                }
+//            }
         }
 
         state -> dropCached();
@@ -498,8 +505,8 @@ protected:
                         );
 
                         state -> stack -> push(top);
-                        ++state -> buffer;
-                        state -> dropCached();
+//                        ++state -> buffer;
+//                        state -> dropCached();
                         goto continue_mark;
                     }
                 break;}
