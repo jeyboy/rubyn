@@ -161,7 +161,7 @@ class LexerRuby : public Lexer {
         }
         else state -> lex_state = lex_ignore;
 
-        if (state -> lex_state < lex_end_line)
+        if (state -> lex_state != lex_ignore)
             state -> new_line_state = state -> lex_state;
 
 
@@ -171,7 +171,7 @@ class LexerRuby : public Lexer {
 
             if (state -> lex_state == lex_end_line)
                 state -> new_line_state = lex_none;
-            else if (state -> lex_state < lex_end_line)
+            else if (state -> lex_state != lex_ignore)
                 state -> new_line_state = state -> lex_state;
 
             if (!checkStack(state -> lex_state, state))
@@ -207,6 +207,50 @@ class LexerRuby : public Lexer {
 
         return true;
     }
+
+    bool parseRegexp(LexerState * state) {
+        bool ended = false;
+        bool out_req = false;
+        bool def_required = false;
+
+        while(!ended && !out_req) {
+            ++state -> buffer;
+
+            switch(ECHAR0) {
+                case '#': { def_required = ended = ECHAR1 == '{';  break;}
+                case '/': { ended = ECHAR_PREV1 != '\\';  break;}
+                case 0: { out_req = true; break;}
+            }
+        }
+
+        ended = false;
+
+        while(!ended && !out_req) {
+            ++state -> buffer;
+
+            switch(ECHAR0) {
+                case 'm': // Treat a newline as a character matched by .
+                case 'i': // Ignore case
+                case 'x': // Ignore whitespace and comments in the pattern
+                case 'o': // Perform #{} interpolation only once
+                case 'u': // encoding:  UTF-8
+                case 'e': // encoding:  EUC-JP
+                case 's': // encoding:  Windows-31J
+                case 'n': // encoding:  ASCII-8BIT
+                    { break;}
+                case 0: { out_req = true; break;}
+                default: { ended = true;                                        }
+            }
+        }
+
+        if (!cutWord(state, out_req ? lex_regexp_continue : lex_regexp_end))
+            return false;
+
+        if (def_required)
+            state -> stack -> push(lex_regexp_continue);
+
+        return true;
+    }
 protected:
     LexerStatus handle(LexerState * state) {
         char end_str_symb;
@@ -231,15 +275,16 @@ protected:
                 switch(top) {
                     case lex_string_continue: goto handle_string;
                     case lex_heredoc_continue: goto handle_heredoc;
-                    case lex_regexp_continue: goto handle_regexp;
+                    case lex_regexp_continue: {
+                        if (!parseRegexp(state))
+                            goto exit;
+                    break;}
                     case lex_commentary_continue: goto handle_multiline_comment;
                     default:;
                 };
             }
 
         while(true) {
-            next_step:
-
             switch(ECHAR0) {
                 case ';':
                 case '\r':
@@ -291,9 +336,7 @@ protected:
 
                             switch(ECHAR0) {
                                 case '#': {
-                                    if (end_str_symb != '\'' && ECHAR1 == '{') {
-                                        def_required = ended = true;
-                                    }
+                                        def_required = ended = end_str_symb != '\'' && ECHAR1 == '{';
                                 break;}
 
                                 case '`':
@@ -305,9 +348,7 @@ protected:
                                     }
                                 break;}
 
-                                case 0: {
-                                    out_req = true;
-                                break;}
+                                case 0: { out_req = true; break;}
                             }
                         }
 
@@ -315,9 +356,8 @@ protected:
                     if (!cutWord(state, out_req ? lex_string_continue : lex_string_end))
                         goto exit;
 
-                    if (def_required) { // INFO: patch for interpolation
+                    if (def_required)
                         state -> stack -> push(lex_string_continue);
-                    }
                 break;}
 
 
@@ -740,90 +780,27 @@ protected:
 
 
 
-
                 case '/': {
-                    if (ECHAR1 == '=')
+                    if (ECHAR1 == '=') {
                         ++state -> next_offset;
-                    else {
-                        switch(state -> new_line_state) {                       
-                            case lex_method: {
 
-                            }
-                            case lex_key:
-                            case lex_wrap_start:
-                            case lex_unary_operator:
-                            case lex_binary_operator:
-                            case lex_none: {
-                                state -> stack -> push(lex_regexp_start);
+                        if (!cutWord(state))
+                            goto exit;
+                    } else {
+                        bool is_regexp = state -> new_line_state != lex_predefined;
 
-                                handle_regexp:
-                                    bool ended = false;
-                                    bool out_req = false;
-                                    bool def_required = false;
+                        state -> next_offset = is_regexp ? 0 : 1;
 
-                                    while(!ended && !out_req) {
-                                        ++state -> buffer;
+                        if (!cutWord(state))
+                            goto exit;
 
-                                        switch(ECHAR0) {
-                                            case '#': {
-                                                if (ECHAR1 == '{') {
-                                                    def_required = ended = true;
-                                                }
-                                            break;}
+                        if (is_regexp) {
+                            state -> stack -> push(lex_regexp_start);
 
-                                            case '/': {
-                                                if (ECHAR_PREV1 != '\\') {
-                                                    ended = true;
-                                                }
-                                            break;}
-
-                                            case 0: {
-                                                out_req = true;
-                                            break;}
-                                        }
-                                    }
-
-
-                                    ended = false;
-
-                                    while(!ended && !out_req) {
-                                        ++state -> buffer;
-
-                                        switch(ECHAR0) {
-                                            case 'm': // Treat a newline as a character matched by .
-                                            case 'i': // Ignore case
-                                            case 'x': // Ignore whitespace and comments in the pattern
-                                            case 'o': // Perform #{} interpolation only once
-                                            case 'u': // encoding:  UTF-8
-                                            case 'e': // encoding:  EUC-JP
-                                            case 's': // encoding:  Windows-31J
-                                            case 'n': // encoding:  ASCII-8BIT
-                                                { break;}
-                                            case 0: {
-                                                out_req = true;
-                                            break;}
-                                            default: {
-                                                ended = true;
-                                            }
-                                        }
-                                    }
-
-
-                                if (!cutWord(state, out_req ? lex_regexp_continue : lex_regexp_end))
-                                    goto exit;
-
-                                if (def_required) { // INFO: patch for interpolation
-                                    state -> stack -> push(lex_regexp_continue);
-                                }
-
-                                goto next_step;
-                            break;}
-                            default:;
+                            if (!parseRegexp(state))
+                                goto exit;
                         }
                     }
-
-                    if (!cutWord(state))
-                        goto exit;
                 break;}
 
 
