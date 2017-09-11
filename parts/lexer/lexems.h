@@ -29,7 +29,7 @@ enum Lexem : quint32 {
 
     lex_key = 1 << 19,
 //    lex_null = 1 << 20, // nil, undefined
-//    lex_bool = 1 << 21,
+    lex_def = 1 << 21,
     lex_commentary = 1 << 22,
     lex_string = 1 << 23,
     lex_def_name = 1 << 24,
@@ -65,15 +65,13 @@ enum Lexem : quint32 {
     lex_self = 20 | lex_key,
     lex_super = 21 | lex_key,
 
-    lex_class_def = 22 | lex_key,
+    lex_class_def = 22 | lex_def | lex_key,
     lex_class_def_name = 23,
 
-    lex_module_def = 24 | lex_key,
+    lex_module_def = 24 | lex_def | lex_key,
     lex_module_def_name = 25,
 
-    lex_def = lex_class_def | lex_module_def,
-
-    lex_method_def = 26 | lex_key,
+    lex_method_def = 26 | lex_def | lex_key,
     lex_method_def_static_flag = 27,
     lex_method_def_name = 28,
 

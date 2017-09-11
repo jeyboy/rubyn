@@ -47,8 +47,9 @@ class LexerRuby : public Lexer {
 //                );
 
 ////                APPEND_ERR(QByteArrayLiteral("Error in condition logic"));
-//        } else if (lex_flag & lex_def)
-//            state -> stack -> push(lex_flag);
+//        } else
+        if (lex_flag & lex_def)
+            state -> stack -> push(lex_flag);
 
         return true;
     }
