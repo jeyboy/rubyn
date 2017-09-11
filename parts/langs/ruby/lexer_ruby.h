@@ -694,6 +694,8 @@ protected:
                             lex_error,
                             QByteArrayLiteral("Error in number: must have value")
                         );
+
+                        goto exit;
                     }
 
                     if (!cutWord(state, predef))

@@ -69,12 +69,14 @@ struct LexerState {
         prev = buffer;
     }
 
-    inline LEXER_INT_TYPE bufferPos() { return buffer - start; }
+    inline LEXER_INT_TYPE bufferPos() { return prev - start; }
     inline LEXER_INT_TYPE strLength() { return buffer - prev; }
 
 //    inline quint32 bufferLenght() const { return ; }
 
     inline void light(const Lexem & lexem) {
+//        qDebug() << "!!!!" << bufferPos() << cached_length;
+
         lighter -> setFormat(
             bufferPos(),
             cached_length,
