@@ -133,7 +133,7 @@ void CodeEditor::highlightCurrentLine() {
         QTextEdit::ExtraSelection selection;
 
 //        QColor lineColor = QColor(Qt::yellow).lighter(160);
-        QColor lineColor = QColor::fromRgb(128, 128, 128, 24);
+        QColor lineColor = QColor::fromRgb(128, 128, 128, 16);
 
         QTextCursor cursor = textCursor();
         QTextBlock origin_block = cursor.block();

@@ -11,224 +11,351 @@
 
  // = (1ULL << 1),
 
-enum Lexem : quint32 {
-    lex_none = 0,
+enum Lexem : quint16 {
+    lex_error = 0,
+    lex_warning,
+    lex_notice,
 
-    //    1 << 8,
+    lex_none,
 
-    lex_variation = 1 << 11,
+//    ////////// highlightable
+//    lex_key = 1 << 19,
+//    lex_block = 1 << 20,
+//    lex_def = 1 << 21,
+//    lex_commentary = 1 << 22,
+//    lex_string = 1 << 23,
+//    lex_def_name = 1 << 24,
+//    lex_symbol = 1 << 25,
+//    lex_regexp = 1 << 26,
+//    lex_method = 1 << 27,
+//    lex_class = 1 << 28,
+//    lex_predefined = 1 << 29,
+//    lex_name = 1 << 30,
+//    //////////
 
-    lex_operator = 1 << 12,
-    lex_unary_operator = 1 << 13 | lex_operator,
-    lex_binary_operator = 1 << 14 | lex_operator,
-    lex_chain = 1 << 15,
+    lex_super,
+    lex_self,
 
-    lex_start = 1 << 16,
-    lex_continue = 1 << 17,
-    lex_end = 1 << 18,
+    lex_expression, // abstract
 
-    lex_key = 1 << 19,
-    lex_block = 1 << 20, // nil, undefined
-    lex_def = 1 << 21,
-    lex_commentary = 1 << 22,
-    lex_string = 1 << 23,
-    lex_def_name = 1 << 24,
-    lex_symbol = 1 << 25,
-    lex_regexp = 1 << 26,
-    lex_method = 1 << 27,
-    lex_class = 1 << 28,
-    lex_predefined = 1 << 29,
-    lex_name = 1 << 30,
+    lex_unary_operator,
+    lex_binary_operator,
 
+    lex_bin,
+    lex_oct,
+    lex_dec,
+    lex_hex,
+    lex_float,
+    lex_double,
 
-    lex_number_bin = 1 | lex_predefined,
-    lex_number_oct = 2 | lex_predefined,
-    lex_number_dec = 3 | lex_predefined,
-    lex_number_hex = 4 | lex_predefined,
-    lex_number_float = 5 | lex_predefined,
-    lex_number_double = 6 | lex_predefined,
+    lex_const,
+    lex_var_scoped, // variables in blocks and etc // |a, b|
+    lex_var_local,
+    lex_var_instance,
+    lex_var_object,
+    lex_var_global,
 
-    lex_name_symbol = 7 | lex_symbol,
-    lex_name_const = 8 | lex_name,
-    lex_name_scoped = 9 | lex_name, // variables in blocks and etc // |a, b|
-    lex_name_local = 10, // | lex_name,
-    lex_name_instance = 11 | lex_name,
-    lex_name_object = 12 | lex_name,
-    lex_name_global = 13 | lex_name,
+    lex_interpolation, // #{
 
-    lex_require = 14 | lex_key, // require some source
-    lex_include = 15 | lex_key, // include some obj
-    lex_extend = 16 | lex_key, // extend some obj
-    lex_undef = 17 | lex_key, // undef method
-    lex_visibility = 18 | lex_key, // public, private etc // use one space pad in format // https://fabiokung.com/2010/04/05/ruby-indentation-for-access-modifiers-and-their-sections/
-    lex_alias = 19 | lex_key,
-    lex_self = 20 | lex_key,
-    lex_super = 21 | lex_key,
-
-    lex_class_def = 22 | lex_def | lex_key,
-    lex_class_def_name = 23,
-
-    lex_module_def = 24 | lex_def | lex_key,
-    lex_module_def_name = 25,
-
-    lex_method_def = 26 | lex_def | lex_key,
-    lex_method_def_static_flag = 27,
-    lex_method_def_name = 28,
-
-    lex_lambda_def = 29 | lex_key, // -> // Lambda.new // lambda
-    lex_lambda_vars_start = 30, // (
-
-    lex_proc_def = 31 | lex_key, // Proc.new // proc
-
-    lex_unless = 32 | lex_chain,
-    lex_if = 33 | lex_chain,
-    lex_then = 34,
-    lex_elsif = 35,
-    lex_else = 36,
-
-    lex_inline_commentary = 37 | lex_commentary,
-
-    lex_commentary_start = lex_commentary | lex_start,
-    lex_commentary_continue = lex_commentary | lex_continue,
-    lex_commentary_end = lex_commentary | lex_end,
-
-    lex_string_start = lex_string | lex_start, // '
-    lex_string_continue = lex_string | lex_continue,
-    lex_string_end = lex_string | lex_end,
-
-    // 38
-
-//    lex_estring_start = 39 | lex_string | lex_start, // "
-//    lex_estring_continue = 40 | lex_string | lex_continue,
-//    lex_estring_end = 41 | lex_string | lex_end,
-
-    lex_heredoc_start = 42 | lex_string | lex_start, // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
-    lex_heredoc_continue = 43 | lex_string | lex_continue,
-    lex_heredoc_end = 44 | lex_string | lex_end,
-
-    lex_regexp_start = lex_regexp | lex_start, // /\a+/
-    lex_regexp_continue = lex_regexp | lex_continue,
-    lex_regexp_end = lex_regexp | lex_end,
-
-    lex_operator_assigment = 45 | lex_binary_operator, // =
-    lex_operator_comparison = 46 | lex_binary_operator, // ==
-    lex_operator_equality = 47 | lex_binary_operator, // ===
-    lex_operator_not_equal = 48 | lex_binary_operator, // !=
-
-    lex_operator_less = 49 | lex_binary_operator, // <
-    lex_operator_less_eql = 50 | lex_binary_operator, // <=
-    lex_operator_great = 51 | lex_binary_operator, // >
-    lex_operator_great_eql = 52 | lex_binary_operator, // >=
-
-    lex_operator_sort = 53 | lex_binary_operator, // <=>
-
-    lex_operator_addition = 54 | lex_binary_operator, // +
-    lex_operator_addition_assigment = 55 | lex_binary_operator, // +=
-    lex_operator_increase = 56 | lex_unary_operator, // ++
-    lex_operator_substraction = 57 | lex_binary_operator, // -
-    lex_operator_substraction_assigment = 58 | lex_binary_operator, // -=
-    lex_operator_decrease = 59 | lex_unary_operator, // --
-    lex_operator_multiplication = 60 | lex_binary_operator, // *
-    lex_operator_multiplication_assigment = 61 | lex_binary_operator, // *=
-    lex_operator_division = 62 | lex_binary_operator, // /
-    lex_operator_division_assigment = 63 | lex_binary_operator, // /=
-    lex_operator_exponentiation = 64 | lex_binary_operator, // **
-    lex_operator_exponentiation_assigment = 65 | lex_binary_operator, // **=
-    lex_operator_modulus = 66 | lex_binary_operator, // %
-    lex_operator_modulus_assigment = 67 | lex_binary_operator, // %=
-
-    lex_safe_navigation = 68 | lex_binary_operator, // &. // ruby 2.3+
-
-    lex_operator_bit_and = 69 | lex_binary_operator, // &
-    lex_operator_bit_or = 70 | lex_binary_operator, // |
-    lex_operator_bit_exclusive_or = 71 | lex_binary_operator, // ^
-    lex_operator_bit_not = 72 | lex_unary_operator, // ~
-    lex_operator_bit_left_shift = 73 | lex_binary_operator, // <<
-    lex_operator_bit_right_shift = 74 | lex_binary_operator, // >>
-
-    lex_operator_and = 75 | lex_binary_operator, // &&
-    lex_operator_or = 76 | lex_binary_operator, // ||
-    lex_operator_or_assigment = 77 | lex_binary_operator, // ||=
-    lex_operator_not = 78 | lex_unary_operator, // !
-
-    lex_global_pre_hook = 79 | lex_key,
-    lex_global_post_hook = 80 | lex_key,
-    lex_end_of_code = 81 | lex_key,
-
-    lex_block_start = 82 | lex_key, // begin
-    lex_block_end = 83 | lex_key, // end
-
-//    lex_switch = 84 | lex_key,
-    lex_case = 85 | lex_key,
-    lex_when = 86 | lex_key,
-
-    lex_while = 87 | lex_key,
-    lex_until = 88 | lex_key,
-    lex_for = 89 | lex_key,
-    lex_in = 90 | lex_key,
-
-    lex_break = 91 | lex_key,
-    lex_retry = 92 | lex_key,
-    lex_redo = 93 | lex_key,
-    lex_next = 94 | lex_key,
-    lex_rescue = 95 | lex_key,
-    lex_ensure = 96 | lex_key,
-
-    lex_return = 97 | lex_key,
-
-    lex_expression = 98, // abstract
-    lex_interpolation = 99 | lex_block_start, // #{
-
-    lex_dot = 100,  // .
-    lex_dot_dot = 101,  // ..
-    lex_dot_dot_dot = 102,  // ...
-    lex_rocket = 103,  // =>
-    lex_colon = 104,  // :
-    lex_semicolon = 105,  // ;
-    lex_resolution = 106,  // ::
-    lex_comma = 107,  // ,
-    lex_inheritance = 108, // <
-
-    lex_inline_block_start = 109 | lex_block | lex_start,
-    lex_inline_block_end = 109 | lex_block | lex_end,
-
-    // 110
-
-    lex_block_vars_start = 111,
-//    lex_block_var = 112,
-    lex_block_vars_end = 113,
-
-    lex_wrap_start = 114, // (
-    lex_wrap_end = 115, // )
-
-    lex_hash_start = 116,
-    lex_hash_end = 117,
-
-    lex_array_start = 118,
-    lex_array_end = 119,
-
-    lex_ternary_main_branch = 120, // ? :
-    lex_ternary_alt_branch = 121, // ? :
-
-    lex_error = 122,
-    lex_warning = 123,
-    lex_notice = 124,
-
-    lex_undefined = 125,
-    lex_end_line = 125,
-    lex_ignore = 126,
+    lex_dot,  // .
+    lex_dot_dot,  // ..
+    lex_dot_dot_dot,  // ...
+    lex_rocket,  // =>
+    lex_colon,  // :
+    lex_semicolon,  // ;
+    lex_resolution,  // ::
+    lex_comma,  // ,
+    lex_inheritance, // <
 
 
-    lex_max = 255,
+    lex_operator_assigment, // =
+    lex_operator_comparison, // ==
+    lex_operator_equality, // ===
+    lex_operator_not_equal, // !=
 
-    lex_highlightable = lex_key | lex_method | lex_name | lex_commentary |
-        lex_string | lex_predefined | lex_regexp | lex_symbol | lex_def_name,
+    lex_operator_less, // <
+    lex_operator_less_eql, // <=
+    lex_operator_great, // >
+    lex_operator_great_eql, // >=
+
+    lex_operator_sort, // <=>
+
+    lex_operator_addition, // +
+    lex_operator_addition_assigment, // +=
+    lex_operator_increase, // ++
+    lex_operator_substraction, // -
+    lex_operator_substraction_assigment, // -=
+    lex_operator_decrease, // --
+    lex_operator_multiplication, // *
+    lex_operator_multiplication_assigment, // *=
+    lex_operator_division, // /
+    lex_operator_division_assigment, // /=
+    lex_operator_exponentiation, // **
+    lex_operator_exponentiation_assigment, // **=
+    lex_operator_modulus, // %
+    lex_operator_modulus_assigment, // %=
+
+    lex_operator_safe_navigation, // &. // ruby 2.3+
+
+    lex_operator_bit_and, // &
+    lex_operator_bit_or, // |
+    lex_operator_bit_exclusive_or, // ^
+    lex_operator_bit_not, // ~
+    lex_operator_bit_left_shift, // <<
+    lex_operator_bit_right_shift, // >>
+
+    lex_operator_and, // &&
+    lex_operator_or, // ||
+    lex_operator_or_assigment, // ||=
+    lex_operator_not, // !
+
+
+    lex_method_def,
+    lex_method_scope,
+    lex_method_def_name,
+    lex_method_def_vars_start,
+    lex_method_def_var_attr, // const
+    lex_method_def_var_type, // int
+    lex_method_def_var_access_type, // * & and etc
+    lex_method_def_var_name,
+    lex_method_def_vars_splitter,
+    lex_method_def_vars_end,
+    lex_method_def_block,
+    lex_method_def_block_end,
+
+    lex_method_call_name,
+    lex_method_call_vars_start,
+    lex_method_def_vars_splitter,
+    lex_method_call_vars_end,
+    lex_method_call_block,
+    lex_method_call_block_vars_start,
+    lex_method_call_block_var_name,
+    lex_method_call_block_vars_splitter,
+    lex_method_call_block_vars_end,
+    lex_method_call_block_end,
+
+
+    lex_class_def,
+    lex_class_def_name,
+    lex_class_def_inheritance,
+    lex_class_def_ancestor,
+    lex_class_def_block,
+    lex_class_def_block_end,
+
+
+    lex_module_def,
+    lex_module_def_name,
+    lex_module_def_block,
+    lex_module_def_block_end,
+
+
+    lex_lambda_def,
+    lex_lambda_def_vars_start,
+    lex_lambda_def_var_attr, // const
+    lex_lambda_def_var_type, // int
+    lex_lambda_def_var_access_type, // * & and etc
+    lex_lambda_def_var_name,
+    lex_lambda_def_vars_splitter,
+    lex_lambda_def_vars_end,
+    lex_lambda_def_block,
+    lex_lambda_def_block_end,
+
+
+    lex_proc_def,
+    lex_proc_def_block,
+    lex_proc_def_block_end,
+    lex_proc_def_vars_start,
+    lex_proc_def_var_attr, // const
+    lex_proc_def_var_type, // int
+    lex_proc_def_var_access_type, // * & and etc
+    lex_proc_def_var_name,
+    lex_proc_def_vars_splitter,
+    lex_proc_def_vars_end,
+
+    lex_inline_commentary,
+
+    lex_commentary_start,
+    lex_commentary_continue,
+    lex_commentary_end,
+
+    lex_string_start,
+    lex_string_continue,
+    lex_string_end,
+
+    lex_estring_start, // "
+    lex_estring_continue,
+    lex_estring_end,
+
+    lex_heredoc_start, // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
+    lex_heredoc_continue,
+    lex_heredoc_end,
+
+    lex_regexp_start, // /\a+/
+    lex_regexp_continue,
+    lex_regexp_end,
+
+
+    lex_require, // require some source
+    lex_require_path,
+
+    lex_include, // include some obj
+    lex_include_obj, // part of name
+    lex_include_resolution, // ::
+    lex_include_name, // full name
+
+    lex_extend, // extend some obj
+    lex_extend_obj, // part of name
+    lex_extend_resolution, // ::
+    lex_exyend_name, // full name
+
+    lex_undef, // undef method
+    lex_undef_name,
+
+    lex_visibility_scope, // public, private etc // use one space pad in format // https://fabiokung.com/2010/04/05/ruby-indentation-for-access-modifiers-and-their-sections/
+    lex_visibility_scope_name, // public :show, :index and etc
+
+    lex_alias,
+    lex_alias_base_name,
+    lex_alias_alt_name,
+
+
+    lex_wrap_start, // (
+    lex_wrap_end, // )
+
+
+    lex_hash_start,
+    lex_hash_item, // key and val
+    lex_hash_key,
+    lex_hash_key_with_relation,
+    lex_hash_key_relation, // =>
+    lex_hash_val,
+    lex_hash_splitter,
+    lex_hash_end,
+
+
+    lex_array_start,
+    lex_array_item,
+    lex_array_splitter,
+    lex_array_end,
+
+
+    lex_ternary_main_start, // ? :
+    lex_ternary_main_val, // ? :
+    lex_ternary_alt_start,
+    lex_ternary_alt_val,
+
+
+    lex_unless,
+    lex_unless_rule,
+    lex_unless_then,
+    lex_unless_block,
+    lex_unless_block_end,
+
+    lex_if,
+    lex_if_rule,
+    lex_if_then,
+    lex_if_block,
+    lex_if_block_end,
+
+    lex_elsif,
+    lex_elsif_rule,
+    lex_elsif_then,
+    lex_elsif_block,
+    lex_elsif_block_end,
+
+    lex_else,
+    lex_else_block,
+    lex_else_block_end,
+
+
+    lex_switch,
+    lex_switch_target,
+    lex_switch_block,
+    lex_switch_block_end,
+
+    lex_case,
+    lex_case_target,
+    lex_case_target_block,
+    lex_case_target_block_end,
+
+    lex_when,
+    lex_when_target,
+    lex_when_target_splitter,
+    lex_when_then,
+    lex_when_else,
+    lex_when_block,
+    lex_when_block_end,
+
+
+    lex_while,
+    lex_while_rule,
+    lex_while_block,
+    lex_while_block_end,
+
+    lex_until,
+    lex_until_rule,
+    lex_until_block,
+    lex_until_block_end,
+
+    lex_for,
+    lex_for_vars_start,
+    lex_for_var,
+    lex_for_vars_splitter,
+    lex_for_vars_end,
+
+    lex_for_in,
+    lex_for_in_target,
+
+    lex_loop_break,
+    lex_loop_redo,
+    lex_loop_next,
+
+
+    lex_inline_block_start,
+    lex_inline_block_vars_start,
+    lex_inline_block_var_access_type, // * & and etc
+    lex_inline_block_var_name,
+    lex_inline_block_vars_splitter,
+    lex_inline_block_vars_end,
+    lex_inline_block_end,
+
+
+    lex_block_start,
+    lex_block_rescue,
+    lex_block_ensure,
+    lex_block_retry,
+    lex_block_end,
+
+
+    lex_return,
+
+
+    lex_global_pre_hook,
+    lex_global_post_hook,
+    lex_end_of_code,
+
+
+    lex_undefined,
+    lex_end_line,
+    lex_blank,
+    lex_blanks,
+    lex_ignore,
 };
 
 struct Lexems {
     QByteArray toStr(const Lexem & lexem) {
         switch(lexem) {
+
+
             default: return QByteArrayLiteral("Undefined");
+        }
+    }
+
+    Lexem toHighlightable(const Lexem & lexem) {
+        switch(lexem) {
+
+
+            default: return lex_none;
         }
     }
 };

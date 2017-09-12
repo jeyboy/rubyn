@@ -37,6 +37,7 @@ struct LexerState {
 
     Scope * scope;
     Stack<Lexem> * stack;
+    Stack<Lexem> * chain;
     quint8 next_offset;
 
 //    LEXER_INT_TYPE cached_str_pos;
@@ -48,7 +49,8 @@ struct LexerState {
 
     LexerState(Highlighter * lighter = 0) : lighter(lighter), new_line_state(lex_none),
         /*var_def_state(lex_none),*/ scope(new Scope()),
-        stack(new Stack<Lexem>(lex_none)), next_offset(1), cached_length(0) { }
+        stack(new Stack<Lexem>(lex_none)), chain(new Stack<Lexem>(lex_none, 32)),
+        next_offset(1), cached_length(0) { }
 
     inline void setBuffer(const char * buff) { prev = start = buffer = buff; }
 

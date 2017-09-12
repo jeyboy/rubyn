@@ -21,6 +21,8 @@ public:
         delete [] data;
     }
 
+    inline T * items() const { return curr; }
+
     inline T & touch() {
         return *curr;
     }
