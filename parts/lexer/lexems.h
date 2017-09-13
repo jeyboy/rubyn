@@ -11,12 +11,16 @@
 
  // = (1ULL << 1),
 
-enum Lexem : quint16 {
+enum Lexem : quint32 {
+    // lex_to_stack,
+    // lex_from_stack
+
     lex_error = 0,
     lex_warning,
     lex_notice,
 
     lex_none,
+
 
 //    ////////// highlightable
 //    lex_key = 1 << 19,
@@ -37,6 +41,8 @@ enum Lexem : quint16 {
     lex_self,
 
     lex_expression, // abstract
+    lex_predefined_expression, // abstract
+    lex_word, // names and etc
 
     lex_unary_operator,
     lex_binary_operator,
@@ -48,6 +54,7 @@ enum Lexem : quint16 {
     lex_float,
     lex_double,
 
+    lex_symbol,
     lex_const,
     lex_var_scoped, // variables in blocks and etc // |a, b|
     lex_var_local,
@@ -65,7 +72,10 @@ enum Lexem : quint16 {
     lex_semicolon,  // ;
     lex_resolution,  // ::
     lex_comma,  // ,
-    lex_inheritance, // <
+    lex_open_curly_bracket, // {
+    lex_close_curly_bracket, // }
+    lex_open_square_bracket, // [
+    lex_close_square_bracket, // ]
 
 
     lex_operator_assigment, // =
@@ -111,8 +121,12 @@ enum Lexem : quint16 {
 
 
     lex_method_def,
-    lex_method_scope,
+    lex_method_def_scope,
+    lex_method_def_scoped,
     lex_method_def_name,
+    lex_method_def_scoped_name,
+    lex_method_def_block,
+    lex_method_def_block_end,
     lex_method_def_vars_start,
     lex_method_def_var_attr, // const
     lex_method_def_var_type, // int
@@ -120,12 +134,13 @@ enum Lexem : quint16 {
     lex_method_def_var_name,
     lex_method_def_vars_splitter,
     lex_method_def_vars_end,
-    lex_method_def_block,
-    lex_method_def_block_end,
+
+
+    lex_predefined_method_call_name,
 
     lex_method_call_name,
     lex_method_call_vars_start,
-    lex_method_def_vars_splitter,
+    lex_method_call_vars_splitter,
     lex_method_call_vars_end,
     lex_method_call_block,
     lex_method_call_block_vars_start,
@@ -137,14 +152,23 @@ enum Lexem : quint16 {
 
     lex_class_def,
     lex_class_def_name,
+    lex_class_def_extension,
+    lex_class_def_extender,
     lex_class_def_inheritance,
     lex_class_def_ancestor,
     lex_class_def_block,
     lex_class_def_block_end,
 
+    lex_class_def_short,
+    lex_class_def_short_accessing,
+    lex_class_def_short_method,
+    lex_class_def_short_block,
+    lex_class_def_short_block_end,
+
 
     lex_module_def,
     lex_module_def_name,
+    lex_module_def_resolution,
     lex_module_def_block,
     lex_module_def_block_end,
 
@@ -244,6 +268,7 @@ enum Lexem : quint16 {
     lex_ternary_alt_start,
     lex_ternary_alt_val,
 
+    lex_then,
 
     lex_unless,
     lex_unless_rule,
@@ -310,14 +335,21 @@ enum Lexem : quint16 {
     lex_loop_redo,
     lex_loop_next,
 
+    lex_do_block_start,
+    lex_do_block_vars_start,
+    lex_do_block_var_access_type, // * & and etc
+    lex_do_block_var_name,
+    lex_do_block_vars_splitter,
+    lex_do_block_vars_end,
+    lex_do_block_end,
 
-    lex_inline_block_start,
-    lex_inline_block_vars_start,
-    lex_inline_block_var_access_type, // * & and etc
-    lex_inline_block_var_name,
-    lex_inline_block_vars_splitter,
-    lex_inline_block_vars_end,
-    lex_inline_block_end,
+    lex_inline_do_block_start,
+    lex_inline_do_block_vars_start,
+    lex_inline_do_block_var_access_type, // * & and etc
+    lex_inline_do_block_var_name,
+    lex_inline_do_block_vars_splitter,
+    lex_inline_do_block_vars_end,
+    lex_inline_do_block_end,
 
 
     lex_block_start,
@@ -337,9 +369,13 @@ enum Lexem : quint16 {
 
     lex_undefined,
     lex_end_line,
+    lex_tab,
     lex_blank,
     lex_blanks,
     lex_ignore,
+
+
+    lex_max
 };
 
 struct Lexems {
