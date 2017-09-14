@@ -71,7 +71,7 @@ protected:
 //        QTextCharFormat format;
 //        format.setFontWeight(QFont::Bold);
 //        format.setForeground(Qt::darkMagenta);
-//        formats.insert(lex_name_const, format);
+//        formats.insert(lex_const, format);
 //    }
     void registerStringFormat() {
         QTextCharFormat format;

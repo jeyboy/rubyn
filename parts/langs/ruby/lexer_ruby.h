@@ -213,69 +213,73 @@ class LexerRuby : public Lexer {
         state -> cachingPredicate();
 
         if (state -> cached_length) {
-            state -> lex_state =
-                predefined_lexem
-                    ?
-                        predefined_lexem
-                    :
-                        Lexem & stack_top = state -> stack -> touch();
-
-                        if ((stack_top & lex_def) > lex_key) {
-                            state -> lex_state = stack_top == lex_class_def ? lex_class_def_name : lex_module_def_name;
-
-                            state -> scope -> addVar(
-                                state -> cached,
-                                new FilePoint(
-                                    state -> lex_state,
-                                    0, 0, state -> bufferPos()
-                                )
-                            );
-                        }
-                        else
-                            PredefinedRuby::obj().lexem(state -> cached);
 
 
 
-
-
-
-            if (state -> lex_state == lex_undefined) {
-                if (!state -> scope -> hasVar(state -> cached)) {
-                    switch(SCHAR0) { // INFO: determine type of word
-                        case ':': { state -> lex_state = lex_symbol; break;}
-                        case '$': { state -> lex_state = lex_var_global; break;}
-                        case '@': {
-                            if (SCHAR1 == '@')
-                                state -> lex_state = lex_var_object;
-                            else
-                                state -> lex_state = lex_var_instance;
-                        break;}
-                        default: {
-                            state -> lex_state =
-                                (ECHAR_PREV1 == ':')
-                                    ?
-                                        lex_symbol
-                                    :
-                                        lex_var_local;
-                        }
-                    }
-
-                    if (state -> lex_state != lex_symbol)
-                        state -> scope -> addVar(
-                            state -> cached,
-                            new FilePoint(state -> lex_state, 0, 0, state -> bufferPos())
-                        );
-                }
-                else state -> lex_state = state -> scope -> varType(state -> cached);
-            }
-
-            qDebug() << state -> cached;
         }
-        else state -> lex_state = lex_ignore;
 
-        if (state -> lex_state != lex_ignore) {
-//            state -> new_line_state = state -> lex_state;
-        }
+//            Lexem & stack_top = state -> stack -> touch();
+
+//            if ((stack_top & lex_def) > lex_key) {
+//                state -> lex_state = stack_top == lex_class_def ? lex_class_def_name : lex_module_def_name;
+
+//                state -> scope -> addVar(
+//                    state -> cached,
+//                    new FilePoint(
+//                        state -> lex_state,
+//                        0, 0, state -> bufferPos()
+//                    )
+//                );
+//            } else {
+//                state -> lex_state =
+//                    predefined_lexem
+//                        ?
+//                            predefined_lexem
+//                        :
+//                            PredefinedRuby::obj().lexem(state -> cached);
+//            }
+
+
+//            if (state -> lex_state == lex_undefined) {
+//                if (!state -> scope -> hasVar(state -> cached)) {
+//                    switch(SCHAR0) { // INFO: determine type of word
+//                        case ':': { state -> lex_state = lex_symbol; break;}
+//                        case '$': { state -> lex_state = lex_var_global; break;}
+//                        case '@': {
+//                            if (SCHAR1 == '@')
+//                                state -> lex_state = lex_var_object;
+//                            else
+//                                state -> lex_state = lex_var_instance;
+//                        break;}
+//                        default: {
+//                            state -> lex_state =
+//                                (ECHAR_PREV1 == ':')
+//                                    ?
+//                                        lex_symbol
+//                                    :
+//                                        lex_var_local;
+//                        }
+//                    }
+
+//                    if (state -> lex_state != lex_symbol)
+//                        state -> scope -> addVar(
+//                            state -> cached,
+//                            new FilePoint(state -> lex_state, 0, 0, state -> bufferPos())
+//                        );
+//                }
+//                else state -> lex_state = state -> scope -> varType(state -> cached);
+//            }
+
+//            qDebug() << state -> cached;
+//        }
+//        else state -> lex_state = lex_ignore;
+
+//        if (state -> lex_state != lex_ignore) {
+//            state -> lex_state = GrammarRuby::obj().translate(curr_state, state -> lex_state);
+
+//            if (state -> lex_state < lex_end_line)
+//                state -> new_line_state = state -> lex_state;
+//        }
 
 
         if (state -> next_offset) {
@@ -287,33 +291,8 @@ class LexerRuby : public Lexer {
             else if (state -> lex_state != lex_ignore)
                 state -> new_line_state = state -> lex_state;
 
-            if (!checkStack(state -> lex_state, state))
-                return false;
-
-//            if (state -> var_def_state) {
-//                if (state -> lex_state == lex_var_chain_end) {
-//                    state -> scope -> clearUnregVar();
-//                    state -> var_def_state = lex_none;
-//                } else {
-//                    if (
-//                            (
-//                                state -> lex_state == state -> var_def_state &&
-//                                (
-//                                    state -> var_def_state == lex_var ||
-//                                    state -> var_def_state == lex_comma
-//                                )
-//                            )
-//                            || state -> lex_state == lex_end_line
-//                            || state -> lex_state == lex_binary_operator
-//                    ) {
-
-//                        APPEND_ERR(QByteArrayLiteral("Error in variable def"));
-//                        return false;
-//                    }
-//                    else if (state -> lex_state != lex_ignore)
-//                        state -> var_def_state = state -> lex_state;
-//                }
-//            }
+//            if (!checkStack(state -> lex_state, state))
+//                return false;
         }
 
         state -> dropCached();
@@ -378,24 +357,24 @@ protected:
 //        they indicate the continuation of a statement.
 
 
-        continue_mark:
-            Lexem top = state -> stack -> touch();
+//        continue_mark:
+//            Lexem top = state -> stack -> touch();
 
-            if (top & lex_continue) {
-                state -> stack -> drop();
-                --state -> buffer;
+//            if (top & lex_continue) {
+//                state -> stack -> drop();
+//                --state -> buffer;
 
-                switch(top) {
-                    case lex_string_continue: goto handle_string;
-                    case lex_heredoc_continue: goto handle_heredoc;
-                    case lex_regexp_continue: {
-                        if (!parseRegexp(state))
-                            goto exit;
-                    break;}
-                    case lex_commentary_continue: goto handle_multiline_comment;
-                    default:;
-                };
-            }
+//                switch(top) {
+//                    case lex_string_continue: goto handle_string;
+//                    case lex_heredoc_continue: goto handle_heredoc;
+//                    case lex_regexp_continue: {
+//                        if (!parseRegexp(state))
+//                            goto exit;
+//                    break;}
+//                    case lex_commentary_continue: goto handle_multiline_comment;
+//                    default:;
+//                };
+//            }
 
         while(true) {
             switch(ECHAR0) {
@@ -648,20 +627,20 @@ protected:
                     if (!cutWord(state))
                         goto exit;
 
-                    Lexem top = state -> stack -> touch();
-                    if (top & lex_continue) { // after interpolation
-                        state -> stack -> replace(
-                            LEX(
-                                EXCLUDE_BIT(top, lex_continue),
-                                lex_start
-                            )
-                        );
+//                    Lexem top = state -> stack -> touch();
+//                    if (top & lex_continue) { // after interpolation
+//                        state -> stack -> replace(
+//                            LEX(
+//                                EXCLUDE_BIT(top, lex_continue),
+//                                lex_start
+//                            )
+//                        );
 
-                        state -> stack -> push(top);
-//                        ++state -> buffer;
-//                        state -> dropCached();
-                        goto continue_mark;
-                    }
+//                        state -> stack -> push(top);
+////                        ++state -> buffer;
+////                        state -> dropCached();
+//                        goto continue_mark;
+//                    }
                 break;}
 
 
@@ -734,8 +713,8 @@ protected:
 
                     if (ECHAR0 == '0') {
                         switch(ECHAR1) {
-                            case 'x': { predef = lex_number_hex; break; }
-                            case 'b': { predef = lex_number_bin; break; }
+                            case 'x': { predef = lex_hex; break; }
+                            case 'b': { predef = lex_bin; break; }
                             case '0':
                             case '1':
                             case '2':
@@ -743,7 +722,7 @@ protected:
                             case '4':
                             case '5':
                             case '6':
-                            case '7': { predef = lex_number_oct; break; }
+                            case '7': { predef = lex_oct; break; }
                             case '8':
                             case '9': {
                                 state -> cacheAndLightWithMessage(
@@ -755,24 +734,24 @@ protected:
                             }
                             default: {
                                 ended = true;
-                                predef = lex_number_dec;
+                                predef = lex_dec;
                             }
                         }
 
                         ++state -> buffer;
-                    } else predef = lex_number_dec;
+                    } else predef = lex_dec;
 
-                    bool is_valid = predef != lex_number_hex && predef != lex_number_bin;
+                    bool is_valid = predef != lex_hex && predef != lex_bin;
 
                     while(!ended) {
                         ++state -> buffer;
 
                         switch(ECHAR0) {
                             case '.': {
-                                if ((predef & lex_number_float) == lex_number_float)
+                                if ((predef & lex_float) == lex_float)
                                     ended = true;
                                 else
-                                    predef = lex_number_float;
+                                    predef = lex_float;
                             break;}
 
                             case 'a':
@@ -785,7 +764,7 @@ protected:
                             case 'D':
                             case 'f':
                             case 'F': {
-                                if (predef != lex_number_hex) {
+                                if (predef != lex_hex) {
                                     state -> cacheAndLightWithMessage(
                                         lex_error,
                                         QByteArrayLiteral("Error in number: wrong literal")
@@ -797,14 +776,14 @@ protected:
 
                             case 'e':
                             case 'E': {
-                                if (predef < lex_number_dec) {
+                                if (predef < lex_dec) {
                                     state -> cacheAndLightWithMessage(
                                         lex_error,
                                         QByteArrayLiteral("Error in number: exponent part available only for decimals")
                                     );
 
                                     goto exit;
-                                } else if (predef == lex_number_dec) {
+                                } else if (predef == lex_dec) {
                                     if (has_exp_part) {
                                         state -> cacheAndLightWithMessage(
                                             lex_error,
@@ -823,7 +802,7 @@ protected:
 
                             case '8':
                             case '9': {
-                                if (predef < lex_number_dec) {
+                                if (predef < lex_dec) {
                                     state -> cacheAndLightWithMessage(
                                         lex_error,
                                         QByteArrayLiteral("Error in number: 0-7 literals only")
@@ -840,7 +819,7 @@ protected:
                             case '5':
                             case '6':
                             case '7': {
-                                if (predef < lex_number_oct) {
+                                if (predef < lex_oct) {
                                     state -> cacheAndLightWithMessage(
                                         lex_error,
                                         QByteArrayLiteral("Error in number: 0,1 literals only")

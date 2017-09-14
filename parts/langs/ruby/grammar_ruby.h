@@ -39,9 +39,8 @@ class GrammarRuby : public Grammar {
         rules[lex_module_def_name][lex_end_line] = lex_block_start;
 
 
-        rules[lex_method_def][lex_self] = lex_method_scope;
+        rules[lex_method_def][lex_self] = lex_method_def_name;
         rules[lex_method_def][lex_word] = lex_method_def_name;
-        rules[lex_method_scope][lex_dot] = lex_method_def_scoped;
         rules[lex_method_def_scoped][lex_word] = lex_method_def_scoped_name;
 
         rules[lex_method_def_name][lex_dot] = lex_method_def_scoped;

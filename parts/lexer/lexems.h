@@ -23,6 +23,17 @@ enum Lexem : quint32 {
 
 
 //    ////////// highlightable
+    lex_key,
+    lex_predefined,
+    lex_name,
+    lex_def_name,
+    lex_commentary,
+    lex_string,
+    lex_regexp,
+    lex_method,
+
+
+
 //    lex_key = 1 << 19,
 //    lex_block = 1 << 20,
 //    lex_def = 1 << 21,
