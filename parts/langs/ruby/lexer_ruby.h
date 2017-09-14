@@ -213,87 +213,65 @@ class LexerRuby : public Lexer {
         state -> cachingPredicate();
 
         if (state -> cached_length) {
+            if (predefined_lexem)
+                state -> lex_word = predefined_lexem;
+            else
+                PredefinedRuby::obj().lexem(state -> cached);
+
+            if (state -> lex_word == lex_undefined) {
+                if (!state -> scope -> hasVar(state -> cached)) {
+                    switch(SCHAR0) {
+                        case ':': { state -> lex_word = lex_symbol; break;}
+                        case '$': { state -> lex_word = lex_var_global; break;}
+                        case '@': {
+                            if (SCHAR1 == '@')
+                                state -> lex_word = lex_var_object;
+                            else
+                                state -> lex_word = lex_var_instance;
+                        break;}
+                        default: {
+                            state -> lex_word =
+                                (ECHAR_PREV1 == ':')
+                                    ?
+                                        lex_symbol
+                                    :
+                                        lex_word;
+                        }
+                    }
 
 
 
+                    if (state -> lex_word != lex_symbol && state -> lex_word != lex_word)
+                        state -> scope -> addVar(
+                            state -> cached,
+                            new FilePoint(state -> lex_word, 0, 0, state -> bufferPos())
+                        );
+                }
+                else state -> lex_word = state -> scope -> varType(state -> cached);
+            }
         }
-
-//            Lexem & stack_top = state -> stack -> touch();
-
-//            if ((stack_top & lex_def) > lex_key) {
-//                state -> lex_state = stack_top == lex_class_def ? lex_class_def_name : lex_module_def_name;
-
-//                state -> scope -> addVar(
-//                    state -> cached,
-//                    new FilePoint(
-//                        state -> lex_state,
-//                        0, 0, state -> bufferPos()
-//                    )
-//                );
-//            } else {
-//                state -> lex_state =
-//                    predefined_lexem
-//                        ?
-//                            predefined_lexem
-//                        :
-//                            PredefinedRuby::obj().lexem(state -> cached);
-//            }
-
-
-//            if (state -> lex_state == lex_undefined) {
-//                if (!state -> scope -> hasVar(state -> cached)) {
-//                    switch(SCHAR0) { // INFO: determine type of word
-//                        case ':': { state -> lex_state = lex_symbol; break;}
-//                        case '$': { state -> lex_state = lex_var_global; break;}
-//                        case '@': {
-//                            if (SCHAR1 == '@')
-//                                state -> lex_state = lex_var_object;
-//                            else
-//                                state -> lex_state = lex_var_instance;
-//                        break;}
-//                        default: {
-//                            state -> lex_state =
-//                                (ECHAR_PREV1 == ':')
-//                                    ?
-//                                        lex_symbol
-//                                    :
-//                                        lex_var_local;
-//                        }
-//                    }
-
-//                    if (state -> lex_state != lex_symbol)
-//                        state -> scope -> addVar(
-//                            state -> cached,
-//                            new FilePoint(state -> lex_state, 0, 0, state -> bufferPos())
-//                        );
-//                }
-//                else state -> lex_state = state -> scope -> varType(state -> cached);
-//            }
-
-//            qDebug() << state -> cached;
-//        }
-//        else state -> lex_state = lex_ignore;
-
-//        if (state -> lex_state != lex_ignore) {
-//            state -> lex_state = GrammarRuby::obj().translate(curr_state, state -> lex_state);
-
-//            if (state -> lex_state < lex_end_line)
-//                state -> new_line_state = state -> lex_state;
-//        }
-
+        else state -> lex_word = lex_none;
 
         if (state -> next_offset) {
             state -> cachingDelimiter();
-            state -> lex_state = PredefinedRuby::obj().lexem(state -> cached);
-
-            if (state -> lex_state == lex_end_line)
-                state -> new_line_state = lex_none;
-            else if (state -> lex_state != lex_ignore)
-                state -> new_line_state = state -> lex_state;
-
-//            if (!checkStack(state -> lex_state, state))
-//                return false;
+            state -> lex_delimiter = PredefinedRuby::obj().lexem(state -> cached);
+            state -> chain -> push(state -> lex_delimiter);
         }
+
+        if (state -> lex_word != lex_none)
+//            state -> lex_word =
+//                state -> stack -> push(state -> lex_word, state -> lex_delimiter);
+
+            // TODO: convert lex_word to lex_var_local, claas_name or etc
+
+            state -> chain -> push(state -> lex_word, state -> lex_delimiter);
+        else {
+            state -> lex_delimiter =
+                GrammarRuby::obj().translate(state -> stack -> touch(), state -> lex_delimiter);
+
+            state -> chain -> replace(state -> lex_delimiter);
+        }
+
 
         state -> dropCached();
 
@@ -345,7 +323,6 @@ class LexerRuby : public Lexer {
     }
 protected:
     LexerStatus handle(LexerState * state) {
-        char end_str_symb;
         LexerStatus status = ls_none;
 
 //        a + b is interpreted as a.+(b)
@@ -411,14 +388,10 @@ protected:
                 break;}
 
 
+                case '`': {
+                    state -> stack -> push(lex_command_start);
 
-                case '`':
-                case '\'':
-                case '"': {
-                    end_str_symb = ECHAR0;
-                    state -> stack -> push(lex_string_start);
-
-                    handle_string:
+                    handle_command:
                         bool ended = false;
                         bool out_req = false;
                         bool def_required = false;
@@ -427,13 +400,40 @@ protected:
                             ++state -> buffer;
 
                             switch(ECHAR0) {
-                                case '#': {
-                                        def_required = ended = end_str_symb != '\'' && ECHAR1 == '{';
+                                case '#': { def_required = ended = ECHAR1 == '{'; break; }
+
+                                case '`': {
+                                    if (ECHAR_PREV1 != '\\') {
+                                        ++state -> buffer;
+                                        ended = true;
+                                    }
                                 break;}
 
-                                case '`':
-                                case '\'':
-                                case '"': {
+                                case 0: { out_req = true; break;}
+                            }
+                        }
+
+
+                    if (!cutWord(state, out_req ? lex_command_continue : lex_command_end))
+                        goto exit;
+
+                    if (def_required)
+                        state -> stack -> push(lex_command_continue);
+                break;}
+
+
+                case '\'': {
+                    state -> stack -> push(lex_string_start);
+
+                    handle_string:
+                        bool ended = false;
+                        bool out_req = false;
+
+                        while(!ended && !out_req) {
+                            ++state -> buffer;
+
+                            switch(ECHAR0) {
+                                case '\'': {
                                     if (ECHAR_PREV1 != '\\') {
                                         ++state -> buffer;
                                         ended = true;
@@ -447,9 +447,40 @@ protected:
 
                     if (!cutWord(state, out_req ? lex_string_continue : lex_string_end))
                         goto exit;
+                break;}
+
+
+                case '"': {
+                    state -> stack -> push(lex_estring_start);
+
+                    handle_estring:
+                        bool ended = false;
+                        bool out_req = false;
+                        bool def_required = false;
+
+                        while(!ended && !out_req) {
+                            ++state -> buffer;
+
+                            switch(ECHAR0) {
+                                case '#': { def_required = ended = ECHAR1 == '{'; break; }
+
+                                case '"': {
+                                    if (ECHAR_PREV1 != '\\') {
+                                        ++state -> buffer;
+                                        ended = true;
+                                    }
+                                break;}
+
+                                case 0: { out_req = true; break;}
+                            }
+                        }
+
+
+                    if (!cutWord(state, out_req ? lex_estring_continue : lex_estring_end))
+                        goto exit;
 
                     if (def_required)
-                        state -> stack -> push(lex_string_continue);
+                        state -> stack -> push(lex_estring_continue);
                 break;}
 
 
@@ -462,9 +493,9 @@ protected:
                             ++state -> buffer;
                             state -> next_offset = 0;
                         }
-                        else if (state -> lex_state > lex_undefined) {
-                            goto iterate;
-                        }
+//                        else if (state -> lex_state > lex_undefined) {
+//                            goto iterate;
+//                        }
                     }
 
                     if (!cutWord(state))
@@ -713,8 +744,14 @@ protected:
 
                     if (ECHAR0 == '0') {
                         switch(ECHAR1) {
+                            case 'X':
                             case 'x': { predef = lex_hex; break; }
+                            case 'B':
                             case 'b': { predef = lex_bin; break; }
+                            case 'o':
+                            case 'O': { predef = lex_oct; break; }
+                            case 'd':
+                            case 'D': { predef = lex_dec; break; }
                             case '0':
                             case '1':
                             case '2':
@@ -722,16 +759,9 @@ protected:
                             case '4':
                             case '5':
                             case '6':
-                            case '7': { predef = lex_oct; break; }
+                            case '7':
                             case '8':
-                            case '9': {
-                                state -> cacheAndLightWithMessage(
-                                    lex_error,
-                                    QByteArrayLiteral("Error in number: wrong literal for octal")
-                                );
-
-                                goto exit;
-                            }
+                            case '9': { predef = lex_dec; break;}
                             default: {
                                 ended = true;
                                 predef = lex_dec;
@@ -863,11 +893,21 @@ protected:
 
 
                 case '%': {
-                    if (ECHAR1 == '=')
-                        ++state -> next_offset;
+                    switch(ECHAR1) {
+                        case '=': { ++state -> next_offset; break; }
+                        case 'i': { break; } // Array of Symbols
+                        case 'q': { break; } // single quoted string
+                        case 'Q': { break; } // double quoted string
+                        case 'r': { break; } // Regular Expression
+                        case 's': { break; } // Symbol
+                        case 'w': { break; } // Array of Strings
+                        case 'x': { break; } // Backtick (capture subshell result)
+                    };
 
                     if (!cutWord(state))
                         goto exit;
+
+
                 break;}
 
 
@@ -879,7 +919,7 @@ protected:
                         if (!cutWord(state))
                             goto exit;
                     } else {
-                        bool is_regexp = state -> new_line_state != lex_predefined;
+                        bool is_regexp = true; //state -> new_line_state != lex_predefined;
 
                         state -> next_offset = is_regexp ? 0 : 1;
 

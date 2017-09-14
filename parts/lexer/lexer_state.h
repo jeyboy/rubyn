@@ -31,11 +31,8 @@ struct LexerState {
 
     QByteArray cached;
 
-    Lexem lex_state;
-    Lexem lex_input;
-
-    Lexem new_line_state;
-//    Lexem var_def_state;
+    Lexem lex_word;
+    Lexem lex_delimiter;
 
     Scope * scope;
     Stack<Lexem> * stack;
@@ -49,9 +46,8 @@ struct LexerState {
     const char * buffer;
     const char * prev;
 
-    LexerState(Highlighter * lighter = 0) : lighter(lighter), lex_state(lex_none),
-        lex_input(lex_none), new_line_state(lex_none),
-        /*var_def_state(lex_none),*/ scope(new Scope()),
+    LexerState(Highlighter * lighter = 0) : lighter(lighter),
+        lex_word(lex_none), lex_delimiter(lex_none), scope(new Scope()),
         stack(new Stack<Lexem>(lex_none)), chain(new Stack<Lexem>(lex_none, 32)),
         next_offset(1), cached_length(0) { }
 

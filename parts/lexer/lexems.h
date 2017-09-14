@@ -213,6 +213,10 @@ enum Lexem : quint32 {
     lex_commentary_continue,
     lex_commentary_end,
 
+    lex_command_start,
+    lex_command_continue,
+    lex_command_end,
+
     lex_string_start,
     lex_string_continue,
     lex_string_end,

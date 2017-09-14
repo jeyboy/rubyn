@@ -21,14 +21,14 @@ public:
         delete [] data;
     }
 
+    inline bool atBegin() { return curr == start; }
+
     inline T * items() const { return curr; }
 
-    inline T & touch() {
-        return *curr;
-    }
+    inline T & touch() { return *curr; }
 
     inline bool drop() {
-        if (curr == start)
+        if (atBegin())
             return false;
 
         --curr;
@@ -36,19 +36,25 @@ public:
     }
 
     inline bool pop(T & res) {
-        if (curr != start) {
-            res = *curr;
-            --curr;
-        }
+        if (atBegin())
+            return false;
 
-        return false;
+        res = *curr;
+        --curr;
+
+        return true;
     }
 
-    void replace(const T & new_val) {
+    inline void replace(const T & new_val) {
         (*curr) = new_val;
     }
 
-    const T & push(const T & val) {
+    inline void push(const T & val1, const T & val2) {
+        push(val1);
+        push(val2);
+    }
+
+    inline const T & push(const T & val) {
         if (curr == end) {
             int curr_pos = size;
 
