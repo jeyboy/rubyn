@@ -39,7 +39,7 @@ struct LexerState {
     Stack<Lexem> * chain;
     quint8 next_offset;
 
-//    LEXER_INT_TYPE cached_str_pos;
+    LEXER_INT_TYPE cached_str_pos;
     LEXER_INT_TYPE cached_length;
 
     const char * start;
@@ -54,7 +54,7 @@ struct LexerState {
     inline void setBuffer(const char * buff) { prev = start = buffer = buff; }
 
     inline void cachingPredicate() {
-//        cached_str_pos = bufferPos();
+        cached_str_pos = bufferPos();
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
     }
@@ -62,7 +62,7 @@ struct LexerState {
     inline void cachingDelimiter() {
         prev = buffer;
         buffer += next_offset;
-        cachingPredicate();
+        cached.setRawData(prev, strLength());
     }
 
     inline void dropCached() {
@@ -79,7 +79,7 @@ struct LexerState {
 //        qDebug() << "!!!!" << bufferPos() << cached_length;
 
         lighter -> setFormat(
-            bufferPos(),
+            cached_str_pos,
             cached_length > 0 ? cached_length : 1,
             HighlightFormatFactory::obj().getFormatFor(lexem)
         );

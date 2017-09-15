@@ -27,6 +27,8 @@ public:
 
     inline T & touch() { return *curr; }
 
+    inline T & touchSublevel() { return *(curr - 1); }
+
     inline bool drop() {
         if (atBegin())
             return false;

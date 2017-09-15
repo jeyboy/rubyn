@@ -251,10 +251,6 @@ class LexerRuby : public Lexer {
                 }
                 else state -> lex_word = state -> scope -> varType(state -> cached);
             }
-
-            Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
-            if (highlightable != lex_none)
-                state -> light(highlightable);
         }
         else state -> lex_word = lex_none;
 
@@ -264,19 +260,32 @@ class LexerRuby : public Lexer {
             state -> chain -> push(state -> lex_delimiter);
         }
 
-        if (state -> lex_word != lex_none)
-//            state -> lex_word =
-//                state -> stack -> push(state -> lex_word, state -> lex_delimiter);
+        state -> lex_delimiter =
+            GrammarRuby::obj().translate(
+                state -> stack -> touch(),
+                state -> lex_delimiter
+            );
 
+        if (state -> lex_word != lex_none) {
             // TODO: convert lex_word to lex_var_local, claas_name or etc
 
-            state -> chain -> push(state -> lex_word, state -> lex_delimiter);
-        else {
-            state -> lex_delimiter =
-                GrammarRuby::obj().translate(state -> stack -> touch(), state -> lex_delimiter);
+            Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
 
-            state -> chain -> replace(state -> lex_delimiter);
+            state -> lex_word =
+                GrammarRuby::obj().translate(
+                    state -> stack -> touchSublevel(),
+                    state -> lex_delimiter
+                );
+
+            if (highlightable == lex_none)
+                highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
+
+            state -> chain -> push(state -> lex_word, state -> lex_delimiter);
+
+            if (highlightable != lex_none)
+                state -> light(highlightable);
         }
+        else state -> chain -> replace(state -> lex_delimiter);
 
 
         state -> dropCached();
