@@ -4,7 +4,7 @@
 #include "misc/singleton.h"
 #include "parts/lexer/lexems.h"
 
-class Grammar : public Singleton<Grammar> {
+class Grammar {
 protected:
     Lexem rules[lex_max][lex_max] = {{lex_error}};
 public:
@@ -12,9 +12,7 @@ public:
         return rules[state][input];
     }
 
-    virtual Lexem toHighlightable(const Lexem & /*lexem*/) {
-        return lex_none;
-    }
+    virtual Lexem toHighlightable(const Lexem & /*lexem*/) = 0;
 };
 
 #endif // GRAMMAR_H

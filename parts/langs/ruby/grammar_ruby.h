@@ -3,7 +3,7 @@
 
 #include "parts/lexer/grammar.h"
 
-class GrammarRuby : public Grammar {
+class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
     GrammarRuby() : Grammar() {
 //        for(int i = 0; i < lex_max; i++) {
 //            rules[i][lex_blank] = lex_blank;
@@ -68,6 +68,8 @@ class GrammarRuby : public Grammar {
         rules[lex_method_def_vars_splitter][lex_operator_multiplication] = lex_method_def_var_access_type;
         rules[lex_method_def_vars_splitter][lex_word] = lex_method_def_var_name;
     }
+
+    friend class Singleton<GrammarRuby>;
 public:
     Lexem toHighlightable(const Lexem & lexem) {
         switch(lexem) {

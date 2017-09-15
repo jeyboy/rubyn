@@ -213,9 +213,11 @@ class LexerRuby : public Lexer {
         state -> cachingPredicate();
 
         if (state -> cached_length) {
-            if (predefined_lexem)
-                state -> lex_word = predefined_lexem;
-            else
+            state -> lex_word =
+                predefined_lexem != lex_none
+                    ?
+                predefined_lexem
+                    :
                 PredefinedRuby::obj().lexem(state -> cached);
 
             if (state -> lex_word == lex_undefined) {
@@ -249,6 +251,10 @@ class LexerRuby : public Lexer {
                 }
                 else state -> lex_word = state -> scope -> varType(state -> cached);
             }
+
+            Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
+            if (highlightable != lex_none)
+                state -> light(highlightable);
         }
         else state -> lex_word = lex_none;
 
@@ -265,10 +271,6 @@ class LexerRuby : public Lexer {
             // TODO: convert lex_word to lex_var_local, claas_name or etc
 
             state -> chain -> push(state -> lex_word, state -> lex_delimiter);
-
-            Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
-            if (highlightable != lex_none)
-                state -> light(highlightable);
         else {
             state -> lex_delimiter =
                 GrammarRuby::obj().translate(state -> stack -> touch(), state -> lex_delimiter);
