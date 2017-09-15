@@ -54,16 +54,16 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("alias"), lex_alias); // Creates an alias between two methods (and other things)
         keys.insert(QByteArrayLiteral("and"), lex_operator_and); // Short-circuit Boolean and with lower precedence than &&
 
-        keys.insert(QByteArrayLiteral("begin"), lex_block_start); // Starts an exception handling block
+        keys.insert(QByteArrayLiteral("begin"), lex_begin); // Starts an exception handling block
         keys.insert(QByteArrayLiteral("break"), lex_loop_break); // Leaves a block early
         keys.insert(QByteArrayLiteral("case"), lex_case); // Starts a case expression
         keys.insert(QByteArrayLiteral("class"), lex_class_def); // Creates or opens a class
         keys.insert(QByteArrayLiteral("def"), lex_method_def); // Defines a method
         keys.insert(QByteArrayLiteral("defined?"), lex_predefined_method_call_name); // Returns a string describing its argument
-        keys.insert(QByteArrayLiteral("do"), lex_block_start); // Starts a block
+        keys.insert(QByteArrayLiteral("do"), lex_do); // Starts a block
         keys.insert(QByteArrayLiteral("else"), lex_else); // The unhandled condition in case, if and unless expressions
         keys.insert(QByteArrayLiteral("elsif"), lex_elsif); // An alternate condition for an if expression
-        keys.insert(QByteArrayLiteral("end"), lex_block_end); // The end of a syntax block. Used by classes, modules, methods, exception handling and control expressions
+        keys.insert(QByteArrayLiteral("end"), lex_end); // The end of a syntax block. Used by classes, modules, methods, exception handling and control expressions
         keys.insert(QByteArrayLiteral("ensure"), lex_block_ensure); // Starts a section of code that is always run when an exception is raised
 
         keys.insert(QByteArrayLiteral("eql?"), lex_operator_comparison); // receiver and argument have both the same type and equal values
@@ -73,7 +73,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("false"), lex_predefined_expression); // Boolean false
         keys.insert(QByteArrayLiteral("for"), lex_for); // A loop that is similar to using the each method
         keys.insert(QByteArrayLiteral("if"), lex_if); // Used for if and modifier if expressions
-        keys.insert(QByteArrayLiteral("in"), lex_for_in); // Used to separate the iterable object and iterator variable in a for loop
+        keys.insert(QByteArrayLiteral("in"), lex_in); // Used to separate the iterable object and iterator variable in a for loop
         keys.insert(QByteArrayLiteral("include"), lex_include);
 
         keys.insert(QByteArrayLiteral("lambda"), lex_lambda_def);
@@ -83,10 +83,10 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("nil"), lex_predefined_expression); // A false value usually indicating “no value” or “unknown”
         keys.insert(QByteArrayLiteral("not"), lex_operator_not); // Inverts the following boolean expression
         keys.insert(QByteArrayLiteral("or"), lex_operator_or); // Boolean or with lower precedence than ||
-        keys.insert(QByteArrayLiteral("private"), lex_visibility_scope_name);
+        keys.insert(QByteArrayLiteral("private"), lex_visibility_scope);
         keys.insert(QByteArrayLiteral("proc"), lex_proc_def);
-        keys.insert(QByteArrayLiteral("protected"), lex_visibility_scope_name);
-        keys.insert(QByteArrayLiteral("public"), lex_visibility_scope_name);
+        keys.insert(QByteArrayLiteral("protected"), lex_visibility_scope);
+        keys.insert(QByteArrayLiteral("public"), lex_visibility_scope);
         keys.insert(QByteArrayLiteral("raise"), lex_predefined_method_call_name);
         keys.insert(QByteArrayLiteral("redo"), lex_loop_redo); // Restarts execution in the current block
         keys.insert(QByteArrayLiteral("require"), lex_require);

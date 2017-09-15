@@ -151,6 +151,7 @@ enum Lexem : quint32 {
 
     lex_method_call_name,
     lex_method_call_vars_start,
+    lex_method_call_var_entry,
     lex_method_call_vars_splitter,
     lex_method_call_vars_end,
     lex_method_call_block,
@@ -251,7 +252,8 @@ enum Lexem : quint32 {
     lex_undef_name,
 
     lex_visibility_scope, // public, private etc // use one space pad in format // https://fabiokung.com/2010/04/05/ruby-indentation-for-access-modifiers-and-their-sections/
-    lex_visibility_scope_name, // public :show, :index and etc
+    lex_visibility_scope_arg, // public :show, :index and etc
+    lex_visibility_scope_arg_splitter, // ,
 
     lex_alias,
     lex_alias_base_name,
@@ -284,6 +286,7 @@ enum Lexem : quint32 {
     lex_ternary_alt_val,
 
     lex_then,
+    lex_in,
 
     lex_unless,
     lex_unless_rule,
@@ -350,6 +353,7 @@ enum Lexem : quint32 {
     lex_loop_redo,
     lex_loop_next,
 
+    lex_do,
     lex_do_block_start,
     lex_do_block_vars_start,
     lex_do_block_var_access_type, // * & and etc
@@ -366,6 +370,9 @@ enum Lexem : quint32 {
     lex_inline_do_block_vars_end,
     lex_inline_do_block_end,
 
+
+    lex_begin,
+    lex_end,
 
     lex_block_start,
     lex_block_rescue,
@@ -399,14 +406,6 @@ struct Lexems {
 
 
             default: return QByteArrayLiteral("Undefined");
-        }
-    }
-
-    Lexem toHighlightable(const Lexem & lexem) {
-        switch(lexem) {
-
-
-            default: return lex_none;
         }
     }
 };

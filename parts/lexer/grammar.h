@@ -11,6 +11,10 @@ public:
     inline Lexem translate(const Lexem & state, const Lexem & input) {
         return rules[state][input];
     }
+
+    virtual Lexem toHighlightable(const Lexem & /*lexem*/) {
+        return lex_none;
+    }
 };
 
 #endif // GRAMMAR_H
