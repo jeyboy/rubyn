@@ -242,15 +242,41 @@ class LexerRuby : public Lexer {
                     }
 
 
-
                     if (state -> lex_word != lex_symbol && state -> lex_word != lex_word)
                         state -> scope -> addVar(
                             state -> cached,
-                            new FilePoint(state -> lex_word, 0, 0, state -> bufferPos())
+                            new FilePoint(state -> lex_word, 0, 0, state -> cached_str_pos)
                         );
                 }
                 else state -> lex_word = state -> scope -> varType(state -> cached);
             }
+
+            Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
+
+            Lexem lex_new_word =
+                GrammarRuby::obj().translate(
+                    state -> lex_delimiter,
+                    state -> lex_word
+                );
+
+            if (state -> lex_word == lex_new_word) {
+                if (lex_new_word == lex_word) {
+                    state -> scope -> addVar(
+                        state -> cached,
+                        new FilePoint(lex_var_local, 0, 0, state -> cached_str_pos)
+                    );
+                }
+            } else {
+                state -> lex_word = lex_new_word;
+
+                if (highlightable == lex_none)
+                    highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
+
+                if (highlightable != lex_none)
+                    state -> light(highlightable);
+            }
+
+            state -> chain -> push(state -> lex_word);
         }
         else state -> lex_word = lex_none;
 
@@ -260,33 +286,20 @@ class LexerRuby : public Lexer {
             state -> chain -> push(state -> lex_delimiter);
         }
 
-        state -> lex_delimiter =
-            GrammarRuby::obj().translate(
-                state -> stack -> touch(),
-                state -> lex_delimiter
-            );
-
-        if (state -> lex_word != lex_none) {
-            // TODO: convert lex_word to lex_var_local, claas_name or etc
-
-            Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
-
-            state -> lex_word =
+        if (state -> lex_word == lex_none) {
+            Lexem lex_new_delimiter =
                 GrammarRuby::obj().translate(
-                    state -> stack -> touchSublevel(),
+                    state -> chain -> touch(),
                     state -> lex_delimiter
                 );
 
-            if (highlightable == lex_none)
-                highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
-
-            state -> chain -> push(state -> lex_word, state -> lex_delimiter);
-
-            if (highlightable != lex_none)
-                state -> light(highlightable);
+            if (lex_new_delimiter == lex_chain_item)
+                state -> chain -> push(state -> lex_delimiter);
+            else {
+                state -> lex_delimiter = lex_new_delimiter;
+                state -> chain -> replace(state -> lex_delimiter);
+            }
         }
-        else state -> chain -> replace(state -> lex_delimiter);
-
 
         state -> dropCached();
 

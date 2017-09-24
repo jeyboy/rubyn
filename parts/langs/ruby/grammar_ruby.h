@@ -5,13 +5,23 @@
 
 class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
     GrammarRuby() : Grammar() {
-//        for(int i = 0; i < lex_max; i++) {
-//            rules[i][lex_blank] = lex_blank;
-//            rules[i][lex_tab] = lex_blanks;
-//        }
+        for(quint32 i = 0; i < lex_max; i++) {
+            Lexem curr = (Lexem)i;
+
+            rules[lex_none][i] = curr;
+            rules[lex_end_line][i] = curr;
+
+            rules[i][lex_blank] = lex_chain_item;
+            rules[lex_blank][i] = curr;
+            rules[lex_blanks][i] = curr;
+            rules[i][lex_tab] = lex_chain_item;
+            rules[lex_tab][i] = curr;
+        }
 
         rules[lex_blank][lex_blank] = lex_blanks;
         rules[lex_blank][lex_tab] = lex_blanks;
+        rules[lex_tab][lex_blank] = lex_blanks;
+        rules[lex_tab][lex_tab] = lex_blanks;
 
 
         rules[lex_class_def][lex_word] = lex_class_def_name;
@@ -71,6 +81,18 @@ class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
 
     friend class Singleton<GrammarRuby>;
 public:
+//    bool isPushable(const Lexem & lexem) {
+//        switch(lexem) {
+//            case:;
+//        }
+//    }
+
+//    bool isPopable(const Lexem & lexem) {
+//        switch(lexem) {
+//            case:;
+//        }
+//    }
+
     Lexem toHighlightable(const Lexem & lexem) {
         switch(lexem) {
             case lex_super:

@@ -395,7 +395,7 @@ enum Lexem : quint32 {
     lex_blank,
     lex_blanks,
     lex_ignore,
-
+    lex_chain_item, // service token
 
     lex_max
 };
