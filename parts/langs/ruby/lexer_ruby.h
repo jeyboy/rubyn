@@ -271,10 +271,10 @@ class LexerRuby : public Lexer {
 
                 if (highlightable == lex_none)
                     highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
-
-                if (highlightable != lex_none)
-                    state -> light(highlightable);
             }
+
+            if (highlightable != lex_none)
+                state -> light(highlightable);
 
             state -> chain -> push(state -> lex_word);
         }
