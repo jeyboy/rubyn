@@ -259,6 +259,11 @@ class LexerRuby : public Lexer {
                     state -> lex_word
                 );
 
+            if (lex_new_word == lex_error) {
+                state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
+                return false;
+            }
+
             if (state -> lex_word == lex_new_word) {
                 if (lex_new_word == lex_word) {
                     state -> scope -> addVar(
@@ -706,11 +711,11 @@ protected:
 
                 case '#': { // inline comment
                     Lexem predef = lex_none;
+                    bool ended = false;
 
                     if (ECHAR1 == '{' && state -> stack -> touch() == lex_string_continue) {
                         ++state -> next_offset;
                     } else {
-                        bool ended = false;
                         predef = lex_inline_commentary;
 
                         while(!ended) {
@@ -720,9 +725,11 @@ protected:
                                 case 0: { ended = true; break;}
                             }
                         }
+
+                        state -> next_offset = 0;
                     }
 
-                    if (!cutWord(state, predef))
+                    if (!cutWord(state, predef) || ended)
                         goto exit;
                 break;}
 
