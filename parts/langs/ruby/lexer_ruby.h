@@ -285,6 +285,11 @@ class LexerRuby : public Lexer {
         }
         else state -> lex_word = lex_none;
 
+        if (state -> bufferEof()) {
+            state -> chain -> push(lex_end_line);
+            return false;
+        }
+
         if (state -> next_offset) {
             state -> cachingDelimiter();
             state -> lex_delimiter = PredefinedRuby::obj().lexem(state -> cached);

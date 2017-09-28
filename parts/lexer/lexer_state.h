@@ -52,6 +52,7 @@ struct LexerState {
         next_offset(1), cached_length(0) { }
 
     inline void setBuffer(const char * buff) { prev = start = buffer = buff; }
+    inline bool bufferEof() { return buffer == 0; }
 
     inline void cachingPredicate() {
         cached_str_pos = bufferPos();
