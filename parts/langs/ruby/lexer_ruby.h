@@ -281,6 +281,12 @@ class LexerRuby : public Lexer {
             if (highlightable != lex_none)
                 state -> light(highlightable);
 
+            //TODO: prev word satisfy
+//            GrammarRuby::obj().translate(
+//                state -> chain -> touchSublevel(),
+//                state -> lex_word
+//            );
+
             state -> chain -> push(state -> lex_word);
         }
         else state -> lex_word = lex_none;
@@ -360,9 +366,7 @@ class LexerRuby : public Lexer {
         return true;
     }
 protected:
-    LexerStatus handle(LexerState * state) {
-        LexerStatus status = ls_none;
-
+    void handle(LexerState * state) {
 //        a + b is interpreted as a.+(b)
 //        a + b is interpreted as a+b ( Here a is a local variable)
 //        a  +b is interpreted as a(+b) ( Here a is a method call)
@@ -567,7 +571,7 @@ protected:
                                                 out_req = true;
                                                 cutWord(state, lex_commentary_continue);
 
-                                                status = ls_comment;
+                                                state -> status = LexerState::ls_comment;
 
                                                 goto exit;
                                             break;}
@@ -1065,7 +1069,7 @@ protected:
             }
         }
 
-        exit: return status;
+        exit: return;
     }
 
 public:

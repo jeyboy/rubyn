@@ -27,6 +27,14 @@
 #define LEXER_INT_TYPE quint32
 
 struct LexerState {
+    enum Status {
+        ls_none = -1,
+        ls_error = 1,
+        ls_handled = 2,
+        ls_comment = 3,
+        ls_comment_ended = 4,
+    };
+
     Highlighter * lighter;
 
     QByteArray cached;
@@ -46,13 +54,23 @@ struct LexerState {
     const char * buffer;
     const char * prev;
 
-    LexerState(Highlighter * lighter = 0) : lighter(lighter),
-        lex_word(lex_none), lex_delimiter(lex_none), scope(new Scope()),
-        stack(new Stack<Lexem>(lex_none)), chain(new Stack<Lexem>(lex_none, 32)),
-        next_offset(1), cached_length(0) { }
+    Status status;
 
-    inline void setBuffer(const char * buff) { prev = start = buffer = buff; }
-    inline bool bufferEof() { return buffer == 0; }
+    LexerState(Highlighter * lighter = 0) : lighter(lighter),
+        lex_word(lex_none), lex_delimiter(lex_none),
+        scope(new Scope()), stack(new Stack<Lexem>(lex_none)),
+        chain(new Stack<Lexem>(lex_none, 32)),
+        next_offset(1), cached_length(0),
+        start(0), buffer(0), prev(0), status(ls_handled) { }
+
+    inline void setBuffer(const char * buff) {
+        prev = start = buffer = buff;
+        cached.clear();
+        cached_str_pos = cached_length = 0;
+        next_offset = 1;
+        status = ls_handled;
+    }
+    inline bool bufferEof() { return *buffer == 0; }
 
     inline void cachingPredicate() {
         cached_str_pos = bufferPos();
@@ -93,6 +111,10 @@ struct LexerState {
 
     inline void lightWithMessage(const Lexem & lexem, const QByteArray & /*msg*/) {
         light(lexem);
+
+        if (lexem == lex_error)
+            status = ls_error;
+
         //TODO: attach message
     }
 

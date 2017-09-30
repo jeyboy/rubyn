@@ -20,12 +20,6 @@
 
 class Lexer {
 protected:
-    enum LexerStatus {
-        ls_none = -1,
-        ls_comment = 1,
-        ls_comment_ended = 2,
-    };
-
     inline bool isBDigit(const char & c) { return c == '0' || c == '1'; }
     inline bool isODigit(const char & c) { return c >= '0' && c <= '7'; }
     inline bool isDigit(const char & c) { return c >= '0' && c <= '9'; }
@@ -46,7 +40,7 @@ protected:
         //template<typename ch_t> inline bool is_print(ch_t c)   {   return c>=' ' && c<='~';    }
         //template<typename ch_t> inline bool is_crlf(ch_t c) { return c=='\r' || c=='\n'; }
 
-    virtual LexerStatus handle(LexerState * state) = 0;
+    virtual void handle(LexerState * state) = 0;
 
 public:
     void handle(const QString & text, Highlighter * lighter) {
@@ -69,7 +63,7 @@ public:
         state -> setBuffer(window);
 
         quint64 date = QDateTime::currentMSecsSinceEpoch();
-        LexerStatus lex_status = handle(state);
+        handle(state);
         qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
 
         if (lighter) {
@@ -82,7 +76,7 @@ public:
                 cdata -> state = state;
 
             block.setUserData(cdata);
-            block.setUserState(lex_status);
+            block.setUserState(state -> status);
         }
     }
 
