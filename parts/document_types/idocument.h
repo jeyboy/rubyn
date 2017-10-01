@@ -3,27 +3,22 @@
 
 #include <qstring>
 #include <qtextdocument>
-#include <qurl.h>
-#include <qfile>
 
+#include "parts/editor_parts/file.h"
 #include "parts/lexer/lexer_factory.h"
 
-class IDocument : public QTextDocument {
+class IDocument : public QTextDocument, public File {
 protected:
-    QString _path;
-    QString _name;
     QIODevice * _device;
     Lexer * _lexer;
 
     bool fully_readed;
 public:
-    static IDocument * create(const QUrl & url);
+    static IDocument * create(const QUrl & url, Project * project = 0);
 
-    IDocument(const QString & path, const QString & name, QIODevice * device, Lexer * lexer = 0);
+    IDocument(const QString & path, const QString & name, QIODevice * device, Project * project = 0, Lexer * lexer = 0);
     virtual ~IDocument();
 
-    inline QString name() const { return _name; }
-    inline QString path() const { return _path; }
     inline FormatType mime() const { return _lexer ? _lexer -> format() : ft_unknown; }
     inline bool isFullyReaded() const { return fully_readed; }
 

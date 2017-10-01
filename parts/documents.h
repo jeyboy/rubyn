@@ -2,6 +2,7 @@
 #define DOCUMENTS
 
 #include "misc/singleton.h"
+#include "parts/editor_parts/project.h"
 #include "parts/document_types/idocument.h"
 
 class Documents : public QObject, public Singleton<Documents> {
@@ -12,9 +13,9 @@ public:
     Documents() {}
     ~Documents() { qDeleteAll(documents); }
 
-    bool openDocument(const QUrl & url) {
+    bool openDocument(const QUrl & url, Project * project = 0) {
         if (!documents.contains(url)) {
-            IDocument * doc = IDocument::create(url);
+            IDocument * doc = IDocument::create(url, project);
             if (doc) {
                 documents.insert(url, doc);
                 emit documentAdded(url);

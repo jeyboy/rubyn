@@ -12,10 +12,12 @@
 
 #define READ_LIMIT (qint64)(512000) // ~512 kb
 
+class Project;
+
 class TextDocument : public IDocument {
 public:
-    TextDocument(const QString & path, const QString & name, QIODevice * device, Lexer * lexer = 0)
-        : IDocument(path, name, device, lexer) {
+    TextDocument(const QString & path, const QString & name, QIODevice * device, Project * project = 0, Lexer * lexer = 0)
+        : IDocument(path, name, device, project, lexer) {
 
         setDocumentLayout(new QPlainTextDocumentLayout(this));
 

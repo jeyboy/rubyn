@@ -18,10 +18,12 @@
 
 //    editor->append("<img src=\"mydata://image.png\" />");
 
+class Project;
+
 class ImageDocument : public IDocument {
 public:
-    ImageDocument(const QString & path, const QString & name, QIODevice * device, Lexer * lexer = 0)
-        : IDocument(path, name, device, lexer)
+    ImageDocument(const QString & path, const QString & name, QIODevice * device, Project * project = 0, Lexer * lexer = 0)
+        : IDocument(path, name, device, project, lexer)
     {
         _device -> close();
     }

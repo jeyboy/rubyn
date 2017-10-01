@@ -1,7 +1,7 @@
 #include "idocument.h"
 #include "documents_types.h"
 
-IDocument * IDocument::create(const QUrl & url) {
+IDocument * IDocument::create(const QUrl & url, Project * project) {
     bool isLocal = url.isLocalFile();
     QString path = isLocal ? url.toLocalFile() : url.toString();
 
@@ -46,17 +46,17 @@ IDocument * IDocument::create(const QUrl & url) {
 
         //TODO: return BynaryDocument if is_bynary
 
-        return new TextDocument(path, name, device, f);
+        return new TextDocument(path, name, device, project, f);
     }
 
     if (format & ft_image)
-        return new ImageDocument(path, name, device, f);
+        return new ImageDocument(path, name, device, project, f);
 
     return 0;
 }
 
-IDocument::IDocument(const QString & path, const QString & name, QIODevice * device, Lexer * lexer) :
-    _path(path), _name(name), _device(device), _lexer(lexer), fully_readed(true)
+IDocument::IDocument(const QString & path, const QString & name, QIODevice * device, Project * project, Lexer * lexer) :
+    File(name, path, project), _device(device), _lexer(lexer), fully_readed(true)
 {
 
     QTextOption option =  defaultTextOption();
