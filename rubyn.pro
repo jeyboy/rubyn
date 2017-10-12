@@ -66,7 +66,8 @@ HEADERS  += ide_window.h \
     parts/lexer/lexer_factory.h \
     misc/utils.h \
     parts/lexer/grammar.h \
-    parts/langs/ruby/grammar_ruby.h
+    parts/langs/ruby/grammar_ruby.h \
+    misc/token_list.h
 
 FORMS    += ide_window.ui
 

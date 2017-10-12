@@ -287,33 +287,33 @@ class LexerRuby : public Lexer {
 //                state -> lex_word
 //            );
 
-            state -> chain -> push(state -> lex_word);
+            state -> attachToken(state -> lex_word);
         }
         else state -> lex_word = lex_none;
 
         if (state -> bufferEof()) {
-            state -> chain -> push(lex_end_line);
+            state -> attachToken(lex_end_line);
             return false;
         }
 
         if (state -> next_offset) {
             state -> cachingDelimiter();
             state -> lex_delimiter = PredefinedRuby::obj().lexem(state -> cached);
-            state -> chain -> push(state -> lex_delimiter);
+            state -> attachToken(state -> lex_delimiter);
         }
 
         if (state -> lex_word == lex_none) {
             Lexem lex_new_delimiter =
                 GrammarRuby::obj().translate(
-                    state -> chain -> touch(),
+                    state -> lastToken(),
                     state -> lex_delimiter
                 );
 
             if (lex_new_delimiter == lex_chain_item)
-                state -> chain -> push(state -> lex_delimiter);
+                state -> attachToken(state -> lex_delimiter);
             else {
                 state -> lex_delimiter = lex_new_delimiter;
-                state -> chain -> replace(state -> lex_delimiter);
+                state -> replaceToken(state -> lex_delimiter);
             }
         }
 

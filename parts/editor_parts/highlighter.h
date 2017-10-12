@@ -13,10 +13,13 @@ class IDocument;
 
 class Highlighter : public QObject {
     Q_OBJECT
+
+    bool rehighlighting;
 protected:
     void highlightBlock(const QString & text);
 
     Lexer * lexer;
+
     QPointer<IDocument> doc;
     QTextBlock current_block;
 

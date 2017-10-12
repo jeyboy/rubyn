@@ -23,7 +23,7 @@ public:
 
         QByteArray ar = _device -> readAll();
         setPlainText(ar);
-        _device -> close();
+        _device -> close(); // this closed already in IDocument
 
 //        if (_device -> size() < READ_LIMIT)
 //            setPlainText(ar);

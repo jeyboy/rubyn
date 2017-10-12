@@ -5,8 +5,11 @@
 #include <qdatetime.h>
 #include <qdebug.h>
 
+#include "misc/token_list.h"
+
 #include "lexer_state.h"
 #include "parts/formats/format_types.h"
+#include "parts/lexer/scopes/scope.h"
 
 
 //unsigned int hCount(0);
@@ -42,21 +45,29 @@ protected:
 
     virtual void handle(LexerState * state) = 0;
 
+    TokenList * tokens;
+    Scope * scope;
 public:
     void handle(const QString & text, Highlighter * lighter) {
         LexerState * state = 0;
 
         if (lighter) {
-            QTextBlock prev_block = lighter -> prevBlock();
+            QTextBlock block = lighter -> currentBlock();
 
-            BlockUserData * udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
+            BlockUserData * udata = reinterpret_cast<BlockUserData *>(block.userData());
 
-            if (!udata)
-                state = new LexerState(lighter);
-            else
-                state = new LexerState(*udata -> state);
+            if (!udata) {
+                QTextBlock prev_block = lighter -> prevBlock();
+                udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
+                udata = new BlockUserData(tokens, udata ? udata -> end : 0);
+
+                block.setUserData(udata);
+            }
+
+            state = new LexerState(scope, udata -> begin, lighter);
         }
-        else state = new LexerState(lighter);
+
+        state = new LexerState(scope, 0, lighter);
 
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();
@@ -68,19 +79,16 @@ public:
 
         if (lighter) {
             QTextBlock block = lighter -> currentBlock();
-            BlockUserData * cdata = reinterpret_cast<BlockUserData *>(block.userData());
-
-            if (!cdata)
-                cdata = new BlockUserData(false, false, state);
-            else
-                cdata -> state = state;
-
-            block.setUserData(cdata);
             block.setUserState(state -> status);
         }
     }
 
-    virtual ~Lexer() {}
+    Lexer() : tokens(new TokenList()), scope(new Scope()) {}
+
+    virtual ~Lexer() {
+        delete scope;
+        delete tokens;
+    }
 
     virtual FormatType format() const = 0;
 };

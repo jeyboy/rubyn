@@ -2,17 +2,23 @@
 #define BLOCK_USER_DATA_H
 
 #include <QTextBlockUserData>
-//#include "parts/lexer/lexer_state.h"
-
-class LexerState;
+#include "misc/token_list.h"
 
 struct BlockUserData : public QTextBlockUserData {
     bool has_folding;
     bool has_break_point;
-    LexerState * state;
+    TokenCell * begin;
+    TokenCell * end;
 public:
-    BlockUserData(bool has_break_point = false, bool has_folding = false, LexerState * state = 0)
-        : has_folding(has_folding), has_break_point(has_break_point), state(state) {}
+    BlockUserData(TokenList * file_tokens, TokenCell * prev = 0, bool has_break_point = false, bool has_folding = false)
+        : has_folding(has_folding), has_break_point(has_break_point)
+    {
+        file_tokens -> registerLine(begin, end, prev);
+    }
+
+    ~BlockUserData() {
+        TokenList::removeLine(begin, end);
+    }
 };
 
 #endif // BLOCK_USER_DATA_H

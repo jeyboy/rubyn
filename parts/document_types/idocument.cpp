@@ -74,4 +74,6 @@ IDocument::~IDocument() {
 
         delete _device;
     }
+
+    delete _lexer;
 }

@@ -44,8 +44,10 @@ struct LexerState {
 
     Scope * scope;
     Stack<Lexem> * stack;
-    Stack<Lexem> * chain;
+//    Stack<Lexem> * chain;
     quint8 next_offset;
+
+    TokenCell * token;
 
     LEXER_INT_TYPE cached_str_pos;
     LEXER_INT_TYPE cached_length;
@@ -56,11 +58,10 @@ struct LexerState {
 
     Status status;
 
-    LexerState(Highlighter * lighter = 0) : lighter(lighter),
+    LexerState(Scope * scope, TokenCell * token, Highlighter * lighter = 0) : lighter(lighter),
         lex_word(lex_none), lex_delimiter(lex_none),
-        scope(new Scope()), stack(new Stack<Lexem>(lex_none)),
-        chain(new Stack<Lexem>(lex_none, 32)),
-        next_offset(1), cached_length(0),
+        scope(scope), stack(new Stack<Lexem>(lex_none)),
+        next_offset(1), token(token), cached_length(0),
         start(0), buffer(0), prev(0), status(ls_handled) { }
 
     inline void setBuffer(const char * buff) {
@@ -81,7 +82,11 @@ struct LexerState {
     inline void cachingDelimiter() {
         prev = buffer;
         buffer += next_offset;
-        cached.setRawData(prev, strLength());
+
+        cached_str_pos = bufferPos();
+        cached_length = strLength();
+
+        cached.setRawData(prev, cached_length);
     }
 
     inline void dropCached() {
@@ -92,7 +97,16 @@ struct LexerState {
     inline LEXER_INT_TYPE bufferPos() { return prev - start; }
     inline LEXER_INT_TYPE strLength() { return buffer - prev; }
 
-//    inline quint32 bufferLenght() const { return ; }
+    inline Lexem & lastToken() { return token -> lexem; }
+
+    inline void attachToken(const Lexem & lexem) {
+        TokenList::insert(token, lexem, cached_str_pos, cached_length);
+    }
+
+    inline void replaceToken(const Lexem & lexem) {
+        token -> lexem = lexem;
+        token -> length += cached_length;
+    }
 
     inline void light(const Lexem & lexem) {
 //        qDebug() << "!!!!" << bufferPos() << cached_length;

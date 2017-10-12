@@ -34,14 +34,13 @@ void Highlighter::setDocument(IDocument * new_doc) {
 }
 
 Highlighter::Highlighter(IDocument * doc, Lexer * lexer)
-    : QObject(doc), lexer(lexer), doc(0)
+    : QObject(doc), rehighlighting(false), lexer(lexer), doc(0)
 {
     setDocument(doc);
 }
 
 Highlighter::~Highlighter() {
     setDocument(0);
-    delete lexer;
 }
 
 void Highlighter::highlightBlock(const QString & text) {
@@ -51,19 +50,18 @@ void Highlighter::highlightBlock(const QString & text) {
 //        return;
 
     lexer -> handle(text, this);
-
-//    QTextBlock blk = nextBlock();
-
-//    if (blk.isValid())
-//        forceBlockRehighlightion(blk);
 }
 
 void Highlighter::rehighlight() {
     if (!doc)
         return;
 
+    rehighlighting = true;
+
     QTextCursor cursor(doc);
     rehighlight(cursor, QTextCursor::End);
+
+    rehighlighting = false;
 }
 
 void Highlighter::rehighlightBlock(const QTextBlock & block) {
@@ -192,8 +190,6 @@ void Highlighter::setExtraFormats(const QTextBlock & block, QVector<QTextLayout:
 //    inReformatBlocks = wasInReformatBlocks;
 }
 
-
-
 void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
 //    foldValidator.reset();
 
@@ -218,7 +214,7 @@ void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
 
         reformatBlock(block, from, charsRemoved, charsAdded);
 
-        forceHighlightOfNextBlock = (block.userState() != stateBeforeHighlight);
+        forceHighlightOfNextBlock = !rehighlighting && (block.userState() != stateBeforeHighlight);
 
         block = block.next();
     }
