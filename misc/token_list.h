@@ -17,7 +17,7 @@ struct TokenCell {
 
     TokenCell(const Lexem & lexem, const TOKEN_TYPE & start_pos,
               const TOKEN_LENGTH_TYPE & length, TokenCell * prev = 0)
-        : prev(prev), lexem(lexem), start_pos(start_pos), length(length)
+        : prev(prev), next(0), lexem(lexem), start_pos(start_pos), length(length)
     {
         if (prev) {
             if (prev -> next)

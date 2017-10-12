@@ -66,8 +66,11 @@ public:
 
             state = new LexerState(scope, udata -> begin, lighter);
         }
-
-        state = new LexerState(scope, 0, lighter);
+        else {
+            TokenCell * left, * right;
+            tokens -> registerLine(left, right);
+            state = new LexerState(scope, left, lighter);
+        }
 
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();
