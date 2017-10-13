@@ -69,16 +69,14 @@ public:
         right = new TokenCell(lex_end_line, 0, 0, left);
     }
 
-    static void unregisterLine(TokenCell * left, TokenCell * right) {
+    static void removeLine(TokenCell * left, TokenCell * right) {
         if (left -> prev)
             left -> prev -> next = right -> next;
 
         if (right -> next)
             right -> next -> prev = left -> prev;
-    }
 
-    static void removeLine(TokenCell * left, TokenCell * right) {
-        while(left != right) {
+        while(left != right -> next) {
             TokenCell * curr = left;
             left = left -> next;
 
