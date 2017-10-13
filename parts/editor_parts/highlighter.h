@@ -18,17 +18,16 @@ class Highlighter : public QObject {
 protected:
     void highlightBlock(const QString & text);
 
-    Lexer * lexer;
-
     QPointer<IDocument> doc;
     QTextBlock current_block;
 
     QVector<QTextCharFormat> formats;
     QVector<QTextCharFormat> formatChanges;
 public:
-    Highlighter(IDocument * doc, Lexer * lexer);
+    Highlighter(IDocument * doc);
     ~Highlighter();
 
+//    inline QPointer<IDocument> document() { return doc; }
     void setDocument(IDocument * new_doc);
 
     QTextBlock prevBlock() const { return current_block.previous(); }

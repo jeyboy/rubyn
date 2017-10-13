@@ -9,7 +9,7 @@
 
 class IDocument : public QTextDocument, public File {
 protected:
-    QIODevice * _device;
+    QPointer<QIODevice> _device;
     Lexer * _lexer;
 
     bool fully_readed;
@@ -18,6 +18,11 @@ public:
 
     IDocument(const QString & path, const QString & name, QIODevice * device, Project * project = 0, Lexer * lexer = 0);
     virtual ~IDocument();
+
+    void lexicate(const QString & text, Highlighter * highlighter) {
+        if (_lexer)
+            _lexer -> handle(text, highlighter, scope, tokens);
+    }
 
     inline FormatType mime() const { return _lexer ? _lexer -> format() : ft_unknown; }
     inline bool isFullyReaded() const { return fully_readed; }

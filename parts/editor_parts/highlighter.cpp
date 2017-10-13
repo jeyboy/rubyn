@@ -33,9 +33,7 @@ void Highlighter::setDocument(IDocument * new_doc) {
     }
 }
 
-Highlighter::Highlighter(IDocument * doc, Lexer * lexer)
-    : QObject(doc), rehighlighting(false), lexer(lexer), doc(0)
-{
+Highlighter::Highlighter(IDocument * doc) : QObject(doc), rehighlighting(false), doc(0) {
     setDocument(doc);
 }
 
@@ -46,10 +44,7 @@ Highlighter::~Highlighter() {
 void Highlighter::highlightBlock(const QString & text) {
 //    qDebug() << "*** " << currentBlock().firstLineNumber();
 
-//    if (text.trimmed().isEmpty()) // INFO: ignore empty str
-//        return;
-
-    lexer -> handle(text, this);
+    doc -> lexicate(text, this);
 }
 
 void Highlighter::rehighlight() {

@@ -23,7 +23,7 @@ public:
 
         QByteArray ar = _device -> readAll();
         setPlainText(ar);
-        _device -> close(); // this closed already in IDocument
+//        _device -> close(); // this closed already in IDocument
 
 //        if (_device -> size() < READ_LIMIT)
 //            setPlainText(ar);
@@ -33,7 +33,7 @@ public:
 //        }
 
         if (lexer)
-            new Highlighter(this, lexer);
+            new Highlighter(this);
     }
 
     void readNextBlock() {

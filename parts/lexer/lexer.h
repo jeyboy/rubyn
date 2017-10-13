@@ -5,11 +5,8 @@
 #include <qdatetime.h>
 #include <qdebug.h>
 
-#include "misc/token_list.h"
-
 #include "lexer_state.h"
 #include "parts/formats/format_types.h"
-#include "parts/lexer/scopes/scope.h"
 
 
 //unsigned int hCount(0);
@@ -45,32 +42,23 @@ protected:
 
     virtual void handle(LexerState * state) = 0;
 
-    TokenList * tokens;
-    Scope * scope;
 public:
-    void handle(const QString & text, Highlighter * lighter) {
+    void handle(const QString & text, Highlighter * lighter, Scope * scope, TokenList * tokens) {
         LexerState * state = 0;
 
-        if (lighter) {
-            QTextBlock block = lighter -> currentBlock();
+        QTextBlock block = lighter -> currentBlock();
 
-            BlockUserData * udata = reinterpret_cast<BlockUserData *>(block.userData());
+        BlockUserData * udata = reinterpret_cast<BlockUserData *>(block.userData());
 
-            if (!udata) {
-                QTextBlock prev_block = lighter -> prevBlock();
-                udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
-                udata = new BlockUserData(tokens, udata ? udata -> end : 0);
+        if (!udata) {
+            QTextBlock prev_block = lighter -> prevBlock();
+            udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
+            udata = new BlockUserData(tokens, udata ? udata -> end : 0);
 
-                block.setUserData(udata);
-            }
-
-            state = new LexerState(scope, udata -> begin, lighter);
+            block.setUserData(udata);
         }
-        else {
-            TokenCell * left, * right;
-            tokens -> registerLine(left, right);
-            state = new LexerState(scope, left, lighter);
-        }
+
+        state = new LexerState(scope, udata -> begin, lighter);
 
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();
@@ -80,18 +68,10 @@ public:
         handle(state);
         qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
 
-        if (lighter) {
-            QTextBlock block = lighter -> currentBlock();
-            block.setUserState(state -> status);
-        }
+        block.setUserState(state -> status);
     }
 
-    Lexer() : tokens(new TokenList()), scope(new Scope()) {}
-
-    virtual ~Lexer() {
-        delete scope;
-        delete tokens;
-    }
+    virtual ~Lexer() {}
 
     virtual FormatType format() const = 0;
 };
