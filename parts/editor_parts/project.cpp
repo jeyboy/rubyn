@@ -2,7 +2,7 @@
 
 #include "file.h"
 
-Project::Project(const QUrl & uri) {
+Project::Project(QObject * parent, const QUrl & uri) : QObject(parent) {
     if (uri.isEmpty()) {
 //      TODO: create empty project
     } else {
@@ -18,14 +18,37 @@ void Project::rename(const QString & new_name) {
     // TODO: write me
 }
 
-void Project::addFile(const QUrl & uri) {
-    if (uri.isEmpty() || uri.isRelative()) {
-        // TODO: create new file
-    } else {
-        // TODO: open file
-    }
+bool Project::addFile(const QUrl & uri, const bool & open) {
+    bool new_file = false;
+    File * file;
 
-    emit fileAdded(project_uri, uri);
+    if (!files.contains(url)) {
+        new_file = true;
+        file = new File(url, project);
+
+        if (file -> isOpened())
+            _files.insert(url, file);
+        else {
+            delete file;
+            return false;
+        }
+    }
+    else file = _files[url];
+
+    if (open) {
+        switch(file -> formatType()) {
+            case ft_text: { emit textAdded(url); break;}
+            case ft_image: { emit imageAdded(url); break;}
+            case ft_binary: { emit binaryAdded(url); break;}
+            default:
+                delete file;
+                return false;
+        };
+    }
+    else if (new_file)
+        emit parent() -> fileAdded(url);
+
+    return true;
 }
 
 void Project::renameFile(const QUrl & uri, const QUrl & new_uri) {
@@ -35,5 +58,5 @@ void Project::renameFile(const QUrl & uri, const QUrl & new_uri) {
 void Project::removeFile(const QUrl & uri) {
     // TODO: write me
 
-    emit fileRemoved(project_uri, uri);
+//    emit fileRemoved(project_uri, uri);
 }

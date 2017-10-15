@@ -3,5 +3,6 @@
 
 #include "text_document.h"
 #include "image_document.h"
+#include "binary_document.h"
 
 #endif // DOCUMENTS_TYPES

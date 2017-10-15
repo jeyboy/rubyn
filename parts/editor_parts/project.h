@@ -10,21 +10,18 @@ class File;
 class Project : public QObject {
     Q_OBJECT
 
-    QUrl project_uri;
-    QHash<QUrl, File *> files;
+    QUrl _project_uri;
+    QHash<QUrl, File *> _files;
 public:
-    Project(const QUrl & uri = QUrl());
+    Project(QObject * parent, const QUrl & uri = QUrl());
     ~Project();
 
     void rename(const QString & new_name);
 
-    void addFile(const QUrl & uri = QUrl());
+    bool addFile(const QUrl & uri = QUrl(), const bool & open = true);
     void renameFile(const QUrl & uri, const QUrl & new_uri);
     void removeFile(const QUrl & uri);
-
-signals:
-    void fileAdded(const QUrl & project_uri, const QUrl & file_uri);
-    void fileRemoved(const QUrl & project_uri, const QUrl & file_uri);
+    inline File * file(const QUrl & url) { return files.value(url, 0); }
 };
 
 #endif // PROJECT_H

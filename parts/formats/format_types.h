@@ -8,7 +8,7 @@ enum FormatType {
 
     ft_image = (1 << 0),
     ft_text = (1 << 1),
-    ft_bynary = (1 << 2),
+    ft_binary = (1 << 2),
 
     ft_rb = (1 << 3) | ft_text,
     ft_sql = (1 << 4) | ft_text,

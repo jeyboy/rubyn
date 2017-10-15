@@ -1,8 +1,6 @@
 #ifndef IMAGE_DOCUMENT
 #define IMAGE_DOCUMENT
 
-#include "idocument.h"
-
 //For example, you can add an image as a resource in order to reference it from within the document:
 
 //    document->addResource(QTextDocument::ImageResource,
@@ -18,15 +16,17 @@
 
 //    editor->append("<img src=\"mydata://image.png\" />");
 
+#include "idocument.h"
+
 class Project;
 
 class ImageDocument : public IDocument {
 public:
-    ImageDocument(const QString & path, const QString & name, QIODevice * device, Project * project = 0, Lexer * lexer = 0)
-        : IDocument(path, name, device, project, lexer)
-    {
-        _device -> close();
-    }
+//    ImageDocument(const QString & path, const QString & name, QIODevice * device, Project * project = 0, Lexer * lexer = 0)
+//        : IDocument(path, name, device, project, lexer)
+//    {
+//        _device -> close();
+//    }
 };
 
 #endif // IMAGE_DOCUMENT

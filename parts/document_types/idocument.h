@@ -1,34 +1,29 @@
-#ifndef IDOCUMENTS
-#define IDOCUMENTS
+#ifndef IDOCUMENT_H
+#define IDOCUMENT_H
 
-#include <qstring>
-#include <qtextdocument>
+#include <qfile>
 
-#include "parts/editor_parts/file.h"
-#include "parts/lexer/lexer_factory.h"
+class BinaryDocument;
+class ImageDocument;
+class TextDocument;
 
-class IDocument : public QTextDocument, public File {
+class IDocument {
+    IDocument * doc;
 protected:
-    QPointer<QIODevice> _device;
-    Lexer * _lexer;
-
-    bool fully_readed;
+    QPointer<QIODevice> device;
 public:
-    static IDocument * create(const QUrl & url, Project * project = 0);
+    virtual ~IDocument() {
+        if (device) {
+            if (device -> isOpen())
+                device -> close();
 
-    IDocument(const QString & path, const QString & name, QIODevice * device, Project * project = 0, Lexer * lexer = 0);
-    virtual ~IDocument();
-
-    void lexicate(const QString & text, Highlighter * highlighter) {
-        if (_lexer)
-            _lexer -> handle(text, highlighter, scope, tokens);
+            delete device;
+        }
     }
 
-    inline FormatType mime() const { return _lexer ? _lexer -> format() : ft_unknown; }
-    inline bool isFullyReaded() const { return fully_readed; }
-
-    inline bool isText() const { return mime() & ft_text; }
-    inline bool isImage() const { return mime() & ft_image; }
+    BinaryDocument * asBinary() { return reinterpret_cast<BinaryDocument *>(doc); }
+    ImageDocument * asImage() { return reinterpret_cast<ImageDocument *>(doc); }
+    TextDocument * asText() { return reinterpret_cast<TextDocument *>(doc); }
 };
 
-#endif // IDOCUMENTS
+#endif // IDOCUMENT_H

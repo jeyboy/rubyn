@@ -1,7 +1,7 @@
 #include "ide_window.h"
 #include "ui_ide_window.h"
 
-#include "parts/documents.h"
+#include "parts/editor_parts/projects.h"
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
@@ -11,7 +11,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     ui -> setupUi(this);
 
     setAcceptDrops(true);
-    connect(&Documents::obj(), SIGNAL(textDocumentAdded(QUrl)), this, SLOT(textDocumentAdded(QUrl)));
+    connect(&Projects::obj(), SIGNAL(textDocumentAdded(QUrl)), this, SLOT(textDocumentAdded(QUrl)));
 
     setupFileMenu();
     setupHelpMenu();
