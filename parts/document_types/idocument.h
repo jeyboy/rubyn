@@ -11,7 +11,10 @@ class IDocument {
     IDocument * doc;
 protected:
     QPointer<QIODevice> device;
+    bool fully_readed;
 public:
+    IDocument(QIODevice * device) : device(device) {}
+
     virtual ~IDocument() {
         if (device) {
             if (device -> isOpen())
@@ -21,7 +24,7 @@ public:
         }
     }
 
-    inline bool isOpened() const { device && device -> isOpen(); }
+    inline bool isOpened() const { return device && device -> isOpen(); }
 
     BinaryDocument * asBinary() { return reinterpret_cast<BinaryDocument *>(doc); }
     ImageDocument * asImage() { return reinterpret_cast<ImageDocument *>(doc); }

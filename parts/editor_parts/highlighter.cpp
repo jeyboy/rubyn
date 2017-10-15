@@ -1,12 +1,12 @@
 #include "highlighter.h"
 
 #include "misc/utils.h"
-#include "parts/document_types/idocument.h"
+#include "parts/document_types/text_document.h"
 #include "parts/lexer/lexer.h"
 
 #include <qtimer.h>
 
-void Highlighter::setDocument(IDocument * new_doc) {
+void Highlighter::setDocument(TextDocument * new_doc) {
     if (doc) {
         disconnect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         disconnect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);

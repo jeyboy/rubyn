@@ -2,6 +2,7 @@
 #define TEXT_DOCUMENT
 
 #include <qtextcursor>
+#include <qtextdocument.h>
 #include <QPlainTextDocumentLayout>
 #include <qdebug.h>
 
@@ -16,21 +17,20 @@
 
 class Project;
 
-class TextDocument : public IDocument {
-    QTextDocument * doc;
+class TextDocument : public QTextDocument, public IDocument {
 protected:
     TokenList * tokens;
     Scope * scope;
     Lexer * lexer;
 public:
     TextDocument(QIODevice * device, Lexer * lexer = 0)
-        : tokens(new TokenList()), scope(new Scope()), lexer(lexer) {
+        : QTextDocument(), IDocument(device), tokens(new TokenList()), scope(new Scope()), lexer(lexer) {
 
         QByteArray ar = device -> readAll();
 
-        QTextDocument * doc = new QTextDocument(ar);
+        setPlainText(ar);
 
-        doc -> setDocumentLayout(new QPlainTextDocumentLayout(this));
+        setDocumentLayout(new QPlainTextDocumentLayout(this));
 
         QTextOption option =  defaultTextOption();
         option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
@@ -38,7 +38,7 @@ public:
     //        option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
         option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
 
-        doc -> setDefaultTextOption(option);
+        setDefaultTextOption(option);
 
 
 //        _device -> close(); // this closed already in IDocument

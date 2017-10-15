@@ -36,7 +36,7 @@ public:
     ~IDEWindow();
 
 protected slots:
-    void textDocumentAdded(const QUrl & path);
+    void textDocumentAdded(QObject * project, const QUrl & file_uri);
 public slots:
     void about();
     void newFile();

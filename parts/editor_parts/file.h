@@ -20,8 +20,6 @@ protected:
 
     QString _path;
     QString _name;
-
-    bool fully_readed;
 public:
     void init(const QString & name, const QString & path, const bool & is_local);
 

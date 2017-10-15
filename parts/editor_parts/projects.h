@@ -21,17 +21,17 @@ public:
 
     inline Project * project(const QUrl & uri) { return _projects.value(uri, 0); }
 signals:
-    void projectAdded(const QUrl & project_uri, const QString & name);
-    void projectRemoved(const QUrl & project_uri, const QString & name);
-    void projectRenamed(const QUrl & project_uri, const QString & from_name, const QString & to_name);
+    void projectAdded(QObject * project);
+    void projectRemoved(QObject * project);
+    void projectRenamed(QObject * project, const QString & prev_name);
 
-    void textAdded(const QUrl & project_uri, const QUrl & file_uri);
-    void imageAdded(const QUrl & project_uri, const QUrl & file_uri);
-    void binaryAdded(const QUrl & project_uri, const QUrl & file_uri);
+    void textAdded(QObject * project, const QUrl & file_uri);
+    void imageAdded(QObject * project, const QUrl & file_uri);
+    void binaryAdded(QObject * project, const QUrl & file_uri);
 
-    void fileAdded(const QUrl & project_uri, const QUrl & file_uri);
-    void fileRemoved(const QUrl & project_uri, const QUrl & file_uri);
-    void fileRenamed(const QUrl & project_uri, const QUrl & from_uri, const QUrl & to_uri);
+    void fileAdded(QObject * project, const QUrl & file_uri);
+    void fileRemoved(QObject * project, const QUrl & file_uri);
+    void fileRenamed(QObject * project, const QUrl & from_uri, const QUrl & to_uri);
 };
 
 #endif // PROJECTS_H

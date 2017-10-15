@@ -2,6 +2,8 @@
 #include "ui_ide_window.h"
 
 #include "parts/editor_parts/projects.h"
+#include "parts/editor_parts/project.h"
+#include "parts/editor_parts/file.h"
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
@@ -11,7 +13,22 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     ui -> setupUi(this);
 
     setAcceptDrops(true);
-    connect(&Projects::obj(), SIGNAL(textDocumentAdded(QUrl)), this, SLOT(textDocumentAdded(QUrl)));
+    connect(&Projects::obj(), SIGNAL(textAdded(QObject*,QUrl)), this, SLOT(textDocumentAdded(QObject*,QUrl)));
+
+
+//    void projectAdded(QObject * project);
+//    void projectRemoved(QObject * project);
+//    void projectRenamed(QObject * project, const QString & prev_name);
+
+//    void textAdded(QObject * project, const QUrl & file_uri);
+//    void imageAdded(QObject * project, const QUrl & file_uri);
+//    void binaryAdded(QObject * project, const QUrl & file_uri);
+
+//    void fileAdded(QObject * project, const QUrl & file_uri);
+//    void fileRemoved(QObject * project, const QUrl & file_uri);
+//    void fileRenamed(QObject * project, const QUrl & from_uri, const QUrl & to_uri);
+
+
 
     setupFileMenu();
     setupHelpMenu();
@@ -27,8 +44,11 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 IDEWindow::~IDEWindow() { delete ui; }
 
-void IDEWindow::textDocumentAdded(const QUrl & url) {
-    activeEditor -> openDocument(Documents::obj().document(url));
+void IDEWindow::textDocumentAdded(QObject * project, const QUrl & file_uri) {
+    Project * _project = reinterpret_cast<Project *>(project);
+    File * _file = _project -> file(file_uri);
+
+    activeEditor -> openDocument(_file -> document());
     activeEditor -> show();
 }
 
