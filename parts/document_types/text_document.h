@@ -24,20 +24,21 @@ protected:
     Lexer * lexer;
 public:
     TextDocument(QIODevice * device, Lexer * lexer = 0)
-        : tokens(new TokenList()), scope(new Scope()) {
+        : tokens(new TokenList()), scope(new Scope()), lexer(lexer) {
 
-        QByteArray ar = _device -> readAll();
+        QByteArray ar = device -> readAll();
 
         QTextDocument * doc = new QTextDocument(ar);
+
+        doc -> setDocumentLayout(new QPlainTextDocumentLayout(this));
 
         QTextOption option =  defaultTextOption();
         option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
     //    else
     //        option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
         option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
-        doc -> setDefaultTextOption(option);
 
-        doc -> setDocumentLayout(new QPlainTextDocumentLayout(this));
+        doc -> setDefaultTextOption(option);
 
 
 //        _device -> close(); // this closed already in IDocument
@@ -73,8 +74,8 @@ public:
     }
 
     void lexicate(const QString & text, Highlighter * highlighter) {
-        if (_lexer)
-            _lexer -> handle(text, highlighter, scope, tokens);
+        if (lexer)
+            lexer -> handle(text, highlighter, scope, tokens);
     }
 };
 

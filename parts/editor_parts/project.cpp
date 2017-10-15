@@ -11,7 +11,7 @@ Project::Project(QObject * parent, const QUrl & uri) : QObject(parent) {
 }
 
 Project::~Project() {
-    qDeleteAll(files);
+    qDeleteAll(_files);
 }
 
 void Project::rename(const QString & new_name) {
@@ -37,9 +37,9 @@ bool Project::addFile(const QUrl & uri, const bool & open) {
 
     if (open) {
         switch(file -> formatType()) {
-            case ft_text: { emit textAdded(url); break;}
-            case ft_image: { emit imageAdded(url); break;}
-            case ft_binary: { emit binaryAdded(url); break;}
+            case ft_text: { emit parent() -> textAdded(url); break;}
+            case ft_image: { emit parent() -> imageAdded(url); break;}
+            case ft_binary: { emit parent() -> binaryAdded(url); break;}
             default:
                 delete file;
                 return false;

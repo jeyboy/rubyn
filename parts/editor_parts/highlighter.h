@@ -9,7 +9,7 @@
 
 class Lexer;
 class LexerState;
-class IDocument;
+class TextDocument;
 
 class Highlighter : public QObject {
     Q_OBJECT
@@ -18,17 +18,17 @@ class Highlighter : public QObject {
 protected:
     void highlightBlock(const QString & text);
 
-    QPointer<IDocument> doc;
+    QPointer<TextDocument> doc;
     QTextBlock current_block;
 
     QVector<QTextCharFormat> formats;
     QVector<QTextCharFormat> formatChanges;
 public:
-    Highlighter(IDocument * doc);
+    Highlighter(TextDocument * doc);
     ~Highlighter();
 
-//    inline QPointer<IDocument> document() { return doc; }
-    void setDocument(IDocument * new_doc);
+//    inline QPointer<TextDocument> document() { return doc; }
+    void setDocument(TextDocument * new_doc);
 
     QTextBlock prevBlock() const { return current_block.previous(); }
     QTextBlock currentBlock() const { return current_block; }

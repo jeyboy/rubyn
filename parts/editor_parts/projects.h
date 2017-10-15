@@ -29,9 +29,9 @@ signals:
     void imageAdded(const QUrl & project_uri, const QUrl & file_uri);
     void binaryAdded(const QUrl & project_uri, const QUrl & file_uri);
 
-    void fileAdded(const QUrl & uri);
-    void fileRemoved(const QUrl & uri);
-    void fileRenamed(const QUrl & from_uri, const QUrl & to_uri);
+    void fileAdded(const QUrl & project_uri, const QUrl & file_uri);
+    void fileRemoved(const QUrl & project_uri, const QUrl & file_uri);
+    void fileRenamed(const QUrl & project_uri, const QUrl & from_uri, const QUrl & to_uri);
 };
 
 #endif // PROJECTS_H

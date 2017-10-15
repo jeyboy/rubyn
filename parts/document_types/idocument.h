@@ -21,6 +21,8 @@ public:
         }
     }
 
+    inline bool isOpened() const { device && device -> isOpen(); }
+
     BinaryDocument * asBinary() { return reinterpret_cast<BinaryDocument *>(doc); }
     ImageDocument * asImage() { return reinterpret_cast<ImageDocument *>(doc); }
     TextDocument * asText() { return reinterpret_cast<TextDocument *>(doc); }
