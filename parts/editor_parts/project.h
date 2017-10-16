@@ -21,7 +21,7 @@ public:
     bool addFile(const QUrl & uri = QUrl(), const bool & open = true);
     void renameFile(const QUrl & uri, const QUrl & new_uri);
     void removeFile(const QUrl & uri);
-    inline File * file(const QUrl & url) { return files.value(url, 0); }
+    inline File * file(const QUrl & url) { return _files.value(url, 0); }
 };
 
 #endif // PROJECT_H

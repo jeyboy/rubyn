@@ -33,7 +33,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     }
 }
 
-Highlighter::Highlighter(IDocument * doc) : QObject(doc), rehighlighting(false), doc(0) {
+Highlighter::Highlighter(TextDocument * doc) : QObject(doc), rehighlighting(false), doc(0) {
     setDocument(doc);
 }
 

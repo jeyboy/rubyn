@@ -7,6 +7,7 @@
 #include <qdebug.h>
 
 #include "idocument.h"
+#include "parts/lexer/lexer.h"
 #include "parts/lexer/scopes/scope.h"
 #include "parts/editor_parts/highlighter.h"
 
@@ -54,6 +55,12 @@ public:
             new Highlighter(this);
     }
 
+    ~TextDocument() {
+        delete lexer;
+        delete scope;
+        delete tokens;
+    }
+
     void readNextBlock() {
         if (fully_readed) return;
 
@@ -66,11 +73,11 @@ public:
 //          myCursor->insertText("\n");
 
         myCursor -> movePosition(QTextCursor::End);
-        char * data = new char[qMin(_device -> bytesAvailable(), READ_LIMIT)];
-        _device -> read(data, READ_LIMIT);
+        char * data = new char[qMin(device -> bytesAvailable(), READ_LIMIT)];
+        device -> read(data, READ_LIMIT);
         myCursor -> insertText(QString(data));
         delete [] data;
-        fully_readed = _device -> atEnd();
+        fully_readed = device -> atEnd();
     }
 
     void lexicate(const QString & text, Highlighter * highlighter) {

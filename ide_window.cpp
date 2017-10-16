@@ -61,18 +61,18 @@ void IDEWindow::newFile() {
 }
 
 void IDEWindow::openFile(const QUrl & url) {
-    QUrl fileUrl = url;
+    QUrl file_url = url;
 
-    if (fileUrl.isEmpty())
-        fileUrl = QUrl::fromLocalFile(
+    if (file_url.isEmpty())
+        file_url = QUrl::fromLocalFile(
             QFileDialog::getOpenFileName(
                 this,
                 tr("Open File"), "", "All (*.*);;Ruby Files (*.rb);;SQL (*.sql)" // ;;C Sharp (*.cs);;C++ Files (*.cpp *.h)
             )
         );
 
-    if (!fileUrl.isEmpty())
-        Documents::obj().openDocument(fileUrl);
+    if (!file_url.isEmpty())
+        Projects::obj().defaultProject() -> addFile(file_url);
 }
 
 void IDEWindow::setupEditor() {

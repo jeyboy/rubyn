@@ -19,6 +19,7 @@ public:
 
     bool open(const QUrl & uri);
 
+    inline Project * defaultProject() { return _projects.value(QUrl(), 0); }
     inline Project * project(const QUrl & uri) { return _projects.value(uri, 0); }
 signals:
     void projectAdded(QObject * project);

@@ -2,6 +2,7 @@
 #define IDOCUMENT_H
 
 #include <qfile>
+#include <qpointer.h>
 
 class BinaryDocument;
 class ImageDocument;
@@ -25,6 +26,7 @@ public:
     }
 
     inline bool isOpened() const { return device && device -> isOpen(); }
+    inline bool isReaded() const { return device && fully_readed; }
 
     BinaryDocument * asBinary() { return reinterpret_cast<BinaryDocument *>(doc); }
     ImageDocument * asImage() { return reinterpret_cast<ImageDocument *>(doc); }

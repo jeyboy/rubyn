@@ -34,10 +34,10 @@ public:
     inline QString path() const { return _path; }
 
     inline bool isOpened() const { return doc && doc -> isOpened(); }
-    inline bool isFullyReaded() const { return fully_readed; }
+    inline bool isFullyReaded() const { return doc -> isReaded(); }
 
-    inline FormatType formatType() const {
-        return _main_format & ft_text | _main_format & ft_image | _main_format & ft_text;
+    inline int formatType() const {
+        return _main_format & (ft_text | ft_image | ft_text);
     }
     inline bool isText() const { return _main_format & ft_text; }
     inline bool isImage() const { return _main_format & ft_image; }
