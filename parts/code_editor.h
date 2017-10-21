@@ -10,9 +10,11 @@ class QPaintEvent;
 class QResizeEvent;
 class QSize;
 class QWidget;
-class ExtraArea;
-class IDocument;
 class QPen;
+
+class TextDocument;
+class ExtraArea;
+class File;
 
 #define HPADDING 3
 #define FOLDING_WIDTH 16
@@ -34,7 +36,7 @@ public:
     int extraAreaWidth();
     int foldingOffset();
 
-    void openDocument(IDocument * doc);
+    void openDocument(File * file);
 protected:
     bool event(QEvent * event);
     void resizeEvent(QResizeEvent * event) Q_DECL_OVERRIDE;

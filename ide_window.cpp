@@ -9,7 +9,7 @@
 #include <qfiledialog.h>
 #include <qsplitter>
 
-IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), activeEditor(0) {
+IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), editors_spliter(0) {
     ui -> setupUi(this);
 
     setAcceptDrops(true);
@@ -35,7 +35,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     setupSplitter();
     setupEditor();
 
-    activeEditor -> hide();
+    active_editor -> hide();
 
     openFile(QUrl::fromLocalFile("F://rubyn test//ruby//test1.rb"));
 
@@ -47,9 +47,17 @@ IDEWindow::~IDEWindow() { delete ui; }
 void IDEWindow::textDocumentAdded(QObject * project, const QUrl & file_uri) {
     Project * _project = reinterpret_cast<Project *>(project);
     File * _file = _project -> file(file_uri);
+//    IDocument * doc = _file -> document();
 
-    activeEditor -> openDocument(_file -> document());
-    activeEditor -> show();
+    switch(_file -> formatType()) {
+        case ft_text: {
+            active_editor -> openDocument(_file);
+            active_editor -> show();
+        break;}
+        case ft_image: //{ emit parent() -> imageAdded(url); break;}
+        case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
+        default:;
+    };
 }
 
 void IDEWindow::about() {
@@ -76,35 +84,35 @@ void IDEWindow::openFile(const QUrl & url) {
 }
 
 void IDEWindow::setupEditor() {
-    editors << (activeEditor = new CodeEditor(this));
+    editors << (active_editor = new CodeEditor(this));
 
     QFont font;
     font.setFamily("Courier");
     font.setFixedPitch(true);
     font.setPointSize(11);
 
-    activeEditor -> setFont(font);
-    editorsSpliter -> addWidget(activeEditor);
+    active_editor -> setFont(font);
+    editors_spliter -> addWidget(active_editor);
 }
 
 void IDEWindow::setupFileMenu() {
-    QMenu * fileMenu = new QMenu(tr("&File"), this);
-    menuBar() -> addMenu(fileMenu);
+    QMenu * file_menu = new QMenu(tr("&File"), this);
+    menuBar() -> addMenu(file_menu);
 
-    fileMenu -> addAction(tr("&New"), this, SLOT(newFile()), QKeySequence::New);
-    fileMenu -> addAction(tr("&Open..."), this, SLOT(openFile()), QKeySequence::Open);
-    fileMenu -> addAction(tr("E&xit"), qApp, SLOT(quit()), QKeySequence::Quit);
+    file_menu -> addAction(tr("&New"), this, SLOT(newFile()), QKeySequence::New);
+    file_menu -> addAction(tr("&Open..."), this, SLOT(openFile()), QKeySequence::Open);
+    file_menu -> addAction(tr("E&xit"), qApp, SLOT(quit()), QKeySequence::Quit);
 }
 
 void IDEWindow::setupHelpMenu() {
-    QMenu * helpMenu = new QMenu(tr("&Help"), this);
-    menuBar() -> addMenu(helpMenu);
-    helpMenu -> addAction(tr("&About"), this, SLOT(about()));
+    QMenu * help_menu = new QMenu(tr("&Help"), this);
+    menuBar() -> addMenu(help_menu);
+    help_menu -> addAction(tr("&About"), this, SLOT(about()));
 }
 
 void IDEWindow::setupSplitter() {
-    editorsSpliter = new QSplitter(this);
-    setCentralWidget(editorsSpliter);
+    editors_spliter = new QSplitter(this);
+    setCentralWidget(editors_spliter);
 }
 
 void IDEWindow::dragEnterEvent(QDragEnterEvent * event) {

@@ -1,5 +1,6 @@
 #include "project.h"
 
+#include "projects.h"
 #include "file.h"
 
 Project::Project(QObject * parent, const QUrl & uri) : QObject(parent) {
@@ -22,31 +23,33 @@ bool Project::addFile(const QUrl & uri, const bool & open) {
     bool new_file = false;
     File * file;
 
-    if (!files.contains(url)) {
+    if (!_files.contains(uri)) {
         new_file = true;
-        file = new File(url, project);
+        file = new File(uri, this);
 
         if (file -> isOpened())
-            _files.insert(url, file);
+            _files.insert(uri, file);
         else {
             delete file;
             return false;
         }
     }
-    else file = _files[url];
+    else file = _files[uri];
+
+    Projects * projects = reinterpret_cast<Projects *>(parent());
 
     if (open) {
         switch(file -> formatType()) {
-            case ft_text: { emit parent() -> textAdded(url); break;}
-            case ft_image: { emit parent() -> imageAdded(url); break;}
-            case ft_binary: { emit parent() -> binaryAdded(url); break;}
+            case ft_text: { emit projects -> textAdded(this, uri); break; }
+            case ft_image: { emit projects -> imageAdded(this, uri); break; }
+            case ft_binary: { emit projects -> binaryAdded(this, uri); break; }
             default:
                 delete file;
                 return false;
         };
     }
     else if (new_file)
-        emit parent() -> fileAdded(url);
+        emit projects -> fileAdded(this, uri);
 
     return true;
 }
@@ -59,4 +62,9 @@ void Project::removeFile(const QUrl & uri) {
     // TODO: write me
 
 //    emit fileRemoved(project_uri, uri);
+}
+
+inline IDocument * Project::document(const QUrl & url) {
+    File * file = _files.value(url, 0);
+    return file ? file -> document() : 0;
 }

@@ -1,5 +1,4 @@
 #include "code_editor.h"
-#include "editor_parts/extra_area.h"
 
 #include <qstringbuilder.h>
 #include <qwidget.h>
@@ -7,10 +6,12 @@
 #include <qpainter.h>
 #include <qfile.h>
 #include <qscrollbar.h>
-
 #include <qtooltip.h>
 
-#include "document_types/idocument.h"
+#include "editor_parts/file.h"
+#include "editor_parts/extra_area.h"
+
+#include "parts/document_types/text_document.h"
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), folding_y(NO_FOLDING), folding_click(false) {
     extra_area = new ExtraArea(this);
@@ -35,18 +36,20 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), folding_y(NO_
     setMouseTracking(true);
 }
 
-void CodeEditor::openDocument(IDocument * doc) {
-    if (doc) {
+void CodeEditor::openDocument(File * file) {
+    if (file && file -> isText()) {
         QFont new_font(font().family(), 11);
 //        new_font.setStretch(110);
 
-        doc -> setDefaultFont(new_font);
+        TextDocument * text_doc = file -> asText();
+
+        text_doc -> setDefaultFont(new_font);
         setFont(new_font);
 
-        setDocumentTitle(doc -> name());
-        setDocument(doc);
+        setDocumentTitle(file -> name());
+        setDocument(text_doc);
 
-        if (!doc -> isFullyReaded()) {
+        if (!file -> isFullyReaded()) {
             //    verticalScrollBar()
         }
     }

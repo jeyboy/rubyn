@@ -19,8 +19,8 @@ class IDEWindow : public QMainWindow {
     Q_OBJECT
 
     Ui::IDEWindow * ui;
-    CodeEditor * activeEditor;
-    QSplitter * editorsSpliter;
+    CodeEditor * active_editor;
+    QSplitter * editors_spliter;
     QList<CodeEditor *> editors;
 
     void setupEditor();

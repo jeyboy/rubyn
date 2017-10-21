@@ -1,6 +1,7 @@
 #include "file.h"
 
 #include "parts/document_types/documents_types.h"
+#include "parts/lexer/lexer_factory.h"
 
 void File::init(const QString & name, const QString & path, const bool & is_local) {
     QIODevice * device = 0;
@@ -30,33 +31,32 @@ void File::init(const QString & name, const QString & path, const bool & is_loca
                 device = file;
             } else {
                 file -> deleteLater();
-                return 0;
+                return;
             }
         } else {
             //TODO: proceed remote file
-            return 0; // but not now ...
+            return; // but not now ...
         }
 
         //TODO: return BynaryDocument if is_bynary
 
-        doc = new TextDocument(device, lexer);
+        _doc = new TextDocument(device, lexer);
     }
-
-//    if (format & ft_image)
-//        return new ImageDocument(path, name, device, project, f);
+//    else if (_main_format & ft_image)
+//        _doc = new ImageDocument(path, name, device, project, f);
 }
 
 File::File(const QString & name, const QString & path, Project * project)
-    : doc(0), project(project), _path(path), _name(name)
+    : _doc(0), _project(project), _path(path), _name(name)
 {
     init(_name, _path, true);
 }
 
-File::File(const QUrl & uri, Project * project = 0) : doc(0), project(project) {
-    bool isLocal = uri.isLocalFile();
-    _path = isLocal ? uri.toLocalFile() : uri.toString();
+File::File(const QUrl & uri, Project * project) : _doc(0), _project(project) {
+    bool is_local = uri.isLocalFile();
+    _path = is_local ? uri.toLocalFile() : uri.toString();
 
-    if (isLocal)
+    if (is_local)
         _name = _path.section('/', -1, -1);
     else
         _name = _path;

@@ -2,6 +2,7 @@
 #define PROJECTS_H
 
 #include <qhash.h>
+#include <qurl.h>
 
 #include "misc/singleton.h"
 
@@ -13,9 +14,7 @@ class Projects : public QObject, public Singleton<Projects> {
     QHash<QUrl, Project *> _projects;
 public:
     Projects(QObject * parent = 0);
-    ~Projects() {
-        _projects.clear();
-    }
+    inline ~Projects() { _projects.clear(); }
 
     bool open(const QUrl & uri);
 

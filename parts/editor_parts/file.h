@@ -13,7 +13,7 @@ class Project;
 
 class File {
 protected:
-    IDocument * doc;
+    IDocument * _doc;
 
     FormatType _main_format;
     Project * _project;
@@ -28,13 +28,13 @@ public:
 
     virtual ~File() {}
 
-    inline IDocument * document() { return doc; }
+    inline IDocument * document() { return _doc; }
 
     inline QString name() const { return _name; }
     inline QString path() const { return _path; }
 
-    inline bool isOpened() const { return doc && doc -> isOpened(); }
-    inline bool isFullyReaded() const { return doc -> isReaded(); }
+    inline bool isOpened() const { return _doc && _doc -> isOpened(); }
+    inline bool isFullyReaded() const { return _doc -> isReaded(); }
 
     inline int formatType() const {
         return _main_format & (ft_text | ft_image | ft_text);
@@ -42,6 +42,10 @@ public:
     inline bool isText() const { return _main_format & ft_text; }
     inline bool isImage() const { return _main_format & ft_image; }
     inline bool isBynary() const { return _main_format & ft_text; }
+
+    inline TextDocument * asText() const { return _doc ? _doc -> asText() : 0; }
+    inline ImageDocument * asImage() const { return _doc ? _doc -> asImage() : 0; }
+    inline BinaryDocument * asBinary() const { return _doc ? _doc -> asBinary() : 0; }
 };
 
 #endif // FILE_H
