@@ -18,8 +18,6 @@
 
 #include "idocument.h"
 
-class Project;
-
 class ImageDocument : public IDocument {
 public:
 //    ImageDocument(const QString & path, const QString & name, QIODevice * device, Project * project = 0, Lexer * lexer = 0)

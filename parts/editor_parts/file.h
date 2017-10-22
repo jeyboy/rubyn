@@ -56,9 +56,9 @@ public:
     inline bool isImage() const { return _main_format & ft_image; }
     inline bool isBynary() const { return _main_format & ft_text; }
 
-    inline TextDocument * asText() const { return reinterpret_cast<TextDocument *>(_doc); }
-    inline ImageDocument * asImage() const { return reinterpret_cast<ImageDocument *>(_doc); }
-    inline BinaryDocument * asBinary() const { return reinterpret_cast<BinaryDocument *>(_doc); }
+    TextDocument * asText();
+    ImageDocument * asImage();
+    BinaryDocument * asBinary();
 };
 
 #endif // FILE_H

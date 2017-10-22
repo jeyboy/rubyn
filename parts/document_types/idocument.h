@@ -7,6 +7,7 @@ protected:
     inline void setFullyReaded(const bool & readed) { fully_readed = readed; }
 public:
     IDocument() : fully_readed(false) {}
+    virtual ~IDocument() {}
 
     inline bool isFullyReaded() const { return fully_readed; }
 };

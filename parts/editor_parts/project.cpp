@@ -2,6 +2,8 @@
 
 #include "projects.h"
 #include "file.h"
+#include "qfont.h"
+#include "parts/document_types/text_document.h"
 
 Project::Project(QObject * parent, const QUrl & uri) : QObject(parent) {
     if (uri.isEmpty()) {

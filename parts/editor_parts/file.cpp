@@ -62,3 +62,7 @@ File::File(const QUrl & uri, Project * project) : _doc(0), _device(0), _project(
 
     init(_name, _path, is_local);
 }
+
+TextDocument * File::asText() { return dynamic_cast<TextDocument *>(_doc); }
+ImageDocument * File::asImage() { return dynamic_cast<ImageDocument *>(_doc); }
+BinaryDocument * File::asBinary() { return dynamic_cast<BinaryDocument *>(_doc); }
