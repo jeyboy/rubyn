@@ -4,7 +4,6 @@
 #include "parts/lexer/lexer_factory.h"
 
 void File::init(const QString & name, const QString & path, const bool & is_local) {
-    QIODevice * device = 0;
     Lexer * lexer;
 
     bool res = LexerFactory::determine(name, lexer);
@@ -28,7 +27,7 @@ void File::init(const QString & name, const QString & path, const bool & is_loca
                 omode |= QFile::Text;
 
             if (file -> open(omode)) {
-                device = file;
+                _device = file;
             } else {
                 file -> deleteLater();
                 return;
@@ -40,19 +39,19 @@ void File::init(const QString & name, const QString & path, const bool & is_loca
 
         //TODO: return BynaryDocument if is_bynary
 
-        _doc = new TextDocument(device, lexer);
+        _doc = new TextDocument(this, lexer);
     }
 //    else if (_main_format & ft_image)
 //        _doc = new ImageDocument(path, name, device, project, f);
 }
 
 File::File(const QString & name, const QString & path, Project * project)
-    : _doc(0), _project(project), _path(path), _name(name)
+    : _doc(0), _device(0), _project(project), _path(path), _name(name)
 {
     init(_name, _path, true);
 }
 
-File::File(const QUrl & uri, Project * project) : _doc(0), _project(project) {
+File::File(const QUrl & uri, Project * project) : _doc(0), _device(0), _project(project) {
     bool is_local = uri.isLocalFile();
     _path = is_local ? uri.toLocalFile() : uri.toString();
 

@@ -1,6 +1,7 @@
 #ifndef FILE_H
 #define FILE_H
 
+#include <qfile.h>
 #include <qurl.h>
 #include <qhash.h>
 
@@ -10,10 +11,14 @@
 #include "parts/document_types/idocument.h"
 
 class Project;
+class TextDocument;
+class ImageDocument;
+class BinaryDocument;
 
 class File {
 protected:
     IDocument * _doc;
+    QIODevice * _device;
 
     FormatType _main_format;
     Project * _project;
@@ -26,15 +31,23 @@ public:
     File(const QString & name, const QString & path = QString(), Project * project = 0);
     File(const QUrl & uri, Project * project = 0);
 
-    virtual ~File() {}
+    virtual ~File() {
+        if (_device) {
+            if (_device -> isOpen())
+                _device -> close();
+
+            delete _device;
+        }
+    }
 
     inline IDocument * document() { return _doc; }
+    inline QIODevice * source() { return _device; }
 
     inline QString name() const { return _name; }
     inline QString path() const { return _path; }
 
-    inline bool isOpened() const { return _doc && _doc -> isOpened(); }
-    inline bool isFullyReaded() const { return _doc -> isReaded(); }
+    inline bool isOpened() const { return _device && _device -> isOpen(); }
+    inline bool isFullyReaded() const { return _device && _doc && _doc -> isFullyReaded(); }
 
     inline int formatType() const {
         return _main_format & (ft_text | ft_image | ft_text);
@@ -43,9 +56,9 @@ public:
     inline bool isImage() const { return _main_format & ft_image; }
     inline bool isBynary() const { return _main_format & ft_text; }
 
-    inline TextDocument * asText() const { return _doc ? _doc -> asText() : 0; }
-    inline ImageDocument * asImage() const { return _doc ? _doc -> asImage() : 0; }
-    inline BinaryDocument * asBinary() const { return _doc ? _doc -> asBinary() : 0; }
+    inline TextDocument * asText() const { return reinterpret_cast<TextDocument *>(_doc); }
+    inline ImageDocument * asImage() const { return reinterpret_cast<ImageDocument *>(_doc); }
+    inline BinaryDocument * asBinary() const { return reinterpret_cast<BinaryDocument *>(_doc); }
 };
 
 #endif // FILE_H

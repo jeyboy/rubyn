@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     parts/editor_parts/project.cpp \
     parts/editor_parts/file.cpp \
     parts/lexer/lexer_factory.cpp \
-    parts/editor_parts/projects.cpp
+    parts/editor_parts/projects.cpp \
+    parts/document_types/text_document.cpp
 
 HEADERS  += ide_window.h \
     parts/editor_parts/highlighter.h \

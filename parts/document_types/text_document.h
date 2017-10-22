@@ -17,72 +17,28 @@
 #define READ_LIMIT (qint64)(512000) // ~512 kb
 
 class Project;
+class File;
 
 class TextDocument : public QTextDocument, public IDocument {
 protected:
-    TokenList * tokens;
-    Scope * scope;
-    Lexer * lexer;
+    TokenList * _tokens;
+    Scope * _scope;
+    Lexer * _lexer;
+    File * _file;
 public:
-    TextDocument(QIODevice * device, Lexer * lexer = 0)
-        : QTextDocument(), IDocument(device), tokens(new TokenList()), scope(new Scope()), lexer(lexer) {
+    TextDocument(File * file, Lexer * lexer = 0);
 
-        QByteArray ar = device -> readAll();
-
-        setPlainText(ar);
-
-        setDocumentLayout(new QPlainTextDocumentLayout(this));
-
-        QTextOption option =  defaultTextOption();
-        option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
-    //    else
-    //        option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
-        option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
-
-        setDefaultTextOption(option);
-
-
-//        _device -> close(); // this closed already in IDocument
-
-//        if (_device -> size() < READ_LIMIT)
-//            setPlainText(ar);
-//        else {
-//            fully_readed = false;
-//            readNextBlock();
-//        }
-
-        if (lexer)
-            new Highlighter(this);
+    inline ~TextDocument() {
+        delete _lexer;
+        delete _scope;
+        delete _tokens;
     }
 
-    ~TextDocument() {
-        delete lexer;
-        delete scope;
-        delete tokens;
-    }
-
-    void readNextBlock() {
-        if (fully_readed) return;
-
-        QTextCursor * myCursor = new QTextCursor(this);
-
-//          // Insert an image
-//          QTextImageFormat imageFormat;
-//          imageFormat.setName("logo.jpg");
-//          myCursor->insertImage(imageFormat, QTextFrameFormat::InFlow);
-//          myCursor->insertText("\n");
-
-        myCursor -> movePosition(QTextCursor::End);
-        char * data = new char[qMin(device -> bytesAvailable(), READ_LIMIT)];
-        device -> read(data, READ_LIMIT);
-        myCursor -> insertText(QString(data));
-        delete [] data;
-        fully_readed = device -> atEnd();
-    }
+    void readNextBlock();
 
     void lexicate(const QString & text, Highlighter * highlighter) {
-        if (lexer)
-            lexer -> handle(text, highlighter, scope, tokens);
+        if (_lexer)
+            _lexer -> handle(text, highlighter, _scope, _tokens);
     }
 };
 
