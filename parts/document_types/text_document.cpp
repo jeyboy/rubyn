@@ -2,23 +2,27 @@
 
 #include "parts/editor_parts/file.h"
 
+#include <qtextdocument.h>
+#include <qtextcursor>
+#include <QPlainTextDocumentLayout>
+
 TextDocument::TextDocument(File * file, Lexer * lexer)
-    : QTextDocument(), IDocument(), _tokens(new TokenList()), _scope(new Scope()), _lexer(lexer), _file(file) {
+    : IDocument(), _doc(0), _tokens(new TokenList()), _scope(new Scope()), _lexer(lexer), _file(file) {
 
     setFullyReaded(true);
     QByteArray ar = _file -> source() -> readAll();
 
-    setPlainText(ar);
+    _doc = new QTextDocument(ar);
 
-    setDocumentLayout(new QPlainTextDocumentLayout(this));
+    _doc -> setDocumentLayout(new QPlainTextDocumentLayout(_doc));
 
-    QTextOption option =  defaultTextOption();
+    QTextOption option = _doc -> defaultTextOption();
     option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
 //    else
 //        option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
     option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
 
-    setDefaultTextOption(option);
+    _doc -> setDefaultTextOption(option);
 
 
 //        _device -> close(); // this closed already in IDocument
@@ -37,7 +41,7 @@ TextDocument::TextDocument(File * file, Lexer * lexer)
 void TextDocument::readNextBlock() {
     if (isFullyReaded()) return;
 
-    QTextCursor * myCursor = new QTextCursor(this);
+    QTextCursor * myCursor = new QTextCursor(_doc);
 
 //          // Insert an image
 //          QTextImageFormat imageFormat;

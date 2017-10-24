@@ -1,9 +1,7 @@
 #ifndef TEXT_DOCUMENT
 #define TEXT_DOCUMENT
 
-#include <qtextcursor>
-#include <qtextdocument.h>
-#include <QPlainTextDocumentLayout>
+#include <qpointer.h>
 #include <qdebug.h>
 
 #include "idocument.h"
@@ -18,9 +16,11 @@
 
 class Project;
 class File;
+class QTextDocument;
 
-class TextDocument : public QTextDocument, public IDocument {
+class TextDocument : public IDocument {
 protected:
+    QPointer<QTextDocument> _doc;
     TokenList * _tokens;
     Scope * _scope;
     Lexer * _lexer;
@@ -29,10 +29,13 @@ public:
     TextDocument(File * file, Lexer * lexer = 0);
 
     inline ~TextDocument() {
+        delete _doc;
         delete _lexer;
         delete _scope;
         delete _tokens;
     }
+
+    QTextDocument * toQDoc() { return _doc; }
 
     void readNextBlock();
 

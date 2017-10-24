@@ -41,12 +41,13 @@ class TokenList {
 public:
     inline TokenList() : root(0), last(0) {
         root = new TokenCell(lex_none, 0, 0);
-        last = new TokenCell(lex_end_line, 0, 0, root);
+        last = new TokenCell(lex_end_doc, 0, 0, root);
     }
 
     // descructor of docs called after destructor of TokenList, so we just clearing
     // head and tail - other things will be cleared by destructor of doc
     inline ~TokenList() {
+        clear();
         delete root;
         delete last;
     }
@@ -76,7 +77,7 @@ public:
         if (right -> next)
             right -> next -> prev = left -> prev;
 
-        while(left != right -> next) {
+        while(left && left != right -> next) {
             TokenCell * curr = left;
             left = left -> next;
 

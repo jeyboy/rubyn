@@ -3,9 +3,10 @@
 
 //#include <qobject.h>
 
-#include <qpointer.h>
-
 #include "parts/editor_parts/block_user_data.h"
+
+#include <qtextdocument.h>
+#include <qpointer.h>
 
 class Lexer;
 class LexerState;
@@ -18,7 +19,9 @@ class Highlighter : public QObject {
 protected:
     void highlightBlock(const QString & text);
 
-    QPointer<TextDocument> doc;
+    TextDocument * _doc_wrapper;
+    QPointer<QTextDocument> doc;
+
     QTextBlock current_block;
 
     QVector<QTextCharFormat> formats;

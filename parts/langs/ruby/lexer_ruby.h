@@ -291,10 +291,8 @@ class LexerRuby : public Lexer {
         }
         else state -> lex_word = lex_none;
 
-        if (state -> bufferEof()) {
-            state -> attachToken(lex_end_line);
+        if (state -> bufferEof())
             return false;
-        }
 
         if (state -> next_offset) {
             state -> cachingDelimiter();

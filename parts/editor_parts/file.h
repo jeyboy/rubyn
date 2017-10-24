@@ -32,6 +32,8 @@ public:
     File(const QUrl & uri, Project * project = 0);
 
     virtual ~File() {
+        delete _doc;
+
         if (_device) {
             if (_device -> isOpen())
                 _device -> close();

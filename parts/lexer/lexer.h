@@ -58,7 +58,7 @@ public:
             block.setUserData(udata);
         }
 
-        state = new LexerState(scope, udata -> begin, lighter);
+        state = new LexerState(scope, udata -> end_token -> prev, lighter);
 
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();

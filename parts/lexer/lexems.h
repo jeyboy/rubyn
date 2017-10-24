@@ -391,6 +391,7 @@ enum Lexem : quint32 {
 
     lex_undefined,
     lex_end_line,
+    lex_end_doc,
     lex_tab,
     lex_blank,
     lex_blanks,

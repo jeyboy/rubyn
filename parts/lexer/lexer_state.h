@@ -100,7 +100,7 @@ struct LexerState {
     inline Lexem & lastToken() { return token -> lexem; }
 
     inline void attachToken(const Lexem & lexem) {
-        TokenList::insert(token, lexem, cached_str_pos, cached_length);
+        token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
     }
 
     inline void replaceToken(const Lexem & lexem) {

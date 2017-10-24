@@ -41,7 +41,7 @@ void CodeEditor::openDocument(File * file) {
         QFont new_font(font().family(), 11);
 //        new_font.setStretch(110);
 
-        TextDocument * text_doc = file -> asText();
+        QTextDocument * text_doc = file -> asText() -> toQDoc();
 
         text_doc -> setDefaultFont(new_font);
         setFont(new_font);

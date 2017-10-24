@@ -21,8 +21,10 @@ void Highlighter::setDocument(TextDocument * new_doc) {
         cursor.endEditBlock();
     }
 
-    doc = new_doc;
-    if (doc) {
+    if (new_doc) {
+        _doc_wrapper = new_doc;
+        doc = _doc_wrapper -> toQDoc();
+
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
 //            d->rehighlightPending = true;
@@ -33,7 +35,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     }
 }
 
-Highlighter::Highlighter(TextDocument * doc) : QObject(doc), rehighlighting(false), doc(0) {
+Highlighter::Highlighter(TextDocument * doc) : QObject(), rehighlighting(false), _doc_wrapper(0), doc(0) {
     setDocument(doc);
 }
 
@@ -44,7 +46,7 @@ Highlighter::~Highlighter() {
 void Highlighter::highlightBlock(const QString & text) {
 //    qDebug() << "*** " << currentBlock().firstLineNumber();
 
-    doc -> lexicate(text, this);
+    _doc_wrapper -> lexicate(text, this);
 }
 
 void Highlighter::rehighlight() {
