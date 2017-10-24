@@ -53,7 +53,7 @@ public:
         if (!udata) {
             QTextBlock prev_block = lighter -> prevBlock();
             udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
-            udata = new BlockUserData(tokens, udata ? udata -> end : 0);
+            udata = new BlockUserData(tokens, udata ? udata -> end_token : 0);
 
             block.setUserData(udata);
         }

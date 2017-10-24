@@ -48,6 +48,7 @@ public:
     // head and tail - other things will be cleared by destructor of doc
     inline ~TokenList() {
         clear();
+
         delete root;
         delete last;
     }
@@ -55,7 +56,7 @@ public:
     inline void clear() {
         TokenCell * curr = root -> next, * temp;
 
-        while(curr != last) {
+        while(curr && curr != last) {
             temp = curr -> next;
             delete curr;
             curr = temp;
@@ -71,18 +72,14 @@ public:
     }
 
     static void removeLine(TokenCell * left, TokenCell * right) {
-        if (left -> prev)
-            left -> prev -> next = right -> next;
-
-        if (right -> next)
-            right -> next -> prev = left -> prev;
-
-        while(left && left != right -> next) {
+        while(left && left != right) {
             TokenCell * curr = left;
             left = left -> next;
 
             delete curr;
         }
+
+        delete right;
     }
 
     TokenCell * append(const Lexem & lexem, const TOKEN_TYPE & start_pos, const TOKEN_LENGTH_TYPE & length) {
