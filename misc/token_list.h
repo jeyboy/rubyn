@@ -44,8 +44,6 @@ public:
         last = new TokenCell(lex_end_doc, 0, 0, root);
     }
 
-    // descructor of docs called after destructor of TokenList, so we just clearing
-    // head and tail - other things will be cleared by destructor of doc
     inline ~TokenList() {
         clear();
 
@@ -54,12 +52,12 @@ public:
     }
 
     inline void clear() {
-        TokenCell * curr = root -> next, * temp;
+        TokenCell * curr;
 
-        while(curr && curr != last) {
-            temp = curr -> next;
+        while(last -> prev != root) {
+            curr = last;
+            last = last -> prev;
             delete curr;
-            curr = temp;
         }
     }
 
