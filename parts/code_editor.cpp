@@ -49,6 +49,8 @@ void CodeEditor::openDocument(File * file) {
         setDocumentTitle(file -> name());
         setDocument(text_doc);
 
+        updateExtraAreaWidth(0);
+
         if (!file -> isFullyReaded()) {
             //    verticalScrollBar()
         }
