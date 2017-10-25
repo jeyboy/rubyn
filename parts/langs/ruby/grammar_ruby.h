@@ -93,6 +93,31 @@ public:
 //        }
 //    }
 
+    bool isContinious(const Lexem & lexem) {
+        switch(lexem) {
+            case lex_string_continue:
+            case lex_estring_continue:
+            case lex_commentary_continue:
+            case lex_command_continue:
+            case lex_heredoc_continue:
+            case lex_regexp_continue:
+                return true;
+            default: return false;
+        }
+    }
+
+    Lexem fromContinious(const Lexem & lexem) {
+        switch(lexem) {
+            case lex_string_continue: return lex_string_start;
+            case lex_estring_continue: return lex_estring_start;
+            case lex_commentary_continue: return lex_commentary_start;
+            case lex_command_continue: return lex_command_start;
+            case lex_heredoc_continue: return lex_heredoc_start;
+            case lex_regexp_continue: return lex_regexp_start;
+            default: return lex_none;
+        }
+    }
+
     Lexem toHighlightable(const Lexem & lexem) {
         switch(lexem) {
             case lex_super:

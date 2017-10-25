@@ -374,24 +374,24 @@ protected:
 //        they indicate the continuation of a statement.
 
 
-//        continue_mark:
-//            Lexem top = state -> stack -> touch();
+        continue_mark:
+            Lexem top = state -> stack -> touch();
 
-//            if (top & lex_continue) {
-//                state -> stack -> drop();
-//                --state -> buffer;
+            if (GrammarRuby::obj().isContinious(top)) {
+                state -> stack -> drop();
+                --state -> buffer;
 
-//                switch(top) {
-//                    case lex_string_continue: goto handle_string;
-//                    case lex_heredoc_continue: goto handle_heredoc;
-//                    case lex_regexp_continue: {
-//                        if (!parseRegexp(state))
-//                            goto exit;
-//                    break;}
-//                    case lex_commentary_continue: goto handle_multiline_comment;
-//                    default:;
-//                };
-//            }
+                switch(top) {
+                    case lex_string_continue: goto handle_string;
+                    case lex_heredoc_continue: goto handle_heredoc;
+                    case lex_regexp_continue: {
+                        if (!parseRegexp(state))
+                            goto exit;
+                    break;}
+                    case lex_commentary_continue: goto handle_multiline_comment;
+                    default:;
+                };
+            }
 
         while(true) {
             switch(ECHAR0) {
@@ -698,20 +698,16 @@ protected:
                     if (!cutWord(state))
                         goto exit;
 
-//                    Lexem top = state -> stack -> touch();
-//                    if (top & lex_continue) { // after interpolation
-//                        state -> stack -> replace(
-//                            LEX(
-//                                EXCLUDE_BIT(top, lex_continue),
-//                                lex_start
-//                            )
-//                        );
+                    Lexem top = state -> stack -> touch();
+                    Lexem top_conv = GrammarRuby::obj().fromContinious(top);
 
-//                        state -> stack -> push(top);
-////                        ++state -> buffer;
-////                        state -> dropCached();
-//                        goto continue_mark;
-//                    }
+                    if (top_conv != lex_none) { // after interpolation
+                        state -> stack -> replace(top_conv);
+                        state -> stack -> push(top);
+//                        ++state -> buffer;
+//                        state -> dropCached();
+                        goto continue_mark;
+                    }
                 break;}
 
 
