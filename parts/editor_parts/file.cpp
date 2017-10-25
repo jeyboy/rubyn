@@ -10,6 +10,7 @@ void File::init(const QString & name, const QString & path, const bool & is_loca
 
     if (!res) {
         //TODO: ask user about preffered type of file
+        return;
     }
 
     _main_format = lexer -> format();
