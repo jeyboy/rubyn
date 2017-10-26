@@ -212,7 +212,7 @@ class LexerRuby : public Lexer {
     bool cutWord(LexerState * state, const Lexem & predefined_lexem = lex_none) {
         state -> cachingPredicate();
 
-        if (state -> cached_length) {
+        if (state -> cached_length || predefined_lexem != lex_none) {
             state -> lex_word =
                 predefined_lexem != lex_none
                     ?
