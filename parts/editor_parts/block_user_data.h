@@ -17,7 +17,26 @@ public:
         file_tokens -> registerLine(begin_token, end_token, prev_token);
     }
 
-    inline TokenCell * lineControlToken() { return end_token -> prev; }
+    inline TokenCell * lineControlToken() {
+        end_token -> prev -> next = 0; // detach end line
+        return begin_token;
+    }
+
+    inline void syncLine(TokenCell * last_sync) {
+        TokenCell * sync = last_sync -> next;
+
+        if (sync) {
+            while(sync -> next) {
+                sync = sync -> next;
+                delete sync -> prev;
+            }
+
+            delete sync;
+        }
+
+        end_token -> prev = last_sync;
+        end_token -> prev -> next = end_token;
+    }
 
     inline Lexem prevLineState() {
         TokenCell * curr = begin_token -> prev -> prev;
