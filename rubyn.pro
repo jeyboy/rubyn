@@ -74,3 +74,5 @@ FORMS    += ide_window.ui
 
 RESOURCES += \
     resources.qrc
+
+RC_FILE = rubyn.rc

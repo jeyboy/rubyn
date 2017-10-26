@@ -47,18 +47,18 @@ public:
         LexerState * state = 0;
 
         QTextBlock block = lighter -> currentBlock();
+        QTextBlock prev_block = lighter -> prevBlock();
 
         BlockUserData * udata = reinterpret_cast<BlockUserData *>(block.userData());
 
         if (!udata) {
-            QTextBlock prev_block = lighter -> prevBlock();
             udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
             udata = new BlockUserData(tokens, udata ? udata -> end_token : 0);
 
             block.setUserData(udata);
         }
 
-        state = new LexerState(scope, udata -> end_token -> prev, lighter);
+        state = new LexerState(scope, udata -> lineControlToken(), udata -> prevLineState(), lighter);
 
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();

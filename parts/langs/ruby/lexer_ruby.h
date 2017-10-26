@@ -548,7 +548,7 @@ protected:
                     if (ECHAR1 == 'b') { // =begin
                        if (ECHAR2 == 'e' && ECHAR3 == 'g' &&
                             ECHAR4 == 'i' && ECHAR5 == 'n') {
-                                state -> buffer += 4;
+                                state -> buffer += 5;
 
                                 handle_multiline_comment:
                                     bool ended = false;

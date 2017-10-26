@@ -58,11 +58,13 @@ struct LexerState {
 
     Status status;
 
-    LexerState(Scope * scope, TokenCell * token, Highlighter * lighter = 0) : lighter(lighter),
+    LexerState(Scope * scope, TokenCell * token, const Lexem & stack_state = lex_none, Highlighter * lighter = 0) : lighter(lighter),
         lex_word(lex_none), lex_delimiter(lex_none),
-        scope(scope), stack(new Stack<Lexem>(lex_none)),
+        scope(scope), stack(new Stack<Lexem>(stack_state)),
         next_offset(1), token(token), cached_length(0),
-        start(0), buffer(0), prev(0), status(ls_handled) { }
+        start(0), buffer(0), prev(0), status(ls_handled) {
+
+    }
 
     inline void setBuffer(const char * buff) {
         prev = start = buffer = buff;
