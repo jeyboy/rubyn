@@ -137,8 +137,7 @@ void CodeEditor::highlightCurrentLine() {
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;
 
-//        QColor lineColor = QColor(Qt::yellow).lighter(160);
-        QColor lineColor = QColor::fromRgb(128, 128, 128, 16);
+        QColor lineColor = currentLineColor();
 
         QTextCursor cursor = textCursor();
         QTextBlock origin_block = cursor.block();
@@ -235,17 +234,22 @@ void CodeEditor::extraAreaLeaveEvent(QEvent *) {
 
 void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     QPainter painter(extra_area);
-    painter.fillRect(event -> rect(), Qt::lightGray);
+    painter.fillRect(event -> rect(), palette().base().color());
+
+    painter.setPen(QPen(QColor::fromRgb(0,127,255), 3));
+    painter.drawLine(event -> rect().topRight(), event -> rect().bottomRight());
 
     QTextBlock block = firstVisibleBlock();
     int block_number = block.blockNumber();
     int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
     int bottom = top + (int) blockBoundingRect(block).height();
-//    int curr_block_number = textCursor().blockNumber();
+    int curr_block_number = textCursor().blockNumber();
 
     painter.setPen(Qt::black);
-//    QFont curr_font = font();
-//    QFont curr_line_font(curr_font.family(), curr_font.pointSize(), 100);
+    QFont curr_font = font();
+    QFont curr_line_font(curr_font.family(), curr_font.pointSize());
+    curr_line_font.setUnderline(true);
+    curr_line_font.setBold(true);
 
     int rect_top = event -> rect().top();
     int rect_bottom = event -> rect().bottom();
@@ -255,6 +259,8 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
     while (block.isValid() && top <= rect_bottom) {
         if (block.isVisible() && bottom >= rect_top) {
+            if (curr_block_number == block_number)
+                painter.fillRect(0, top, event -> rect().width(), line_number_height, currentLineColor(48));
 
 //            BlockUserData * user_data = static_cast<BlockUserData *>(block.userData())
 
@@ -265,7 +271,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 //            }
 
             QString number = QString::number(block_number + 1);
-//            painter.setFont(curr_block_number == block_number ? curr_line_font : curr_font);
+            painter.setFont(curr_block_number == block_number ? curr_line_font : curr_font);
             painter.drawText(0, top, line_number_width, line_number_height, Qt::AlignRight, number);
         }
 
