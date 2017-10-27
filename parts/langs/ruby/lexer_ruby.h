@@ -303,7 +303,7 @@ class LexerRuby : public Lexer {
         else state -> lex_word = lex_none;
 
         if (state -> bufferEof())
-            return true; //false;
+            return false;
 
         if (state -> next_offset) {
             state -> cachingDelimiter();
@@ -608,7 +608,7 @@ protected:
                                             case 0: {
                                                 out_req = true;
                                                 cutWord(state, lex_commentary_continue);
-
+                                                state -> stack -> push(lex_commentary_continue);
                                                 state -> status = LexerState::ls_comment;
 
                                                 goto exit;
