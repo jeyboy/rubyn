@@ -261,7 +261,7 @@ class LexerRuby : public Lexer {
 
             if (lex_new_word == lex_error) {
                 state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
-                return false;
+//                return false;
             }
 
             if (state -> lex_word == lex_new_word) {
@@ -290,20 +290,20 @@ class LexerRuby : public Lexer {
             state -> attachToken(state -> lex_word);
 
 
-            Lexem cont_lexem = GrammarRuby::obj().fromContinious(state -> lex_word);
+//            Lexem cont_lexem = GrammarRuby::obj().fromContinious(state -> lex_word);
 
-            if (cont_lexem != lex_none) {
-                Lexem & top = state -> stack -> touch();
+//            if (cont_lexem != lex_none) {
+//                Lexem & top = state -> stack -> touch();
 
-                if (top == cont_lexem)
-                    state -> stack -> replace(state -> lex_word);
-                else state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
-            }
+//                if (top == cont_lexem)
+//                    state -> stack -> push(state -> lex_word);
+//                else state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
+//            }
         }
         else state -> lex_word = lex_none;
 
         if (state -> bufferEof())
-            return false;
+            return true; //false;
 
         if (state -> next_offset) {
             state -> cachingDelimiter();
@@ -460,6 +460,7 @@ protected:
                         bool ended = false;
                         bool out_req = false;
                         bool def_required = false;
+                        state -> next_offset = 0;
 
                         while(!ended && !out_req) {
                             ++state -> buffer;
@@ -470,7 +471,6 @@ protected:
                                 case '`': {
                                     if (ECHAR_PREV1 != '\\') {
                                         ++state -> buffer;
-                                        state -> next_offset = 0;
                                         ended = true;
                                     }
                                 break;}
@@ -498,6 +498,7 @@ protected:
                     handle_string:
                         bool ended = false;
                         bool out_req = false;
+                        state -> next_offset = 0;
 
                         while(!ended && !out_req) {
                             ++state -> buffer;
@@ -506,7 +507,6 @@ protected:
                                 case '\'': {
                                     if (ECHAR_PREV1 != '\\') {
                                         ++state -> buffer;
-                                        state -> next_offset = 0;
                                         ended = true;
                                     }
                                 break;}
@@ -532,6 +532,7 @@ protected:
                         bool ended = false;
                         bool out_req = false;
                         bool def_required = false;
+                        state -> next_offset = 0;
 
                         while(!ended && !out_req) {
                             ++state -> buffer;
@@ -542,7 +543,6 @@ protected:
                                 case '"': {
                                     if (ECHAR_PREV1 != '\\') {
                                         ++state -> buffer;
-                                        state -> next_offset = 0;
                                         ended = true;
                                     }
                                 break;}
@@ -782,7 +782,7 @@ protected:
                     Lexem predef = lex_none;
                     bool ended = false;
 
-                    if (ECHAR1 == '{' && state -> stack -> touch() == lex_string_continue) {
+                    if (ECHAR1 == '{' && GrammarRuby::obj().isInterpolable(state -> stack -> touch())) {
                         ++state -> next_offset;
                     } else {
                         predef = lex_inline_commentary;

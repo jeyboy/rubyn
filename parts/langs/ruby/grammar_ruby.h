@@ -95,6 +95,17 @@ public:
 //        }
 //    }
 
+    bool isInterpolable(const Lexem & lexem) {
+        switch(lexem) {
+            case lex_estring_continue:
+            case lex_command_continue:
+            case lex_heredoc_continue:
+            case lex_regexp_continue:
+                return true;
+            default: return false;
+        }
+    }
+
     bool isContinious(const Lexem & lexem) {
         switch(lexem) {
             case lex_string_continue:
