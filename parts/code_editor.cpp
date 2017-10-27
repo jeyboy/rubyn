@@ -234,9 +234,12 @@ void CodeEditor::extraAreaLeaveEvent(QEvent *) {
 
 void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     QPainter painter(extra_area);
-    painter.fillRect(event -> rect(), palette().base().color());
+//    painter.fillRect(event -> rect(), palette().base().color());
 
-    painter.setPen(QPen(QColor::fromRgb(0,127,255), 3));
+//    painter.setPen(QPen(QColor::fromRgb(0,127,255), 3));
+//    painter.drawLine(event -> rect().topRight(), event -> rect().bottomRight());
+
+    painter.setPen(extra_area -> palette().base().color().darker(150));
     painter.drawLine(event -> rect().topRight(), event -> rect().bottomRight());
 
     QTextBlock block = firstVisibleBlock();
