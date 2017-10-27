@@ -331,7 +331,11 @@ class LexerRuby : public Lexer {
             switch(ECHAR0) {
                 case '#': { def_required = ended = ECHAR1 == '{';  break;}
                 case '/': { ended = ECHAR_PREV1 != '\\';  break;}
-                case 0: { out_req = true; break;}
+                case 0: {
+                    out_req = true;
+                    state -> status = LexerState::ls_regexp;
+                    break;
+                }
             }
         }
 
@@ -350,8 +354,8 @@ class LexerRuby : public Lexer {
                 case 's': // encoding:  Windows-31J
                 case 'n': // encoding:  ASCII-8BIT
                     { break;}
-                case 0: { out_req = true; break;}
-                default: { ended = true;                                        }
+                case 0: { ended = true; break; }
+                default: { ended = true; } // need to check current char - if its eql to letter then need to show error
             }
         }
 
@@ -449,7 +453,11 @@ protected:
                                     }
                                 break;}
 
-                                case 0: { out_req = true; break;}
+                                case 0: {
+                                    out_req = true;
+                                    state -> status = LexerState::ls_command;
+                                    break;
+                                }
                             }
                         }
 
@@ -480,7 +488,11 @@ protected:
                                     }
                                 break;}
 
-                                case 0: { out_req = true; break;}
+                                case 0: {
+                                    out_req = true;
+                                    state -> status = LexerState::ls_string;
+                                    break;
+                                }
                             }
                         }
 
@@ -511,7 +523,11 @@ protected:
                                     }
                                 break;}
 
-                                case 0: { out_req = true; break;}
+                                case 0: {
+                                    out_req = true;
+                                    state -> status = LexerState::ls_estring;
+                                    break;
+                                }
                             }
                         }
 

@@ -32,17 +32,11 @@ struct LexerState {
         ls_error = 1,
         ls_handled,
         ls_comment,
-        ls_comment_ended,
         ls_string,
-        ls_string_ended,
         ls_estring,
-        ls_estring_ended,
         ls_command,
-        ls_command_ended,
         ls_regexp,
-        ls_regexp_ended,
-        ls_heredoc,
-        ls_heredoc_ended,
+        ls_heredoc
     };
 
     Highlighter * lighter;
