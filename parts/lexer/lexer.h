@@ -49,16 +49,15 @@ public:
         QTextBlock block = lighter -> currentBlock();
         QTextBlock prev_block = lighter -> prevBlock();
 
+        BlockUserData * prev_udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
         BlockUserData * udata = reinterpret_cast<BlockUserData *>(block.userData());
 
         if (!udata) {
-            udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
-            udata = new BlockUserData(tokens, udata ? udata -> end_token : 0);
-
+            udata = new BlockUserData(tokens, prev_udata ? prev_udata -> end_token : 0);
             block.setUserData(udata);
         }
 
-        state = new LexerState(scope, udata -> lineControlToken(), udata -> prevLineState(), lighter);
+        state = new LexerState(scope, udata -> lineControlToken(), prev_udata ? prev_udata -> stackState() : 0, lighter);
 
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();
@@ -69,7 +68,7 @@ public:
         qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
 
         block.setUserState(state -> status);
-        udata -> syncLine(state -> token);
+        udata -> syncLine(state -> token, state -> stack);
     }
 
     virtual ~Lexer() {}

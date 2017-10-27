@@ -6,22 +6,30 @@
 template <typename T>
 class Stack {
     T * data;
-    T * curr, * start, * end;
+    T * curr;
 
     uint size;
-public:
+public:   
     Stack(const T & default_val, const uint & default_size = 8) : size(default_size == 0 ? 32 : default_size) {
+        curr = data = new T[size + 1];
+        *curr = default_val;
+    }
+
+    Stack(Stack<T> * st) {
+        size = st -> size;
         data = new T[size + 1];
-        curr = start = data;
-        *start = default_val;
-        end = &data[size];
+
+        memcpy(data, st -> data, (size + 1) * sizeof(T));
+
+        curr = &data[st -> curr - st -> data];
     }
 
     ~Stack() {
         delete [] data;
+//        delete curr;
     }
 
-    inline bool atBegin() { return curr == start; }
+    inline bool atBegin() { return curr == data; }
 
     inline T * items() const { return curr; }
 
@@ -57,16 +65,15 @@ public:
     }
 
     inline const T & push(const T & val) {
-        if (curr == end) {
+        if ((uint)(curr - data) == size) {
             int curr_pos = size;
 
             T * old_data = data;
             size = (int)(size * (size < 20 ? 2 : 1.5));
 
-            start = data = new T[size + 1];
+            data = new T[size + 1];
             memcpy(data, old_data, (curr_pos + 1) * sizeof(T));
 
-            end = &data[size];
             curr = &data[curr_pos];
             delete [] old_data;
         }

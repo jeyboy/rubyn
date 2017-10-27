@@ -288,6 +288,17 @@ class LexerRuby : public Lexer {
 //            );
 
             state -> attachToken(state -> lex_word);
+
+
+            Lexem cont_lexem = GrammarRuby::obj().fromContinious(state -> lex_word);
+
+            if (cont_lexem != lex_none) {
+                Lexem & top = state -> stack -> touch();
+
+                if (top == cont_lexem)
+                    state -> stack -> replace(state -> lex_word);
+                else state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
+            }
         }
         else state -> lex_word = lex_none;
 
@@ -317,6 +328,11 @@ class LexerRuby : public Lexer {
 
         state -> dropCached();
 
+        return true;
+    }
+
+    bool parseHeredoc(LexerState * state) {
+        //TODO: write me
         return true;
     }
 
@@ -388,12 +404,16 @@ protected:
                 switch(top) {
                     case lex_string_continue: goto handle_string;
                     case lex_estring_continue: goto handle_estring;
-                    case lex_heredoc_continue: goto handle_heredoc;
+                    case lex_heredoc_continue: {
+                        if (!parseHeredoc(state))
+                            goto exit;
+                    }
                     case lex_regexp_continue: {
                         if (!parseRegexp(state))
                             goto exit;
                     break;}
                     case lex_commentary_continue: goto handle_multiline_comment;
+                    case lex_command_continue: goto handle_command;
                     default:;
                 };
             }
@@ -668,12 +688,38 @@ protected:
                 case '<': {
                     if (ECHAR1 == '<')
                         ++state -> next_offset;
+                        const char * curr = state -> buffer + 2;
 
-                        if (isUpper(ECHAR2)) {
-                            handle_heredoc:
-                                ;
-                                //TODO: realize heredoc
+                        if (*curr == '-' || *curr == '~') {
+                            ++state -> next_offset;
+                            curr++;
                         }
+
+                        if (*curr == '\'' || *curr == '"' || *curr == '`') {
+                            {
+                                const char * control = curr;
+                                bool ended = false;
+
+                                while(!ended) {
+                                    switch(*curr) {
+                                        case '\'':
+                                        case '"':
+                                        case '`': {
+
+                                        break;}
+
+                                        case 0: {
+                                            // raise error
+                                            ended = true;
+                                        break;}
+                                    }
+                                }
+                            }
+                        }
+
+//                        if (isUpper(ECHAR2)) {
+//                            parseHeredoc(state);
+//                        }
                     else {
                         if (ECHAR1 == '=') {
                             ++state -> next_offset;
