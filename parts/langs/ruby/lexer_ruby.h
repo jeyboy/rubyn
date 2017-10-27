@@ -387,6 +387,7 @@ protected:
 
                 switch(top) {
                     case lex_string_continue: goto handle_string;
+                    case lex_estring_continue: goto handle_estring;
                     case lex_heredoc_continue: goto handle_heredoc;
                     case lex_regexp_continue: {
                         if (!parseRegexp(state))
@@ -449,6 +450,7 @@ protected:
                                 case '`': {
                                     if (ECHAR_PREV1 != '\\') {
                                         ++state -> buffer;
+                                        state -> next_offset = 0;
                                         ended = true;
                                     }
                                 break;}
@@ -484,6 +486,7 @@ protected:
                                 case '\'': {
                                     if (ECHAR_PREV1 != '\\') {
                                         ++state -> buffer;
+                                        state -> next_offset = 0;
                                         ended = true;
                                     }
                                 break;}
@@ -519,6 +522,7 @@ protected:
                                 case '"': {
                                     if (ECHAR_PREV1 != '\\') {
                                         ++state -> buffer;
+                                        state -> next_offset = 0;
                                         ended = true;
                                     }
                                 break;}

@@ -11,6 +11,8 @@ class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
             rules[lex_none][i] = curr;
             rules[lex_end_line][i] = curr;
 
+            rules[lex_operator_assigment][i] = curr;
+
             rules[i][lex_blank] = lex_chain_item;
             rules[lex_blank][i] = curr;
             rules[lex_blanks][i] = curr;
