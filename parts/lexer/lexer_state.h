@@ -82,7 +82,7 @@ struct LexerState {
         next_offset = 1;
         status = ls_handled;
     }
-    inline bool isBufferStart() { return buffer == start; }
+//    inline bool isBufferStart() { return buffer == start; }
     inline bool isBufferEof() { return *buffer == 0; }
 
     inline void cachingPredicate() {

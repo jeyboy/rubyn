@@ -227,8 +227,9 @@ enum Lexem : quint32 {
     lex_estring_continue,
     lex_estring_end,
 
+    // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
     lex_heredoc_mark,
-    lex_heredoc_start, // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
+    lex_heredoc_start,
     lex_heredoc_continue,
     lex_heredoc_end,
 
@@ -241,6 +242,8 @@ enum Lexem : quint32 {
     lex_cheredoc_start,
     lex_cheredoc_continue,
     lex_cheredoc_end,
+    //////////////////////////////////////
+
 
     lex_regexp_start, // /\a+/
     lex_regexp_continue,

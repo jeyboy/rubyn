@@ -332,12 +332,13 @@ class LexerRuby : public Lexer {
     }
 
     bool parseHeredoc(LexerState * state) {
-        if (state -> isBufferStart()) {
-            QByteArray stop_token = state -> stack -> dataForTop();
-            int i = 0;
-        } else {
+        QByteArray stop_token = state -> stack -> dataForTop();
 
-        }
+        --state -> buffer;
+        while(isBlank(*++state -> buffer));
+
+        if (QByteArray(state -> buffer, stop_token.length()) == stop_token)
+
 
         return true;
     }
@@ -410,6 +411,8 @@ protected:
                 switch(top) {
                     case lex_string_continue: goto handle_string;
                     case lex_estring_continue: goto handle_estring;
+                    case lex_cheredoc_continue:
+                    case lex_eheredoc_continue:
                     case lex_heredoc_continue: {
                         if (!parseHeredoc(state))
                             goto exit;
@@ -739,7 +742,8 @@ protected:
                             }
 
                             QByteArray doc_name(control, curr - control);
-                            state -> next_offset = curr - state -> buffer;
+                            state -> buffer += curr - state -> buffer;
+                            state -> next_offset = 0;
 
                             //INFO: stacked heredocs going in revert order so we must to insert new heredoc before previous if heredocs is stacked
                             Lexem top = GrammarRuby::obj().toHeredocContinious(state -> stack -> touch());
