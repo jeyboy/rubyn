@@ -233,15 +233,25 @@ enum Lexem : quint32 {
     lex_heredoc_continue,
     lex_heredoc_end,
 
+    lex_heredoc_intended_mark,
+    lex_heredoc_intended_start,
+    lex_heredoc_intended_continue,
+
     lex_eheredoc_mark,
     lex_eheredoc_start,
     lex_eheredoc_continue,
-    lex_eheredoc_end,
+
+    lex_eheredoc_intended_mark,
+    lex_eheredoc_intended_start,
+    lex_eheredoc_intended_continue,
 
     lex_cheredoc_mark,
     lex_cheredoc_start,
     lex_cheredoc_continue,
-    lex_cheredoc_end,
+
+    lex_cheredoc_intended_mark,
+    lex_cheredoc_intended_start,
+    lex_cheredoc_intended_continue,
     //////////////////////////////////////
 
 

@@ -331,7 +331,7 @@ class LexerRuby : public Lexer {
         return true;
     }
 
-    bool parseHeredoc(LexerState * state) {
+    bool parseHeredoc(LexerState * state, const Lexem & heredoc_lexem) {
         QByteArray stop_token = state -> stack -> dataForTop();
 
         --state -> buffer;
@@ -412,11 +412,13 @@ protected:
                     case lex_string_continue: goto handle_string;
                     case lex_estring_continue: goto handle_estring;
                     case lex_cheredoc_continue:
+                    case lex_cheredoc_intended_continue:
                     case lex_eheredoc_continue:
-                    case lex_heredoc_continue: {
-                        if (!parseHeredoc(state))
+                    case lex_eheredoc_intended_continue:
+                    case lex_heredoc_continue:
+                    case lex_heredoc_intended_continue:
+                        if (!parseHeredoc(state, top))
                             goto exit;
-                    }
                     case lex_regexp_continue: {
                         if (!parseRegexp(state))
                             goto exit;

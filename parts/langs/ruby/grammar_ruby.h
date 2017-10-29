@@ -99,7 +99,10 @@ public:
         switch(lexem) {
             case lex_estring_continue:
             case lex_command_continue:
-            case lex_heredoc_continue:
+            case lex_eheredoc_continue:
+            case lex_eheredoc_intended_continue:
+            case lex_cheredoc_continue:
+            case lex_cheredoc_intended_continue:
             case lex_regexp_continue:
                 return true;
             default: return false;
@@ -109,8 +112,11 @@ public:
     Lexem toHeredocContinious(const Lexem & lexem) {
         switch(lexem) {
             case lex_heredoc_mark: return lex_heredoc_continue;
+            case lex_heredoc_intended_mark: return lex_heredoc_continue;
             case lex_eheredoc_mark: return lex_eheredoc_continue;
+            case lex_eheredoc_mark: return lex_eheredoc_intended_continue;
             case lex_cheredoc_mark: return lex_cheredoc_continue;
+            case lex_cheredoc_mark: return lex_cheredoc_intended_continue;
             default: return lex_none;
         }
     }
@@ -234,11 +240,12 @@ public:
             case lex_estring_continue:
             case lex_estring_end:
             case lex_heredoc_continue:
+            case lex_heredoc_intended_continue:
             case lex_heredoc_end:
             case lex_eheredoc_continue:
-            case lex_eheredoc_end:
+            case lex_eheredoc_intended_continue:
             case lex_cheredoc_continue:
-            case lex_cheredoc_end:
+            case lex_cheredoc_intended_continue:
             case lex_require_path:
                 return lex_string;
 
@@ -248,8 +255,11 @@ public:
 
 
             case lex_heredoc_start:
+            case lex_heredoc_intended_start:
             case lex_eheredoc_start:
+            case lex_eheredoc_intended_start:
             case lex_cheredoc_start:
+            case lex_cheredoc_intended_start:
                 return lex_mark;
 
             default: return lex_none;
