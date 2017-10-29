@@ -95,6 +95,26 @@ public:
 //        }
 //    }
 
+    bool isStackDroppable(const Lexem & lexem) {
+        switch(lexem) {
+            case lex_string_continue:
+            case lex_estring_continue:
+            case lex_commentary_continue:
+            case lex_command_continue:
+            case lex_regexp_continue:
+                return true;
+
+//            case lex_heredoc_continue:
+//            case lex_heredoc_intended_continue:
+//            case lex_eheredoc_continue:
+//            case lex_eheredoc_intended_continue:
+//            case lex_cheredoc_continue:
+//            case lex_cheredoc_intended_continue:
+
+            default: return false;
+        }
+    }
+
     bool isInterpolable(const Lexem & lexem) {
         switch(lexem) {
             case lex_estring_continue:
@@ -112,11 +132,11 @@ public:
     Lexem toHeredocContinious(const Lexem & lexem) {
         switch(lexem) {
             case lex_heredoc_mark: return lex_heredoc_continue;
-            case lex_heredoc_intended_mark: return lex_heredoc_continue;
+            case lex_heredoc_intended_mark: return lex_heredoc_intended_continue;
             case lex_eheredoc_mark: return lex_eheredoc_continue;
-            case lex_eheredoc_mark: return lex_eheredoc_intended_continue;
+            case lex_eheredoc_intended_mark: return lex_eheredoc_intended_continue;
             case lex_cheredoc_mark: return lex_cheredoc_continue;
-            case lex_cheredoc_mark: return lex_cheredoc_intended_continue;
+            case lex_cheredoc_intended_mark: return lex_cheredoc_intended_continue;
             default: return lex_none;
         }
     }
@@ -128,8 +148,11 @@ public:
             case lex_commentary_continue:
             case lex_command_continue:
             case lex_heredoc_continue:
+            case lex_heredoc_intended_continue:
             case lex_eheredoc_continue:
+            case lex_eheredoc_intended_continue:
             case lex_cheredoc_continue:
+            case lex_cheredoc_intended_continue:
             case lex_regexp_continue:
                 return true;
             default: return false;
@@ -143,8 +166,11 @@ public:
             case lex_commentary_continue: return lex_commentary_start;
             case lex_command_continue: return lex_command_start;
             case lex_heredoc_continue: return lex_heredoc_start;
+            case lex_heredoc_intended_continue: return lex_heredoc_intended_start;
             case lex_eheredoc_continue: return lex_eheredoc_start;
+            case lex_eheredoc_intended_continue: return lex_eheredoc_intended_start;
             case lex_cheredoc_continue: return lex_cheredoc_start;
+            case lex_cheredoc_intended_continue: return lex_cheredoc_intended_start;
             case lex_regexp_continue: return lex_regexp_start;
             default: return lex_none;
         }

@@ -333,14 +333,32 @@ class LexerRuby : public Lexer {
 
     bool parseHeredoc(LexerState * state, const Lexem & heredoc_lexem) {
         QByteArray stop_token = state -> stack -> dataForTop();
+        bool is_intended = false;
 
-        --state -> buffer;
-        while(isBlank(*++state -> buffer));
+        switch(heredoc_lexem) {
+            case lex_heredoc_intended_continue:
+            case lex_eheredoc_intended_continue:
+            case lex_cheredoc_intended_continue: {
+                while(isBlank(*++state -> buffer));
+                is_intended = true;
+            }
 
-        if (QByteArray(state -> buffer, stop_token.length()) == stop_token)
+            case lex_heredoc_continue:
+            case lex_eheredoc_continue:
+            case lex_cheredoc_continue: {
+                if (!is_intended)
+                    ++state -> buffer;
 
+                if (QByteArray(state -> buffer, stop_token.length()) == stop_token) {
+                    state -> stack -> drop();
+                    return cutWord(state, lex_heredoc_end);
+                }
+            }
 
-        return true;
+            default: state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack status for heredoc content"));
+        }
+
+        return cutWord(state, lex_heredoc_end);
     }
 
     bool parseRegexp(LexerState * state) {
@@ -356,7 +374,7 @@ class LexerRuby : public Lexer {
                 case '/': { ended = ECHAR_PREV1 != '\\';  break;}
                 case 0: {
                     out_req = true;
-                    state -> status = LexerState::ls_regexp;
+                    state -> setStatus(LexerState::ls_regexp);
                     break;
                 }
             }
@@ -405,7 +423,9 @@ protected:
             Lexem top = state -> stack -> touch();
 
             if (GrammarRuby::obj().isContinious(top)) {
-                state -> stack -> drop();
+                if (GrammarRuby::obj().isStackDroppable(top))
+                    state -> stack -> drop();
+
                 --state -> buffer;
 
                 switch(top) {
@@ -416,9 +436,10 @@ protected:
                     case lex_eheredoc_continue:
                     case lex_eheredoc_intended_continue:
                     case lex_heredoc_continue:
-                    case lex_heredoc_intended_continue:
+                    case lex_heredoc_intended_continue: {
                         if (!parseHeredoc(state, top))
                             goto exit;
+                    break;}
                     case lex_regexp_continue: {
                         if (!parseRegexp(state))
                             goto exit;
@@ -488,7 +509,7 @@ protected:
 
                                 case 0: {
                                     out_req = true;
-                                    state -> status = LexerState::ls_command;
+                                    state -> setStatus(LexerState::ls_command);
                                     break;
                                 }
                             }
@@ -524,7 +545,7 @@ protected:
 
                                 case 0: {
                                     out_req = true;
-                                    state -> status = LexerState::ls_string;
+                                    state -> setStatus(LexerState::ls_string);
                                     break;
                                 }
                             }
@@ -560,7 +581,7 @@ protected:
 
                                 case 0: {
                                     out_req = true;
-                                    state -> status = LexerState::ls_estring;
+                                    state -> setStatus(LexerState::ls_estring);
                                     break;
                                 }
                             }
@@ -620,7 +641,7 @@ protected:
                                                 out_req = true;
                                                 cutWord(state, lex_commentary_continue);
                                                 state -> stack -> push(lex_commentary_continue);
-                                                state -> status = LexerState::ls_comment;
+                                                state -> setStatus(LexerState::ls_comment);
 
                                                 goto exit;
                                             break;}
@@ -729,19 +750,16 @@ protected:
                                         break;}
 
                                         case 0: {
-                                            // raise error
+                                            state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Heredoc mark is not closed"));
                                             ended = true;
                                         break;}
                                     }
                                 }
                                 ++control;
                                 ++curr;
-                            } else {
-                                while(true) {
-                                    if (!isWord(*(++curr)))
-                                        break;
-                                }
                             }
+                            else while(isWord(*(++curr)));
+
 
                             QByteArray doc_name(control, curr - control);
                             state -> buffer += curr - state -> buffer;
@@ -756,7 +774,7 @@ protected:
                             }
                             else {
                                 state -> stack -> push(lex, doc_name);
-                                state -> status = is_simple ? LexerState::ls_heredoc : is_command ? LexerState::ls_cheredoc : LexerState::ls_eheredoc;
+                                state -> setStatus(is_simple ? LexerState::ls_heredoc : is_command ? LexerState::ls_cheredoc : LexerState::ls_eheredoc);
                             }
                         }
                     else {
@@ -1153,10 +1171,12 @@ protected:
                 break;}
 
 
+
                 case 0: {
                     cutWord(state);
                     goto exit;
                 break;}
+
 
 
                 default:

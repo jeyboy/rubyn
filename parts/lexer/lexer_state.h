@@ -75,6 +75,11 @@ struct LexerState {
         delete stack;
     }
 
+    inline void setStatus(const Status & new_status) {
+        if (status != ls_error)
+            status = new_status;
+    }
+
     inline void setBuffer(const char * buff) {
         prev = start = buffer = buff;
         cached.clear();
