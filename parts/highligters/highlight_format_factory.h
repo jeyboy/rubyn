@@ -37,6 +37,16 @@ protected:
         formats.insert(lex_notice, format);
     }
 
+    void registerMarkFormat() {
+        QTextCharFormat format;
+        format.setFontWeight(QFont::Black);
+        format.setForeground(Qt::black);
+        format.setFontUnderline(true);
+        format.setUnderlineColor(QColor(Qt::black));
+        format.setUnderlineStyle(QTextCharFormat::DashDotDotLine);
+        formats.insert(lex_mark, format);
+    }
+
     void registerKeywordFormat() {
         QTextCharFormat format;
         format.setFontItalic(true);
@@ -116,6 +126,7 @@ protected:
 //    }
 public:
     HighlightFormatFactory() {
+        registerMarkFormat();
         registerKeywordFormat();
         registerAssigmentFormat();
         registerNameFormat();

@@ -106,6 +106,15 @@ public:
         }
     }
 
+    Lexem toHeredocContinious(const Lexem & lexem) {
+        switch(lexem) {
+            case lex_heredoc_mark: return lex_heredoc_continue;
+            case lex_eheredoc_mark: return lex_eheredoc_continue;
+            case lex_cheredoc_mark: return lex_cheredoc_continue;
+            default: return lex_none;
+        }
+    }
+
     bool isContinious(const Lexem & lexem) {
         switch(lexem) {
             case lex_string_continue:
@@ -236,6 +245,12 @@ public:
             case lex_regexp_continue:
             case lex_regexp_end:
                 return lex_regexp;
+
+
+            case lex_heredoc_start:
+            case lex_eheredoc_start:
+            case lex_cheredoc_start:
+                return lex_mark;
 
             default: return lex_none;
         }

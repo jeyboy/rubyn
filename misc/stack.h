@@ -69,8 +69,10 @@ public:
         return true;
     }
 
-    inline void replace(const T & new_val) {
-        level_data -> remove(CURR_INDEX);
+    inline void replace(const T & new_val, const bool & drop_level_data = true) {
+        if (drop_level_data)
+            level_data -> remove(CURR_INDEX);
+
         (*curr) = new_val;
     }
 

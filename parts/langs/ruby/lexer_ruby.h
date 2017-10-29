@@ -709,7 +709,7 @@ protected:
                             bool is_simple = *curr == '\'';
                             bool is_command = *curr == '`';
 
-                            lex = is_simple ? lex_heredoc_start : is_command ? lex_cheredoc_start : lex_eheredoc_start;
+                            lex = is_simple ? lex_heredoc_mark : is_command ? lex_cheredoc_mark : lex_eheredoc_mark;
 
                             if (is_simple || is_command || *curr == '"') {
                                 bool ended = false;
@@ -742,15 +742,10 @@ protected:
                             state -> next_offset = curr - state -> buffer;
 
                             //INFO: stacked heredocs going in revert order so we must to insert new heredoc before previous if heredocs is stacked
-                            Lexem top = state -> stack -> touch();
-                            if (top == lex_heredoc_start || top == lex_cheredoc_start || top == lex_eheredoc_start) {
+                            Lexem top = GrammarRuby::obj().toHeredocContinious(state -> stack -> touch());
+                            if (top != lex_none) {
                                 int level = 0;
-                                while(true) {
-                                    top = state -> stack -> touch(++level);
-                                    if (top != lex_heredoc_start && top != lex_cheredoc_start && top != lex_eheredoc_start)
-                                        break;
-                                }
-
+                                while(GrammarRuby::obj().toHeredocContinious(state -> stack -> touch(++level)) != lex_none);
                                 state -> stack -> pushToLevel(level, lex, doc_name);
                             }
                             else {
@@ -1167,7 +1162,10 @@ protected:
             }
         }
 
-        exit: return;
+        exit:
+            Lexem replaceable = GrammarRuby::obj().toHeredocContinious(state -> stack -> touch());
+            if (replaceable != lex_none)
+                state -> stack -> replace(replaceable, false);
     }
 
 public:
