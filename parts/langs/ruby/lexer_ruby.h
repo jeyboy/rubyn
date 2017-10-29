@@ -729,6 +729,8 @@ protected:
                                         break;}
                                     }
                                 }
+                                ++control;
+                                ++curr;
                             } else {
                                 while(true) {
                                     if (!isWord(*(++curr)))
@@ -744,7 +746,7 @@ protected:
                             if (top == lex_heredoc_start || top == lex_cheredoc_start || top == lex_eheredoc_start) {
                                 int level = 0;
                                 while(true) {
-                                    top = state -> stack -> touch(--level);
+                                    top = state -> stack -> touch(++level);
                                     if (top != lex_heredoc_start && top != lex_cheredoc_start && top != lex_eheredoc_start)
                                         break;
                                 }

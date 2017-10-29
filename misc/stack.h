@@ -104,17 +104,17 @@ public:
     }
 
     inline const T & pushToLevel(const int & level, const T & val, const QByteArray & item_data) {
-        push(*it, dataForTop());
+        push(*curr, dataForTop());
 
         uint index = CURR_INDEX;
 
-        for(int i = 0; i < level; i--) {
-            *(curr - i - 1) = *(curr - i - 2);
-            level_data -> insert(index - i - 1, level_data ->operator [](index - i - 2));
+        for(int i = 1; i < level; i++) {
+            *(curr - i) = *(curr - i - 1);
+            level_data -> insert(index - i, level_data ->operator [](index - i - 1));
         }
 
-        *(curr - level - 1) = val;
-        level_data -> insert(index - level - 1, item_data);
+        *(curr - level) = val;
+        level_data -> insert(index - level, item_data);
 
         return val;
     }
