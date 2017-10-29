@@ -36,7 +36,9 @@ struct LexerState {
         ls_estring,
         ls_command,
         ls_regexp,
-        ls_heredoc
+        ls_heredoc,
+        ls_eheredoc,
+        ls_cheredoc
     };
 
     Highlighter * lighter;
@@ -68,6 +70,11 @@ struct LexerState {
         next_offset(1), token(token), cached_length(0),
         start(0), buffer(0), prev(0), status(ls_handled) { }
 
+    ~LexerState() {
+        delete scope;
+        delete stack;
+    }
+
     inline void setBuffer(const char * buff) {
         prev = start = buffer = buff;
         cached.clear();
@@ -75,14 +82,14 @@ struct LexerState {
         next_offset = 1;
         status = ls_handled;
     }
-    inline bool bufferEof() { return *buffer == 0; }
+    inline bool isBufferStart() { return buffer == start; }
+    inline bool isBufferEof() { return *buffer == 0; }
 
     inline void cachingPredicate() {
         cached_str_pos = bufferPos();
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
     }
-
     inline void cachingDelimiter() {
         prev = buffer;
         buffer += next_offset;
@@ -92,7 +99,6 @@ struct LexerState {
 
         cached.setRawData(prev, cached_length);
     }
-
     inline void dropCached() {
         next_offset = 1;
         prev = buffer;
@@ -102,7 +108,6 @@ struct LexerState {
     inline LEXER_INT_TYPE strLength() { return buffer - prev; }
 
     inline Lexem & lastToken() { return token -> lexem; }
-
     inline void attachToken(const Lexem & lexem) {
         if (token -> next) {
             token = token -> next;
@@ -112,7 +117,6 @@ struct LexerState {
         }
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
     }
-
     inline void replaceToken(const Lexem & lexem) {
         token -> lexem = lexem;
         token -> length += cached_length;
@@ -127,12 +131,10 @@ struct LexerState {
             HighlightFormatFactory::obj().getFormatFor(lexem)
         );
     }
-
     inline void cacheAndLightWithMessage(const Lexem & lexem, const QByteArray & msg) {
         cachingPredicate();
         lightWithMessage(lexem, msg);
     }
-
     inline void lightWithMessage(const Lexem & lexem, const QByteArray & /*msg*/) {
         light(lexem);
 
@@ -140,11 +142,6 @@ struct LexerState {
             status = ls_error;
 
         //TODO: attach message
-    }
-
-    ~LexerState() {
-        delete scope;
-        delete stack;
     }
 };
 

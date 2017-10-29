@@ -302,7 +302,7 @@ class LexerRuby : public Lexer {
         }
         else state -> lex_word = lex_none;
 
-        if (state -> bufferEof())
+        if (state -> isBufferEof())
             return false;
 
         if (state -> next_offset) {
@@ -332,7 +332,13 @@ class LexerRuby : public Lexer {
     }
 
     bool parseHeredoc(LexerState * state) {
-        //TODO: write me
+        if (state -> isBufferStart()) {
+            QByteArray stop_token = state -> stack -> dataForTop();
+            int i = 0;
+        } else {
+
+        }
+
         return true;
     }
 
@@ -686,26 +692,35 @@ protected:
 
 
                 case '<': {
+                    Lexem lex = lex_none;
+
                     if (ECHAR1 == '<')
                         ++state -> next_offset;
-                        const char * curr = state -> buffer + 2;
 
-                        if (*curr == '-' || *curr == '~') {
-                            ++state -> next_offset;
-                            curr++;
-                        }
+                        if (!isBlank(ECHAR2) && isBlank(ECHAR_PREV1)) {
+                            const char * curr = state -> buffer + 2;
 
-                        if (*curr == '\'' || *curr == '"' || *curr == '`') {
-                            {
-                                const char * control = curr;
+                            if (*curr == '-' || *curr == '~') {
+                                ++state -> next_offset;
+                                curr++;
+                            }
+
+                            const char * control = curr;
+                            bool is_simple = *curr == '\'';
+                            bool is_command = *curr == '`';
+
+                            lex = is_simple ? lex_heredoc_start : is_command ? lex_cheredoc_start : lex_eheredoc_start;
+
+                            if (is_simple || is_command || *curr == '"') {
                                 bool ended = false;
 
                                 while(!ended) {
-                                    switch(*curr) {
+                                    switch(*++curr) {
                                         case '\'':
                                         case '"':
                                         case '`': {
-
+                                            if (*control == *curr)
+                                                ended = true;
                                         break;}
 
                                         case 0: {
@@ -714,12 +729,33 @@ protected:
                                         break;}
                                     }
                                 }
+                            } else {
+                                while(true) {
+                                    if (!isWord(*(++curr)))
+                                        break;
+                                }
+                            }
+
+                            QByteArray doc_name(control, curr - control);
+                            state -> next_offset = curr - state -> buffer;
+
+                            //INFO: stacked heredocs going in revert order so we must to insert new heredoc before previous if heredocs is stacked
+                            Lexem top = state -> stack -> touch();
+                            if (top == lex_heredoc_start || top == lex_cheredoc_start || top == lex_eheredoc_start) {
+                                int level = 0;
+                                while(true) {
+                                    top = state -> stack -> touch(--level);
+                                    if (top != lex_heredoc_start && top != lex_cheredoc_start && top != lex_eheredoc_start)
+                                        break;
+                                }
+
+                                state -> stack -> pushToLevel(level, lex, doc_name);
+                            }
+                            else {
+                                state -> stack -> push(lex, doc_name);
+                                state -> status = is_simple ? LexerState::ls_heredoc : is_command ? LexerState::ls_cheredoc : LexerState::ls_eheredoc;
                             }
                         }
-
-//                        if (isUpper(ECHAR2)) {
-//                            parseHeredoc(state);
-//                        }
                     else {
                         if (ECHAR1 == '=') {
                             ++state -> next_offset;
@@ -729,7 +765,7 @@ protected:
                         }
                     }
 
-                    if (!cutWord(state))
+                    if (!cutWord(state, lex))
                         goto exit;
                 break;}
 

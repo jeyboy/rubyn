@@ -113,6 +113,8 @@ public:
             case lex_commentary_continue:
             case lex_command_continue:
             case lex_heredoc_continue:
+            case lex_eheredoc_continue:
+            case lex_cheredoc_continue:
             case lex_regexp_continue:
                 return true;
             default: return false;
@@ -126,6 +128,8 @@ public:
             case lex_commentary_continue: return lex_commentary_start;
             case lex_command_continue: return lex_command_start;
             case lex_heredoc_continue: return lex_heredoc_start;
+            case lex_eheredoc_continue: return lex_eheredoc_start;
+            case lex_cheredoc_continue: return lex_cheredoc_start;
             case lex_regexp_continue: return lex_regexp_start;
             default: return lex_none;
         }
@@ -222,6 +226,10 @@ public:
             case lex_estring_end:
             case lex_heredoc_continue:
             case lex_heredoc_end:
+            case lex_eheredoc_continue:
+            case lex_eheredoc_end:
+            case lex_cheredoc_continue:
+            case lex_cheredoc_end:
             case lex_require_path:
                 return lex_string;
 

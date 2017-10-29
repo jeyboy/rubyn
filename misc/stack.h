@@ -2,6 +2,9 @@
 #define STACK_H
 
 #include <qglobal.h>
+#include <qhash.h>
+
+#define CURR_INDEX (uint)(curr - data)
 
 template <typename T>
 class Stack {
@@ -9,8 +12,10 @@ class Stack {
     T * curr;
 
     uint size;
+
+    QHash<uint, QByteArray> * level_data;
 public:   
-    Stack(const T & default_val, const uint & default_size = 8) : size(default_size == 0 ? 32 : default_size) {
+    Stack(const T & default_val, const uint & default_size = 16) : size(default_size == 0 ? 32 : default_size), level_data(new QHash<uint, QByteArray>()) {
         curr = data = new T[size + 1];
         *curr = default_val;
     }
@@ -22,18 +27,25 @@ public:
         memcpy(data, st -> data, (size + 1) * sizeof(T));
 
         curr = &data[st -> curr - st -> data];
+        level_data = new QHash<uint, QByteArray>(*st -> level_data);
     }
 
     ~Stack() {
         delete [] data;
 //        delete curr;
+        delete level_data;
     }
+
+    inline void setDataForTop(const QByteArray & item_data) { level_data -> insert(CURR_INDEX, item_data); }
+    inline QByteArray dataForTop() { return level_data -> operator [](CURR_INDEX); }
 
     inline bool atBegin() { return curr == data; }
 
-    inline T * items() const { return curr; }
+    inline T * items() const { return data; }
 
     inline T & touch() { return *curr; }
+
+    inline T & touch(const int & level) { return *(curr - level); }
 
     inline T & touchSublevel() { return *(curr - 1); }
 
@@ -41,6 +53,7 @@ public:
         if (atBegin())
             return false;
 
+        level_data -> remove(CURR_INDEX);
         --curr;
         return true;
     }
@@ -50,12 +63,14 @@ public:
             return false;
 
         res = *curr;
+        level_data -> remove(CURR_INDEX);
         --curr;
 
         return true;
     }
 
     inline void replace(const T & new_val) {
+        level_data -> remove(CURR_INDEX);
         (*curr) = new_val;
     }
 
@@ -65,7 +80,7 @@ public:
     }
 
     inline const T & push(const T & val) {
-        if ((uint)(curr - data) == size) {
+        if (CURR_INDEX == size) {
             int curr_pos = size;
 
             T * old_data = data;
@@ -79,6 +94,28 @@ public:
         }
 
         *(++curr) = val;
+        return val;
+    }
+
+    inline const T & push(const T & val, const QByteArray & item_data) {
+        push(val);
+        setDataForTop(item_data);
+        return val;
+    }
+
+    inline const T & pushToLevel(const int & level, const T & val, const QByteArray & item_data) {
+        push(*it, dataForTop());
+
+        uint index = CURR_INDEX;
+
+        for(int i = 0; i < level; i--) {
+            *(curr - i - 1) = *(curr - i - 2);
+            level_data -> insert(index - i - 1, level_data ->operator [](index - i - 2));
+        }
+
+        *(curr - level - 1) = val;
+        level_data -> insert(index - level - 1, item_data);
+
         return val;
     }
 };

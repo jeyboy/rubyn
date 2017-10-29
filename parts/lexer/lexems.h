@@ -230,6 +230,14 @@ enum Lexem : quint32 {
     lex_heredoc_continue,
     lex_heredoc_end,
 
+    lex_eheredoc_start,
+    lex_eheredoc_continue,
+    lex_eheredoc_end,
+
+    lex_cheredoc_start,
+    lex_cheredoc_continue,
+    lex_cheredoc_end,
+
     lex_regexp_start, // /\a+/
     lex_regexp_continue,
     lex_regexp_end,
@@ -401,14 +409,14 @@ enum Lexem : quint32 {
     lex_max
 };
 
-struct Lexems {
-    QByteArray toStr(const Lexem & lexem) {
-        switch(lexem) {
+//struct Lexems {
+//    QByteArray toStr(const Lexem & lexem) {
+//        switch(lexem) {
 
 
-            default: return QByteArrayLiteral("Undefined");
-        }
-    }
-};
+//            default: return QByteArrayLiteral("Undefined");
+//        }
+//    }
+//};
 
 #endif // LEXEMS_H

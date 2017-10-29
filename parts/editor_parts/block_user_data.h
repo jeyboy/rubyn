@@ -3,9 +3,7 @@
 
 #include <QTextBlockUserData>
 #include "misc/token_list.h"
-
-
-template <typename T> class Stack;
+#include "misc/stack.h"
 
 struct BlockUserData : public QTextBlockUserData {
     bool has_folding;
@@ -27,7 +25,9 @@ public:
     }
 
     inline void syncLine(TokenCell * last_sync, Stack<Lexem> * stack_state) {
+        delete stack;
         stack = stack_state;
+
         TokenCell * sync = last_sync -> next;
 
         if (sync) {
@@ -46,6 +46,7 @@ public:
     inline Stack<Lexem> * stackState() { return stack; }
 
     inline ~BlockUserData() {
+        delete stack;
         TokenList::removeLine(begin_token, end_token);
     }
 };
