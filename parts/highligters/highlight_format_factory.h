@@ -43,7 +43,7 @@ protected:
         format.setForeground(Qt::black);
         format.setFontUnderline(true);
         format.setUnderlineColor(QColor(Qt::black));
-        format.setUnderlineStyle(QTextCharFormat::DashDotDotLine);
+        format.setUnderlineStyle(QTextCharFormat::SingleUnderline);
         formats.insert(lex_mark, format);
     }
 

@@ -280,12 +280,12 @@ public:
                 return lex_regexp;
 
 
-            case lex_heredoc_start:
-            case lex_heredoc_intended_start:
-            case lex_eheredoc_start:
-            case lex_eheredoc_intended_start:
-            case lex_cheredoc_start:
-            case lex_cheredoc_intended_start:
+            case lex_heredoc_mark:
+            case lex_heredoc_intended_mark:
+            case lex_eheredoc_mark:
+            case lex_eheredoc_intended_mark:
+            case lex_cheredoc_mark:
+            case lex_cheredoc_intended_mark:
                 return lex_mark;
 
             default: return lex_none;
