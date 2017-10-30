@@ -93,7 +93,7 @@ struct LexerState {
     inline void moveBufferToEnd() {
         buffer = start + strlen(start);
     }
-//    inline bool isBufferStart() { return buffer == start; }
+    inline bool isBufferStart() { return buffer == start; }
     inline bool isBufferEof() { return *buffer == 0; }
 
     inline void cachingPredicate() {

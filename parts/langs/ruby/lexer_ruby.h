@@ -333,41 +333,66 @@ class LexerRuby : public Lexer {
 
     bool parseHeredoc(LexerState * state) {
         QByteArray stop_token = state -> stack -> dataForTop();
-        bool is_intended = false;
 
-        switch(state -> stack -> touch()) {
-            case lex_heredoc_intended_continue:
-            case lex_eheredoc_intended_continue:
-            case lex_cheredoc_intended_continue: {
-                while(isBlank(*++state -> buffer)) ++state -> prev;
-                is_intended = true;
-            }
-
-            case lex_heredoc_continue:
-            case lex_eheredoc_continue:
-            case lex_cheredoc_continue: {
-                if (!is_intended)
-                    ++state -> buffer;
-
-                int token_length = stop_token.length();
-
-                if (QByteArray(state -> buffer, token_length) == stop_token) {
-                    state -> stack -> drop();
-                    state -> buffer += token_length;
-                    return cutWord(state, lex_heredoc_mark);
+        if (state -> isBufferStart()) {
+            switch(state -> stack -> touch()) {
+                case lex_heredoc_intended_continue:
+                case lex_eheredoc_intended_continue:
+                case lex_cheredoc_intended_continue: {
+                    --state -> buffer;
+                    while(isBlank(*++state -> buffer)) ++state -> prev;
                 }
-            break;}
 
-            default: state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack status for heredoc content"));
+                case lex_heredoc_continue:
+                case lex_eheredoc_continue:
+                case lex_cheredoc_continue: {
+                    int token_length = stop_token.length();
+
+                    if (QByteArray(state -> buffer, token_length) == stop_token) {
+                        state -> stack -> drop();
+                        state -> buffer += token_length;
+                        return cutWord(state, lex_heredoc_mark);
+                    }
+                break;}
+
+                default: state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack status for heredoc content"));
+            }
         }
 
-        state -> moveBufferToEnd();
+        switch(state -> stack -> touch()) {
+            case lex_heredoc_continue:
+            case lex_heredoc_intended_continue: { state -> moveBufferToEnd(); break;}
+
+            case lex_eheredoc_intended_continue:
+            case lex_cheredoc_intended_continue:
+            case lex_eheredoc_continue:
+            case lex_cheredoc_continue: {
+                bool ended = false;
+
+                while(!ended) {
+                    switch(ECHAR0) {
+                        case 0: {
+                            ended = true;
+                        break;}
+
+                        case '#': {
+                            if (ECHAR1 == '{')
+                                return cutWord(state, lex_heredoc_end);
+                        }
+
+                        default: ++state -> buffer;
+                    }
+                }
+            break;}
+            default:;
+        }
+
 
         switch(state -> stack -> touch()) {
+            case lex_heredoc_continue: { state -> setStatus(LexerState::ls_heredoc); break;}
             case lex_heredoc_intended_continue: { state -> setStatus(LexerState::ls_heredoc_intended); break;}
             case lex_eheredoc_intended_continue: { state -> setStatus(LexerState::ls_eheredoc_intended); break;}
             case lex_cheredoc_intended_continue: { state -> setStatus(LexerState::ls_cheredoc_intended); break;}
-            case lex_heredoc_continue: { state -> setStatus(LexerState::ls_heredoc); break;}
             case lex_eheredoc_continue: { state -> setStatus( LexerState::ls_eheredoc); break;}
             case lex_cheredoc_continue: { state -> setStatus(LexerState::ls_cheredoc); break;}
             default:;
@@ -437,10 +462,10 @@ protected:
             Lexem top = state -> stack -> touch();
 
             if (GrammarRuby::obj().isContinious(top)) {
-                if (GrammarRuby::obj().isStackDroppable(top))
+                if (GrammarRuby::obj().isStackDroppable(top)) {
                     state -> stack -> drop();
-
-                --state -> buffer;
+                    --state -> buffer;
+                }
 
                 switch(top) {
                     case lex_string_continue: goto handle_string;
@@ -466,17 +491,17 @@ protected:
 
         while(true) {
             switch(ECHAR0) {
-                case ';':
-                case '\r':
-                case '\n':
-                case '\v':
-                case '\t':
                 case ' ':
                 case ',':
                 case '^':
                 case '~':
                 case '(':
-                case ')': {
+                case ')':
+                case ';':
+                case '\t':
+                case '\r':
+                case '\n':
+                case '\v': {
                     if(!cutWord(state))
                         goto exit;
                 break;}
@@ -856,10 +881,9 @@ protected:
                     Lexem top_conv = GrammarRuby::obj().fromContinious(top);
 
                     if (top_conv != lex_none) { // after interpolation
-                        state -> stack -> replace(top_conv);
-                        state -> stack -> push(top);
-//                        ++state -> buffer;
-//                        state -> dropCached();
+                        if (GrammarRuby::obj().isStackDroppable(top))
+                            state -> stack -> pushToLevel(1, top_conv);
+
                         goto continue_mark;
                     }
                 break;}
