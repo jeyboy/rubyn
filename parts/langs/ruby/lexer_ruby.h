@@ -787,7 +787,15 @@ protected:
                             }
                             else {
                                 state -> stack -> push(lex, doc_name);
-                                state -> setStatus(is_simple ? LexerState::ls_heredoc : is_command ? LexerState::ls_cheredoc : LexerState::ls_eheredoc);
+                                state -> setStatus(
+                                    is_simple ?
+                                        is_intended ? LexerState::ls_heredoc_intended : LexerState::ls_heredoc
+                                          :
+                                        is_command ?
+                                            is_intended ? LexerState::ls_cheredoc_intended : LexerState::ls_cheredoc
+                                                :
+                                            is_intended ? LexerState::ls_eheredoc_intended : LexerState::ls_eheredoc
+                                );
                             }
                         }
                     } else {

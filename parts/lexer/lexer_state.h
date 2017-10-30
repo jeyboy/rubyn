@@ -38,7 +38,10 @@ struct LexerState {
         ls_regexp,
         ls_heredoc,
         ls_eheredoc,
-        ls_cheredoc
+        ls_cheredoc,
+        ls_heredoc_intended,
+        ls_eheredoc_intended,
+        ls_cheredoc_intended
     };
 
     Highlighter * lighter;
