@@ -339,7 +339,7 @@ class LexerRuby : public Lexer {
             case lex_heredoc_intended_continue:
             case lex_eheredoc_intended_continue:
             case lex_cheredoc_intended_continue: {
-                while(isBlank(*++state -> buffer));
+                while(isBlank(*++state -> buffer)) ++state -> prev;
                 is_intended = true;
             }
 
@@ -729,10 +729,12 @@ protected:
 
                         if (!isBlank(ECHAR2) && isBlank(ECHAR_PREV1)) {
                             const char * curr = state -> buffer + 2;
+                            bool is_intended = false;
 
                             if (*curr == '-' || *curr == '~') {
                                 ++state -> next_offset;
                                 curr++;
+                                is_intended = true;
                             }
 
                             const char * control = curr;
@@ -740,7 +742,14 @@ protected:
                             bool is_command = *curr == '`';
                             bool is_quoted = is_simple || is_command || *curr == '"';
 
-                            lex = is_simple ? lex_heredoc_mark : is_command ? lex_cheredoc_mark : lex_eheredoc_mark;
+                            lex =
+                                is_simple ?
+                                    is_intended ? lex_heredoc_intended_mark : lex_heredoc_mark
+                                      :
+                                    is_command ?
+                                        is_intended ? lex_cheredoc_intended_mark : lex_cheredoc_mark
+                                            :
+                                        is_intended ? lex_eheredoc_intended_mark : lex_eheredoc_mark;
 
                             if (is_quoted) {
                                 bool ended = false;
