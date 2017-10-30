@@ -362,6 +362,16 @@ class LexerRuby : public Lexer {
         }
 
         state -> moveBufferToEnd();
+
+        switch(state -> stack -> touch()) {
+            case lex_heredoc_intended_continue: { state -> setStatus(LexerState::ls_heredoc_intended); break;}
+            case lex_eheredoc_intended_continue: { state -> setStatus(LexerState::ls_eheredoc_intended); break;}
+            case lex_cheredoc_intended_continue: { state -> setStatus(LexerState::ls_cheredoc_intended); break;}
+            case lex_heredoc_continue: { state -> setStatus(LexerState::ls_heredoc); break;}
+            case lex_eheredoc_continue: { state -> setStatus( LexerState::ls_eheredoc); break;}
+            case lex_cheredoc_continue: { state -> setStatus(LexerState::ls_cheredoc); break;}
+            default:;
+        }
         return cutWord(state, lex_heredoc_continue);
     }
 
