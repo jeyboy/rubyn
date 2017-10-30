@@ -86,7 +86,7 @@ protected:
     void registerStringFormat() {
         QTextCharFormat format;
         format.setFontWeight(QFont::Bold);
-        format.setBackground(Qt::yellow);
+        format.setBackground(Qt::green);
 //        format.setForeground(Qt::darkGreen);
         formats.insert(lex_string, format);
     }

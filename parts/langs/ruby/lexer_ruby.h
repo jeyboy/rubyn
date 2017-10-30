@@ -724,7 +724,7 @@ protected:
                 case '<': {
                     Lexem lex = lex_none;
 
-                    if (ECHAR1 == '<')
+                    if (ECHAR1 == '<') {
                         ++state -> next_offset;
 
                         if (!isBlank(ECHAR2) && isBlank(ECHAR_PREV1)) {
@@ -790,7 +790,7 @@ protected:
                                 state -> setStatus(is_simple ? LexerState::ls_heredoc : is_command ? LexerState::ls_cheredoc : LexerState::ls_eheredoc);
                             }
                         }
-                    else {
+                    } else {
                         if (ECHAR1 == '=') {
                             ++state -> next_offset;
 
