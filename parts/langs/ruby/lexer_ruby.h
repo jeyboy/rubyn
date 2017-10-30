@@ -331,11 +331,11 @@ class LexerRuby : public Lexer {
         return true;
     }
 
-    bool parseHeredoc(LexerState * state, const Lexem & heredoc_lexem) {
+    bool parseHeredoc(LexerState * state) {
         QByteArray stop_token = state -> stack -> dataForTop();
         bool is_intended = false;
 
-        switch(heredoc_lexem) {
+        switch(state -> stack -> touch()) {
             case lex_heredoc_intended_continue:
             case lex_eheredoc_intended_continue:
             case lex_cheredoc_intended_continue: {
@@ -353,7 +353,7 @@ class LexerRuby : public Lexer {
                     state -> stack -> drop();
                     return cutWord(state, lex_heredoc_end);
                 }
-            }
+            break;}
 
             default: state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack status for heredoc content"));
         }
@@ -437,7 +437,7 @@ protected:
                     case lex_eheredoc_intended_continue:
                     case lex_heredoc_continue:
                     case lex_heredoc_intended_continue: {
-                        if (!parseHeredoc(state, top))
+                        if (!parseHeredoc(state))
                             goto exit;
                     break;}
                     case lex_regexp_continue: {
@@ -734,10 +734,11 @@ protected:
                             const char * control = curr;
                             bool is_simple = *curr == '\'';
                             bool is_command = *curr == '`';
+                            bool is_quoted = is_simple || is_command || *curr == '"';
 
                             lex = is_simple ? lex_heredoc_mark : is_command ? lex_cheredoc_mark : lex_eheredoc_mark;
 
-                            if (is_simple || is_command || *curr == '"') {
+                            if (is_quoted) {
                                 bool ended = false;
 
                                 while(!ended) {
@@ -756,13 +757,12 @@ protected:
                                     }
                                 }
                                 ++control;
-                                ++curr;
                             }
                             else while(isWord(*(++curr)));
 
 
                             QByteArray doc_name(control, curr - control);
-                            state -> buffer += curr - state -> buffer;
+                            state -> buffer += curr - state -> buffer + (is_quoted ? 1 : 0);
                             state -> next_offset = 0;
 
                             //INFO: stacked heredocs going in revert order so we must to insert new heredoc before previous if heredocs is stacked
