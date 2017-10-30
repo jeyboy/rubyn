@@ -349,16 +349,20 @@ class LexerRuby : public Lexer {
                 if (!is_intended)
                     ++state -> buffer;
 
-                if (QByteArray(state -> buffer, stop_token.length()) == stop_token) {
+                int token_length = stop_token.length();
+
+                if (QByteArray(state -> buffer, token_length) == stop_token) {
                     state -> stack -> drop();
-                    return cutWord(state, lex_heredoc_end);
+                    state -> buffer += token_length;
+                    return cutWord(state, lex_heredoc_mark);
                 }
             break;}
 
             default: state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack status for heredoc content"));
         }
 
-        return cutWord(state, lex_heredoc_end);
+        state -> moveBufferToEnd();
+        return cutWord(state, lex_heredoc_continue);
     }
 
     bool parseRegexp(LexerState * state) {

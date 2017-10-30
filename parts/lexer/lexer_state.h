@@ -87,6 +87,9 @@ struct LexerState {
         next_offset = 1;
         status = ls_handled;
     }
+    inline void moveBufferToEnd() {
+        buffer = start + strlen(start);
+    }
 //    inline bool isBufferStart() { return buffer == start; }
     inline bool isBufferEof() { return *buffer == 0; }
 
