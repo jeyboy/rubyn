@@ -507,7 +507,6 @@ protected:
                 break;}
 
 
-
                 case '.': {
                     if (ECHAR1 == '.') { // is range
                         ++state -> next_offset;
@@ -762,7 +761,7 @@ protected:
                     if (ECHAR1 == '<') {
                         ++state -> next_offset;
 
-                        if (!isBlank(ECHAR2) && isBlank(ECHAR_PREV1)) {
+                        if (!isBlank(ECHAR2) && (state -> isBufferStart() || isBlank(ECHAR_PREV1))) {
                             const char * curr = state -> buffer + 2;
                             bool is_intended = false;
 
