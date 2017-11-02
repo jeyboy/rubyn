@@ -1202,7 +1202,7 @@ protected:
                     };
 
                     if (res != lex_none) {
-                        state -> stack -> push(res, QByteArray(1, shorted ? '/' : ECHAR2));
+                        state -> stack -> push(res, QByteArray(1, shorted ? '/' : GrammarRuby::obj().percentagePresentationBlocker(ECHAR2)));
                         state -> buffer += shorted ? 2 : 3;
                         if (!parsePercentagePresenation(state))
                             goto exit;

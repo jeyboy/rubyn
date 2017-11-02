@@ -95,6 +95,16 @@ public:
 //        }
 //    }
 
+    char percentagePresentationBlocker(const char & ch) {
+        switch(ch) {
+            case '(': return ')';
+            case '[': return ']';
+            case '{': return '}';
+
+            default: return ch;
+        };
+    }
+
     bool isStackDroppable(const Lexem & lexem) {
         switch(lexem) {
             case lex_string_continue:
@@ -125,7 +135,6 @@ public:
             case lex_cheredoc_intended_continue:
             case lex_regexp_continue:
             case lex_epercent_presentation_continue:
-            case lex_epercent_presentation_start:
                 return true;
             default: return false;
         }
