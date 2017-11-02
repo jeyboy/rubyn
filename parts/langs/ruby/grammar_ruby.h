@@ -124,6 +124,8 @@ public:
             case lex_cheredoc_continue:
             case lex_cheredoc_intended_continue:
             case lex_regexp_continue:
+            case lex_epercent_presentation_continue:
+            case lex_epercent_presentation_start:
                 return true;
             default: return false;
         }
@@ -154,6 +156,8 @@ public:
             case lex_cheredoc_continue:
             case lex_cheredoc_intended_continue:
             case lex_regexp_continue:
+            case lex_epercent_presentation_continue:
+            case lex_percent_presentation_continue:
                 return true;
             default: return false;
         }
@@ -172,6 +176,9 @@ public:
             case lex_cheredoc_continue: return lex_cheredoc_start;
             case lex_cheredoc_intended_continue: return lex_cheredoc_intended_start;
             case lex_regexp_continue: return lex_regexp_start;
+            case lex_epercent_presentation_continue: return lex_epercent_presentation_start;
+            case lex_percent_presentation_continue: return lex_percent_presentation_start;
+
             default: return lex_none;
         }
     }
@@ -273,6 +280,11 @@ public:
             case lex_cheredoc_continue:
             case lex_cheredoc_intended_continue:
             case lex_require_path:
+
+            case lex_epercent_presentation_end:
+            case lex_percent_presentation_end:
+            case lex_epercent_presentation_continue:
+            case lex_percent_presentation_continue:
                 return lex_string;
 
             case lex_regexp_continue:

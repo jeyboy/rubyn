@@ -41,7 +41,9 @@ struct LexerState {
         ls_cheredoc,
         ls_heredoc_intended,
         ls_eheredoc_intended,
-        ls_cheredoc_intended
+        ls_cheredoc_intended,
+        ls_percentage_presentation,
+        ls_epercentage_presentation
     };
 
     Highlighter * lighter;

@@ -331,6 +331,72 @@ class LexerRuby : public Lexer {
         return true;
     }
 
+    bool parsePercentagePresenation(LexerState * state) {
+        const char blocker = state -> stack -> dataForTop()[0];
+
+        if (isAlphaNum(blocker)) {
+            state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong limiter for construction. Must be any non alpha numeric"));
+            return true;
+        }
+
+        switch(state -> stack -> touch()) {
+            case lex_percent_presentation_start:
+            case lex_percent_presentation_continue: {
+                while(true) {
+                    switch(ECHAR0) {
+                        case 0: {
+                            state -> setStatus(LexerState::ls_percentage_presentation);
+                            return cutWord(state, lex_percent_presentation_continue);
+                        break;}
+
+                        default: {
+                            if (ECHAR0 == blocker && ECHAR_PREV1 != '\\') {
+                                ++state -> buffer;
+                                state -> stack -> drop();
+                                return cutWord(state, lex_percent_presentation_end);
+                            }
+                        }
+                    }
+
+                    ++state -> buffer;
+                }
+            break;}
+
+            case lex_epercent_presentation_start:
+            case lex_epercent_presentation_continue: {
+                while(true) {
+                    switch(ECHAR0) {
+                        case 0: {
+                            state -> setStatus(LexerState::ls_epercentage_presentation);
+                            return cutWord(state, lex_epercent_presentation_continue);
+                        break;}
+
+                        case '#': {
+                            if (ECHAR1 == '{') {
+                                state -> stack -> replace(lex_epercent_presentation_continue, false);
+                                return cutWord(state, lex_epercent_presentation_end);
+                            }
+                        break;}
+
+                        default: {
+                            if (ECHAR0 == blocker && ECHAR_PREV1 != '\\') {
+                                ++state -> buffer;
+                                state -> stack -> drop();
+                                return cutWord(state, lex_epercent_presentation_end);
+                            }
+                        }
+                    }
+
+                    ++state -> buffer;
+                }
+            break;}
+
+            default: state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state for percent presentation"));
+        }
+
+        return true;
+    }
+
     bool parseHeredoc(LexerState * state) {
         QByteArray stop_token = state -> stack -> dataForTop();
 
@@ -470,6 +536,17 @@ protected:
                 switch(top) {
                     case lex_string_continue: goto handle_string;
                     case lex_estring_continue: goto handle_estring;
+                    case lex_regexp_continue: {
+                        if (!parseRegexp(state))
+                            goto exit;
+                    break;}
+
+                    case lex_percent_presentation_continue:
+                    case lex_epercent_presentation_continue: {
+                        if (!parsePercentagePresenation(state))
+                            goto exit;
+                    break;}
+
                     case lex_cheredoc_continue:
                     case lex_cheredoc_intended_continue:
                     case lex_eheredoc_continue:
@@ -477,10 +554,6 @@ protected:
                     case lex_heredoc_continue:
                     case lex_heredoc_intended_continue: {
                         if (!parseHeredoc(state))
-                            goto exit;
-                    break;}
-                    case lex_regexp_continue: {
-                        if (!parseRegexp(state))
                             goto exit;
                     break;}
                     case lex_commentary_continue: goto handle_multiline_comment;
@@ -1108,21 +1181,33 @@ protected:
 
 
                 case '%': {
+                    Lexem res = lex_none;
+                    bool shorted = false;
+
                     switch(ECHAR1) {
                         case '=': { ++state -> next_offset; break; }
-                        case 'i': { break; } // Array of Symbols
-                        case 'q': { break; } // single quoted string
-                        case 'Q': { break; } // double quoted string
-                        case 'r': { break; } // Regular Expression
-                        case 's': { break; } // Symbol
-                        case 'w': { break; } // Array of Strings
-                        case 'x': { break; } // Backtick (capture subshell result)
+                        case '/': shorted = true;
+                        case 'l': // Interpolated Array of Symbols
+                        case 'Q': // double quoted string
+                        case 'r': // Regular Expression
+                        case 'W': // Array of double quoted Strings
+                        case 'x': // Backtick (capture subshell result)
+                            { res = lex_epercent_presentation_start; break;}
+
+                        case 'i': // Array of Symbols
+                        case 'q': // single quoted string
+                        case 's': // Symbol
+                        case 'w': // Array of Strings
+                            { res = lex_percent_presentation_start; break;}
                     };
 
-                    if (!cutWord(state))
+                    if (res != lex_none) {
+                        state -> stack -> push(res, QByteArray(1, shorted ? '/' : ECHAR2));
+                        state -> buffer += shorted ? 2 : 3;
+                        if (!parsePercentagePresenation(state))
+                            goto exit;
+                    } else if (!cutWord(state))
                         goto exit;
-
-
                 break;}
 
 

@@ -227,6 +227,14 @@ enum Lexem : quint32 {
     lex_estring_continue,
     lex_estring_end,
 
+    lex_percent_presentation_start, // %n/.../
+    lex_percent_presentation_continue,
+    lex_percent_presentation_end,
+
+    lex_epercent_presentation_start, // %N/.../
+    lex_epercent_presentation_continue,
+    lex_epercent_presentation_end,
+
     // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
     lex_heredoc_mark,
     lex_heredoc_start,
