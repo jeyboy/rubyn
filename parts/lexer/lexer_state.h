@@ -120,6 +120,7 @@ struct LexerState {
     inline LEXER_INT_TYPE bufferPos() { return prev - start; }
     inline LEXER_INT_TYPE strLength() { return buffer - prev; }
 
+    inline Lexem & sublastToken() { return token -> prev -> lexem; }
     inline Lexem & lastToken() { return token -> lexem; }
     inline void attachToken(const Lexem & lexem) {
         if (token -> next) {

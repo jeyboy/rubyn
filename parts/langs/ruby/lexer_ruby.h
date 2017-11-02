@@ -61,6 +61,14 @@ class LexerRuby : public Lexer {
 //                return false;
             }
 
+            Lexem sub = state -> sublastToken();
+
+            //TODO: prev word satisfy
+            lex_new_word = GrammarRuby::obj().translate(
+                sub,
+                state -> lex_word
+            );
+
             if (state -> lex_word == lex_new_word) {
                 if (lex_new_word == lex_word) {
                     state -> scope -> addVar(
@@ -77,12 +85,6 @@ class LexerRuby : public Lexer {
 
             if (highlightable != lex_none)
                 state -> light(highlightable);
-
-            //TODO: prev word satisfy
-//            GrammarRuby::obj().translate(
-//                state -> chain -> touchSublevel(),
-//                state -> lex_word
-//            );
 
             state -> attachToken(state -> lex_word);
 
