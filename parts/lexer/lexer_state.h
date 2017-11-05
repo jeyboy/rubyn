@@ -50,7 +50,9 @@ struct LexerState {
 
     QByteArray cached;
 
+    Lexem lex_prev_word;
     Lexem lex_word;
+    Lexem lex_prev_delimiter;
     Lexem lex_delimiter;
 
     Scope * scope;
@@ -70,7 +72,7 @@ struct LexerState {
     Status status;
 
     LexerState(Scope * scope, TokenCell * token, Stack<Lexem> * stack_state = 0, Highlighter * lighter = 0) : lighter(lighter),
-        lex_word(lex_none), lex_delimiter(lex_none),
+        lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
         scope(scope), stack(stack_state == 0 ? new Stack<Lexem>(lex_none) : new Stack<Lexem>(stack_state)),
         next_offset(1), token(token), cached_length(0),
         start(0), buffer(0), prev(0), status(ls_handled) { }
@@ -99,11 +101,13 @@ struct LexerState {
     inline bool isBufferEof() { return *buffer == 0; }
 
     inline void cachingPredicate() {
+        lex_prev_word = lex_word;
         cached_str_pos = bufferPos();
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
     }
     inline void cachingDelimiter() {
+        lex_prev_delimiter = lex_delimiter;
         prev = buffer;
         buffer += next_offset;
 
@@ -135,6 +139,19 @@ struct LexerState {
         token -> lexem = lexem;
         token -> length += cached_length;
     }
+//    inline void updateSubToken(const Lexem & lexem) {
+//        TokenCell * prev = token -> prev;
+//        prev -> lexem = lexem;
+//        light(prev);
+//    }
+
+//    inline void light(TokenCell * tcell) {
+//        lighter -> setFormat(
+//            tcell -> start_pos,
+//            tcell -> length,
+//            HighlightFormatFactory::obj().getFormatFor(tcell -> lexem)
+//        );
+//    }
 
     inline void light(const Lexem & lexem) {
 //        qDebug() << "!!!!" << bufferPos() << cached_length;

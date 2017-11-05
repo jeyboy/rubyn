@@ -6,82 +6,99 @@
 #include "grammar_ruby.h"
 
 class LexerRuby : public Lexer {
+    void identifyWordType(LexerState * state) {
+        switch(SCHAR0) {
+            case ':': { state -> lex_word = lex_symbol; break;}
+            case '$': { state -> lex_word = lex_var_global; break;}
+            case '@': {
+                if (SCHAR1 == '@')
+                    state -> lex_word = lex_var_object;
+                else
+                    state -> lex_word = lex_var_instance;
+            break;}
+            default: {
+                if (ECHAR_PREV1 == ':')
+                    state -> lex_word = lex_symbol;
+            }
+        }
+    }
+
+    void registerVariable(LexerState * state) {
+        if (!state -> scope -> hasVar(state -> cached)) {
+            state -> scope -> addVar(
+                state -> cached,
+                new FilePoint(state -> lex_word, 0, 0, state -> cached_str_pos)
+            );
+        }
+        else state -> lex_word = state -> scope -> varType(state -> cached);
+    }
+
+//    void stateConversion(LexerState * state) {
+////        Lexem lex_new_word = GrammarRuby::obj().translate(
+////            state -> lex_delimiter,
+////            state -> lex_word
+////        );
+
+////        if (lex_new_word == lex_error) {
+////            state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
+//////                return false;
+////        }
+
+////        lex_new_word = GrammarRuby::obj().translate(
+////            state -> sublastToken(),
+////            lex_new_word
+////        );
+
+////        if (lex_new_word == lex_error) {
+////            state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
+//////                return false;
+////        }
+
+
+//        if (state -> lex_word == lex_new_state) {
+//            if (lex_new_state == lex_word) {
+//                state -> scope -> addVar(
+//                    state -> cached,
+//                    new FilePoint(lex_var_local, 0, 0, state -> cached_str_pos)
+//                );
+//            }
+//        }
+//        else state -> lex_word = lex_new_state;
+//    }
+
     bool cutWord(LexerState * state, const Lexem & predefined_lexem = lex_none) {
         state -> cachingPredicate();
 
-        if (state -> cached_length || predefined_lexem != lex_none) {
+        bool has_predefined = predefined_lexem != lex_none;
+
+        if (state -> cached_length || has_predefined) {
             state -> lex_word =
-                predefined_lexem != lex_none
-                    ?
-                predefined_lexem
-                    :
-                PredefinedRuby::obj().lexem(state -> cached);
+                has_predefined ? predefined_lexem : PredefinedRuby::obj().lexem(state -> cached);
 
-            if (state -> lex_word == lex_undefined) {
-                if (!state -> scope -> hasVar(state -> cached)) {
-                    switch(SCHAR0) {
-                        case ':': { state -> lex_word = lex_symbol; break;}
-                        case '$': { state -> lex_word = lex_var_global; break;}
-                        case '@': {
-                            if (SCHAR1 == '@')
-                                state -> lex_word = lex_var_object;
-                            else
-                                state -> lex_word = lex_var_instance;
-                        break;}
-                        default: {
-                            state -> lex_word =
-                                (ECHAR_PREV1 == ':')
-                                    ?
-                                        lex_symbol
-                                    :
-                                        lex_word;
-                        }
-                    }
+            if (state -> lex_word == lex_word)
+                identifyWordType(state);
 
+            // translate state
+            state -> lex_prev_word =
+                GrammarRuby::obj().translate(state -> lex_prev_word, state -> lex_delimiter);
 
-                    if (state -> lex_word != lex_symbol && state -> lex_word != lex_word)
-                        state -> scope -> addVar(
-                            state -> cached,
-                            new FilePoint(state -> lex_word, 0, 0, state -> cached_str_pos)
-                        );
-                }
-                else state -> lex_word = state -> scope -> varType(state -> cached);
-            }
-
-            Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
-
-            Lexem lex_new_word =
-                GrammarRuby::obj().translate(
-                    state -> lex_delimiter,
-                    state -> lex_word
-                );
-
-            if (lex_new_word == lex_error) {
-                state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
+            if (state -> lex_prev_word == lex_error) {
+                state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong delimiter state!!!"));
 //                return false;
             }
 
-            Lexem sub = state -> sublastToken();
+            state -> lex_word =
+                GrammarRuby::obj().translate(state -> lex_prev_word, state -> lex_word);
 
-            //TODO: prev word satisfy
-            lex_new_word = GrammarRuby::obj().translate(
-                sub,
-                state -> lex_word
-            );
-
-            if (state -> lex_word == lex_new_word) {
-                if (lex_new_word == lex_word) {
-                    state -> scope -> addVar(
-                        state -> cached,
-                        new FilePoint(lex_var_local, 0, 0, state -> cached_str_pos)
-                    );
-                }
-            } else {
-                state -> lex_word = lex_new_word;
-
-                if (highlightable == lex_none)
-                    highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
+            if (state -> lex_word == lex_error) {
+                state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong delimiter state!!!"));
+//                return false;
             }
+
+            if (state -> lex_word == lex_word)
+                registerVariable(state);
+
+            Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
 
             if (highlightable != lex_none)
                 state -> light(highlightable);
@@ -101,29 +118,30 @@ class LexerRuby : public Lexer {
         }
         else state -> lex_word = lex_none;
 
-        if (state -> isBufferEof())
-            return false;
-
         if (state -> next_offset) {
             state -> cachingDelimiter();
             state -> lex_delimiter = PredefinedRuby::obj().lexem(state -> cached);
-            state -> attachToken(state -> lex_delimiter);
-        }
 
-        if (state -> lex_word == lex_none) {
-            Lexem lex_new_delimiter =
-                GrammarRuby::obj().translate(
-                    state -> lastToken(),
-                    state -> lex_delimiter
-                );
+            if (state -> lex_word == lex_none) {
+                state -> lex_delimiter =
+                    GrammarRuby::obj().translate(state -> lex_prev_delimiter, state -> lex_delimiter);
 
-            if (lex_new_delimiter == lex_chain_item)
-                state -> attachToken(state -> lex_delimiter);
-            else {
-                state -> lex_delimiter = lex_new_delimiter;
                 state -> replaceToken(state -> lex_delimiter);
             }
+            else {
+                state -> attachToken(state -> lex_delimiter);
+            }
         }
+
+//        if (state -> lex_delimiter == lex_dot) {
+//            switch(state -> sublastToken()) {
+//                case lex_method_def_name: {
+//                    state -> updateSubToken(lex_method_def_scope);
+//                break;}
+
+//                default:;
+//            }
+//        }
 
         state -> dropCached();
 
@@ -1111,6 +1129,7 @@ protected:
 
 
                 case 0: {
+                    state -> next_offset = 0;
                     cutWord(state);
                     goto exit;
                 break;}

@@ -235,7 +235,7 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
     friend class SingletonPtr<PredefinedRuby>;
 public:
     inline bool hasKey(const QByteArray & key) { return keys.contains(key); }
-    inline Lexem lexem(const QByteArray & key) { return keys.value(key, lex_undefined); }
+    inline Lexem lexem(const QByteArray & key) { return keys.value(key, lex_word); }
 };
 
 #endif // PREDEFINED_RUBY_H
