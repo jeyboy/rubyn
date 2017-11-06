@@ -536,134 +536,133 @@ struct Lexems {
             case lex_operator_not: return QByteArrayLiteral("operator_not_token");
 
 
-            case lex_method_def,
-            case lex_method_def_scope,
-            case lex_method_def_scoped,
-            case lex_method_def_name,
-            case lex_method_def_scoped_name,
-            case lex_method_def_block,
-            case lex_method_def_block_end,
-            case lex_method_def_vars_start,
-            case lex_method_def_var_attr, // const
-            case lex_method_def_var_type, // int
-            case lex_method_def_var_access_type, // * & and etc
-            case lex_method_def_var_name,
-            case lex_method_def_vars_splitter,
-            case lex_method_def_vars_end,
+            case lex_method_def: return QByteArrayLiteral("method_def_token");
+            case lex_method_def_scope: return QByteArrayLiteral("method_def_scope_token");
+            case lex_method_def_scoped: return QByteArrayLiteral("method_def_scoped_token");
+            case lex_method_def_name: return QByteArrayLiteral("method_def_name_token");
+            case lex_method_def_scoped_name: return QByteArrayLiteral("method_def_scoped_name_token");
+            case lex_method_def_block: return QByteArrayLiteral("method_def_block_token");
+            case lex_method_def_block_end: return QByteArrayLiteral("method_def_block_end_token");
+            case lex_method_def_vars_start: return QByteArrayLiteral("method_def_vars_start_token");
+            case lex_method_def_var_attr: return QByteArrayLiteral("method_def_var_attr_token");
+            case lex_method_def_var_type: return QByteArrayLiteral("method_def_var_type_token");
+            case lex_method_def_var_access_type: return QByteArrayLiteral("method_def_var_access_type_token");
+            case lex_method_def_var_name: return QByteArrayLiteral("method_def_var_name_token");
+            case lex_method_def_vars_splitter: return QByteArrayLiteral("method_def_vars_splitter_token");
+            case lex_method_def_vars_end: return QByteArrayLiteral("method_def_vars_end_token");
 
 
-            case lex_predefined_method_call_name,
+            case lex_predefined_method_call_name: return QByteArrayLiteral("predefined_method_call_name_token");
 
-            case lex_method_call_name,
-            case lex_method_call_vars_start,
-            case lex_method_call_var_entry,
-            case lex_method_call_vars_splitter,
-            case lex_method_call_vars_end,
-            case lex_method_call_block,
-            case lex_method_call_block_vars_start,
-            case lex_method_call_block_var_name,
-            case lex_method_call_block_vars_splitter,
-            case lex_method_call_block_vars_end,
-            case lex_method_call_block_end,
-
-
-            case lex_class_def,
-            case lex_class_def_name,
-            case lex_class_def_extension,
-            case lex_class_def_extender,
-            case lex_class_def_inheritance,
-            case lex_class_def_ancestor,
-            case lex_class_def_block,
-            case lex_class_def_block_end,
-
-            case lex_class_def_short,
-            case lex_class_def_short_accessing,
-            case lex_class_def_short_method,
-            case lex_class_def_short_block,
-            case lex_class_def_short_block_end,
+            case lex_method_call_name: return QByteArrayLiteral("method_call_name_token");
+            case lex_method_call_vars_start: return QByteArrayLiteral("method_call_vars_start_token");
+            case lex_method_call_var_entry: return QByteArrayLiteral("method_call_var_entry_token");
+            case lex_method_call_vars_splitter: return QByteArrayLiteral("method_call_vars_splitter_token");
+            case lex_method_call_vars_end: return QByteArrayLiteral("method_call_vars_end_token");
+            case lex_method_call_block: return QByteArrayLiteral("method_call_block_token");
+            case lex_method_call_block_vars_start: return QByteArrayLiteral("method_call_block_vars_start_token");
+            case lex_method_call_block_var_name: return QByteArrayLiteral("method_call_block_var_name_token");
+            case lex_method_call_block_vars_splitter: return QByteArrayLiteral("method_call_block_vars_splitter_token");
+            case lex_method_call_block_vars_end: return QByteArrayLiteral("method_call_block_vars_end_token");
+            case lex_method_call_block_end: return QByteArrayLiteral("method_call_block_end_token");
 
 
-            case lex_module_def,
-            case lex_module_def_name,
-            case lex_module_def_resolution,
-            case lex_module_def_block,
-            case lex_module_def_block_end,
+            case lex_class_def: return QByteArrayLiteral("class_def_token");
+            case lex_class_def_name: return QByteArrayLiteral("class_def_name_token");
+            case lex_class_def_extension: return QByteArrayLiteral("class_def_extension_token");
+            case lex_class_def_extender: return QByteArrayLiteral("class_def_extender_token");
+            case lex_class_def_inheritance: return QByteArrayLiteral("class_def_inheritance_token");
+            case lex_class_def_ancestor: return QByteArrayLiteral("class_def_ancestor_token");
+            case lex_class_def_block: return QByteArrayLiteral("class_def_block_token");
+            case lex_class_def_block_end: return QByteArrayLiteral("class_def_block_end_token");
+
+            case lex_class_def_short: return QByteArrayLiteral("class_def_short_token");
+            case lex_class_def_short_accessing: return QByteArrayLiteral("class_def_short_accessing_token");
+            case lex_class_def_short_method: return QByteArrayLiteral("class_def_short_method_token");
+            case lex_class_def_short_block: return QByteArrayLiteral("class_def_short_block_token");
+            case lex_class_def_short_block_end: return QByteArrayLiteral("class_def_short_block_end_token");
 
 
-            case lex_lambda_def,
-            case lex_lambda_def_vars_start,
-            case lex_lambda_def_var_attr, // const
-            case lex_lambda_def_var_type, // int
-            case lex_lambda_def_var_access_type, // * & and etc
-            case lex_lambda_def_var_name,
-            case lex_lambda_def_vars_splitter,
-            case lex_lambda_def_vars_end,
-            case lex_lambda_def_block,
-            case lex_lambda_def_block_end,
+            case lex_module_def: return QByteArrayLiteral("module_def_token");
+            case lex_module_def_name: return QByteArrayLiteral("module_def_name_token");
+            case lex_module_def_resolution: return QByteArrayLiteral("module_def_resolution_token");
+            case lex_module_def_block: return QByteArrayLiteral("module_def_block_token");
+            case lex_module_def_block_end: return QByteArrayLiteral("module_def_block_end_token");
 
 
-            case lex_proc_def,
-            case lex_proc_def_block,
-            case lex_proc_def_block_end,
-            case lex_proc_def_vars_start,
-            case lex_proc_def_var_attr, // const
-            case lex_proc_def_var_type, // int
-            case lex_proc_def_var_access_type, // * & and etc
-            case lex_proc_def_var_name,
-            case lex_proc_def_vars_splitter,
-            case lex_proc_def_vars_end,
+            case lex_lambda_def: return QByteArrayLiteral("lambda_def_token");
+            case lex_lambda_def_vars_start: return QByteArrayLiteral("lambda_def_vars_start_token");
+            case lex_lambda_def_var_attr: return QByteArrayLiteral("lambda_def_var_attr_token");
+            case lex_lambda_def_var_type: return QByteArrayLiteral("lambda_def_var_type_token");
+            case lex_lambda_def_var_access_type: return QByteArrayLiteral("lambda_def_var_access_type_token");
+            case lex_lambda_def_var_name: return QByteArrayLiteral("lambda_def_var_name_token");
+            case lex_lambda_def_vars_splitter: return QByteArrayLiteral("lambda_def_vars_splitter_token");
+            case lex_lambda_def_vars_end: return QByteArrayLiteral("lambda_def_vars_end_token");
+            case lex_lambda_def_block: return QByteArrayLiteral("lambda_def_block_token");
+            case lex_lambda_def_block_end: return QByteArrayLiteral("lambda_def_block_end_token");
 
-            case lex_inline_commentary,
 
-            case lex_commentary_start,
-            case lex_commentary_continue,
-            case lex_commentary_end,
+            case lex_proc_def: return QByteArrayLiteral("proc_def_token");
+            case lex_proc_def_block: return QByteArrayLiteral("proc_def_block_token");
+            case lex_proc_def_block_end: return QByteArrayLiteral("proc_def_block_end_token");
+            case lex_proc_def_vars_start: return QByteArrayLiteral("proc_def_vars_start_token");
+            case lex_proc_def_var_attr: return QByteArrayLiteral("proc_def_var_attr_token");
+            case lex_proc_def_var_type: return QByteArrayLiteral("proc_def_var_type_token");
+            case lex_proc_def_var_access_type: return QByteArrayLiteral("proc_def_var_access_type_token");
+            case lex_proc_def_var_name: return QByteArrayLiteral("proc_def_var_name_token");
+            case lex_proc_def_vars_splitter: return QByteArrayLiteral("proc_def_vars_splitter_token");
+            case lex_proc_def_vars_end: return QByteArrayLiteral("proc_def_vars_end_token");
 
-            case lex_command_start,
-            case lex_command_continue,
-            case lex_command_end,
+            case lex_inline_commentary: return QByteArrayLiteral("inline_commentary_token");
 
-            case lex_string_start,
-            case lex_string_continue,
-            case lex_string_end,
+            case lex_commentary_start: return QByteArrayLiteral("commentary_start_token");
+            case lex_commentary_continue: return QByteArrayLiteral("commentary_continue_token");
+            case lex_commentary_end: return QByteArrayLiteral("commentary_end_token");
 
-            case lex_estring_start, // "
-            case lex_estring_continue,
-            case lex_estring_end,
+            case lex_command_start: return QByteArrayLiteral("command_start_token");
+            case lex_command_continue: return QByteArrayLiteral("command_continue_token");
+            case lex_command_end: return QByteArrayLiteral("command_end_token");
 
-            case lex_percent_presentation_start, // %n/.../
-            case lex_percent_presentation_continue,
-            case lex_percent_presentation_end,
+            case lex_string_start: return QByteArrayLiteral("string_start_token");
+            case lex_string_continue: return QByteArrayLiteral("string_continue_token");
+            case lex_string_end: return QByteArrayLiteral("string_end_token");
 
-            case lex_epercent_presentation_start, // %N/.../
-            case lex_epercent_presentation_continue,
-            case lex_epercent_presentation_end,
+            case lex_estring_start: return QByteArrayLiteral("estring_start_token");
+            case lex_estring_continue: return QByteArrayLiteral("estring_continue_token");
+            case lex_estring_end: return QByteArrayLiteral("estring_end_token");
 
-        // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
-            case lex_heredoc_mark,
-            case lex_heredoc_start,
-            case lex_heredoc_continue,
-            case lex_heredoc_end,
+            case lex_percent_presentation_start: return QByteArrayLiteral("percentage_presentation_start_token");
+            case lex_percent_presentation_continue: return QByteArrayLiteral("percentage_presentation_continue_token");
+            case lex_percent_presentation_end: return QByteArrayLiteral("percentage_presentation_end_token");
 
-            case lex_heredoc_intended_mark,
-            case lex_heredoc_intended_start,
-            case lex_heredoc_intended_continue,
+            case lex_epercent_presentation_start: return QByteArrayLiteral("epercentage_presentation_start_token");
+            case lex_epercent_presentation_continue: return QByteArrayLiteral("epercentage_presentation_continue_token");
+            case lex_epercent_presentation_end: return QByteArrayLiteral("epercentage_presentation_end_token");
 
-            case lex_eheredoc_mark,
-            case lex_eheredoc_start,
-            case lex_eheredoc_continue,
+            case lex_heredoc_mark: return QByteArrayLiteral("heredoc_mark_token");
+            case lex_heredoc_start: return QByteArrayLiteral("heredoc_start_token");
+            case lex_heredoc_continue: return QByteArrayLiteral("heredoc_continue_token");
+            case lex_heredoc_end: return QByteArrayLiteral("heredoc_end_token");
 
-            case lex_eheredoc_intended_mark,
-            case lex_eheredoc_intended_start,
-            case lex_eheredoc_intended_continue,
+            case lex_heredoc_intended_mark: return QByteArrayLiteral("heredoc_intended_mark_token");
+            case lex_heredoc_intended_start: return QByteArrayLiteral("heredoc_intended_start_token");
+            case lex_heredoc_intended_continue: return QByteArrayLiteral("heredoc_intended_continue_token");
 
-            case lex_cheredoc_mark,
-            case lex_cheredoc_start,
-            case lex_cheredoc_continue,
+            case lex_eheredoc_mark: return QByteArrayLiteral("eheredoc_mark_token");
+            case lex_eheredoc_start: return QByteArrayLiteral("eheredoc_start_token");
+            case lex_eheredoc_continue: return QByteArrayLiteral("eheredoc_continue_token");
 
-            case lex_cheredoc_intended_mark,
-            case lex_cheredoc_intended_start,
-            case lex_cheredoc_intended_continue,
+            case lex_eheredoc_intended_mark: return QByteArrayLiteral("eheredoc_intended_mark_token");
+            case lex_eheredoc_intended_start: return QByteArrayLiteral("eheredoc_intended_start_token");
+            case lex_eheredoc_intended_continue: return QByteArrayLiteral("eheredoc_intended_continue_token");
+
+            case lex_cheredoc_mark: return QByteArrayLiteral("cheredoc_mark_token");
+            case lex_cheredoc_start: return QByteArrayLiteral("cheredoc_start_token");
+            case lex_cheredoc_continue: return QByteArrayLiteral("cheredoc_continue_token");
+
+            case lex_cheredoc_intended_mark: return QByteArrayLiteral("cheredoc_intended_mark_token");
+            case lex_cheredoc_intended_start: return QByteArrayLiteral("cheredoc_intended_start_token");
+            case lex_cheredoc_intended_continue: return QByteArrayLiteral("cheredoc_intended_continue_token");
         //////////////////////////////////////
 
 
