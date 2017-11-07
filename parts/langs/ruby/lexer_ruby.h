@@ -70,13 +70,15 @@ class LexerRuby : public Lexer {
 //                return false;
             }
 
-            if (state -> lex_word == lex_word)
-                registerVariable(state);
+            if (state -> cached_length) {
+                if (state -> lex_word == lex_word)
+                    registerVariable(state);
 
-            Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
+                Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
 
-            if (highlightable != lex_none)
-                state -> light(highlightable);
+                if (highlightable != lex_none)
+                    state -> light(highlightable);
+            }
 
             state -> attachToken(state -> lex_word);
 
@@ -994,12 +996,19 @@ protected:
                     };
 
                     if (res != lex_none) {
+                        state -> next_offset = 0;
                         state -> stack -> push(res, QByteArray(1, shorted ? '/' : GrammarRuby::obj().percentagePresentationBlocker(ECHAR2)));
+
+                        if (!cutWord(state, res))
+                            goto exit;
+
                         state -> buffer += shorted ? 2 : 3;
                         if (!parsePercentagePresenation(state))
                             goto exit;
-                    } else if (!cutWord(state))
-                        goto exit;
+                    } else {
+                        if (!cutWord(state))
+                            goto exit;
+                    }
                 break;}
 
 

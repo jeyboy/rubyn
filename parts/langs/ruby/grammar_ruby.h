@@ -32,6 +32,10 @@ class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
         rules[lex_blanks][lex_tab] = lex_blanks;
 
 
+        // PERCENTAGE PRESENTATION
+
+        rules[lex_percent_presentation_start][lex_percent_presentation_end] = lex_none;
+        rules[lex_epercent_presentation_start][lex_epercent_presentation_end] = lex_none;
 
         // CLASS DEFINITION
 
