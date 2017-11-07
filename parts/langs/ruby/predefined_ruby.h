@@ -105,15 +105,15 @@ class PredefinedRuby : public SingletonPtr<PredefinedRuby> {
         keys.insert(QByteArrayLiteral("yield"), lex_predefined_method_call_name); // Starts execution of the block sent to the current method
 
 
-        keys.insert(QByteArrayLiteral("+"), lex_operator_addition);
-        keys.insert(QByteArrayLiteral("-"), lex_operator_substraction);
+        keys.insert(QByteArrayLiteral("+"), lex_operator_add);
+        keys.insert(QByteArrayLiteral("-"), lex_operator_minus);
         keys.insert(QByteArrayLiteral("*"), lex_operator_multiplication);
         keys.insert(QByteArrayLiteral("/"), lex_operator_division);
         keys.insert(QByteArrayLiteral("%"), lex_operator_modulus);
         keys.insert(QByteArrayLiteral("**"), lex_operator_exponentiation);
 
-        keys.insert(QByteArrayLiteral("+="), lex_operator_addition_assigment);
-        keys.insert(QByteArrayLiteral("-="), lex_operator_substraction_assigment);
+        keys.insert(QByteArrayLiteral("+="), lex_operator_add_assigment);
+        keys.insert(QByteArrayLiteral("-="), lex_operator_minus_assigment);
         keys.insert(QByteArrayLiteral("*="), lex_operator_multiplication_assigment);
         keys.insert(QByteArrayLiteral("/="), lex_operator_division_assigment);
         keys.insert(QByteArrayLiteral("%="), lex_operator_modulus_assigment);
