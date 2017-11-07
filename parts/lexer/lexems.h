@@ -766,72 +766,72 @@ struct Lexems {
             case lex_when_block_end: return QByteArrayLiteral("when_block_token");
 
 
-            case lex_while,
-            case lex_while_rule,
-            case lex_while_block,
-            case lex_while_block_end,
+            case lex_while: return QByteArrayLiteral("while_token");
+            case lex_while_rule: return QByteArrayLiteral("while_rule_token");
+            case lex_while_block: return QByteArrayLiteral("while_block_token");
+            case lex_while_block_end: return QByteArrayLiteral("while_block_end_token");
 
-            case lex_until,
-            case lex_until_rule,
-            case lex_until_block,
-            case lex_until_block_end,
+            case lex_until: return QByteArrayLiteral("until_token");
+            case lex_until_rule: return QByteArrayLiteral("until_rule_token");
+            case lex_until_block: return QByteArrayLiteral("until_block_token");
+            case lex_until_block_end: return QByteArrayLiteral("until_block_end_token");
 
-            case lex_for,
-            case lex_for_vars_start,
-            case lex_for_var,
-            case lex_for_vars_splitter,
-            case lex_for_vars_end,
+            case lex_for: return QByteArrayLiteral("for_token");
+            case lex_for_vars_start: return QByteArrayLiteral("for_vars_start_token");
+            case lex_for_var: return QByteArrayLiteral("for_var_token");
+            case lex_for_vars_splitter: return QByteArrayLiteral("for_vars_splitter_token");
+            case lex_for_vars_end: return QByteArrayLiteral("for_vars_token");
 
-            case lex_for_in,
-            case lex_for_in_target,
+            case lex_for_in: return QByteArrayLiteral("for_in_token");
+            case lex_for_in_target: return QByteArrayLiteral("for_in_target_token");
 
-            case lex_loop_break,
-            case lex_loop_redo,
-            case lex_loop_next,
+            case lex_loop_break: return QByteArrayLiteral("loop_break_token");
+            case lex_loop_redo: return QByteArrayLiteral("loop_redo_token");
+            case lex_loop_next: return QByteArrayLiteral("loop_next_token");
 
-            case lex_do,
-            case lex_do_block_start,
-            case lex_do_block_vars_start,
-            case lex_do_block_var_access_type, // * & and etc
-            case lex_do_block_var_name,
-            case lex_do_block_vars_splitter,
-            case lex_do_block_vars_end,
-            case lex_do_block_end,
+            case lex_do: return QByteArrayLiteral("do_token");
+            case lex_do_block_start: return QByteArrayLiteral("do_block_start_token");
+            case lex_do_block_vars_start: return QByteArrayLiteral("do_block_vars_start_token");
+            case lex_do_block_var_access_type: return QByteArrayLiteral("do_block_var_access_type_token");
+            case lex_do_block_var_name: return QByteArrayLiteral("do_block_var_name_token");
+            case lex_do_block_vars_splitter: return QByteArrayLiteral("do_block_vars_splitter_token");
+            case lex_do_block_vars_end: return QByteArrayLiteral("do_block_vars_end_token");
+            case lex_do_block_end: return QByteArrayLiteral("do_block_end_token");
 
-            case lex_inline_do_block_start,
-            case lex_inline_do_block_vars_start,
-            case lex_inline_do_block_var_access_type, // * & and etc
-            case lex_inline_do_block_var_name,
-            case lex_inline_do_block_vars_splitter,
-            case lex_inline_do_block_vars_end,
-            case lex_inline_do_block_end,
-
-
-            case lex_begin,
-            case lex_end,
-
-            case lex_block_start,
-            case lex_block_rescue,
-            case lex_block_ensure,
-            case lex_block_retry,
-            case lex_block_end,
+            case lex_inline_do_block_start: return QByteArrayLiteral("inline_do_block_start_token");
+            case lex_inline_do_block_vars_start: return QByteArrayLiteral("inline_do_block_vars_start_token");
+            case lex_inline_do_block_var_access_type: return QByteArrayLiteral("inline_do_block_var_access_type_token");
+            case lex_inline_do_block_var_name: return QByteArrayLiteral("inline_do_block_var_name_token");
+            case lex_inline_do_block_vars_splitter: return QByteArrayLiteral("inline_do_block_vars_splitter_token");
+            case lex_inline_do_block_vars_end: return QByteArrayLiteral("inline_do_block_vars_end_token");
+            case lex_inline_do_block_end: return QByteArrayLiteral("inline_do_block_end_token");
 
 
-            case lex_return,
+            case lex_begin: return QByteArrayLiteral("begin_token");
+            case lex_end: return QByteArrayLiteral("end_token");
+
+            case lex_block_start: return QByteArrayLiteral("block_start_token");
+            case lex_block_rescue: return QByteArrayLiteral("block_rescue_token");
+            case lex_block_ensure: return QByteArrayLiteral("block_ensure_token");
+            case lex_block_retry: return QByteArrayLiteral("block_retry_token");
+            case lex_block_end: return QByteArrayLiteral("block_end_token");
 
 
-            case lex_global_pre_hook,
-            case lex_global_post_hook,
-            case lex_end_of_code,
+            case lex_return: return QByteArrayLiteral("return_token");
 
 
-            case lex_undefined,
-            case lex_end_line,
-            case lex_end_doc,
-            case lex_tab,
-            case lex_blank,
-            case lex_blanks,
-            case lex_ignore,
+            case lex_global_pre_hook: return QByteArrayLiteral("global_pre_hook_token");
+            case lex_global_post_hook: return QByteArrayLiteral("global_post_hook_token");
+            case lex_end_of_code: return QByteArrayLiteral("end_of_code_token");
+
+
+            case lex_undefined: return QByteArrayLiteral("undefined_token");
+            case lex_end_line: return QByteArrayLiteral("end_of_code_token");
+            case lex_end_doc: return QByteArrayLiteral("end_doc_token");
+            case lex_tab: return QByteArrayLiteral("tab_token");
+            case lex_blank: return QByteArrayLiteral("blank_token");
+            case lex_blanks: return QByteArrayLiteral("blanks_token");
+            case lex_ignore: return QByteArrayLiteral("ignore_token");
 
             default: return QByteArrayLiteral("Unknown: ") + QByteArray::number(lexem);
         }
