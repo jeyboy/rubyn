@@ -63,9 +63,9 @@ public:
         const char * window = text_val.constData();
         state -> setBuffer(window);
 
-        quint64 date = QDateTime::currentMSecsSinceEpoch();
+//        quint64 date = QDateTime::currentMSecsSinceEpoch();
         handle(state);
-        qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
+//        qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
 
         block.setUserState(state -> status);
         udata -> syncLine(state -> token, state -> stack);

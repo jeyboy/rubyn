@@ -1,6 +1,8 @@
 #ifndef LEXER_STATE_H
 #define LEXER_STATE_H
 
+#include <qdebug.h>
+
 #include "lexems.h"
 #include "scopes/scope.h"
 #include "parts/editor_parts/highlighter.h"
@@ -166,11 +168,13 @@ struct LexerState {
         cachingPredicate();
         lightWithMessage(lexem, msg);
     }
-    inline void lightWithMessage(const Lexem & lexem, const QByteArray & /*msg*/) {
+    inline void lightWithMessage(const Lexem & lexem, const QByteArray & msg) {
         light(lexem);
 
-        if (lexem == lex_error)
+        if (lexem == lex_error) {
             status = ls_error;
+            qWarning() << msg;
+        }
 
         //TODO: attach message
     }

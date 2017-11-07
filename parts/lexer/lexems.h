@@ -435,7 +435,7 @@ enum Lexem : quint32 {
 };
 
 struct Lexems {
-    QByteArray toStr(const Lexem & lexem) {
+    static QByteArray toStr(const Lexem & lexem) {
         switch(lexem) {
             case lex_error: return QByteArrayLiteral("error_token");
             case lex_warning: return QByteArrayLiteral("warning_token");

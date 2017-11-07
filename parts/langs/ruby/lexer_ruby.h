@@ -5,6 +5,8 @@
 #include "predefined_ruby.h"
 #include "grammar_ruby.h"
 
+#define ERROR_STATE(msg, lex1, lex2) msg + QByteArrayLiteral(" (") + Lexems::toStr(lex1) + QByteArrayLiteral(" VS ") + Lexems::toStr(lex2) + QByteArrayLiteral(")")
+
 class LexerRuby : public Lexer {
     void identifyWordType(LexerState * state) {
         switch(SCHAR0) {
@@ -33,39 +35,6 @@ class LexerRuby : public Lexer {
         else state -> lex_word = state -> scope -> varType(state -> cached);
     }
 
-//    void stateConversion(LexerState * state) {
-////        Lexem lex_new_word = GrammarRuby::obj().translate(
-////            state -> lex_delimiter,
-////            state -> lex_word
-////        );
-
-////        if (lex_new_word == lex_error) {
-////            state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
-//////                return false;
-////        }
-
-////        lex_new_word = GrammarRuby::obj().translate(
-////            state -> sublastToken(),
-////            lex_new_word
-////        );
-
-////        if (lex_new_word == lex_error) {
-////            state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
-//////                return false;
-////        }
-
-
-//        if (state -> lex_word == lex_new_state) {
-//            if (lex_new_state == lex_word) {
-//                state -> scope -> addVar(
-//                    state -> cached,
-//                    new FilePoint(lex_var_local, 0, 0, state -> cached_str_pos)
-//                );
-//            }
-//        }
-//        else state -> lex_word = lex_new_state;
-//    }
-
     bool cutWord(LexerState * state, const Lexem & predefined_lexem = lex_none) {
         state -> cachingPredicate();
 
@@ -83,7 +52,10 @@ class LexerRuby : public Lexer {
                 GrammarRuby::obj().translate(state -> lex_prev_word, state -> lex_delimiter);
 
             if (state -> lex_prev_word == lex_error) {
-                state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong delimiter state!!!"));
+                state -> lightWithMessage(
+                    lex_error,
+                    ERROR_STATE(QByteArrayLiteral("Wrong prev delimiter satisfy state!!!"), state -> lex_prev_word, state -> lex_delimiter)
+                );
 //                return false;
             }
 
@@ -91,7 +63,10 @@ class LexerRuby : public Lexer {
                 GrammarRuby::obj().translate(state -> lex_prev_word, state -> lex_word);
 
             if (state -> lex_word == lex_error) {
-                state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong delimiter state!!!"));
+                state -> lightWithMessage(
+                    lex_error,
+                    ERROR_STATE(QByteArrayLiteral("Wrong token state!!!"), state -> lex_prev_word, state -> lex_word)
+                );
 //                return false;
             }
 
