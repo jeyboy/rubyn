@@ -106,11 +106,8 @@ void CodeEditor::resizeEvent(QResizeEvent * e) {
 
 void CodeEditor::keyPressEvent(QKeyEvent * e) {
     switch (e -> key()) {
-        case Qt::Key_Tab: {
-            textCursor().insertText(document() -> property("tab_space").toString());
-            e -> accept();
-        break;}
-//        case Qt::Key_Backtab
+        case Qt::Key_Tab: { procSelectionIndent(); break;}
+        case Qt::Key_Backtab: { procSelectionIndent(false); break; }
         default: QPlainTextEdit::keyPressEvent(e);
     }
 }
@@ -298,4 +295,61 @@ void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const b
     int row_height = fontMetrics().height();
 
     p.drawPixmap(x, y + (row_height - FOLDING_WIDTH) / 2, FOLDING_WIDTH, FOLDING_WIDTH, QPixmap(name).scaled(FOLDING_WIDTH, FOLDING_WIDTH, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+void CodeEditor::procSelectionIndent(const bool & right) {
+    QTextCursor curs = textCursor();
+    const QString tab_space = document() -> property("tab_space").toString();
+
+    if(!curs.hasSelection()) {
+        curs.insertText(tab_space);
+        return;
+    }
+
+    // Get the first and count of lines to indent.
+
+    int spos = curs.anchor();
+    int epos = curs.position();
+
+    if (spos > epos)
+        std::swap(spos, epos);
+
+    curs.setPosition(epos, QTextCursor::MoveAnchor);
+    int eblock = curs.block().blockNumber();
+
+    curs.setPosition(spos, QTextCursor::MoveAnchor);
+    int sblock = curs.block().blockNumber();
+
+    const int block_diff = eblock - sblock;
+
+    curs.beginEditBlock();
+
+    for(int i = 0; i <= block_diff; ++i) {
+        curs.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+
+        if (!right) {
+            curs.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, tab_space.length());
+            qDebug() << curs.selectedText() << curs.block().text();
+
+            if (curs.selectedText() == tab_space)
+                curs.removeSelectedText();
+        }
+        else curs.insertText(tab_space);
+
+        curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor);
+    }
+
+    curs.endEditBlock();
+
+    // Set our cursor's selection to span all of the involved lines.
+
+    curs.setPosition(spos, QTextCursor::MoveAnchor);
+    curs.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+
+    while(curs.block().blockNumber() < eblock)
+        curs.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+
+    curs.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+
+    setTextCursor(curs);
 }

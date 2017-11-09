@@ -38,7 +38,9 @@ public:
 
     void openDocument(File * file);
 protected:
-    inline QColor currentLineColor(const int & transparency = 16) { return QColor::fromRgb(128, 128, 128, transparency); } // //        QColor lineColor = QColor(Qt::yellow).lighter(160);
+    void procSelectionIndent(const bool & right = true);
+
+    inline QColor currentLineColor(const int & transparency = 16) { return QColor::fromRgb(128, 128, 128, transparency); } // QColor lineColor = QColor(Qt::yellow).lighter(160);
 
     bool event(QEvent * event);
     void resizeEvent(QResizeEvent * event) Q_DECL_OVERRIDE;
