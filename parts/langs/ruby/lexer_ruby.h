@@ -35,6 +35,32 @@ class LexerRuby : public Lexer {
         else state -> lex_word = state -> scope -> varType(state -> cached);
     }
 
+    void translateState(LexerState * state) {
+        Lexem new_state = GrammarRuby::obj().translate(state -> lex_prev_word, state -> lex_delimiter);
+
+        if (new_state == lex_error) {
+            state -> lightWithMessage(
+                lex_error,
+                ERROR_STATE(QByteArrayLiteral("Wrong prev delimiter satisfy state!!!"), state -> lex_prev_word, state -> lex_delimiter)
+            );
+    //                return false;
+        }
+
+        state -> lex_prev_word = new_state;
+
+        new_state = GrammarRuby::obj().translate(state -> lex_prev_word, state -> lex_word);
+
+        if (new_state == lex_error) {
+            state -> lightWithMessage(
+                lex_error,
+                ERROR_STATE(QByteArrayLiteral("Wrong token state!!!"), state -> lex_prev_word, state -> lex_word)
+            );
+    //                return false;
+        }
+
+        state -> lex_word = new_state;
+    }
+
     bool cutWord(LexerState * state, const Lexem & predefined_lexem = lex_none) {
         state -> cachingPredicate();
 
@@ -47,28 +73,8 @@ class LexerRuby : public Lexer {
             if (state -> lex_word == lex_word)
                 identifyWordType(state);
 
-            // translate state
-            state -> lex_prev_word =
-                GrammarRuby::obj().translate(state -> lex_prev_word, state -> lex_delimiter);
-
-            if (state -> lex_prev_word == lex_error) {
-                state -> lightWithMessage(
-                    lex_error,
-                    ERROR_STATE(QByteArrayLiteral("Wrong prev delimiter satisfy state!!!"), state -> lex_prev_word, state -> lex_delimiter)
-                );
-//                return false;
-            }
-
-            state -> lex_word =
-                GrammarRuby::obj().translate(state -> lex_prev_word, state -> lex_word);
-
-            if (state -> lex_word == lex_error) {
-                state -> lightWithMessage(
-                    lex_error,
-                    ERROR_STATE(QByteArrayLiteral("Wrong token state!!!"), state -> lex_prev_word, state -> lex_word)
-                );
-//                return false;
-            }
+//            // translate state
+//            translateState(state);
 
             if (state -> cached_length) {
                 if (state -> lex_word == lex_word)
@@ -146,6 +152,7 @@ class LexerRuby : public Lexer {
                         default: {
                             if (ECHAR0 == blocker && ECHAR_PREV1 != '\\') {
                                 ++state -> buffer;
+                                state -> next_offset = 0;
                                 state -> stack -> drop();
                                 return cutWord(state, lex_percent_presentation_end);
                             }
@@ -175,6 +182,7 @@ class LexerRuby : public Lexer {
                         default: {
                             if (ECHAR0 == blocker && ECHAR_PREV1 != '\\') {
                                 ++state -> buffer;
+                                state -> next_offset = 0;
                                 state -> stack -> drop();
                                 return cutWord(state, lex_epercent_presentation_end);
                             }

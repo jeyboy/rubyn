@@ -34,8 +34,8 @@ class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
 
         // PERCENTAGE PRESENTATION
 
-        rules[lex_percent_presentation_start][lex_percent_presentation_end] = lex_none;
-        rules[lex_epercent_presentation_start][lex_epercent_presentation_end] = lex_none;
+        rules[lex_percent_presentation_start][lex_percent_presentation_end] = lex_string;
+        rules[lex_epercent_presentation_start][lex_epercent_presentation_end] = lex_string;
 
         // CLASS DEFINITION
 
@@ -288,6 +288,7 @@ public:
             case lex_commentary_end:
                 return lex_commentary;
 
+            case lex_string:
             case lex_command_continue:
             case lex_command_end:
             case lex_string_continue:
