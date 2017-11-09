@@ -19,6 +19,7 @@ class File;
 class QTextDocument;
 
 class TextDocument : public IDocument {
+    static QLatin1String tab_space;
 protected:
     QPointer<QTextDocument> _doc;
     TokenList * _tokens;

@@ -107,7 +107,7 @@ void CodeEditor::resizeEvent(QResizeEvent * e) {
 void CodeEditor::keyPressEvent(QKeyEvent * e) {
     switch (e -> key()) {
         case Qt::Key_Tab: {
-            textCursor().insertText(QLatin1Literal("  "));
+            textCursor().insertText(document() -> property("tab_space").toString());
             e -> accept();
         break;}
 //        case Qt::Key_Backtab
