@@ -300,13 +300,29 @@ void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const b
 void CodeEditor::procSelectionIndent(const bool & right) {
     QTextCursor curs = textCursor();
     const QString tab_space = document() -> property("tab_space").toString();
+    const int tab_space_length = tab_space.length();
 
     if(!curs.hasSelection()) {
-        curs.insertText(tab_space);
+        if (right)
+            curs.insertText(tab_space);
+        else {
+            curs.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+            curs.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, tab_space_length);
+
+            if (curs.selectedText() == tab_space)
+                curs.removeSelectedText();
+            else {
+                curs.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+                for(int i = 0; i < tab_space_length - 1; i++) {
+                    curs.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 1);
+                    if (curs.selectedText()[0] == tab_space[0])
+                        curs.removeSelectedText();
+                    else break;
+                }
+            }
+        }
         return;
     }
-
-    // Get the first and count of lines to indent.
 
     int spos = curs.anchor();
     int epos = curs.position();
@@ -328,11 +344,19 @@ void CodeEditor::procSelectionIndent(const bool & right) {
         curs.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
 
         if (!right) {
-            curs.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, tab_space.length());
-            qDebug() << curs.selectedText() << curs.block().text();
+            curs.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, tab_space_length);
 
             if (curs.selectedText() == tab_space)
                 curs.removeSelectedText();
+            else {
+                curs.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+                for(int i = 0; i < tab_space_length - 1; i++) {
+                    curs.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 1);
+                    if (curs.selectedText()[0] == tab_space[0])
+                        curs.removeSelectedText();
+                    else break;
+                }
+            }
         }
         else curs.insertText(tab_space);
 
@@ -340,16 +364,4 @@ void CodeEditor::procSelectionIndent(const bool & right) {
     }
 
     curs.endEditBlock();
-
-    // Set our cursor's selection to span all of the involved lines.
-
-    curs.setPosition(spos, QTextCursor::MoveAnchor);
-    curs.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
-
-    while(curs.block().blockNumber() < eblock)
-        curs.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
-
-    curs.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-
-    setTextCursor(curs);
 }
