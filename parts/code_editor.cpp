@@ -15,6 +15,8 @@
 
 #include "parts/document_types/text_document.h"
 
+QString CodeEditor::word_boundary("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
+
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), folding_y(NO_FOLDING), folding_click(false) {
     extra_area = new ExtraArea(this);  
 
@@ -54,8 +56,7 @@ void CodeEditor::setCompleter(QCompleter * new_completer) {
     completer -> setWidget(this);
     completer -> setCompletionMode(QCompleter::PopupCompletion);
     completer -> setCaseSensitivity(Qt::CaseInsensitive);
-
-//    connect(completer, &QCompleter::activated, this, &CodeEditor::applyCompletion);
+    completer -> setFilterMode(Qt::MatchContains); // Qt::MatchStartsWith // Qt::MatchEndsWith
 
     connect(completer, SIGNAL(activated(QString)), this, SLOT(applyCompletion(QString)));
 }
@@ -164,16 +165,17 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
 //               if (!c || (ctrlOrShift && e->text().isEmpty()))
 //                   return;
 
-            static QString eow("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-="); // end of word
-            QString completion_prefix = wordUnderCursor();
-            QString text(wordBeforeCursor());//e -> text());
+            QString completion_prefix = wordUnderCursor(true);
+            QString text(wordUnderCursor());//e -> text());
+
+            qDebug() << "###" << completion_prefix << text;
 
             if (
                 !is_shortcut &&
                     (
                         has_modifiers || text.isEmpty() ||
                         //completion_prefix.length() < 3 ||
-                        eow.contains(text.right(1))
+                        word_boundary.contains(text.right(1))
                     )
                 )
             {
@@ -184,7 +186,8 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             if (completion_prefix != completer -> completionPrefix()) {
                 completer -> setCompletionPrefix(completion_prefix);
                 completer -> popup() -> setCurrentIndex(
-                completer -> completionModel() -> index(0, 0));
+                    completer -> completionModel() -> index(0, 0)
+                );
             }
 
             QRect cr = cursorRect();
@@ -391,18 +394,35 @@ void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const b
     p.drawPixmap(x, y + (row_height - FOLDING_WIDTH) / 2, FOLDING_WIDTH, FOLDING_WIDTH, QPixmap(name).scaled(FOLDING_WIDTH, FOLDING_WIDTH, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
-QString CodeEditor::wordUnderCursor() const {
+QString CodeEditor::wordUnderCursor(const bool & only_before_caret) const {
     QTextCursor tc = textCursor();
-    tc.select(QTextCursor::WordUnderCursor);
-    return tc.selectedText();
-}
+    QTextBlock block = tc.block();
+    const int pos = tc.positionInBlock();
+    const int start_pos = block.position();
+    const int end_pos = block.length();
+    const QString block_text = block.text();
 
-QString CodeEditor::wordBeforeCursor() const {
-    QTextCursor tc = textCursor();
-    int pos = tc.position();
-    tc.select(QTextCursor::WordUnderCursor);
-    int start = tc.selectionStart();
-    return tc.selectedText().left(pos - start);
+    int offset = 0;
+    for(int iter = pos - 1; iter >= 0; --iter, ++offset) {
+        if (word_boundary.contains(block_text[iter]))
+            break;
+    }
+
+    if (only_before_caret)
+        tc.setPosition(start_pos + pos - offset, QTextCursor::KeepAnchor);
+    else {
+        tc.setPosition(start_pos + pos - offset, QTextCursor::MoveAnchor);
+
+        offset = 0;
+        for(int iter = pos; iter < end_pos; ++iter, ++offset) {
+            if (word_boundary.contains(block_text[iter]))
+                break;
+        }
+
+        tc.setPosition(start_pos + pos + offset, QTextCursor::KeepAnchor);
+    }
+
+    return tc.selectedText();
 }
 
 void CodeEditor::applyCompletion(const QString & completion) {
@@ -410,10 +430,10 @@ void CodeEditor::applyCompletion(const QString & completion) {
 
     QTextCursor tc = textCursor();
     int extra = completion.length() - completer -> completionPrefix().length();
-    tc.movePosition(QTextCursor::Left);
+//    tc.movePosition(QTextCursor::Left);
     tc.movePosition(QTextCursor::EndOfWord);
     tc.insertText(completion.right(extra));
-//    setTextCursor(tc);
+    setTextCursor(tc);
 }
 
 void CodeEditor::procSelectionIndent(const bool & right) {

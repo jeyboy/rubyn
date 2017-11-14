@@ -23,6 +23,9 @@ class File;
 
 class CodeEditor : public QPlainTextEdit {
     Q_OBJECT
+
+    static QString word_boundary;
+
     QWidget * extra_area;
     QCompleter * completer;
 
@@ -42,8 +45,7 @@ public:
 
     void openDocument(File * file);
 protected:
-    QString wordBeforeCursor() const;
-    QString wordUnderCursor() const;
+    QString wordUnderCursor(const bool & only_before_caret = false) const;
     void procSelectionIndent(const bool & right = true);
 
     inline QColor currentLineColor(const int & transparency = 16) { return QColor::fromRgb(128, 128, 128, transparency); } // QColor lineColor = QColor(Qt::yellow).lighter(160);
