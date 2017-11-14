@@ -166,7 +166,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
 
             static QString eow("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-="); // end of word
             QString completion_prefix = wordUnderCursor();
-            QString text(e -> text());
+            QString text(wordBeforeCursor());//e -> text());
 
             if (
                 !is_shortcut &&
@@ -188,7 +188,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             }
 
             QRect cr = cursorRect();
-            cr.setLeft(extra_area -> width());
+            cr.setLeft(cr.left() + extra_area -> width());
             cr.setWidth(
                 completer -> popup() -> sizeHintForColumn(0) +
                     completer -> popup() -> verticalScrollBar() -> sizeHint().width()
@@ -395,6 +395,14 @@ QString CodeEditor::wordUnderCursor() const {
     QTextCursor tc = textCursor();
     tc.select(QTextCursor::WordUnderCursor);
     return tc.selectedText();
+}
+
+QString CodeEditor::wordBeforeCursor() const {
+    QTextCursor tc = textCursor();
+    int pos = tc.position();
+    tc.select(QTextCursor::WordUnderCursor);
+    int start = tc.selectionStart();
+    return tc.selectedText().left(pos - start);
 }
 
 void CodeEditor::applyCompletion(const QString & completion) {

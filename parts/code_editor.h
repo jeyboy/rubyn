@@ -42,6 +42,7 @@ public:
 
     void openDocument(File * file);
 protected:
+    QString wordBeforeCursor() const;
     QString wordUnderCursor() const;
     void procSelectionIndent(const bool & right = true);
 
