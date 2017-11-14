@@ -8,6 +8,7 @@
 #include <qmessagebox.h>
 #include <qfiledialog.h>
 #include <qsplitter>
+#include <qcompleter.h>
 
 IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), editors_spliter(0) {
     ui -> setupUi(this);
@@ -52,6 +53,12 @@ void IDEWindow::textDocumentAdded(QObject * project, const QUrl & file_uri) {
     switch(_file -> formatType()) {
         case ft_text: {
             active_editor -> openDocument(_file);
+
+            QStringList wordList;
+            wordList << "alpha" << "omega" << "omicron" << "zeta";
+            QCompleter * completer = new QCompleter(wordList, this);
+            active_editor -> setCompleter(completer);
+
             active_editor -> show();
         break;}
         case ft_image: //{ emit parent() -> imageAdded(url); break;}

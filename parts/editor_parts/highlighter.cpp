@@ -10,6 +10,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     if (doc) {
         disconnect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         disconnect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
+        disconnect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::docBlockCountChanged);
 
         QTextCursor cursor(doc);
 
@@ -27,6 +28,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
 
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
+        connect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::docBlockCountChanged);
 //            d->rehighlightPending = true;
 //        QTimer::singleShot(0, this, SLOT(rehighlight()));
         rehighlight();
@@ -298,4 +300,10 @@ void Highlighter::applyFormatChanges(int from, int charsRemoved, int charsAdded)
 
 void Highlighter::cursorPositionChanged(const QTextCursor & /*cursor*/) {
 
+}
+
+void Highlighter::docBlockCountChanged(int new_blocks_count) {
+    qDebug() << "";
+
+    int i = 0;
 }

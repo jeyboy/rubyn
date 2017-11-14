@@ -11,6 +11,7 @@ class QResizeEvent;
 class QSize;
 class QWidget;
 class QPen;
+class QCompleter;
 
 class TextDocument;
 class ExtraArea;
@@ -23,12 +24,15 @@ class File;
 class CodeEditor : public QPlainTextEdit {
     Q_OBJECT
     QWidget * extra_area;
+    QCompleter * completer;
 
     int folding_y;
     bool folding_click;
 public:
     CodeEditor(QWidget * parent = 0);
-    ~CodeEditor() {}
+    inline ~CodeEditor() {}
+
+    void setCompleter(QCompleter * new_completer);
 
     void extraAreaMouseEvent(QMouseEvent * event);
     void extraAreaLeaveEvent(QEvent * event);
@@ -38,6 +42,7 @@ public:
 
     void openDocument(File * file);
 protected:
+    QString wordUnderCursor() const;
     void procSelectionIndent(const bool & right = true);
 
     inline QColor currentLineColor(const int & transparency = 16) { return QColor::fromRgb(128, 128, 128, transparency); } // QColor lineColor = QColor(Qt::yellow).lighter(160);
@@ -46,6 +51,7 @@ protected:
     void resizeEvent(QResizeEvent * event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
+    void focusInEvent(QFocusEvent * e);
 
     void drawFolding(QPainter & p, const int & x, const int & y, const bool & open, const bool & hover);
 
@@ -70,6 +76,8 @@ signals:
     void fileDropped(const QUrl & uri, bool multiple); // Multiple files are dropped?
 
 private slots:
+    void applyCompletion(const QString & completion);
+
     void highlightCurrentLine();
 
     void updateExtraAreaWidth(int newBlockCount);

@@ -7,18 +7,24 @@
 #include <qfile.h>
 #include <qscrollbar.h>
 #include <qtooltip.h>
+#include <qcompleter.h>
+#include <qabstractitemview.h> // completer dependency
 
 #include "editor_parts/file.h"
 #include "editor_parts/extra_area.h"
 
 #include "parts/document_types/text_document.h"
 
-CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), folding_y(NO_FOLDING), folding_click(false) {
-    extra_area = new ExtraArea(this);
+CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), folding_y(NO_FOLDING), folding_click(false) {
+    extra_area = new ExtraArea(this);  
 
-    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateExtraAreaWidth(int)));
-    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateExtraArea(QRect,int)));
-    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+    connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateExtraAreaWidth);
+    connect(this, &CodeEditor::updateRequest, this, &CodeEditor::updateExtraArea);
+    connect(this, &CodeEditor::cursorPositionChanged, this, &CodeEditor::highlightCurrentLine);
+
+//    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateExtraAreaWidth(int)));
+//    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateExtraArea(QRect,int)));
+//    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 
     updateExtraAreaWidth(0);
     highlightCurrentLine();
@@ -34,6 +40,24 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), folding_y(NO_
     //    ui->textEdit->setTextCursor( cursor );
 
     setMouseTracking(true);
+}
+
+void CodeEditor::setCompleter(QCompleter * new_completer) {
+    if (completer)
+        QObject::disconnect(completer, 0, this, 0);
+
+    completer = new_completer;
+
+    if (!completer)
+        return;
+
+    completer -> setWidget(this);
+    completer -> setCompletionMode(QCompleter::PopupCompletion);
+    completer -> setCaseSensitivity(Qt::CaseInsensitive);
+
+//    connect(completer, &QCompleter::activated, this, &CodeEditor::applyCompletion);
+
+    connect(completer, SIGNAL(activated(QString)), this, SLOT(applyCompletion(QString)));
 }
 
 void CodeEditor::openDocument(File * file) {
@@ -87,6 +111,8 @@ bool CodeEditor::event(QEvent * event) {
         QTextCursor cursor = cursorForPosition(helpEvent -> pos());
         cursor.select(QTextCursor::WordUnderCursor);
 
+        qDebug() << "popup";
+
         if (!cursor.selectedText().isEmpty())
             QToolTip::showText(helpEvent -> globalPos(), /*your text*/QString("%1 %2").arg(cursor.selectedText()).arg(cursor.selectedText().length()));
         else
@@ -105,10 +131,71 @@ void CodeEditor::resizeEvent(QResizeEvent * e) {
 }
 
 void CodeEditor::keyPressEvent(QKeyEvent * e) {
+    if (completer && completer -> popup() -> isVisible()) {
+        switch (e -> key()) {
+            case Qt::Key_Enter:
+            case Qt::Key_Return:
+            case Qt::Key_Escape:
+            case Qt::Key_Tab:
+            case Qt::Key_Backtab:
+                e -> ignore();
+                return; // let the completer do default behavior
+            default: break;
+        }
+    }
+
     switch (e -> key()) {
         case Qt::Key_Tab: { procSelectionIndent(); break;}
         case Qt::Key_Backtab: { procSelectionIndent(false); break; }
-        default: QPlainTextEdit::keyPressEvent(e);
+        default: {
+            if (!completer) {
+                QPlainTextEdit::keyPressEvent(e);
+                return;
+            }
+
+            bool has_modifiers = e -> modifiers() != Qt::NoModifier;
+            bool is_shortcut = has_modifiers && (e -> modifiers() & Qt::ControlModifier) && e -> key() == Qt::Key_Space;
+
+            if (!is_shortcut)
+                QPlainTextEdit::keyPressEvent(e);
+
+
+//            const bool ctrlOrShift = e->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
+//               if (!c || (ctrlOrShift && e->text().isEmpty()))
+//                   return;
+
+            static QString eow("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-="); // end of word
+            QString completion_prefix = wordUnderCursor();
+            QString text(e -> text());
+
+            if (
+                !is_shortcut &&
+                    (
+                        has_modifiers || text.isEmpty() ||
+                        //completion_prefix.length() < 3 ||
+                        eow.contains(text.right(1))
+                    )
+                )
+            {
+                completer -> popup() -> hide();
+                return;
+            }
+
+            if (completion_prefix != completer -> completionPrefix()) {
+                completer -> setCompletionPrefix(completion_prefix);
+                completer -> popup() -> setCurrentIndex(
+                completer -> completionModel() -> index(0, 0));
+            }
+
+            QRect cr = cursorRect();
+            cr.setLeft(extra_area -> width());
+            cr.setWidth(
+                completer -> popup() -> sizeHintForColumn(0) +
+                    completer -> popup() -> verticalScrollBar() -> sizeHint().width()
+            );
+
+            completer -> complete(cr); // popup it up!
+        }
     }
 }
 
@@ -126,6 +213,13 @@ void CodeEditor::wheelEvent(QWheelEvent * e) {
     }
 
     QPlainTextEdit::wheelEvent(e);
+}
+
+void CodeEditor::focusInEvent(QFocusEvent * e) {
+    if (completer)
+        completer -> setWidget(this);
+
+    QPlainTextEdit::focusInEvent(e);
 }
 
 void CodeEditor::highlightCurrentLine() {
@@ -295,6 +389,23 @@ void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const b
     int row_height = fontMetrics().height();
 
     p.drawPixmap(x, y + (row_height - FOLDING_WIDTH) / 2, FOLDING_WIDTH, FOLDING_WIDTH, QPixmap(name).scaled(FOLDING_WIDTH, FOLDING_WIDTH, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+QString CodeEditor::wordUnderCursor() const {
+    QTextCursor tc = textCursor();
+    tc.select(QTextCursor::WordUnderCursor);
+    return tc.selectedText();
+}
+
+void CodeEditor::applyCompletion(const QString & completion) {
+    if (completer -> widget() != this) return;
+
+    QTextCursor tc = textCursor();
+    int extra = completion.length() - completer -> completionPrefix().length();
+    tc.movePosition(QTextCursor::Left);
+    tc.movePosition(QTextCursor::EndOfWord);
+    tc.insertText(completion.right(extra));
+//    setTextCursor(tc);
 }
 
 void CodeEditor::procSelectionIndent(const bool & right) {
