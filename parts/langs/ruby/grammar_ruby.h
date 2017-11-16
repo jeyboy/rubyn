@@ -39,6 +39,10 @@ class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
         rules[lex_percent_presentation_start][lex_percent_presentation_end] = lex_expression;
         rules[lex_epercent_presentation_start][lex_epercent_presentation_end] = lex_expression;
 
+        rules[lex_epercent_presentation_start][lex_epercent_presentation_interception] = lex_epercent_presentation_intercepted;
+
+        rules[lex_epercent_presentation_intercepted][lex_interpolation] = lex_inline_block_start;
+
         // CLASS DEFINITION
 
         rules[lex_class_def][lex_word] = lex_class_def_name;
@@ -108,6 +112,24 @@ public:
 //            case:;
 //        }
 //    }
+
+    Lexem toInterceptor(const Lexem & lex) {
+        switch(lex) {
+            case lex_estring_continue: return lex_estring_interception;
+            case lex_regexp_continue: return lex_regexp_interception;
+
+            case lex_epercent_presentation_start:
+            case lex_epercent_presentation_continue: return lex_epercent_presentation_interception;
+
+            case lex_eheredoc_intended_continue: return lex_eheredoc_intended_interception;
+            case lex_cheredoc_intended_continue: return lex_cheredoc_intended_interception;
+            case lex_eheredoc_continue: return lex_eheredoc_interception;
+            case lex_cheredoc_continue: return lex_cheredoc_interception;
+            case lex_command_continue: return lex_command_interception;
+
+            default: return lex_none;
+        };
+    }
 
     char percentagePresentationBlocker(const char & ch) {
         switch(ch) {
@@ -289,22 +311,27 @@ public:
             case lex_commentary_end:
                 return lex_commentary;
 
-            case lex_string:
+//            case lex_string:
             case lex_command_continue:
+            case lex_command_intercepted:
             case lex_command_end:
             case lex_string_continue:
             case lex_string_end:
             case lex_estring_continue:
+            case lex_estring_intercepted:
             case lex_estring_end:
             case lex_heredoc_continue:
             case lex_heredoc_intended_continue:
             case lex_heredoc_end:
             case lex_eheredoc_continue:
+            case lex_eheredoc_intercepted:
             case lex_eheredoc_intended_continue:
             case lex_cheredoc_continue:
+            case lex_cheredoc_intercepted:
             case lex_cheredoc_intended_continue:
             case lex_require_path:
 
+            case lex_epercent_presentation_intercepted:
             case lex_epercent_presentation_end:
             case lex_percent_presentation_end:
             case lex_epercent_presentation_continue:
@@ -312,6 +339,7 @@ public:
                 return lex_string;
 
             case lex_regexp_continue:
+            case lex_regexp_intercepted:
             case lex_regexp_end:
                 return lex_regexp;
 

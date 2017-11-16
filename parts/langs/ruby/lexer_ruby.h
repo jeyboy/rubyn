@@ -195,7 +195,7 @@ class LexerRuby : public Lexer {
                             if (ECHAR1 == '{') {
                                 ++state -> next_offset;
                                 state -> stack -> replace(lex_epercent_presentation_continue, false);
-                                return cutWord(state, lex_epercent_presentation_end);
+                                return cutWord(state, GrammarRuby::obj().toInterceptor(state -> stack -> touch()));
                             }
                         break;}
 
@@ -264,9 +264,10 @@ class LexerRuby : public Lexer {
                         break;}
 
                         case '#': {
-                            if (ECHAR1 == '{')
+                            if (ECHAR1 == '{') {
                                 ++state -> next_offset;
-                                return cutWord(state, lex_heredoc_end);
+                                return cutWord(state, GrammarRuby::obj().toInterceptor(state -> stack -> touch()));
+                            }
                         }
 
                         default: ++state -> buffer;
@@ -331,7 +332,7 @@ class LexerRuby : public Lexer {
             }
         }
 
-        if (!cutWord(state, out_req ? lex_regexp_continue : lex_regexp_end))
+        if (!cutWord(state, out_req ? lex_regexp_continue : (def_required ? lex_regexp_interception : lex_regexp_end)))
             return false;
 
         if (def_required)
@@ -456,7 +457,7 @@ protected:
                         }
 
 
-                    if (!cutWord(state, out_req ? lex_command_continue : lex_command_end))
+                    if (!cutWord(state, out_req ? lex_command_continue : (def_required ? lex_command_interception : lex_command_end)))
                         goto exit;
 
                     if (def_required)
@@ -531,7 +532,7 @@ protected:
                         }
 
 
-                    if (!cutWord(state, out_req ? lex_estring_continue : lex_estring_end))
+                    if (!cutWord(state, out_req ? lex_estring_continue : (def_required ? lex_estring_interception : lex_estring_end)))
                         goto exit;
 
                     if (def_required)

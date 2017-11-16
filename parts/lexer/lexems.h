@@ -216,6 +216,8 @@ enum Lexem : quint32 {
     lex_commentary_end,
 
     lex_command_start,
+    lex_command_interception,
+    lex_command_intercepted,
     lex_command_continue,
     lex_command_end,
 
@@ -224,6 +226,8 @@ enum Lexem : quint32 {
     lex_string_end,
 
     lex_estring_start, // "
+    lex_estring_interception,
+    lex_estring_intercepted,
     lex_estring_continue,
     lex_estring_end,
 
@@ -232,6 +236,8 @@ enum Lexem : quint32 {
     lex_percent_presentation_end,
 
     lex_epercent_presentation_start, // %N/.../
+    lex_epercent_presentation_interception,
+    lex_epercent_presentation_intercepted,
     lex_epercent_presentation_continue,
     lex_epercent_presentation_end,
 
@@ -247,23 +253,33 @@ enum Lexem : quint32 {
 
     lex_eheredoc_mark,
     lex_eheredoc_start,
+    lex_eheredoc_interception,
+    lex_eheredoc_intercepted,
     lex_eheredoc_continue,
 
     lex_eheredoc_intended_mark,
     lex_eheredoc_intended_start,
+    lex_eheredoc_intended_interception,
+    lex_eheredoc_intended_intercepted,
     lex_eheredoc_intended_continue,
 
     lex_cheredoc_mark,
     lex_cheredoc_start,
+    lex_cheredoc_interception,
+    lex_cheredoc_intercepted,
     lex_cheredoc_continue,
 
     lex_cheredoc_intended_mark,
     lex_cheredoc_intended_start,
+    lex_cheredoc_intended_interception,
+    lex_cheredoc_intended_intercepted,
     lex_cheredoc_intended_continue,
     //////////////////////////////////////
 
 
     lex_regexp_start, // /\a+/
+    lex_regexp_interception,
+    lex_regexp_intercepted,
     lex_regexp_continue,
     lex_regexp_end,
 
@@ -394,6 +410,9 @@ enum Lexem : quint32 {
     lex_do_block_vars_splitter,
     lex_do_block_vars_end,
     lex_do_block_end,
+
+    lex_inline_block_start,
+    lex_inline_block_end,
 
     lex_inline_do_block_start,
     lex_inline_do_block_vars_start,
@@ -620,6 +639,8 @@ struct Lexems {
             case lex_commentary_end: return QByteArrayLiteral("commentary_end_token");
 
             case lex_command_start: return QByteArrayLiteral("command_start_token");
+            case lex_command_interception: return QByteArrayLiteral("command_interception_token");
+            case lex_command_intercepted: return QByteArrayLiteral("command_intercepted_token");
             case lex_command_continue: return QByteArrayLiteral("command_continue_token");
             case lex_command_end: return QByteArrayLiteral("command_end_token");
 
@@ -628,6 +649,8 @@ struct Lexems {
             case lex_string_end: return QByteArrayLiteral("string_end_token");
 
             case lex_estring_start: return QByteArrayLiteral("estring_start_token");
+            case lex_estring_interception: return QByteArrayLiteral("estring_interception_token");
+            case lex_estring_intercepted: return QByteArrayLiteral("estring_intercepted_token");
             case lex_estring_continue: return QByteArrayLiteral("estring_continue_token");
             case lex_estring_end: return QByteArrayLiteral("estring_end_token");
 
@@ -636,6 +659,8 @@ struct Lexems {
             case lex_percent_presentation_end: return QByteArrayLiteral("percentage_presentation_end_token");
 
             case lex_epercent_presentation_start: return QByteArrayLiteral("epercentage_presentation_start_token");
+            case lex_epercent_presentation_interception: return QByteArrayLiteral("epercentage_presentation_interception_token");
+            case lex_epercent_presentation_intercepted: return QByteArrayLiteral("epercentage_presentation_intercepted_token");
             case lex_epercent_presentation_continue: return QByteArrayLiteral("epercentage_presentation_continue_token");
             case lex_epercent_presentation_end: return QByteArrayLiteral("epercentage_presentation_end_token");
 
@@ -650,23 +675,33 @@ struct Lexems {
 
             case lex_eheredoc_mark: return QByteArrayLiteral("eheredoc_mark_token");
             case lex_eheredoc_start: return QByteArrayLiteral("eheredoc_start_token");
+            case lex_eheredoc_interception: return QByteArrayLiteral("eheredoc_interception_token");
+            case lex_eheredoc_intercepted: return QByteArrayLiteral("eheredoc_intercepted_token");
             case lex_eheredoc_continue: return QByteArrayLiteral("eheredoc_continue_token");
 
             case lex_eheredoc_intended_mark: return QByteArrayLiteral("eheredoc_intended_mark_token");
             case lex_eheredoc_intended_start: return QByteArrayLiteral("eheredoc_intended_start_token");
+            case lex_eheredoc_intended_interception: return QByteArrayLiteral("eheredoc_intended_interception_token");
+            case lex_eheredoc_intended_intercepted: return QByteArrayLiteral("eheredoc_intended_intercepted_token");
             case lex_eheredoc_intended_continue: return QByteArrayLiteral("eheredoc_intended_continue_token");
 
             case lex_cheredoc_mark: return QByteArrayLiteral("cheredoc_mark_token");
             case lex_cheredoc_start: return QByteArrayLiteral("cheredoc_start_token");
+            case lex_cheredoc_interception: return QByteArrayLiteral("cheredoc_interception_token");
+            case lex_cheredoc_intercepted: return QByteArrayLiteral("cheredoc_intercepted_token");
             case lex_cheredoc_continue: return QByteArrayLiteral("cheredoc_continue_token");
 
             case lex_cheredoc_intended_mark: return QByteArrayLiteral("cheredoc_intended_mark_token");
             case lex_cheredoc_intended_start: return QByteArrayLiteral("cheredoc_intended_start_token");
+            case lex_cheredoc_intended_interception: return QByteArrayLiteral("cheredoc_intended_interception_token");
+            case lex_cheredoc_intended_intercepted: return QByteArrayLiteral("cheredoc_intended_intercepted_token");
             case lex_cheredoc_intended_continue: return QByteArrayLiteral("cheredoc_intended_continue_token");
         //////////////////////////////////////
 
 
             case lex_regexp_start: return QByteArrayLiteral("regexp_start_token");
+            case lex_regexp_interception: return QByteArrayLiteral("regexp_interception_token");
+            case lex_regexp_intercepted: return QByteArrayLiteral("regexp_intercepted_token");
             case lex_regexp_continue: return QByteArrayLiteral("regexp_continue_token");
             case lex_regexp_end: return QByteArrayLiteral("regexp_end_token");
 
@@ -797,6 +832,9 @@ struct Lexems {
             case lex_do_block_vars_splitter: return QByteArrayLiteral("do_block_vars_splitter_token");
             case lex_do_block_vars_end: return QByteArrayLiteral("do_block_vars_end_token");
             case lex_do_block_end: return QByteArrayLiteral("do_block_end_token");
+
+            case lex_inline_block_start: return QByteArrayLiteral("inline_block_start_token");
+            case lex_inline_block_end: return QByteArrayLiteral("inline_block_end_token");
 
             case lex_inline_do_block_start: return QByteArrayLiteral("inline_do_block_start_token");
             case lex_inline_do_block_vars_start: return QByteArrayLiteral("inline_do_block_vars_start_token");
