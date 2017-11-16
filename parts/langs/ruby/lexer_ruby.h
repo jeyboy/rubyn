@@ -193,6 +193,7 @@ class LexerRuby : public Lexer {
 
                         case '#': {
                             if (ECHAR1 == '{') {
+                                ++state -> next_offset;
                                 state -> stack -> replace(lex_epercent_presentation_continue, false);
                                 return cutWord(state, lex_epercent_presentation_end);
                             }
@@ -264,6 +265,7 @@ class LexerRuby : public Lexer {
 
                         case '#': {
                             if (ECHAR1 == '{')
+                                ++state -> next_offset;
                                 return cutWord(state, lex_heredoc_end);
                         }
 
@@ -296,7 +298,10 @@ class LexerRuby : public Lexer {
             ++state -> buffer;
 
             switch(ECHAR0) {
-                case '#': { def_required = ended = ECHAR1 == '{';  break;}
+                case '#': {
+                    if (def_required = ended = ECHAR1 == '{')
+                        ++state -> next_offset;
+                break;}
                 case '/': { ended = ECHAR_PREV1 != '\\';  break;}
                 case 0: {
                     out_req = true;
@@ -430,7 +435,10 @@ protected:
                             ++state -> buffer;
 
                             switch(ECHAR0) {
-                                case '#': { def_required = ended = ECHAR1 == '{'; break; }
+                                case '#': {
+                                    if (def_required = ended = ECHAR1 == '{')
+                                        ++state -> next_offset;
+                                break; }
 
                                 case '`': {
                                     if (ECHAR_PREV1 != '\\') {
@@ -502,7 +510,10 @@ protected:
                             ++state -> buffer;
 
                             switch(ECHAR0) {
-                                case '#': { def_required = ended = ECHAR1 == '{'; break; }
+                                case '#': {
+                                    if (def_required = ended = ECHAR1 == '{')
+                                        ++state -> next_offset;
+                                break; }
 
                                 case '"': {
                                     if (ECHAR_PREV1 != '\\') {
