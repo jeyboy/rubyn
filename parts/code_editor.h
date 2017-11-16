@@ -24,6 +24,15 @@ class File;
 class CodeEditor : public QPlainTextEdit {
     Q_OBJECT
 
+    enum WordUnderCursorOps {
+        wuco_full = 0,
+        wuco_before_caret_part = 1,
+        wuco_remove = 2,
+
+        wuco_remove_full = wuco_full | wuco_remove,
+        wuco_remove_before_caret = wuco_before_caret_part | wuco_remove,
+    };
+
     static QString word_boundary;
 
     QWidget * extra_area;
@@ -45,7 +54,7 @@ public:
 
     void openDocument(File * file);
 protected:
-    QString wordUnderCursor(const bool & only_before_caret = false) const;
+    QString wordUnderCursor(const WordUnderCursorOps & flags = wuco_full) const;
     void procSelectionIndent(const bool & right = true);
 
     inline QColor currentLineColor(const int & transparency = 16) { return QColor::fromRgb(128, 128, 128, transparency); } // QColor lineColor = QColor(Qt::yellow).lighter(160);

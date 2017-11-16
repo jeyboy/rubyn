@@ -160,34 +160,41 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             if (!is_shortcut)
                 QPlainTextEdit::keyPressEvent(e);
 
+//            if (e -> modifiers() & (Qt::ControlModifier | Qt::ShiftModifier))
+//                return;
 
-//            const bool ctrlOrShift = e->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
-//               if (!c || (ctrlOrShift && e->text().isEmpty()))
-//                   return;
+            QTextCursor tc = textCursor();
 
-            QString completion_prefix = wordUnderCursor(true);
-            QString text(wordUnderCursor());//e -> text());
-
-            qDebug() << "###" << completion_prefix << text;
-
-            if (
-                !is_shortcut &&
-                    (
-                        has_modifiers || text.isEmpty() ||
-                        //completion_prefix.length() < 3 ||
-                        word_boundary.contains(text.right(1))
-                    )
-                )
-            {
-                completer -> popup() -> hide();
-                return;
-            }
-
-            if (completion_prefix != completer -> completionPrefix()) {
-                completer -> setCompletionPrefix(completion_prefix);
+            if (tc.hasSelection()) {
+                completer -> setCompletionPrefix(QString());
                 completer -> popup() -> setCurrentIndex(
                     completer -> completionModel() -> index(0, 0)
                 );
+            } else {
+                QString completion_prefix = wordUnderCursor(wuco_before_caret_part);
+                QString text(wordUnderCursor());
+
+                qDebug() << "###" << completion_prefix << text;
+
+                if (
+                    !is_shortcut &&
+                        (
+                            has_modifiers || text.isEmpty() ||
+                            //completion_prefix.length() < 3 ||
+                            word_boundary.contains(text.right(1))
+                        )
+                    )
+                {
+                    completer -> popup() -> hide();
+                    return;
+                }
+
+                if (completion_prefix != completer -> completionPrefix()) {
+                    completer -> setCompletionPrefix(completion_prefix);
+                    completer -> popup() -> setCurrentIndex(
+                        completer -> completionModel() -> index(0, 0)
+                    );
+                }
             }
 
             QRect cr = cursorRect();
@@ -197,7 +204,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                     completer -> popup() -> verticalScrollBar() -> sizeHint().width()
             );
 
-            completer -> complete(cr); // popup it up!
+            completer -> complete(cr);
         }
     }
 }
@@ -394,13 +401,16 @@ void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const b
     p.drawPixmap(x, y + (row_height - FOLDING_WIDTH) / 2, FOLDING_WIDTH, FOLDING_WIDTH, QPixmap(name).scaled(FOLDING_WIDTH, FOLDING_WIDTH, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
-QString CodeEditor::wordUnderCursor(const bool & only_before_caret) const {
+QString CodeEditor::wordUnderCursor(const WordUnderCursorOps & flags) const {
     QTextCursor tc = textCursor();
     QTextBlock block = tc.block();
     const int pos = tc.positionInBlock();
     const int start_pos = block.position();
-    const int end_pos = block.length();
+    const int end_pos = block.length() - 1;
     const QString block_text = block.text();
+
+    if (block_text.isEmpty())
+        return block_text;
 
     int offset = 0;
     for(int iter = pos - 1; iter >= 0; --iter, ++offset) {
@@ -408,7 +418,7 @@ QString CodeEditor::wordUnderCursor(const bool & only_before_caret) const {
             break;
     }
 
-    if (only_before_caret)
+    if (flags & wuco_before_caret_part)
         tc.setPosition(start_pos + pos - offset, QTextCursor::KeepAnchor);
     else {
         tc.setPosition(start_pos + pos - offset, QTextCursor::MoveAnchor);
@@ -422,18 +432,32 @@ QString CodeEditor::wordUnderCursor(const bool & only_before_caret) const {
         tc.setPosition(start_pos + pos + offset, QTextCursor::KeepAnchor);
     }
 
-    return tc.selectedText();
+    if (flags & wuco_remove) {
+        QString res(tc.selectedText());
+        tc.removeSelectedText();
+        return res;
+    }
+    else return tc.selectedText();
 }
 
 void CodeEditor::applyCompletion(const QString & completion) {
     if (completer -> widget() != this) return;
 
     QTextCursor tc = textCursor();
-    int extra = completion.length() - completer -> completionPrefix().length();
-//    tc.movePosition(QTextCursor::Left);
-    tc.movePosition(QTextCursor::EndOfWord);
-    tc.insertText(completion.right(extra));
-    setTextCursor(tc);
+
+    if (tc.hasSelection()) {
+        tc.removeSelectedText();
+//        wordUnderCursor(wuco_remove_full);
+//        tc.insertText(completion);
+    }/* else {
+        int extra = completion.length() - completer -> completionPrefix().length();
+    //    tc.movePosition(QTextCursor::Left);
+//        tc.movePosition(QTextCursor::EndOfWord);
+        tc.insertText(completion.right(extra));
+    }*/
+
+    wordUnderCursor(wuco_remove_full);
+    tc.insertText(completion);
 }
 
 void CodeEditor::procSelectionIndent(const bool & right) {
