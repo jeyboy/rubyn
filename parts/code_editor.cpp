@@ -163,6 +163,9 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
 //            if (e -> modifiers() & (Qt::ControlModifier | Qt::ShiftModifier))
 //                return;
 
+            if ((e -> key() == Qt::Key_Left || e -> key() == Qt::Key_Right || e -> key() == Qt::Key_Up || e -> key() == Qt::Key_Down) && completer -> popup() -> isHidden())
+                return;
+
             QTextCursor tc = textCursor();
 
             if (tc.hasSelection()) {
