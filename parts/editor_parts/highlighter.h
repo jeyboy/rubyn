@@ -37,11 +37,11 @@ public:
     QTextBlock currentBlock() const { return current_block; }
     QTextBlock nextBlock() const { return current_block.next(); }
 
-    QTextCharFormat format(int pos) const;
+    QTextCharFormat format(const int & pos) const;
 
-    void setFormat(int start, int count, const QTextCharFormat & format);
-    void setFormat(int start, int count, const QColor & color);
-    void setFormat(int start, int count, const QFont & font);
+    void setFormat(const int & start, const int & count, const QTextCharFormat & format);
+    void setFormat(const int & start, const int & count, const QColor & color);
+    void setFormat(const int & start, const int & count, const QFont & font);
 
     int previousBlockState() const;
 
@@ -50,6 +50,13 @@ public:
 
     void setCurrentBlockUserData(QTextBlockUserData * data);
     QTextBlockUserData * currentBlockUserData() const;
+
+    void setExtraFormatToCurrBlock(const int & start, const int & count, const QTextCharFormat & format) {
+        setExtraFormats(current_block, QVector<QTextLayout::FormatRange>() << QTextLayout::FormatRange{start, count, format});
+    }
+    void setExtraFormat(const int & start, const int & count, const QTextCharFormat & format) {
+        setExtraFormats(doc -> findBlock(start), QVector<QTextLayout::FormatRange>() << QTextLayout::FormatRange{start, count, format});
+    }
 
     void setExtraFormats(const QTextBlock & block, QVector<QTextLayout::FormatRange> & formats);
 

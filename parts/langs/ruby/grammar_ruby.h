@@ -103,14 +103,14 @@ class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
 
     friend class Singleton<GrammarRuby>;
 public:
-    bool isPushable(const Lexem & lexem) {
-        switch(lexem) {
-            case lex_inline_block_start:
-                return true;
+//    bool isPushable(const Lexem & lexem) {
+//        switch(lexem) {
+//            case lex_inline_block_start:
+//                return true;
 
-            default: return false;
-        }
-    }
+//            default: return false;
+//        }
+//    }
 
 //    bool isPopable(const Lexem & lexem) {
 //        switch(lexem) {

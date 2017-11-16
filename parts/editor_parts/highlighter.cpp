@@ -71,7 +71,7 @@ void Highlighter::rehighlightBlock(const QTextBlock & block) {
     rehighlight(cursor, QTextCursor::EndOfBlock);
 }
 
-void Highlighter::setFormat(int start, int count, const QTextCharFormat & format) {
+void Highlighter::setFormat(const int & start, const int & count, const QTextCharFormat & format) {
     if (start < 0 || start >= formatChanges.count())
         return;
 
@@ -80,19 +80,19 @@ void Highlighter::setFormat(int start, int count, const QTextCharFormat & format
         formatChanges[i] = format;
 }
 
-void Highlighter::setFormat(int start, int count, const QColor & color) {
+void Highlighter::setFormat(const int & start, const int & count, const QColor & color) {
     QTextCharFormat format;
     format.setForeground(color);
     setFormat(start, count, format);
 }
 
-void Highlighter::setFormat(int start, int count, const QFont & font) {
+void Highlighter::setFormat(const int & start, const int & count, const QFont & font) {
     QTextCharFormat format;
     format.setFont(font);
     setFormat(start, count, format);
 }
 
-QTextCharFormat Highlighter::format(int pos) const {
+QTextCharFormat Highlighter::format(const int & pos) const {
     if (pos < 0 || pos >= formatChanges.count())
         return QTextCharFormat();
 
@@ -147,28 +147,28 @@ void Highlighter::setExtraFormats(const QTextBlock & block, QVector<QTextLayout:
     Utils::sort(formats, byStartOfRange);
 
     const QVector<QTextLayout::FormatRange> all = block.layout() -> formats();
-    QVector<QTextLayout::FormatRange> previousSemanticFormats;
-    QVector<QTextLayout::FormatRange> formatsToApply;
-    previousSemanticFormats.reserve(all.size());
-    formatsToApply.reserve(all.size() + formats.size());
+    QVector<QTextLayout::FormatRange> previous_semantic_formats;
+    QVector<QTextLayout::FormatRange> formats_to_apply;
+    previous_semantic_formats.reserve(all.size());
+    formats_to_apply.reserve(all.size() + formats.size());
 
     for (int i = 0, ei = formats.size(); i < ei; ++i)
         formats[i].format.setProperty(QTextFormat::UserProperty, true);
 
     foreach (const QTextLayout::FormatRange &r, all) {
         if (r.format.hasProperty(QTextFormat::UserProperty))
-            previousSemanticFormats.append(r);
+            previous_semantic_formats.append(r);
         else
-            formatsToApply.append(r);
+            formats_to_apply.append(r);
     }
 
-    if (formats.size() == previousSemanticFormats.size()) {
-        Utils::sort(previousSemanticFormats, byStartOfRange);
+    if (formats.size() == previous_semantic_formats.size()) {
+        Utils::sort(previous_semantic_formats, byStartOfRange);
 
         int index = 0;
         for (; index != formats.size(); ++index) {
             const QTextLayout::FormatRange &range = formats.at(index);
-            const QTextLayout::FormatRange &previousRange = previousSemanticFormats.at(index);
+            const QTextLayout::FormatRange &previousRange = previous_semantic_formats.at(index);
 
             if (range.start != previousRange.start ||
                     range.length != previousRange.length ||
@@ -180,11 +180,11 @@ void Highlighter::setExtraFormats(const QTextBlock & block, QVector<QTextLayout:
             return;
     }
 
-    formatsToApply += formats;
+    formats_to_apply += formats;
 
 //    bool wasInReformatBlocks = d->inReformatBlocks;
 //    d->inReformatBlocks = true;
-    block.layout() -> setFormats(formatsToApply);
+    block.layout() -> setFormats(formats_to_apply);
     doc -> markContentsDirty(block.position(), blockLength - 1);
 //    inReformatBlocks = wasInReformatBlocks;
 }

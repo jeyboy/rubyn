@@ -156,13 +156,23 @@ struct LexerState {
 //    }
 
     inline void light(const Lexem & lexem) {
-//        qDebug() << "!!!!" << bufferPos() << cached_length;
+        bool has_predicate = cached_length > 0;
 
-        lighter -> setFormat(
-            cached_str_pos,
-            cached_length > 0 ? cached_length : 1,
-            HighlightFormatFactory::obj().getFormatFor(lexem)
-        );
+        int pos = cached_str_pos - (has_predicate ? 0 : 1);
+        int len = has_predicate ? cached_length : 1;
+
+        if (lexem < lex_none) {
+            lighter -> setExtraFormatToCurrBlock(
+                pos, len,
+                HighlightFormatFactory::obj().getFormatFor(lexem)
+            );
+        }
+        else {
+            lighter -> setFormat(
+                pos, len,
+                HighlightFormatFactory::obj().getFormatFor(lexem)
+            );
+        }
     }
     inline void cacheAndLightWithMessage(const Lexem & lexem, const QByteArray & msg) {
         cachingPredicate();
