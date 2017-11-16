@@ -56,7 +56,7 @@ void CodeEditor::setCompleter(QCompleter * new_completer) {
     completer -> setWidget(this);
     completer -> setCompletionMode(QCompleter::PopupCompletion);
     completer -> setCaseSensitivity(Qt::CaseInsensitive);
-    completer -> setFilterMode(Qt::MatchContains); // Qt::MatchStartsWith // Qt::MatchEndsWith
+    completer -> setFilterMode(Qt::MatchStartsWith); // Qt::MatchStartsWith // Qt::MatchContains // Qt::MatchEndsWith
 
     connect(completer, SIGNAL(activated(QString)), this, SLOT(applyCompletion(QString)));
 }
@@ -109,10 +109,8 @@ void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
 bool CodeEditor::event(QEvent * event) {
     if (event -> type() == QEvent::ToolTip) {
         QHelpEvent * helpEvent = static_cast<QHelpEvent*>(event);
-        QTextCursor cursor = cursorForPosition(helpEvent -> pos());
-        cursor.select(QTextCursor::WordUnderCursor);
-
-        qDebug() << "popup";
+        QTextCursor cursor = cursorForPosition(helpEvent -> pos() - QPoint(extraAreaWidth(), 0));
+        wordUnderCursor(cursor, wuco_full);
 
         if (!cursor.selectedText().isEmpty())
             QToolTip::showText(helpEvent -> globalPos(), /*your text*/QString("%1 %2").arg(cursor.selectedText()).arg(cursor.selectedText().length()));
@@ -174,8 +172,8 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                     completer -> completionModel() -> index(0, 0)
                 );
             } else {
-                QString completion_prefix = wordUnderCursor(wuco_before_caret_part);
-                QString text(wordUnderCursor());
+                QString completion_prefix = wordUnderCursor(tc, wuco_before_caret_part);
+                QString text(wordUnderCursor(tc, wuco_full));
 
                 if (
                     !is_shortcut &&
@@ -402,8 +400,8 @@ void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const b
     p.drawPixmap(x, y + (row_height - FOLDING_WIDTH) / 2, FOLDING_WIDTH, FOLDING_WIDTH, QPixmap(name).scaled(FOLDING_WIDTH, FOLDING_WIDTH, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
-QString CodeEditor::wordUnderCursor(const WordUnderCursorOps & flags) const {
-    QTextCursor tc = textCursor();
+QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags) {
+//    QTextCursor tc = textCursor();
     QTextBlock block = tc.block();
     const int pos = tc.positionInBlock();
     const int start_pos = block.position();
@@ -438,7 +436,11 @@ QString CodeEditor::wordUnderCursor(const WordUnderCursorOps & flags) const {
         tc.removeSelectedText();
         return res;
     }
-    else return tc.selectedText();
+    else {
+        if (flags & wuco_select)
+            setTextCursor(tc);
+        return tc.selectedText();
+    }
 }
 
 void CodeEditor::applyCompletion(const QString & completion) {
@@ -448,7 +450,7 @@ void CodeEditor::applyCompletion(const QString & completion) {
 
     if (tc.hasSelection()) {
         tc.removeSelectedText();
-//        wordUnderCursor(wuco_remove_full);
+//        wordUnderCursor(tc, wuco_remove_full);
 //        tc.insertText(completion);
     }/* else {
         int extra = completion.length() - completer -> completionPrefix().length();
@@ -457,7 +459,7 @@ void CodeEditor::applyCompletion(const QString & completion) {
         tc.insertText(completion.right(extra));
     }*/
 
-    wordUnderCursor(wuco_remove_full);
+    wordUnderCursor(tc, wuco_remove_full);
     tc.insertText(completion);
 }
 

@@ -22,6 +22,8 @@ class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
 
             rules[i][lex_tab] = curr;
             rules[lex_tab][i] = curr;
+
+            rules[i][lex_inline_commentary] = lex_inline_commentary;
         }
 
         rules[lex_blank][lex_blank] = lex_blanks;
@@ -34,11 +36,10 @@ class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
 
         // PERCENTAGE PRESENTATION
 
-        rules[lex_percent_presentation_start][lex_percent_presentation_end] = lex_string;
-        rules[lex_epercent_presentation_start][lex_epercent_presentation_end] = lex_string;
+        rules[lex_percent_presentation_start][lex_percent_presentation_end] = lex_expression;
+        rules[lex_epercent_presentation_start][lex_epercent_presentation_end] = lex_expression;
 
         // CLASS DEFINITION
-
 
         rules[lex_class_def][lex_word] = lex_class_def_name;
         rules[lex_class_def][lex_operator_bit_left_shift] = lex_class_def_extension;

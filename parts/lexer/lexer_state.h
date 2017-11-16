@@ -173,7 +173,9 @@ struct LexerState {
 
         if (lexem == lex_error) {
             status = ls_error;
-            qWarning() << msg;
+
+            if (!msg.contains("error_token"))
+                qWarning() << msg;
         }
 
         //TODO: attach message

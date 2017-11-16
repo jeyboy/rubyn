@@ -28,9 +28,11 @@ class CodeEditor : public QPlainTextEdit {
         wuco_full = 0,
         wuco_before_caret_part = 1,
         wuco_remove = 2,
+        wuco_select = 4,
 
         wuco_remove_full = wuco_full | wuco_remove,
         wuco_remove_before_caret = wuco_before_caret_part | wuco_remove,
+        wuco_select_full = wuco_full | wuco_select,
     };
 
     static QString word_boundary;
@@ -54,7 +56,7 @@ public:
 
     void openDocument(File * file);
 protected:
-    QString wordUnderCursor(const WordUnderCursorOps & flags = wuco_full) const;
+    QString wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags = wuco_full);
     void procSelectionIndent(const bool & right = true);
 
     inline QColor currentLineColor(const int & transparency = 16) { return QColor::fromRgb(128, 128, 128, transparency); } // QColor lineColor = QColor(Qt::yellow).lighter(160);

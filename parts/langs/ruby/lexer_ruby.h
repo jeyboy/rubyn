@@ -70,17 +70,25 @@ class LexerRuby : public Lexer {
             state -> lex_word =
                 has_predefined ? predefined_lexem : PredefinedRuby::obj().lexem(state -> cached);
 
-            if (state -> lex_word == lex_word)
-                identifyWordType(state);
+            Lexem prev_highlightable = lex_none;
+
+            if (state -> cached_length) {
+                if (state -> lex_word == lex_word)
+                    identifyWordType(state);
+
+                prev_highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
+            }
 
 //            // translate state
-//            translateState(state);
+            translateState(state);
 
             if (state -> cached_length) {
                 if (state -> lex_word == lex_word)
                     registerVariable(state);
 
                 Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
+                if (highlightable == lex_none)
+                    highlightable = prev_highlightable;
 
                 if (highlightable != lex_none)
                     state -> light(highlightable);
@@ -106,8 +114,19 @@ class LexerRuby : public Lexer {
             state -> lex_delimiter = PredefinedRuby::obj().lexem(state -> cached);
 
             if (state -> lex_word == lex_none) {
-                state -> lex_delimiter =
+                Lexem new_state =
                     GrammarRuby::obj().translate(state -> lex_prev_delimiter, state -> lex_delimiter);
+
+                if (new_state == lex_error) {
+                    state -> lightWithMessage(
+                        lex_error,
+                        ERROR_STATE(QByteArrayLiteral("Wrong delimiter satisfy state!!!"), state -> lex_prev_delimiter, state -> lex_delimiter)
+                    );
+            //                return false;
+                }
+
+                state -> lex_delimiter = new_state;
+
 
                 state -> replaceToken(state -> lex_delimiter);
             }
