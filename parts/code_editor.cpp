@@ -168,7 +168,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
 
             QTextCursor tc = textCursor();
 
-            if (tc.hasSelection()) {
+            if (is_shortcut && tc.hasSelection()) {
                 completer -> setCompletionPrefix(QString());
                 completer -> popup() -> setCurrentIndex(
                     completer -> completionModel() -> index(0, 0)
@@ -176,8 +176,6 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             } else {
                 QString completion_prefix = wordUnderCursor(wuco_before_caret_part);
                 QString text(wordUnderCursor());
-
-                qDebug() << "###" << completion_prefix << text;
 
                 if (
                     !is_shortcut &&
