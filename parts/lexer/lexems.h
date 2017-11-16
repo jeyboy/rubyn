@@ -409,10 +409,8 @@ enum Lexem : quint32 {
     lex_do_block_var_name,
     lex_do_block_vars_splitter,
     lex_do_block_vars_end,
-    lex_do_block_end,
 
     lex_inline_block_start,
-    lex_inline_block_end,
 
     lex_inline_do_block_start,
     lex_inline_do_block_vars_start,
@@ -420,8 +418,6 @@ enum Lexem : quint32 {
     lex_inline_do_block_var_name,
     lex_inline_do_block_vars_splitter,
     lex_inline_do_block_vars_end,
-    lex_inline_do_block_end,
-
 
     lex_begin,
     lex_end,
@@ -430,7 +426,9 @@ enum Lexem : quint32 {
     lex_block_rescue,
     lex_block_ensure,
     lex_block_retry,
+
     lex_block_end,
+//    lex_inline_block_end, lex_close_curly_bracket
 
 
     lex_return,
@@ -831,10 +829,8 @@ struct Lexems {
             case lex_do_block_var_name: return QByteArrayLiteral("do_block_var_name_token");
             case lex_do_block_vars_splitter: return QByteArrayLiteral("do_block_vars_splitter_token");
             case lex_do_block_vars_end: return QByteArrayLiteral("do_block_vars_end_token");
-            case lex_do_block_end: return QByteArrayLiteral("do_block_end_token");
 
             case lex_inline_block_start: return QByteArrayLiteral("inline_block_start_token");
-            case lex_inline_block_end: return QByteArrayLiteral("inline_block_end_token");
 
             case lex_inline_do_block_start: return QByteArrayLiteral("inline_do_block_start_token");
             case lex_inline_do_block_vars_start: return QByteArrayLiteral("inline_do_block_vars_start_token");
@@ -842,7 +838,6 @@ struct Lexems {
             case lex_inline_do_block_var_name: return QByteArrayLiteral("inline_do_block_var_name_token");
             case lex_inline_do_block_vars_splitter: return QByteArrayLiteral("inline_do_block_vars_splitter_token");
             case lex_inline_do_block_vars_end: return QByteArrayLiteral("inline_do_block_vars_end_token");
-            case lex_inline_do_block_end: return QByteArrayLiteral("inline_do_block_end_token");
 
 
             case lex_begin: return QByteArrayLiteral("begin_token");
