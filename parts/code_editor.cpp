@@ -149,6 +149,16 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
     switch (e -> key()) {
         case Qt::Key_Tab: { procSelectionIndent(); break;}
         case Qt::Key_Backtab: { procSelectionIndent(false); break; }
+
+        case Qt::Key_Escape: // ignore non printable keys
+        case Qt::Key_CapsLock:
+        case Qt::Key_NumLock:
+        case Qt::Key_ScrollLock:
+        case Qt::Key_Meta:
+        case Qt::Key_Alt:
+        case Qt::Key_Shift:
+        case Qt::Key_Control: { QPlainTextEdit::keyPressEvent(e); break;}
+
         case Qt::Key_Return: { emit wrapper -> enterPressed(); }
         default: {
             if (!completer) {
@@ -162,23 +172,21 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             if (!is_shortcut)
                 QPlainTextEdit::keyPressEvent(e);
 
-//            if (e -> modifiers() & (Qt::ControlModifier | Qt::ShiftModifier))
-//                return;
-
             if ((e -> key() == Qt::Key_Left || e -> key() == Qt::Key_Right || e -> key() == Qt::Key_Up || e -> key() == Qt::Key_Down) && completer -> popup() -> isHidden())
                 return;
 
             QTextCursor tc = textCursor();
+            bool has_selection = tc.hasSelection();
 
-            if (is_shortcut && tc.hasSelection()) {
+            QString completion_prefix = wordUnderCursor(tc, wuco_before_caret_part);
+            QString text(wordUnderCursor(tc, wuco_full));
+
+            if (is_shortcut && has_selection) {
                 completer -> setCompletionPrefix(QString());
                 completer -> popup() -> setCurrentIndex(
                     completer -> completionModel() -> index(0, 0)
                 );
             } else {
-                QString completion_prefix = wordUnderCursor(tc, wuco_before_caret_part);
-                QString text(wordUnderCursor(tc, wuco_full));
-
                 if (
                     !is_shortcut &&
                         (
@@ -200,14 +208,18 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                 }
             }
 
-            QRect cr = cursorRect();
-            cr.setLeft(cr.left() + extra_area -> width());
-            cr.setWidth(
-                completer -> popup() -> sizeHintForColumn(0) +
-                    completer -> popup() -> verticalScrollBar() -> sizeHint().width()
-            );
+            if (is_shortcut && completer -> completionCount() == 1 && completion_prefix == text) {
+                applyCompletion(completer -> currentCompletion());
+            } else {
+                QRect cr = cursorRect();
+                cr.setLeft(cr.left() + extra_area -> width());
+                cr.setWidth(
+                    completer -> popup() -> sizeHintForColumn(0) +
+                        completer -> popup() -> verticalScrollBar() -> sizeHint().width()
+                );
 
-            completer -> complete(cr);
+                completer -> complete(cr);
+            }
         }
     }
 }
