@@ -303,5 +303,5 @@ void Highlighter::cursorPositionChanged(const QTextCursor & /*cursor*/) {
 }
 
 void Highlighter::enterPressed() {
-    qDebug() << "ENTER PRESSED";
+
 }

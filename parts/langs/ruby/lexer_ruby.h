@@ -80,7 +80,7 @@ class LexerRuby : public Lexer {
             }
 
 //            // translate state
-            translateState(state);
+//            translateState(state);
 
             if (state -> cached_length) {
                 if (state -> lex_word == lex_word)
