@@ -51,10 +51,15 @@ public:
     void setCurrentBlockUserData(QTextBlockUserData * data);
     QTextBlockUserData * currentBlockUserData() const;
 
-    void setExtraFormatToCurrBlock(const int & start, const int & count, const QTextCharFormat & format) {
-        setExtraFormats(current_block, QVector<QTextLayout::FormatRange>() << QTextLayout::FormatRange{start, count, format});
+    inline void clearExtraFormatForCurrBlock() {
+        if (current_block.isValid())
+            current_block.layout() -> clearFormats();
     }
-    void setExtraFormat(const int & start, const int & count, const QTextCharFormat & format) {
+    inline void setExtraFormatToCurrBlock(const int & start, const int & count, const QTextCharFormat & format) {
+        if (current_block.isValid())
+            setExtraFormats(current_block, QVector<QTextLayout::FormatRange>() << QTextLayout::FormatRange{start, count, format});
+    }
+    inline void setExtraFormat(const int & start, const int & count, const QTextCharFormat & format) {
         setExtraFormats(doc -> findBlock(start), QVector<QTextLayout::FormatRange>() << QTextLayout::FormatRange{start, count, format});
     }
 

@@ -56,6 +56,7 @@ public:
             udata = new BlockUserData(tokens, prev_udata ? prev_udata -> end_token : 0);
             block.setUserData(udata);
         }
+        else lighter -> clearExtraFormatForCurrBlock();
 
         state = new LexerState(scope, udata -> lineControlToken(), prev_udata ? prev_udata -> stackState() : 0, lighter);
 
