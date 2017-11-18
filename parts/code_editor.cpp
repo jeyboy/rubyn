@@ -17,7 +17,7 @@
 
 QString CodeEditor::word_boundary("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
 
-CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), folding_y(NO_FOLDING), folding_click(false) {
+CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), folding_y(NO_FOLDING), folding_click(false) {
     extra_area = new ExtraArea(this);  
 
     connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateExtraAreaWidth);
@@ -66,7 +66,8 @@ void CodeEditor::openDocument(File * file) {
         QFont new_font(font().family(), 11);
 //        new_font.setStretch(110);
 
-        QTextDocument * text_doc = file -> asText() -> toQDoc();
+        wrapper = file -> asText();
+        QTextDocument * text_doc = wrapper -> toQDoc();
 
         text_doc -> setDefaultFont(new_font);
         setFont(new_font);
@@ -130,6 +131,8 @@ void CodeEditor::resizeEvent(QResizeEvent * e) {
 }
 
 void CodeEditor::keyPressEvent(QKeyEvent * e) {
+//    qDebug() << "KEY PRESSED:" << ((Qt::Key)e -> key());
+
     if (completer && completer -> popup() -> isVisible()) {
         switch (e -> key()) {
             case Qt::Key_Enter:
@@ -146,6 +149,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
     switch (e -> key()) {
         case Qt::Key_Tab: { procSelectionIndent(); break;}
         case Qt::Key_Backtab: { procSelectionIndent(false); break; }
+        case Qt::Key_Return: { emit wrapper -> enterPressed(); }
         default: {
             if (!completer) {
                 QPlainTextEdit::keyPressEvent(e);

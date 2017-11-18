@@ -10,7 +10,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     if (doc) {
         disconnect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         disconnect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
-        disconnect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::docBlockCountChanged);
+        disconnect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
 
         QTextCursor cursor(doc);
 
@@ -28,7 +28,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
 
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
-        connect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::docBlockCountChanged);
+        connect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
 //            d->rehighlightPending = true;
 //        QTimer::singleShot(0, this, SLOT(rehighlight()));
         rehighlight();
@@ -302,8 +302,6 @@ void Highlighter::cursorPositionChanged(const QTextCursor & /*cursor*/) {
 
 }
 
-void Highlighter::docBlockCountChanged(int new_blocks_count) {
-    qDebug() << "";
-
-    int i = 0;
+void Highlighter::enterPressed() {
+    qDebug() << "ENTER PRESSED";
 }

@@ -39,6 +39,7 @@ class CodeEditor : public QPlainTextEdit {
 
     QWidget * extra_area;
     QCompleter * completer;
+    TextDocument * wrapper;
 
     int folding_y;
     bool folding_click;

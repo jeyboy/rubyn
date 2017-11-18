@@ -101,7 +101,7 @@ protected slots:
 //    void contentsChanged();
     void reformatBlocks(int from, int charsRemoved, int charsAdded);
     void cursorPositionChanged(const QTextCursor & cursor);
-    void docBlockCountChanged(int new_blocks_count);
+    void enterPressed();
 };
 
 

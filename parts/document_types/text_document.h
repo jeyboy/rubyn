@@ -18,7 +18,9 @@ class Project;
 class File;
 class QTextDocument;
 
-class TextDocument : public IDocument {
+class TextDocument : public QObject, public IDocument {
+    Q_OBJECT
+
     static QLatin1String tab_space;
 protected:
     QPointer<QTextDocument> _doc;
@@ -26,6 +28,9 @@ protected:
     Scope * _scope;
     Lexer * _lexer;
     File * _file;
+
+signals:
+    void enterPressed();
 public:
     TextDocument(File * file, Lexer * lexer = 0);
 
