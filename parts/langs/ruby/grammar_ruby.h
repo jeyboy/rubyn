@@ -2,6 +2,7 @@
 #define GRAMMAR_RUBY_H
 
 #include "parts/lexer/grammar.h"
+#include "parts/editor_parts/para_info.h"
 
 class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
     GrammarRuby() : Grammar() {
@@ -139,13 +140,14 @@ public:
     }
 
     char percentagePresentationBlocker(const char & ch) {
-        switch(ch) {
-            case '(': return ')';
-            case '[': return ']';
-            case '{': return '}';
+        return ParaInfo::paraSymbol(ch);
+//        switch(ch) {
+//            case '(': return ')';
+//            case '[': return ']';
+//            case '{': return '}';
 
-            default: return ch;
-        };
+//            default: return ch;
+//        };
     }
 
     bool isStackDroppable(const Lexem & lexem) {

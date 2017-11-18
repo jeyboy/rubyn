@@ -68,7 +68,8 @@ HEADERS  += ide_window.h \
     parts/langs/ruby/grammar_ruby.h \
     misc/token_list.h \
     parts/editor_parts/projects.h \
-    parts/document_types/idocument.h
+    parts/document_types/idocument.h \
+    parts/editor_parts/para_info.h
 
 FORMS    += ide_window.ui
 
