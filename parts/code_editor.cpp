@@ -110,16 +110,38 @@ void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
 bool CodeEditor::event(QEvent * event) {
     if (event -> type() == QEvent::ToolTip) {
         QHelpEvent * helpEvent = static_cast<QHelpEvent*>(event);
+
         QTextCursor cursor = cursorForPosition(helpEvent -> pos() - QPoint(extraAreaWidth(), 0));
+        QTextBlock blk = cursor.block();
 
-        wordUnderCursor(cursor, wuco_full);
+        quint32 pos = cursor.position();
 
-        if (!cursor.selectedText().isEmpty())
-            emit wrapper -> wordHovered(helpEvent -> globalPos(), cursor.selectionStart(), cursor.selectionEnd());
-//            QToolTip::showText(helpEvent -> globalPos(), /*your text*/QString("%1 %2").arg(cursor.selectedText()).arg(cursor.selectedText().length()));
-        else
-//            QToolTip::hideText();
-            emit wrapper -> wordHovered(helpEvent -> globalPos(), cursor.position(), cursor.position());
+        if (blk.isValid()) {
+            BlockUserData * udata = reinterpret_cast<BlockUserData *>(blk.userData());
+            if (udata) {
+                QList<MsgInfo> msgs = udata -> msgs;
+
+                for(QList<MsgInfo>::Iterator msg = msgs.begin(); msg != msgs.end(); msg++) {
+                    if ((*msg).pos <= pos && ((*msg).pos + (*msg).length) >= pos) {
+                        QToolTip::showText(helpEvent -> globalPos(), (*msg).msg);
+                        break;
+                    }
+                }
+            }
+        }
+
+//        else QToolTip::hideText();
+
+
+
+//        wordUnderCursor(cursor, wuco_full);
+
+//        if (!cursor.selectedText().isEmpty())
+//            emit wrapper -> wordHovered(helpEvent -> globalPos(), cursor.selectionStart(), cursor.selectionEnd());
+////            QToolTip::showText(helpEvent -> globalPos(), /*your text*/QString("%1 %2").arg(cursor.selectedText()).arg(cursor.selectedText().length()));
+//        else
+////            QToolTip::hideText();
+//            emit wrapper -> wordHovered(helpEvent -> globalPos(), cursor.position(), cursor.position());
 
         return true;
     }

@@ -5,14 +5,12 @@
 #include "parts/lexer/lexer.h"
 
 #include <qtimer.h>
-#include <qtooltip.h>
 
 void Highlighter::setDocument(TextDocument * new_doc) {
     if (doc) {
         disconnect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         disconnect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
         disconnect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
-        disconnect(_doc_wrapper, SIGNAL(wordHovered(QPoint,int,int)), this, SLOT(wordHovered(QPoint,int,int)));
 
         QTextCursor cursor(doc);
 
@@ -31,7 +29,6 @@ void Highlighter::setDocument(TextDocument * new_doc) {
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
         connect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
-        connect(_doc_wrapper, SIGNAL(wordHovered(QPoint,int,int)), this, SLOT(wordHovered(QPoint,int,int)));
 //            d->rehighlightPending = true;
 //        QTimer::singleShot(0, this, SLOT(rehighlight()));
         rehighlight();
@@ -307,11 +304,4 @@ void Highlighter::cursorPositionChanged(const QTextCursor & /*cursor*/) {
 
 void Highlighter::enterPressed() {
     qDebug() << "NEW LINE";
-}
-
-void Highlighter::wordHovered(const QPoint & point, const int & start, const int & end) {
-    if (start != end)
-        QToolTip::showText(point, /*your text*/QString("%1 %2").arg(start).arg(end));
-    else
-        QToolTip::hideText();
 }

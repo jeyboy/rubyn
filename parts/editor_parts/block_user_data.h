@@ -14,6 +14,7 @@ struct BlockUserData : public QTextBlockUserData {
 
     TokenCell * begin_token;
     TokenCell * end_token;
+
     Stack<Lexem> * stack;
 
     QList<ParaInfo> pairs;

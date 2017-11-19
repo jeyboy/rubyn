@@ -80,7 +80,7 @@ class LexerRuby : public Lexer {
             }
 
 //            // translate state
-//            translateState(state);
+            translateState(state);
 
             if (state -> cached_length) {
                 if (state -> lex_word == lex_word)
@@ -300,7 +300,7 @@ class LexerRuby : public Lexer {
 
             switch(ECHAR0) {
                 case '#': {
-                    if (def_required = ended = ECHAR1 == '{')
+                    if ((def_required = ended = ECHAR1 == '{'))
                         ++state -> next_offset;
                 break;}
                 case '/': { ended = ECHAR_PREV1 != '\\';  break;}
@@ -437,7 +437,7 @@ protected:
 
                             switch(ECHAR0) {
                                 case '#': {
-                                    if (def_required = ended = ECHAR1 == '{')
+                                    if ((def_required = ended = ECHAR1 == '{'))
                                         ++state -> next_offset;
                                 break; }
 
@@ -512,7 +512,7 @@ protected:
 
                             switch(ECHAR0) {
                                 case '#': {
-                                    if (def_required = ended = ECHAR1 == '{')
+                                    if ((def_required = ended = ECHAR1 == '{'))
                                         ++state -> next_offset;
                                 break; }
 
