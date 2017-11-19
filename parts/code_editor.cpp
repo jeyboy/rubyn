@@ -510,6 +510,10 @@ void CodeEditor::applyCompletion(const QString & completion) {
 
     wordUnderCursor(tc, wuco_remove_full);
     tc.insertText(completion);
+
+    completer -> popup() -> setCurrentIndex(
+        completer -> completionModel() -> index(0, 0)
+    );
 }
 
 void CodeEditor::procSelectionIndent(const bool & right) {
