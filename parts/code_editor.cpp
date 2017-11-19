@@ -17,7 +17,7 @@
 
 QString CodeEditor::word_boundary("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
 
-CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), folding_y(NO_FOLDING), folding_click(false) {
+CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), tooplip_block_num(-1), tooplip_block_pos(-1), folding_y(NO_FOLDING), folding_click(false) {
     extra_area = new ExtraArea(this);  
 
     connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateExtraAreaWidth);
@@ -126,7 +126,7 @@ bool CodeEditor::event(QEvent * event) {
                 for(QList<MsgInfo>::Iterator msg = msgs.begin(); msg != msgs.end(); msg++) {
                     if ((*msg).pos <= pos && ((*msg).pos + (EDITOR_POS_TYPE)(*msg).length) > pos) {
                         // ignore showing of tooltips if its exactly shown for this msg
-                        if (tooplip_block_num.y() == block_num && tooplip_block_num.x() == (*msg).pos)
+                        if (tooplip_block_num == block_num && tooplip_block_pos == (*msg).pos)
                             return true;
 
                         if (tip_is_visible) { // the tooltip is not moving if the text is not changing
@@ -135,7 +135,8 @@ bool CodeEditor::event(QEvent * event) {
                         }
 
                         QToolTip::showText(helpEvent -> globalPos(), (*msg).msg);
-                        tooplip_block_num = QPoint((*msg).pos, block_num);
+                        tooplip_block_num = block_num;
+                        tooplip_block_pos = (*msg).pos;
                         return true;
                     }
                 }
@@ -143,7 +144,7 @@ bool CodeEditor::event(QEvent * event) {
         }
 
         QToolTip::hideText();
-        tooplip_block_num = QPoint();
+        tooplip_block_num = -1;
         event -> ignore();
         return true;
     }

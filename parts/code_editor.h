@@ -6,6 +6,8 @@
 #include <qevent.h>
 #include <qmimedata.h>
 
+#include "misc/defines.h"
+
 class QPaintEvent;
 class QResizeEvent;
 class QSize;
@@ -41,7 +43,9 @@ class CodeEditor : public QPlainTextEdit {
     QCompleter * completer;
     TextDocument * wrapper;
 
-    QPoint tooplip_block_num;
+    EDITOR_POS_TYPE tooplip_block_num;
+    EDITOR_POS_TYPE tooplip_block_pos;
+
     int folding_y;
     bool folding_click;
 public:
