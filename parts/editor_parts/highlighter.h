@@ -102,6 +102,7 @@ protected slots:
     void reformatBlocks(int from, int charsRemoved, int charsAdded);
     void cursorPositionChanged(const QTextCursor & cursor);
     void enterPressed();
+    void wordHovered(const QPoint & point, const int & start, const int & end);
 };
 
 

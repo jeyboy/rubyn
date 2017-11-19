@@ -111,12 +111,16 @@ bool CodeEditor::event(QEvent * event) {
     if (event -> type() == QEvent::ToolTip) {
         QHelpEvent * helpEvent = static_cast<QHelpEvent*>(event);
         QTextCursor cursor = cursorForPosition(helpEvent -> pos() - QPoint(extraAreaWidth(), 0));
+
         wordUnderCursor(cursor, wuco_full);
 
         if (!cursor.selectedText().isEmpty())
-            QToolTip::showText(helpEvent -> globalPos(), /*your text*/QString("%1 %2").arg(cursor.selectedText()).arg(cursor.selectedText().length()));
+            emit wrapper -> wordHovered(helpEvent -> globalPos(), cursor.selectionStart(), cursor.selectionEnd());
+//            QToolTip::showText(helpEvent -> globalPos(), /*your text*/QString("%1 %2").arg(cursor.selectedText()).arg(cursor.selectedText().length()));
         else
-            QToolTip::hideText();
+//            QToolTip::hideText();
+            emit wrapper -> wordHovered(helpEvent -> globalPos(), cursor.position(), cursor.position());
+
         return true;
     }
 

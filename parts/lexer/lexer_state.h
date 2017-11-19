@@ -67,17 +67,21 @@ struct LexerState {
     LEXER_INT_TYPE cached_str_pos;
     LEXER_INT_TYPE cached_length;
 
+    LEXER_INT_TYPE last_light_pos;
+    LEXER_INT_TYPE last_light_len;
+
     const char * start;
     const char * buffer;
     const char * prev;
 
     Status status;
+    BlockUserData * user_data;
 
-    LexerState(Scope * scope, TokenCell * token, Stack<Lexem> * stack_state = 0, Highlighter * lighter = 0) : lighter(lighter),
+    LexerState(Scope * scope, BlockUserData * user_data, Stack<Lexem> * stack_state = 0, Highlighter * lighter = 0) : lighter(lighter),
         lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
         scope(scope), stack(stack_state == 0 ? new Stack<Lexem>(lex_none) : new Stack<Lexem>(stack_state)),
-        next_offset(1), token(token), cached_length(0),
-        start(0), buffer(0), prev(0), status(ls_handled) { }
+        next_offset(1), token(user_data -> lineControlToken()), cached_length(0),
+        start(0), buffer(0), prev(0), status(ls_handled), user_data(user_data) { }
 
     ~LexerState() {
         delete scope;
@@ -158,18 +162,18 @@ struct LexerState {
     inline void light(const Lexem & lexem) {
         bool has_predicate = cached_length > 0;
 
-        int pos = cached_str_pos - (has_predicate ? 0 : 1);
-        int len = has_predicate ? cached_length : 1;
+        last_light_pos = cached_str_pos - (has_predicate ? 0 : 1);
+        last_light_len = has_predicate ? cached_length : 1;
 
         if (lexem < lex_none) {
             lighter -> setExtraFormatToCurrBlock(
-                pos, len,
+                last_light_pos, last_light_len,
                 HighlightFormatFactory::obj().getFormatFor(lexem)
             );
         }
         else {
             lighter -> setFormat(
-                pos, len,
+                last_light_pos, last_light_len,
                 HighlightFormatFactory::obj().getFormatFor(lexem)
             );
         }
@@ -188,7 +192,7 @@ struct LexerState {
                 qWarning() << msg;
         }
 
-        //TODO: attach message
+        user_data -> msgs.append(MsgInfo{lexem, last_light_pos, last_light_len, msg});
     }
 };
 

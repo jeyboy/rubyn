@@ -31,6 +31,7 @@ protected:
 
 signals:
     void enterPressed();
+    void wordHovered(const QPoint & point, const int & start, const int & end);
 public:
     TextDocument(File * file, Lexer * lexer = 0);
 

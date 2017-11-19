@@ -58,7 +58,7 @@ public:
         }
         else lighter -> clearExtraFormatForCurrBlock();
 
-        state = new LexerState(scope, udata -> lineControlToken(), prev_udata ? prev_udata -> stackState() : 0, lighter);
+        state = new LexerState(scope, udata, prev_udata ? prev_udata -> stackState() : 0, lighter);
 
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();

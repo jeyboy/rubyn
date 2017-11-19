@@ -6,7 +6,7 @@
 #include "misc/stack.h"
 
 #include "para_info.h"
-#include "error_info.h"
+#include "msg_info.h"
 
 struct BlockUserData : public QTextBlockUserData {
     bool has_folding;
@@ -17,7 +17,7 @@ struct BlockUserData : public QTextBlockUserData {
     Stack<Lexem> * stack;
 
     QList<ParaInfo> pairs;
-    QList<ErrorInfo> errors;
+    QList<MsgInfo> msgs;
 public:
     inline BlockUserData(TokenList * file_tokens, TokenCell * prev_token = 0, bool has_break_point = false, bool has_folding = false)
         : has_folding(has_folding), has_break_point(has_break_point), begin_token(0), end_token(0), stack(0)
