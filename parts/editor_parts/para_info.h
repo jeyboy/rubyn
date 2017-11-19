@@ -1,11 +1,11 @@
 #ifndef PARA_INFO_H
 #define PARA_INFO_H
 
-#include <qobject.h>
+#include "misc/defines.h"
 
 struct ParaInfo {
     char symbol;
-    quint64 pos;
+    EDITOR_POS_TYPE pos;
 
     static char paraSymbol(const char & ch) {
         switch(ch) {

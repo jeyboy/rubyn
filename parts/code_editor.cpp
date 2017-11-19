@@ -115,7 +115,7 @@ bool CodeEditor::event(QEvent * event) {
         QTextBlock blk = cursor.block();
 
         if (blk.isValid()) {
-            quint32 pos = cursor.positionInBlock();
+            EDITOR_POS_TYPE pos = cursor.positionInBlock();
             bool tip_is_visible = QToolTip::isVisible();
 
             BlockUserData * udata = reinterpret_cast<BlockUserData *>(blk.userData());
@@ -124,7 +124,7 @@ bool CodeEditor::event(QEvent * event) {
                 QList<MsgInfo> msgs = udata -> msgs;
 
                 for(QList<MsgInfo>::Iterator msg = msgs.begin(); msg != msgs.end(); msg++) {
-                    if ((*msg).pos <= pos && ((*msg).pos + (*msg).length) > pos) {
+                    if ((*msg).pos <= pos && ((*msg).pos + (EDITOR_POS_TYPE)(*msg).length) > pos) {
                         // ignore showing of tooltips if its exactly shown for this msg
                         if (tooplip_block_num.y() == block_num && tooplip_block_num.x() == (*msg).pos)
                             return true;

@@ -1,12 +1,12 @@
 #ifndef MSG_INFO_H
 #define MSG_INFO_H
 
-#include <qobject.h>
+#include "misc/defines.h"
 
 struct MsgInfo {
-    quint32 info_type;
-    quint64 pos;
-    quint32 length;
+    LEXEM_TYPE info_type;
+    EDITOR_POS_TYPE pos;
+    EDITOR_LEN_TYPE length;
     QByteArray msg;
 };
 

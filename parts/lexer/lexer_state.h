@@ -26,8 +26,6 @@
 #define SCHAR1 STREAM_NEXT_CHAR(state -> prev)
 #define SCHAR2 STREAM_N_CHAR(state -> prev, 2)
 
-#define LEXER_INT_TYPE quint32
-
 struct LexerState {
     enum Status {
         ls_none = -1,
@@ -64,11 +62,11 @@ struct LexerState {
 
     TokenCell * token;
 
-    LEXER_INT_TYPE cached_str_pos;
-    LEXER_INT_TYPE cached_length;
+    EDITOR_POS_TYPE cached_str_pos;
+    EDITOR_LEN_TYPE cached_length;
 
-    LEXER_INT_TYPE last_light_pos;
-    LEXER_INT_TYPE last_light_len;
+    EDITOR_POS_TYPE last_light_pos;
+    EDITOR_LEN_TYPE last_light_len;
 
     const char * start;
     const char * buffer;
@@ -127,8 +125,8 @@ struct LexerState {
         prev = buffer;
     }
 
-    inline LEXER_INT_TYPE bufferPos() { return prev - start; }
-    inline LEXER_INT_TYPE strLength() { return buffer - prev; }
+    inline EDITOR_POS_TYPE bufferPos() { return prev - start; }
+    inline EDITOR_LEN_TYPE strLength() { return buffer - prev; }
 
     inline Lexem & sublastToken() { return token -> prev -> lexem; }
     inline Lexem & lastToken() { return token -> lexem; }

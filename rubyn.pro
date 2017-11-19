@@ -11,7 +11,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = rubyn
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
     parts/editor_parts/highlighter.cpp \
     ide_window.cpp \
@@ -70,7 +69,8 @@ HEADERS  += ide_window.h \
     parts/editor_parts/projects.h \
     parts/document_types/idocument.h \
     parts/editor_parts/para_info.h \
-    parts/editor_parts/msg_info.h
+    parts/editor_parts/msg_info.h \
+    misc/defines.h
 
 FORMS    += ide_window.ui
 

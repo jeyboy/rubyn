@@ -3,15 +3,16 @@
 
 #pragma once
 
-//#include <qglobal.h>
 #include <qbytearray.h>
+
+#include "misc/defines.h"
 
 #define LEX(val, flag) (Lexem)(val | flag)
 #define EXCLUDE_BIT(val, flag) (Lexem)(val & ~flag)
 
  // = (1ULL << 1),
 
-enum Lexem : quint32 {
+enum Lexem : LEXEM_TYPE {
     // lex_to_stack,
     // lex_from_stack
 
