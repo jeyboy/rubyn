@@ -162,8 +162,10 @@ void CodeEditor::resizeEvent(QResizeEvent * e) {
 void CodeEditor::keyPressEvent(QKeyEvent * e) {
 //    qDebug() << "KEY PRESSED:" << ((Qt::Key)e -> key());
 
+    int curr_key = e -> key();
+
     if (completer && completer -> popup() -> isVisible()) {
-        switch (e -> key()) {
+        switch (curr_key) {
             case Qt::Key_Enter:
             case Qt::Key_Return:
             case Qt::Key_Escape:
@@ -175,7 +177,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         }
     }
 
-    switch (e -> key()) {
+    switch (curr_key) {
         case Qt::Key_Tab: { procSelectionIndent(); break;}
         case Qt::Key_Backtab: { procSelectionIndent(false); break; }
 
@@ -196,13 +198,15 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             }
 
             bool has_modifiers = e -> modifiers() != Qt::NoModifier;
-            bool is_shortcut = has_modifiers && (e -> modifiers() & Qt::ControlModifier) && e -> key() == Qt::Key_Space;
+            bool is_shortcut = has_modifiers && (e -> modifiers() & Qt::ControlModifier) && curr_key == Qt::Key_Space;
 
             if (!is_shortcut)
                 QPlainTextEdit::keyPressEvent(e);
 
-            if ((e -> key() == Qt::Key_Left || e -> key() == Qt::Key_Right || e -> key() == Qt::Key_Up || e -> key() == Qt::Key_Down) && completer -> popup() -> isHidden())
-                return;
+            if (completer -> popup() -> isHidden()) { // ignore showing of suggestions for action keys
+                if (curr_key < Qt::Key_Space || curr_key > Qt::Key_ydiaeresis)
+                    return;
+            }
 
             QTextCursor tc = textCursor();
             bool has_selection = tc.hasSelection();
