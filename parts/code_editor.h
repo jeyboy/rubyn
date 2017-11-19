@@ -41,6 +41,7 @@ class CodeEditor : public QPlainTextEdit {
     QCompleter * completer;
     TextDocument * wrapper;
 
+    QPoint tooplip_block_num;
     int folding_y;
     bool folding_click;
 public:

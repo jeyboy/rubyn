@@ -114,21 +114,28 @@ bool CodeEditor::event(QEvent * event) {
         QTextCursor cursor = cursorForPosition(helpEvent -> pos() - QPoint(extraAreaWidth(), 0));
         QTextBlock blk = cursor.block();
 
-        quint32 pos = cursor.positionInBlock();
-
         if (blk.isValid()) {
+            quint32 pos = cursor.positionInBlock();
+            bool tip_is_visible = QToolTip::isVisible();
+
             BlockUserData * udata = reinterpret_cast<BlockUserData *>(blk.userData());
-            if (udata) {
+            if (udata && !udata -> msgs.isEmpty()) {
+                int block_num = blk.firstLineNumber();
                 QList<MsgInfo> msgs = udata -> msgs;
 
                 for(QList<MsgInfo>::Iterator msg = msgs.begin(); msg != msgs.end(); msg++) {
                     if ((*msg).pos <= pos && ((*msg).pos + (*msg).length) > pos) {
-                        if (QToolTip::isVisible()) { // the tooltip is not moving if the text is not changing
+                        // ignore showing of tooltips if its exactly shown for this msg
+                        if (tooplip_block_num.y() == block_num && tooplip_block_num.x() == (*msg).pos)
+                            return true;
+
+                        if (tip_is_visible) { // the tooltip is not moving if the text is not changing
                             if (QToolTip::text() == (*msg).msg)
                                 QToolTip::showText(helpEvent -> globalPos(), QString("+"));
                         }
 
                         QToolTip::showText(helpEvent -> globalPos(), (*msg).msg);
+                        tooplip_block_num = QPoint((*msg).pos, block_num);
                         return true;
                     }
                 }
@@ -136,6 +143,7 @@ bool CodeEditor::event(QEvent * event) {
         }
 
         QToolTip::hideText();
+        tooplip_block_num = QPoint();
         event -> ignore();
         return true;
     }
