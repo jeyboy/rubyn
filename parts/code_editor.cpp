@@ -114,7 +114,7 @@ bool CodeEditor::event(QEvent * event) {
         QTextCursor cursor = cursorForPosition(helpEvent -> pos() - QPoint(extraAreaWidth(), 0));
         QTextBlock blk = cursor.block();
 
-        quint32 pos = cursor.position();
+        quint32 pos = cursor.positionInBlock();
 
         if (blk.isValid()) {
             BlockUserData * udata = reinterpret_cast<BlockUserData *>(blk.userData());
@@ -122,27 +122,21 @@ bool CodeEditor::event(QEvent * event) {
                 QList<MsgInfo> msgs = udata -> msgs;
 
                 for(QList<MsgInfo>::Iterator msg = msgs.begin(); msg != msgs.end(); msg++) {
-                    if ((*msg).pos <= pos && ((*msg).pos + (*msg).length) >= pos) {
+                    if ((*msg).pos <= pos && ((*msg).pos + (*msg).length) > pos) {
+                        if (QToolTip::isVisible()) { // the tooltip is not moving if the text is not changing
+                            if (QToolTip::text() == (*msg).msg)
+                                QToolTip::showText(helpEvent -> globalPos(), QString("+"));
+                        }
+
                         QToolTip::showText(helpEvent -> globalPos(), (*msg).msg);
-                        break;
+                        return true;
                     }
                 }
             }
         }
 
-//        else QToolTip::hideText();
-
-
-
-//        wordUnderCursor(cursor, wuco_full);
-
-//        if (!cursor.selectedText().isEmpty())
-//            emit wrapper -> wordHovered(helpEvent -> globalPos(), cursor.selectionStart(), cursor.selectionEnd());
-////            QToolTip::showText(helpEvent -> globalPos(), /*your text*/QString("%1 %2").arg(cursor.selectedText()).arg(cursor.selectedText().length()));
-//        else
-////            QToolTip::hideText();
-//            emit wrapper -> wordHovered(helpEvent -> globalPos(), cursor.position(), cursor.position());
-
+        QToolTip::hideText();
+        event -> ignore();
         return true;
     }
 
