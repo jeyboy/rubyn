@@ -48,6 +48,9 @@ class CodeEditor : public QPlainTextEdit {
     EDITOR_POS_TYPE tooplip_block_num;
     EDITOR_POS_TYPE tooplip_block_pos;
 
+    EDITOR_POS_TYPE screen_start_block_num;
+    EDITOR_POS_TYPE screen_end_block_num;
+
     int folding_y;
     bool folding_click;
 public:
@@ -66,6 +69,8 @@ public:
 protected:
     void showOverlay(const QTextBlock & block);
     void hideOverlay();
+
+    bool blockOnScreen(const QTextBlock & block);
 
     QString wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags = wuco_full);
     void procSelectionIndent(const bool & right = true);

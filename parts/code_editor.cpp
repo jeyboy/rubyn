@@ -18,7 +18,10 @@
 
 QString CodeEditor::word_boundary("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
 
-CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), overlay(0), tooplip_block_num(-1), tooplip_block_pos(-1), folding_y(NO_FOLDING), folding_click(false) {
+CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), overlay(0),
+    tooplip_block_num(-1), tooplip_block_pos(-1), screen_start_block_num(-1), screen_end_block_num(-1),
+    folding_y(NO_FOLDING), folding_click(false)
+{
     extra_area = new ExtraArea(this);  
 
     connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateExtraAreaWidth);
@@ -119,6 +122,8 @@ bool CodeEditor::event(QEvent * event) {
         QTextCursor cursor = cursorForPosition(helpEvent -> pos() - QPoint(extraAreaWidth(), 0));
         QTextBlock blk = cursor.block();
 
+        showOverlay(document() -> lastBlock());
+
         if (blk.isValid()) {
             EDITOR_POS_TYPE pos = cursor.positionInBlock();
             bool tip_is_visible = QToolTip::isVisible();
@@ -139,7 +144,6 @@ bool CodeEditor::event(QEvent * event) {
                                 QToolTip::showText(helpEvent -> globalPos(), QString("+"));
                         }
 
-                        showOverlay(blk);
                         QToolTip::showText(helpEvent -> globalPos(), (*msg).msg);
                         tooplip_block_num = block_num;
                         tooplip_block_pos = (*msg).pos;
@@ -399,7 +403,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     painter.drawLine(event -> rect().topRight(), event -> rect().bottomRight());
 
     QTextBlock block = firstVisibleBlock();
-    int block_number = block.blockNumber();
+    screen_end_block_num = screen_start_block_num = block.blockNumber();
 
     QRectF block_geometry_rect = blockBoundingGeometry(block).translated(contentOffset());
 
@@ -421,7 +425,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
     while (block.isValid() && top <= rect_bottom) {
         if (block.isVisible() && bottom >= rect_top) {
-            if (curr_block_number == block_number)
+            if (curr_block_number == screen_end_block_num)
                 painter.fillRect(0, top, event -> rect().width(), line_number_height, currentLineColor(48));
 
 //            BlockUserData * user_data = static_cast<BlockUserData *>(block.userData())
@@ -432,15 +436,15 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 //              drawFolding(painter, foldingOffset(), top, curr_folding && folding_click, curr_folding);
 //            }
 
-            QString number = QString::number(block_number + 1);
-            painter.setFont(curr_block_number == block_number ? curr_line_font : curr_font);
+            QString number = QString::number(screen_end_block_num + 1);
+            painter.setFont(curr_block_number == screen_end_block_num ? curr_line_font : curr_font);
             painter.drawText(0, top, line_number_width, line_number_height, Qt::AlignRight, number);
         }
 
         block = block.next();
         top = bottom;
         bottom = top + (int) blockBoundingRect(block).height();
-        ++block_number;
+        ++screen_end_block_num;
     }
 
     event -> accept();
@@ -460,10 +464,10 @@ void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const b
 }
 
 void CodeEditor::showOverlay(const QTextBlock & block) {
-//    if (block.isVisible()) {
-//        hideOverlay();
-//        return;
-//    }
+    if (blockOnScreen(block)) {
+        hideOverlay();
+        return;
+    }
 
     if (!overlay)
         overlay = new OverlayInfo();
@@ -471,7 +475,11 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
     QRect bl_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
     bl_rect.setTop(bl_rect.top() + 1);
     bl_rect.setWidth(width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0));
-    overlay -> showInfo(this, bl_rect);
+
+    OverlayInfo::OverlayPos overlay_pos =
+        textCursor().blockNumber() < block.blockNumber() ? OverlayInfo::op_bottom : OverlayInfo::op_top;
+
+    overlay -> showInfo(this, bl_rect, overlay_pos);
 
 //    QRectF rect = block.layout() -> boundingRect();
 
@@ -488,6 +496,11 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
 
 void CodeEditor::hideOverlay() {
     if (overlay) overlay -> hide();
+}
+
+bool CodeEditor::blockOnScreen(const QTextBlock & block) {
+    int num = block.blockNumber();
+    return num >= screen_start_block_num && num <= screen_end_block_num;
 }
 
 QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags) {
