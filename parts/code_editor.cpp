@@ -120,8 +120,6 @@ bool CodeEditor::event(QEvent * event) {
         QTextBlock blk = cursor.block();
 
         if (blk.isValid()) {
-            showOverlay(blk);
-
             EDITOR_POS_TYPE pos = cursor.positionInBlock();
             bool tip_is_visible = QToolTip::isVisible();
 
@@ -141,6 +139,7 @@ bool CodeEditor::event(QEvent * event) {
                                 QToolTip::showText(helpEvent -> globalPos(), QString("+"));
                         }
 
+                        showOverlay(blk);
                         QToolTip::showText(helpEvent -> globalPos(), (*msg).msg);
                         tooplip_block_num = block_num;
                         tooplip_block_pos = (*msg).pos;
@@ -470,6 +469,7 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
         overlay = new OverlayInfo();
 
     QRect bl_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
+    bl_rect.setTop(bl_rect.top() + 1);
     bl_rect.setWidth(width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0));
     overlay -> showInfo(this, bl_rect);
 
