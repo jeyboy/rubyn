@@ -151,6 +151,7 @@ bool CodeEditor::event(QEvent * event) {
         }
 
         QToolTip::hideText();
+        hideOverlay();
         tooplip_block_num = -1;
         event -> ignore();
         return true;
@@ -400,8 +401,11 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
     QTextBlock block = firstVisibleBlock();
     int block_number = block.blockNumber();
-    int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
-    int bottom = top + (int) blockBoundingRect(block).height();
+
+    QRectF block_geometry_rect = blockBoundingGeometry(block).translated(contentOffset());
+
+    int top = block_geometry_rect.top();
+    int bottom = block_geometry_rect.bottom();
     int curr_block_number = textCursor().blockNumber();
 
     painter.setPen(Qt::black);
@@ -457,21 +461,29 @@ void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const b
 }
 
 void CodeEditor::showOverlay(const QTextBlock & block) {
-    if (block.isVisible()) {
-        hideOverlay();
-        return;
-    }
-
-    QRectF rect = block.layout() -> boundingRect();
-
-    QPixmap pixmap(rect.size().toSize());
-    QPainter p(&pixmap);
-    block.layout() -> draw(&p, QPoint());
+//    if (block.isVisible()) {
+//        hideOverlay();
+//        return;
+//    }
 
     if (!overlay)
         overlay = new OverlayInfo();
 
-    overlay -> showInfo(this, pixmap);
+    QRect bl_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
+    bl_rect.setWidth(width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0));
+    overlay -> showInfo(this, bl_rect);
+
+//    QRectF rect = block.layout() -> boundingRect();
+
+//    int extra_x_offset = extraAreaWidth();
+
+//    QPixmap pixmap(rect.size().toSize() + QSize(extra_x_offset, 0));
+//    QPainter p(&pixmap);
+//    block.layout() -> draw(&p, QPoint(extra_x_offset, 0));
+
+////    extra_area -> render(&p, QPoint(), QRegion());
+
+//    overlay -> showInfo(this, pixmap);
 }
 
 void CodeEditor::hideOverlay() {

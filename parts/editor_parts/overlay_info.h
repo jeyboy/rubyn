@@ -41,8 +41,6 @@ public:
 
         setPixmap(pixmap);
 
-        qDebug() << "XXX" << widget -> rect().topLeft() << widget -> mapToGlobal(widget -> rect().topLeft());
-
         QPoint new_pos =
             pos == op_top ?
                 widget -> mapToGlobal(widget -> rect().topLeft()) - QPoint(0, pixmap.height() + 2)
