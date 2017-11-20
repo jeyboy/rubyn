@@ -122,7 +122,8 @@ bool CodeEditor::event(QEvent * event) {
         QTextCursor cursor = cursorForPosition(helpEvent -> pos() - QPoint(extraAreaWidth(), 0));
         QTextBlock blk = cursor.block();
 
-        showOverlay(document() -> lastBlock());
+        showOverlay(firstVisibleBlock());
+//        showOverlay(document() -> findBlockByNumber(screen_end_block_num + 1));
 
         if (blk.isValid()) {
             EDITOR_POS_TYPE pos = cursor.positionInBlock();
@@ -393,6 +394,11 @@ void CodeEditor::extraAreaLeaveEvent(QEvent *) {
 }
 
 void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
+    // TODO: need to use code without loop if is_caret_redrawing eql true
+
+    int current_last_line_index = screen_end_block_num;
+    bool is_caret_redrawing = height() - event -> rect().height() > 30;
+
     QPainter painter(extra_area);
 //    painter.fillRect(event -> rect(), palette().base().color());
 
@@ -448,6 +454,9 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     }
 
     event -> accept();
+
+    if (is_caret_redrawing)
+        screen_end_block_num = current_last_line_index;
 }
 
 void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const bool & open, const bool & hover) {
@@ -464,34 +473,40 @@ void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const b
 }
 
 void CodeEditor::showOverlay(const QTextBlock & block) {
-    if (blockOnScreen(block)) {
-        hideOverlay();
-        return;
-    }
+//    if (blockOnScreen(block)) {
+//        hideOverlay();
+//        return;
+//    }
 
     if (!overlay)
         overlay = new OverlayInfo();
 
-    QRect bl_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
-    bl_rect.setTop(bl_rect.top() + 1);
-    bl_rect.setWidth(width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0));
-
     OverlayInfo::OverlayPos overlay_pos =
         textCursor().blockNumber() < block.blockNumber() ? OverlayInfo::op_bottom : OverlayInfo::op_top;
 
-    overlay -> showInfo(this, bl_rect, overlay_pos);
+//    //////////////////////////////////
+//    QRect bl_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
+//    bl_rect.setTop(bl_rect.top() + 1);
+//    bl_rect.setWidth(width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0));
+//    overlay -> showInfo(this, bl_rect, overlay_pos);
+//    //////////////////////////////////
 
-//    QRectF rect = block.layout() -> boundingRect();
 
-//    int extra_x_offset = extraAreaWidth();
 
-//    QPixmap pixmap(rect.size().toSize() + QSize(extra_x_offset, 0));
-//    QPainter p(&pixmap);
-//    block.layout() -> draw(&p, QPoint(extra_x_offset, 0));
 
-////    extra_area -> render(&p, QPoint(), QRegion());
 
-//    overlay -> showInfo(this, pixmap);
+    QRect rect = blockBoundingRect(block).toRect();
+    rect.setWidth(width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0));
+
+    int extra_x_offset = extraAreaWidth() + 1;
+
+    QPixmap pixmap(rect.size());
+    QPainter p(&pixmap);
+    p.fillRect(pixmap.rect(), palette().base().color());
+
+    block.layout() -> draw(&p, QPoint(extra_x_offset, 0));
+
+    overlay -> showInfo(this, pixmap, overlay_pos);
 }
 
 void CodeEditor::hideOverlay() {
