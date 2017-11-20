@@ -10,6 +10,7 @@
 #include <qcompleter.h>
 #include <qabstractitemview.h> // completer dependency
 
+#include "editor_parts/overlay_info.h"
 #include "editor_parts/file.h"
 #include "editor_parts/extra_area.h"
 
@@ -17,7 +18,7 @@
 
 QString CodeEditor::word_boundary("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
 
-CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), tooplip_block_num(-1), tooplip_block_pos(-1), folding_y(NO_FOLDING), folding_click(false) {
+CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), overlay(0), tooplip_block_num(-1), tooplip_block_pos(-1), folding_y(NO_FOLDING), folding_click(false) {
     extra_area = new ExtraArea(this);  
 
     connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateExtraAreaWidth);
@@ -42,6 +43,10 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0),
     //    ui->textEdit->setTextCursor( cursor );
 
     setMouseTracking(true);
+}
+
+CodeEditor::~CodeEditor() {
+   delete overlay;
 }
 
 void CodeEditor::setCompleter(QCompleter * new_completer) {
@@ -115,6 +120,8 @@ bool CodeEditor::event(QEvent * event) {
         QTextBlock blk = cursor.block();
 
         if (blk.isValid()) {
+            showOverlay(blk);
+
             EDITOR_POS_TYPE pos = cursor.positionInBlock();
             bool tip_is_visible = QToolTip::isVisible();
 
@@ -447,6 +454,28 @@ void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const b
     int row_height = fontMetrics().height();
 
     p.drawPixmap(x, y + (row_height - FOLDING_WIDTH) / 2, FOLDING_WIDTH, FOLDING_WIDTH, QPixmap(name).scaled(FOLDING_WIDTH, FOLDING_WIDTH, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+void CodeEditor::showOverlay(const QTextBlock & block) {
+    if (block.isVisible()) {
+        hideOverlay();
+        return;
+    }
+
+    QRectF rect = block.layout() -> boundingRect();
+
+    QPixmap pixmap(rect.size().toSize());
+    QPainter p(&pixmap);
+    block.layout() -> draw(&p, QPoint());
+
+    if (!overlay)
+        overlay = new OverlayInfo();
+
+    overlay -> showInfo(this, pixmap);
+}
+
+void CodeEditor::hideOverlay() {
+    if (overlay) overlay -> hide();
 }
 
 QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags) {

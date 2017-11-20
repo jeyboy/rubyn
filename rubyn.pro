@@ -70,7 +70,8 @@ HEADERS  += ide_window.h \
     parts/document_types/idocument.h \
     parts/editor_parts/para_info.h \
     parts/editor_parts/msg_info.h \
-    misc/defines.h
+    misc/defines.h \
+    parts/editor_parts/overlay_info.h
 
 FORMS    += ide_window.ui
 

@@ -18,6 +18,7 @@ class QCompleter;
 class TextDocument;
 class ExtraArea;
 class File;
+class OverlayInfo;
 
 #define HPADDING 3
 #define FOLDING_WIDTH 16
@@ -42,6 +43,7 @@ class CodeEditor : public QPlainTextEdit {
     QWidget * extra_area;
     QCompleter * completer;
     TextDocument * wrapper;
+    OverlayInfo * overlay;
 
     EDITOR_POS_TYPE tooplip_block_num;
     EDITOR_POS_TYPE tooplip_block_pos;
@@ -50,7 +52,7 @@ class CodeEditor : public QPlainTextEdit {
     bool folding_click;
 public:
     CodeEditor(QWidget * parent = 0);
-    inline ~CodeEditor() {}
+    ~CodeEditor();
 
     void setCompleter(QCompleter * new_completer);
 
@@ -62,6 +64,9 @@ public:
 
     void openDocument(File * file);
 protected:
+    void showOverlay(const QTextBlock & block);
+    void hideOverlay();
+
     QString wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags = wuco_full);
     void procSelectionIndent(const bool & right = true);
 
