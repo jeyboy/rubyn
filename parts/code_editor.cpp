@@ -394,19 +394,23 @@ void CodeEditor::extraAreaLeaveEvent(QEvent *) {
 }
 
 void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
-    // TODO: need to use code without loop if is_caret_redrawing eql true
-
-    int current_last_line_index = screen_end_block_num;
-    bool is_caret_redrawing = height() - event -> rect().height() > 30;
-
     QPainter painter(extra_area);
+    extraAreaPaintProc(painter, event -> rect());
+
+    event -> accept();
+}
+
+void CodeEditor::extraAreaPaintProc(QPainter & painter, const QRect & paint_rect) {
+    int current_last_line_index = screen_end_block_num;
+    bool is_caret_redrawing = height() - paint_rect.height() > 8;
+
 //    painter.fillRect(event -> rect(), palette().base().color());
 
 //    painter.setPen(QPen(QColor::fromRgb(0,127,255), 3));
 //    painter.drawLine(event -> rect().topRight(), event -> rect().bottomRight());
 
     painter.setPen(extra_area -> palette().base().color().darker(150));
-    painter.drawLine(event -> rect().topRight(), event -> rect().bottomRight());
+    painter.drawLine(paint_rect.topRight(), paint_rect.bottomRight());
 
     QTextBlock block = firstVisibleBlock();
     screen_end_block_num = screen_start_block_num = block.blockNumber();
@@ -423,8 +427,8 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     curr_line_font.setUnderline(true);
     curr_line_font.setBold(true);
 
-    int rect_top = event -> rect().top();
-    int rect_bottom = event -> rect().bottom();
+    int rect_top = paint_rect.top();
+    int rect_bottom = paint_rect.bottom();
     int line_number_width = extra_area -> width() - HPADDING * 2 - FOLDING_WIDTH;
     int line_number_height = fontMetrics().height();
 
@@ -432,7 +436,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     while (block.isValid() && top <= rect_bottom) {
         if (block.isVisible() && bottom >= rect_top) {
             if (curr_block_number == screen_end_block_num)
-                painter.fillRect(0, top, event -> rect().width(), line_number_height, currentLineColor(48));
+                painter.fillRect(0, top, paint_rect.width(), line_number_height, currentLineColor(48));
 
 //            BlockUserData * user_data = static_cast<BlockUserData *>(block.userData())
 
@@ -452,8 +456,6 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
         bottom = top + (int) blockBoundingRect(block).height();
         ++screen_end_block_num;
     }
-
-    event -> accept();
 
     if (is_caret_redrawing)
         screen_end_block_num = current_last_line_index;
@@ -505,6 +507,9 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
     p.fillRect(pixmap.rect(), palette().base().color());
 
     block.layout() -> draw(&p, QPoint(extra_x_offset, 0));
+
+    rect.setWidth(extraAreaWidth() + 1);
+    extraAreaPaintProc(p, rect);
 
     overlay -> showInfo(this, pixmap, overlay_pos);
 }

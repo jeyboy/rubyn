@@ -67,6 +67,8 @@ public:
 
     void openDocument(File * file);
 protected:
+    void extraAreaPaintProc(QPainter & painter, const QRect & paint_rect);
+
     void showOverlay(const QTextBlock & block);
     void hideOverlay();
 
