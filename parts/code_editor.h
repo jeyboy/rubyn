@@ -53,6 +53,12 @@ class CodeEditor : public QPlainTextEdit {
 
     int folding_y;
     bool folding_click;
+
+    int curr_block_number;
+
+    int line_number_height;
+    int line_number_width;
+    QFont curr_line_font;
 public:
     CodeEditor(QWidget * parent = 0);
     ~CodeEditor();
@@ -66,6 +72,16 @@ public:
     int foldingOffset();
 
     void openDocument(File * file);
+
+    inline void setFont(const QFont & font) {
+        curr_line_font = QFont(font.family(), font.pointSize());
+        curr_line_font.setUnderline(true);
+        curr_line_font.setBold(true);
+
+        QPlainTextEdit::setFont(font);
+
+        line_number_height = fontMetrics().height();
+    }
 protected:
     void extraAreaPaintProc(QPainter & painter, const QRect & paint_rect);
 

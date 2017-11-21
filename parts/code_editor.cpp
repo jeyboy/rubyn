@@ -20,7 +20,7 @@ QString CodeEditor::word_boundary("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end o
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), overlay(0),
     tooplip_block_num(-1), tooplip_block_pos(-1), screen_start_block_num(-1), screen_end_block_num(-1),
-    folding_y(NO_FOLDING), folding_click(false)
+    folding_y(NO_FOLDING), folding_click(false), curr_block_number(-1)
 {
     extra_area = new ExtraArea(this);  
 
@@ -102,7 +102,9 @@ int CodeEditor::extraAreaWidth() {
 }
 
 void CodeEditor::updateExtraAreaWidth(int /* newBlockCount */) {
-    setViewportMargins(extraAreaWidth(), 0, 0, 0);
+    int w = extraAreaWidth();
+    setViewportMargins(w, 0, 0, 0);
+    line_number_width = w - HPADDING * 2 - FOLDING_WIDTH;
 }
 
 void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
@@ -278,6 +280,7 @@ void CodeEditor::wheelEvent(QWheelEvent * e) {
         else
             zoomOut(4);
 
+        setFont(font());
         e -> accept();
         return;
     }
@@ -293,14 +296,16 @@ void CodeEditor::focusInEvent(QFocusEvent * e) {
 }
 
 void CodeEditor::highlightCurrentLine() {
-    QList<QTextEdit::ExtraSelection> extraSelections;
+    QList<QTextEdit::ExtraSelection> extra_selections;
+
+    QTextCursor cursor = textCursor();
+    curr_block_number = cursor.blockNumber();
 
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;
 
         QColor lineColor = currentLineColor();
 
-        QTextCursor cursor = textCursor();
         QTextBlock origin_block = cursor.block();
 
         selection.format.setBackground(lineColor);
@@ -308,7 +313,7 @@ void CodeEditor::highlightCurrentLine() {
 
         selection.cursor = cursor;
         selection.cursor.clearSelection();
-        extraSelections.append(selection);
+        extra_selections.append(selection);
 
         if (wordWrapMode() != QTextOption::NoWrap) {
             int offset = 0;
@@ -317,7 +322,7 @@ void CodeEditor::highlightCurrentLine() {
                 if (cursor.movePosition(QTextCursor::Down) && origin_block == cursor.block()) {
                     ++offset;
                     selection.cursor = cursor;
-                    extraSelections.append(selection);
+                    extra_selections.append(selection);
                 }
                 else break;
             }
@@ -328,7 +333,7 @@ void CodeEditor::highlightCurrentLine() {
             while(true) {
                 if (cursor.movePosition(QTextCursor::Up) && origin_block == cursor.block()) {
                     selection.cursor = cursor;
-                    extraSelections.append(selection);
+                    extra_selections.append(selection);
                 }
                 else break;
             }
@@ -340,11 +345,11 @@ void CodeEditor::highlightCurrentLine() {
             selection.cursor.setPosition(fragment.position());
             selection.cursor.setPosition(fragment.position() + fragment.length(), QTextCursor::KeepAnchor);
             selection.format = fragment.charFormat();
-            extraSelections.append(selection);
+            extra_selections.append(selection);
         }
     }
 
-    setExtraSelections(extraSelections);
+    setExtraSelections(extra_selections);
 }
 
 void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
@@ -409,8 +414,9 @@ void CodeEditor::extraAreaPaintProc(QPainter & painter, const QRect & paint_rect
 //    painter.setPen(QPen(QColor::fromRgb(0,127,255), 3));
 //    painter.drawLine(event -> rect().topRight(), event -> rect().bottomRight());
 
-    painter.setPen(extra_area -> palette().base().color().darker(150));
-    painter.drawLine(paint_rect.topRight(), paint_rect.bottomRight());
+//    painter.setPen(extra_area -> palette().base().color().darker(150));
+//    painter.drawLine(paint_rect.topRight(), paint_rect.bottomRight());
+//    painter.setPen(Qt::black);
 
     QTextBlock block = firstVisibleBlock();
     screen_end_block_num = screen_start_block_num = block.blockNumber();
@@ -419,19 +425,9 @@ void CodeEditor::extraAreaPaintProc(QPainter & painter, const QRect & paint_rect
 
     int top = block_geometry_rect.top();
     int bottom = block_geometry_rect.bottom();
-    int curr_block_number = textCursor().blockNumber();
-
-    painter.setPen(Qt::black);
-    QFont curr_font = font();
-    QFont curr_line_font(curr_font.family(), curr_font.pointSize());
-    curr_line_font.setUnderline(true);
-    curr_line_font.setBold(true);
 
     int rect_top = paint_rect.top();
     int rect_bottom = paint_rect.bottom();
-    int line_number_width = extra_area -> width() - HPADDING * 2 - FOLDING_WIDTH;
-    int line_number_height = fontMetrics().height();
-
 
     while (block.isValid() && top <= rect_bottom) {
         if (block.isVisible() && bottom >= rect_top) {
@@ -447,7 +443,7 @@ void CodeEditor::extraAreaPaintProc(QPainter & painter, const QRect & paint_rect
 //            }
 
             QString number = QString::number(screen_end_block_num + 1);
-            painter.setFont(curr_block_number == screen_end_block_num ? curr_line_font : curr_font);
+            painter.setFont(curr_block_number == screen_end_block_num ? curr_line_font : font());
             painter.drawText(0, top, line_number_width, line_number_height, Qt::AlignRight, number);
         }
 
@@ -475,10 +471,10 @@ void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const b
 }
 
 void CodeEditor::showOverlay(const QTextBlock & block) {
-//    if (blockOnScreen(block)) {
-//        hideOverlay();
-//        return;
-//    }
+    if (blockOnScreen(block)) {
+        hideOverlay();
+        return;
+    }
 
     if (!overlay)
         overlay = new OverlayInfo();
@@ -500,16 +496,25 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
     QRect rect = blockBoundingRect(block).toRect();
     rect.setWidth(width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0));
 
+
+    QRect bl_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
+    bl_rect.setTop(bl_rect.top() + 1);
+    bl_rect.setWidth(width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0));
+
     int extra_x_offset = extraAreaWidth() + 1;
 
     QPixmap pixmap(rect.size());
     QPainter p(&pixmap);
-    p.fillRect(pixmap.rect(), palette().base().color());
 
-    block.layout() -> draw(&p, QPoint(extra_x_offset, 0));
+    qDebug() << rect.translated(0, 668);
 
-    rect.setWidth(extraAreaWidth() + 1);
-    extraAreaPaintProc(p, rect);
+    this -> viewport() -> render(&p, QPoint(), QRegion(rect.translated(0, 668)));
+//    p.fillRect(pixmap.rect(), palette().base().color());
+
+//    block.layout() -> draw(&p, QPoint(extra_x_offset, 0));
+
+//    rect.setWidth(extra_x_offset);
+//    extraAreaPaintProc(p, rect);
 
     overlay -> showInfo(this, pixmap, overlay_pos);
 }
