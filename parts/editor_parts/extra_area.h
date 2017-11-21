@@ -10,12 +10,12 @@ public:
         setMouseTracking(true);
 
 //        painter.setPen(QPen(QColor::fromRgb(0,127,255), 3));
-        setStyleSheet("border-right: 1px solid " + palette().base().color().darker(150).name(QColor::HexRgb) + ";");
+        setStyleSheet("border-right: 1px solid " + borderColor().name(QColor::HexRgb) + ";");
     }
 
-    QSize sizeHint() const Q_DECL_OVERRIDE {
-        return QSize(codeEditor -> extraAreaWidth(), 0);
-    }
+    inline QSize sizeHint() const Q_DECL_OVERRIDE { return QSize(codeEditor -> extraAreaWidth(), 0); }
+
+    inline QColor borderColor() { return palette().base().color().darker(150); }
 
 protected:
     void paintEvent(QPaintEvent * event) Q_DECL_OVERRIDE {

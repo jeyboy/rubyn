@@ -32,7 +32,7 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0),
 //    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 
     updateExtraAreaWidth(0);
-    highlightCurrentLine();
+//    highlightCurrentLine();
 
 //    setLineWrapMode(NoWrap);
 
@@ -71,7 +71,7 @@ void CodeEditor::setCompleter(QCompleter * new_completer) {
 void CodeEditor::openDocument(File * file) {
     if (file && file -> isText()) {
         QFont new_font(font().family(), 11);
-//        new_font.setStretch(110);
+//        new_font.setStretch(90);
 
         wrapper = file -> asText();
         QTextDocument * text_doc = wrapper -> toQDoc();
@@ -494,8 +494,6 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
 //    overlay -> showInfo(this, bl_rect, overlay_pos);
 //////    //////////////////////////////////
 
-
-
     QRect bl_geometry_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
     bl_geometry_rect.setWidth(width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0));
 
@@ -505,10 +503,13 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
     QPainter painter(&pixmap);
 
     block.layout() -> draw(&painter, QPoint(extra_zone_width + 1, 0));
-    painter.fillRect(0,0, extra_zone_width + 1, bl_geometry_rect.height(), QColor::fromRgb(172, 229, 238));
+    painter.fillRect(0,0, extra_zone_width, bl_geometry_rect.height(), QColor::fromRgb(172, 229, 238));
     painter.translate(QPoint(1, 0));
 
     extraAreaPaintBlock(painter, block, 0, bl_geometry_rect.top(), bl_geometry_rect.bottom(), false, block.blockNumber());
+
+    painter.setPen(extra_area -> borderColor());
+    painter.drawLine(extra_zone_width - 1, 0, extra_zone_width - 1, pixmap.height());
 
     overlay -> showInfo(this, pixmap, overlay_pos);
 }

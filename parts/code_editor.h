@@ -40,7 +40,7 @@ class CodeEditor : public QPlainTextEdit {
 
     static QString word_boundary;
 
-    QWidget * extra_area;
+    ExtraArea * extra_area;
     QCompleter * completer;
     TextDocument * wrapper;
     OverlayInfo * overlay;
