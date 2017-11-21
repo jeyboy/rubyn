@@ -19,8 +19,7 @@
 QString CodeEditor::word_boundary("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), overlay(0),
-    tooplip_block_num(-1), tooplip_block_pos(-1), screen_start_block_num(-1), screen_end_block_num(-1),
-    folding_y(NO_FOLDING), folding_click(false), curr_block_number(-1)
+    tooplip_block_num(-1), tooplip_block_pos(-1), folding_y(NO_FOLDING), folding_click(false), curr_block_number(-1)
 {
     extra_area = new ExtraArea(this);  
 
@@ -125,7 +124,7 @@ bool CodeEditor::event(QEvent * event) {
         QTextBlock blk = cursor.block();
 
 //        showOverlay(firstVisibleBlock());
-        showOverlay(document() -> findBlockByNumber(screen_end_block_num + 1));
+        showOverlay(document() -> findBlockByNumber(60));
 
         if (blk.isValid()) {
             EDITOR_POS_TYPE pos = cursor.positionInBlock();
@@ -406,13 +405,10 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 }
 
 void CodeEditor::extraAreaPaintProc(QPainter & painter, const QRect & paint_rect) {
-    int current_last_line_index = screen_end_block_num;
-    bool is_caret_redrawing = height() - paint_rect.height() > 8;
-
-//    painter.fillRect(event -> rect(), palette().base().color());
+//    bool is_caret_redrawing = height() - paint_rect.height() > 8;
 
     QTextBlock block = firstVisibleBlock();
-    screen_end_block_num = screen_start_block_num = block.blockNumber();
+    int screen_end_block_num = block.blockNumber();
 
     QRectF block_geometry_rect = blockBoundingGeometry(block).translated(contentOffset());
 
@@ -424,7 +420,9 @@ void CodeEditor::extraAreaPaintProc(QPainter & painter, const QRect & paint_rect
 
     while (block.isValid() && top <= rect_bottom) {
         if (block.isVisible() && bottom >= rect_top) {
-            if (curr_block_number == screen_end_block_num)
+            bool is_current_block = curr_block_number == screen_end_block_num;
+
+            if (is_current_block)
                 painter.fillRect(0, top, paint_rect.width(), line_number_height, currentLineColor(48));
 
 //            BlockUserData * user_data = static_cast<BlockUserData *>(block.userData())
@@ -435,9 +433,10 @@ void CodeEditor::extraAreaPaintProc(QPainter & painter, const QRect & paint_rect
 //              drawFolding(painter, foldingOffset(), top, curr_folding && folding_click, curr_folding);
 //            }
 
-            QString number = QString::number(screen_end_block_num + 1);
-            painter.setFont(curr_block_number == screen_end_block_num ? curr_line_font : font());
-            painter.drawText(0, top, line_number_width, line_number_height, Qt::AlignRight, number);
+            painter.setFont(is_current_block ? curr_line_font : font());
+            painter.drawText(
+                0, top, line_number_width, line_number_height, Qt::AlignRight, QString::number(screen_end_block_num + 1)
+            );
         }
 
         block = block.next();
@@ -445,9 +444,6 @@ void CodeEditor::extraAreaPaintProc(QPainter & painter, const QRect & paint_rect
         bottom = top + (int) blockBoundingRect(block).height();
         ++screen_end_block_num;
     }
-
-    if (is_caret_redrawing)
-        screen_end_block_num = current_last_line_index;
 }
 
 void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const bool & open, const bool & hover) {
@@ -517,8 +513,11 @@ void CodeEditor::hideOverlay() {
 }
 
 bool CodeEditor::blockOnScreen(const QTextBlock & block) {
-    int num = block.blockNumber();
-    return num >= screen_start_block_num && num <= screen_end_block_num;
+    QRectF r = blockBoundingGeometry(block).translated(contentOffset());
+    int view_height = height();
+    int rel_pos = view_height - r.top();
+
+    return (rel_pos > -r.height()) && (rel_pos < view_height);
 }
 
 QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags) {

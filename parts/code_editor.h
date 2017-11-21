@@ -48,9 +48,6 @@ class CodeEditor : public QPlainTextEdit {
     EDITOR_POS_TYPE tooplip_block_num;
     EDITOR_POS_TYPE tooplip_block_pos;
 
-    EDITOR_POS_TYPE screen_start_block_num;
-    EDITOR_POS_TYPE screen_end_block_num;
-
     int folding_y;
     bool folding_click;
 
