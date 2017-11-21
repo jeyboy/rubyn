@@ -19,7 +19,7 @@
 QString CodeEditor::word_boundary("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), overlay(0),
-    tooplip_block_num(-1), tooplip_block_pos(-1), folding_y(NO_FOLDING), folding_click(false), curr_block_number(-1)
+    tooplip_block_num(-1), tooplip_block_pos(-1), folding_y(NO_FOLDING)/*, folding_click(false)*/, curr_block_number(-1)
 {
     extra_area = new ExtraArea(this);  
 
@@ -45,10 +45,13 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0),
     //    ui->textEdit->setTextCursor( cursor );
 
     setMouseTracking(true);
+
+    prepareIcons();
 }
 
 CodeEditor::~CodeEditor() {
-   delete overlay;
+    delete overlay;
+    icons.clear();
 }
 
 void CodeEditor::setCompleter(QCompleter * new_completer) {
@@ -104,6 +107,7 @@ void CodeEditor::updateExtraAreaWidth(int /* newBlockCount */) {
     extra_zone_width = extraAreaWidth();
     setViewportMargins(extra_zone_width, 0, 0, 0);
     line_number_width = extra_zone_width - HPADDING * 2 - FOLDING_WIDTH;
+    folding_offset_x = foldingOffset();
 }
 
 void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
@@ -365,26 +369,35 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
         break;}
 
         case QEvent::MouseButtonPress: {
-            folding_click = folding_y != NO_FOLDING;
+            if (event -> button() == Qt::LeftButton) {
+                if (folding_y != NO_FOLDING) {
+                    QTextCursor cursor = cursorForPosition(QPoint(1, folding_y));
+                    QTextBlock blk = cursor.block();
+
+                    if (blk.isValid()) {
+                        BlockUserData * user_data = static_cast<BlockUserData *>(blk.userData());
+                        DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
+
+                        if (folding_flags) {
+                            user_data -> invertFoldingState();
+                            // TODO: some logic for folded text in editor
+                        }
+                    }
+                }
+            }
         break;}
 
-        case QEvent::MouseButtonRelease: {
-            folding_click = false;
-            return;
-        break;}
+//        case QEvent::MouseButtonRelease: {
+//            return;
+//        break;}
 
-        case QEvent::MouseButtonDblClick: {
-            return;
-        break;}
+//        case QEvent::MouseButtonDblClick: {
+//            return;
+//        break;}
 
         default:
-            event -> ignore();
+//            event -> ignore();
             return;
-    }
-
-
-    if (event -> type() == QEvent::MouseButtonPress && event -> button() == Qt::LeftButton) {
-
     }
 
     event -> accept();
@@ -449,11 +462,19 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         painter.fillRect(0, paint_top, extra_zone_width, block_bottom - block_top, currentLineColor(48));
 
     BlockUserData * user_data = static_cast<BlockUserData *>(block.userData());
+    DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
-    if (user_data && user_data -> has_folding) {
-      bool curr_folding = folding_y > block_top && folding_y < block_bottom;
+    if (folding_flags) {
+        if (folding_y > block_top && folding_y < block_bottom)
+            folding_flags |= BlockUserData::udf_folding_hovered;
 
-      drawFolding(painter, foldingOffset(), paint_top, curr_folding && folding_click, curr_folding);
+        painter.drawPixmap(
+            folding_offset_x,
+            paint_top + ((block_bottom - block_top) - FOLDING_WIDTH) / 2,
+            FOLDING_WIDTH,
+            FOLDING_WIDTH,
+            icons[folding_flags]
+        );
     }
 
     painter.setFont(is_current ? curr_line_font : font());
@@ -462,17 +483,26 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     );
 }
 
-void CodeEditor::drawFolding(QPainter & p, const int & x, const int & y, const bool & open, const bool & hover) {
-    //TODO: rewrite me: use cached pixmaps
-    QString name = QStringLiteral(":/folding");
-    name = name % (open ?  QStringLiteral("_open") : QStringLiteral("_close"));
+void CodeEditor::prepareIcons(const uint & size) {
+    icons.insert(
+        BlockUserData::udf_has_folding,
+        PREPARE_PIXMAP(QStringLiteral(":/folding_close"), FOLDING_WIDTH)
+    );
 
-    if (hover)
-        name = name % QStringLiteral("_hover");
+    icons.insert(
+        BlockUserData::udf_has_folding | BlockUserData::udf_folding_hovered,
+        PREPARE_PIXMAP(QStringLiteral(":/folding_close_hover"), FOLDING_WIDTH)
+    );
 
-    int row_height = fontMetrics().height();
+    icons.insert(
+        BlockUserData::udf_folding_opened,
+        PREPARE_PIXMAP(QStringLiteral(":/folding_open"), FOLDING_WIDTH)
+    );
 
-    p.drawPixmap(x, y + (row_height - FOLDING_WIDTH) / 2, FOLDING_WIDTH, FOLDING_WIDTH, QPixmap(name).scaled(FOLDING_WIDTH, FOLDING_WIDTH, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    icons.insert(
+        BlockUserData::udf_folding_opened | BlockUserData::udf_folding_hovered,
+        PREPARE_PIXMAP(QStringLiteral(":/folding_open_hover"), FOLDING_WIDTH)
+    );
 }
 
 void CodeEditor::showOverlay(const QTextBlock & block) {

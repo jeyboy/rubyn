@@ -24,6 +24,8 @@ class OverlayInfo;
 #define FOLDING_WIDTH 16
 #define NO_FOLDING -100
 
+#define PREPARE_PIXMAP(name, size) QPixmap(name).scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation)
+
 class CodeEditor : public QPlainTextEdit {
     Q_OBJECT
 
@@ -49,15 +51,19 @@ class CodeEditor : public QPlainTextEdit {
     EDITOR_POS_TYPE tooplip_block_pos;
 
     int folding_y;
-    bool folding_click;
+//    bool folding_click;
 
     int curr_block_number;
 
     int extra_zone_width;
 
+    int folding_offset_x;
+
     int line_number_height;
     int line_number_width;
     QFont curr_line_font;
+
+    QHash<DATA_FLAGS_TYPE, QPixmap> icons;
 public:
     CodeEditor(QWidget * parent = 0);
     ~CodeEditor();
@@ -82,6 +88,8 @@ public:
         line_number_height = fontMetrics().height();
     }
 protected:
+    void prepareIcons(const uint & size = FOLDING_WIDTH);
+
     void extraAreaPaintBlock(QPainter & painter,  const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const bool & is_current, const int & block_num);
 
     void showOverlay(const QTextBlock & block);
@@ -99,8 +107,6 @@ protected:
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
     void focusInEvent(QFocusEvent * e);
-
-    void drawFolding(QPainter & p, const int & x, const int & y, const bool & open, const bool & hover);
 
     bool canInsertFromMimeData(const QMimeData * source) const {
         return source -> hasUrls() || QPlainTextEdit::canInsertFromMimeData(source);

@@ -9,8 +9,17 @@
 #include "msg_info.h"
 
 struct BlockUserData : public QTextBlockUserData {
-    bool has_folding;
-    bool has_break_point;
+    enum UserDataFlags : DATA_FLAGS_TYPE {
+        udf_none = 0,
+        udf_has_folding = 1,
+        udf_folding_opened = 2 | udf_has_folding,
+        udf_folding_hovered = 4,
+        udf_has_breakpoint = 8,
+
+        udf_folding_flags = udf_has_folding | udf_folding_opened
+    };
+
+    UserDataFlags flags;
 
     TokenCell * begin_token;
     TokenCell * end_token;
@@ -19,9 +28,9 @@ struct BlockUserData : public QTextBlockUserData {
 
     QList<ParaInfo> pairs;
     QList<MsgInfo> msgs;
-public:
-    inline BlockUserData(TokenList * file_tokens, TokenCell * prev_token = 0, bool has_break_point = false, bool has_folding = false)
-        : has_folding(has_folding), has_break_point(has_break_point), begin_token(0), end_token(0), stack(0)
+
+    inline BlockUserData(TokenList * file_tokens, TokenCell * prev_token = 0, UserDataFlags data_flags = udf_has_folding/*udf_none*/)
+        : flags(data_flags), begin_token(0), end_token(0), stack(0)
     {
         file_tokens -> registerLine(begin_token, end_token, prev_token);
     }
@@ -55,6 +64,22 @@ public:
     inline ~BlockUserData() {
         delete stack;
         TokenList::removeLine(begin_token, end_token);
+    }
+
+    inline DATA_FLAGS_TYPE foldingState() { return flags & udf_folding_flags; }
+    inline bool hasBreakpoint() { return flags & udf_has_breakpoint; }
+
+    inline void setFoldingState(const UserDataFlags & new_state) {
+        flags = (UserDataFlags)((flags & (~(udf_folding_flags))) | (new_state & udf_folding_flags));
+    }
+
+    inline void invertFoldingState() {
+        if (flags & udf_folding_flags) {
+            setFoldingState(
+                ((flags & udf_folding_opened) == udf_folding_opened) ?
+                    udf_has_folding : udf_folding_opened
+            );
+        }
     }
 };
 
