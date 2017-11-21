@@ -122,8 +122,8 @@ bool CodeEditor::event(QEvent * event) {
         QTextCursor cursor = cursorForPosition(helpEvent -> pos() - QPoint(extraAreaWidth(), 0));
         QTextBlock blk = cursor.block();
 
-        showOverlay(firstVisibleBlock());
-//        showOverlay(document() -> findBlockByNumber(screen_end_block_num + 1));
+//        showOverlay(firstVisibleBlock());
+        showOverlay(document() -> findBlockByNumber(screen_end_block_num + 1));
 
         if (blk.isValid()) {
             EDITOR_POS_TYPE pos = cursor.positionInBlock();
