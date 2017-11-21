@@ -127,7 +127,7 @@ bool CodeEditor::event(QEvent * event) {
         QTextCursor cursor = cursorForPosition(helpEvent -> pos() - QPoint(extraAreaWidth(), 0));
         QTextBlock blk = cursor.block();
 
-//        showOverlay(firstVisibleBlock());
+        //showOverlay(firstVisibleBlock());
         showOverlay(document() -> findBlockByNumber(60));
 
         if (blk.isValid()) {
@@ -507,6 +507,7 @@ void CodeEditor::prepareIcons(const uint & size) {
 
 void CodeEditor::showOverlay(const QTextBlock & block) {
     if (blockOnScreen(block)) {
+        qDebug() << "ON SCREEN";
         hideOverlay();
         return;
     }
@@ -527,6 +528,14 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
     QRect bl_geometry_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
     bl_geometry_rect.setWidth(width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0));
 
+    if (overlay_pos == OverlayInfo::op_top) {
+        int height_limit = line_number_height * 3 + 3;
+
+        if (bl_geometry_rect.height() > height_limit) {
+            bl_geometry_rect.setHeight(height_limit);
+        }
+    }
+
     QPixmap pixmap(bl_geometry_rect.size());
     pixmap.fill(palette().base().color());
 
@@ -541,6 +550,15 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
     painter.setPen(extra_area -> borderColor());
     painter.drawLine(extra_zone_width - 1, 0, extra_zone_width - 1, pixmap.height());
 
+//    if (overlay_pos == OverlayInfo::op_top) {
+//        int height_limit = bl_geometry_rect.height() > line_number_height * 3 + 3;
+
+//        if (bl_geometry_rect.height() > height_limit) {
+//            bl_geometry_rect.setHeight(height_limit);
+//            pixmap = pixmap.copy(bl_geometry_rect);
+//        }
+//    }
+
     overlay -> showInfo(this, pixmap, overlay_pos);
 }
 
@@ -552,8 +570,7 @@ bool CodeEditor::blockOnScreen(const QTextBlock & block) {
     QRectF r = blockBoundingGeometry(block).translated(contentOffset());
     int view_height = height();
     int rel_pos = view_height - r.top();
-
-    return (rel_pos > -r.height()) && (rel_pos < view_height);
+    return (rel_pos > line_number_height / 2) && (rel_pos < view_height);
 }
 
 QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags) {
