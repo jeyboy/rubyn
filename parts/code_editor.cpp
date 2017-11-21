@@ -470,7 +470,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 
         painter.drawPixmap(
             folding_offset_x,
-            paint_top + ((block_bottom - block_top) - FOLDING_WIDTH) / 2,
+            paint_top + (line_number_height - FOLDING_WIDTH) / 2,
             FOLDING_WIDTH,
             FOLDING_WIDTH,
             icons[folding_flags]
