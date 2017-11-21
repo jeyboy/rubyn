@@ -411,13 +411,6 @@ void CodeEditor::extraAreaPaintProc(QPainter & painter, const QRect & paint_rect
 
 //    painter.fillRect(event -> rect(), palette().base().color());
 
-//    painter.setPen(QPen(QColor::fromRgb(0,127,255), 3));
-//    painter.drawLine(event -> rect().topRight(), event -> rect().bottomRight());
-
-//    painter.setPen(extra_area -> palette().base().color().darker(150));
-//    painter.drawLine(paint_rect.topRight(), paint_rect.bottomRight());
-//    painter.setPen(Qt::black);
-
     QTextBlock block = firstVisibleBlock();
     screen_end_block_num = screen_start_block_num = block.blockNumber();
 

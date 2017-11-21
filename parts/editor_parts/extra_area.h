@@ -8,6 +8,9 @@ class ExtraArea : public QWidget {
 public:
     ExtraArea(CodeEditor * editor) : QWidget(editor), codeEditor(editor) {
         setMouseTracking(true);
+
+//        painter.setPen(QPen(QColor::fromRgb(0,127,255), 3));
+        setStyleSheet("border-right: 1px solid " + palette().base().color().darker(150).name(QColor::HexRgb) + ";");
     }
 
     QSize sizeHint() const Q_DECL_OVERRIDE {
