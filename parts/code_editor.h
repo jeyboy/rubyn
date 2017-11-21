@@ -53,6 +53,8 @@ class CodeEditor : public QPlainTextEdit {
 
     int curr_block_number;
 
+    int extra_zone_width;
+
     int line_number_height;
     int line_number_width;
     QFont curr_line_font;
@@ -80,7 +82,7 @@ public:
         line_number_height = fontMetrics().height();
     }
 protected:
-    void extraAreaPaintProc(QPainter & painter, const QRect & paint_rect);
+    void extraAreaPaintBlock(QPainter & painter,  const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const bool & is_current, const int & block_num);
 
     void showOverlay(const QTextBlock & block);
     void hideOverlay();
