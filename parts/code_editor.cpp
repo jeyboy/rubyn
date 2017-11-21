@@ -446,7 +446,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
 void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const bool & is_current, const int & block_num) {
     if (is_current)
-        painter.fillRect(0, paint_top, extra_zone_width, line_number_height, currentLineColor(48));
+        painter.fillRect(0, paint_top, extra_zone_width, block_bottom - block_top, currentLineColor(48));
 
     BlockUserData * user_data = static_cast<BlockUserData *>(block.userData());
 
