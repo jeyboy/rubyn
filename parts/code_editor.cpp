@@ -507,7 +507,6 @@ void CodeEditor::prepareIcons(const uint & size) {
 
 void CodeEditor::showOverlay(const QTextBlock & block) {
     if (blockOnScreen(block)) {
-        qDebug() << "ON SCREEN";
         hideOverlay();
         return;
     }
@@ -549,15 +548,6 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
 
     painter.setPen(extra_area -> borderColor());
     painter.drawLine(extra_zone_width - 1, 0, extra_zone_width - 1, pixmap.height());
-
-//    if (overlay_pos == OverlayInfo::op_top) {
-//        int height_limit = bl_geometry_rect.height() > line_number_height * 3 + 3;
-
-//        if (bl_geometry_rect.height() > height_limit) {
-//            bl_geometry_rect.setHeight(height_limit);
-//            pixmap = pixmap.copy(bl_geometry_rect);
-//        }
-//    }
 
     overlay -> showInfo(this, pixmap, overlay_pos);
 }

@@ -42,6 +42,9 @@ protected:
 
     virtual void handle(LexerState * state) = 0;
 
+    virtual QByteArray leftPara(const QByteArray & right_para) = 0;
+    virtual QByteArray rightPara(const QByteArray & left_para) = 0;
+
 public:
     void handle(const QString & text, Highlighter * lighter, Scope * scope, TokenList * tokens) {
         LexerState * state = 0;
