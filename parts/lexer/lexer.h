@@ -20,6 +20,8 @@
 
 class Lexer {
 protected:
+    QHash<QByteArray, QByteArray> para_opositions;
+
     inline bool isBDigit(const char & c) { return c == '0' || c == '1'; }
     inline bool isODigit(const char & c) { return c >= '0' && c <= '7'; }
     inline bool isDigit(const char & c) { return c >= '0' && c <= '9'; }
@@ -42,10 +44,9 @@ protected:
 
     virtual void handle(LexerState * state) = 0;
 
-    virtual QByteArray leftPara(const QByteArray & right_para) = 0;
-    virtual QByteArray rightPara(const QByteArray & left_para) = 0;
+    inline const QByteArray & opposite_para(const QByteArray & para) { return para_opositions.value(para, para); }
 
-public:
+public:   
     void handle(const QString & text, Highlighter * lighter, Scope * scope, TokenList * tokens) {
         LexerState * state = 0;
 
@@ -73,6 +74,10 @@ public:
 
         block.setUserState(state -> status);
         udata -> syncLine(state -> token, state -> stack);
+    }
+
+    Lexer() {
+        initParas();
     }
 
     virtual ~Lexer() {}

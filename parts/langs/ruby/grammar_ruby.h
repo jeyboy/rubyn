@@ -140,14 +140,13 @@ public:
     }
 
     char percentagePresentationBlocker(const char & ch) {
-        return ParaInfo::paraSymbol(ch);
-//        switch(ch) {
-//            case '(': return ')';
-//            case '[': return ']';
-//            case '{': return '}';
+        switch(ch) {
+            case '(': return ')';
+            case '[': return ']';
+            case '{': return '}';
 
-//            default: return ch;
-//        };
+            default: return ch;
+        };
     }
 
     bool isStackDroppable(const Lexem & lexem) {
