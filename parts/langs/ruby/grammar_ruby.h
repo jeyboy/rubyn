@@ -2,7 +2,6 @@
 #define GRAMMAR_RUBY_H
 
 #include "parts/lexer/grammar.h"
-#include "parts/editor_parts/para_info.h"
 
 class GrammarRuby : public Grammar, public Singleton<GrammarRuby> {
     GrammarRuby() : Grammar() {

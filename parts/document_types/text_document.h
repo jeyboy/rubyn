@@ -8,6 +8,7 @@
 #include "parts/lexer/lexer.h"
 #include "parts/lexer/scopes/scope.h"
 #include "parts/editor_parts/highlighter.h"
+#include "misc/para_list.h"
 
 //#include "parts/langs/ruby/lexer_ruby.h"
 
@@ -25,6 +26,7 @@ class TextDocument : public QObject, public IDocument {
 protected:
     QPointer<QTextDocument> _doc;
     TokenList * _tokens;
+    ParaList * _paras;
     Scope * _scope;
     Lexer * _lexer;
     File * _file;
@@ -48,7 +50,7 @@ public:
 
     void lexicate(const QString & text, Highlighter * highlighter) {
         if (_lexer)
-            _lexer -> handle(text, highlighter, _scope, _tokens);
+            _lexer -> handle(text, highlighter, _scope, _tokens, _paras);
     }
 };
 

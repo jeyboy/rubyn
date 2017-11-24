@@ -1,22 +1,19 @@
 #ifndef TOKEN_LIST_H
 #define TOKEN_LIST_H
 
-#include <qglobal.h>
+#include "defines.h"
 #include "parts/lexer/lexems.h"
-
-#define TOKEN_TYPE quint32
-#define TOKEN_LENGTH_TYPE quint16
 
 struct TokenCell {
     TokenCell * prev;
     TokenCell * next;
 
     Lexem lexem;
-    TOKEN_TYPE start_pos;
-    TOKEN_LENGTH_TYPE length;
+    EDITOR_POS_TYPE start_pos;
+    EDITOR_LEN_TYPE length;
 
-    TokenCell(const Lexem & lexem, const TOKEN_TYPE & start_pos,
-              const TOKEN_LENGTH_TYPE & length, TokenCell * prev_token = 0)
+    TokenCell(const Lexem & lexem, const EDITOR_POS_TYPE & start_pos,
+              const EDITOR_LEN_TYPE & length, TokenCell * prev_token = 0)
         : prev(0), next(0), lexem(lexem), start_pos(start_pos), length(length)
     {
         if ((prev = prev_token)) {
@@ -80,11 +77,11 @@ public:
         delete right;
     }
 
-    TokenCell * append(const Lexem & lexem, const TOKEN_TYPE & start_pos, const TOKEN_LENGTH_TYPE & length) {
+    TokenCell * append(const Lexem & lexem, const EDITOR_POS_TYPE & start_pos, const EDITOR_LEN_TYPE & length) {
         return new TokenCell(lexem, start_pos, length, last -> prev);
     }
 
-    static TokenCell * insert(TokenCell * left, const Lexem & lexem, const TOKEN_TYPE & start_pos, const TOKEN_LENGTH_TYPE & length) {
+    static TokenCell * insert(TokenCell * left, const Lexem & lexem, const EDITOR_POS_TYPE & start_pos, const EDITOR_LEN_TYPE & length) {
         return new TokenCell(lexem, start_pos, length, left);
     }
 };

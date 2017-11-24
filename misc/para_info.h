@@ -32,12 +32,20 @@ struct ParaInfo {
 
         pt_open_struct = pt_open_block | pt_open_class | pt_open_module,
         pt_close_struct = 1 << 11,
+
+
+
+        pt_block_max = 1 << 14,
+        pt_max = 1 << 15
     };
 
     PARA_TYPE para_type;
     EDITOR_POS_TYPE pos;
 
-    inline PARA_TYPE paraSymbol() { return ParaInfo::para_opposition.value(para_type); }
+    inline PARA_TYPE paraSymbol() { return ParaInfo::para_opposition.value(para_type, pt_none); }
+
+    static inline bool hasPara(const QByteArray & poss_para) { return para_tokens.contains(poss_para); }
+    static inline PARA_TYPE oppositePara(const PARA_TYPE & para_type) { return para_opposition.value(para_type, pt_none); }
 };
 
 #endif // PARA_INFO_H

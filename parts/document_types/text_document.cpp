@@ -9,7 +9,7 @@
 QLatin1String TextDocument::tab_space = QLatin1Literal("  ");
 
 TextDocument::TextDocument(File * file, Lexer * lexer)
-    : IDocument(), _doc(0), _tokens(new TokenList()), _scope(new Scope()), _lexer(lexer), _file(file) {
+    : IDocument(), _doc(0), _tokens(new TokenList()), _paras(new ParaList()), _scope(new Scope()), _lexer(lexer), _file(file) {
 
     setFullyReaded(true);
     QByteArray ar = _file -> source() -> readAll();

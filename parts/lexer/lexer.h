@@ -2,11 +2,12 @@
 #define LEXER_H
 
 #include <qstring.h>
-#include <qdatetime.h>
+//#include <qdatetime.h>
 #include <qdebug.h>
 
 #include "lexer_state.h"
 #include "parts/formats/format_types.h"
+#include "misc/para_info.h"
 
 
 //unsigned int hCount(0);
@@ -20,8 +21,6 @@
 
 class Lexer {
 protected:
-    QHash<QByteArray, QByteArray> para_opositions;
-
     inline bool isBDigit(const char & c) { return c == '0' || c == '1'; }
     inline bool isODigit(const char & c) { return c >= '0' && c <= '7'; }
     inline bool isDigit(const char & c) { return c >= '0' && c <= '9'; }
@@ -44,10 +43,8 @@ protected:
 
     virtual void handle(LexerState * state) = 0;
 
-    inline const QByteArray & opposite_para(const QByteArray & para) { return para_opositions[para]; }
-
 public:   
-    void handle(const QString & text, Highlighter * lighter, Scope * scope, TokenList * tokens) {
+    void handle(const QString & text, Highlighter * lighter, Scope * scope, TokenList * tokens, ParaList * paras) {
         LexerState * state = 0;
 
         QTextBlock block = lighter -> currentBlock();
@@ -57,7 +54,11 @@ public:
         BlockUserData * udata = reinterpret_cast<BlockUserData *>(block.userData());
 
         if (!udata) {
-            udata = new BlockUserData(tokens, prev_udata ? prev_udata -> end_token : 0);
+            udata = new BlockUserData(
+                tokens, paras,
+                prev_udata ? prev_udata -> token_end : 0,
+                prev_udata ? prev_udata -> para_end : 0
+            );
             block.setUserData(udata);
         }
         else lighter -> clearExtraFormatForCurrBlock();
@@ -73,7 +74,7 @@ public:
 //        qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
 
         block.setUserState(state -> status);
-        udata -> syncLine(state -> token, state -> stack);
+        udata -> syncLine(state -> token, state -> para, state -> stack);
     }
 
     inline Lexer() {}

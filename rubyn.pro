@@ -20,7 +20,7 @@ SOURCES += main.cpp\
     parts/lexer/lexer_factory.cpp \
     parts/editor_parts/projects.cpp \
     parts/document_types/text_document.cpp \
-    parts/editor_parts/para_info.cpp
+    misc/para_info.cpp
 
 HEADERS  += ide_window.h \
     parts/editor_parts/highlighter.h \
@@ -69,10 +69,11 @@ HEADERS  += ide_window.h \
     misc/token_list.h \
     parts/editor_parts/projects.h \
     parts/document_types/idocument.h \
-    parts/editor_parts/para_info.h \
     parts/editor_parts/msg_info.h \
     misc/defines.h \
-    parts/editor_parts/overlay_info.h
+    parts/editor_parts/overlay_info.h \
+    misc/para_list.h \
+    misc/para_info.h
 
 FORMS    += ide_window.ui
 

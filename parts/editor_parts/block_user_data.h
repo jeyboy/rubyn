@@ -3,9 +3,9 @@
 
 #include <QTextBlockUserData>
 #include "misc/token_list.h"
+#include "misc/para_list.h"
 #include "misc/stack.h"
 
-#include "para_info.h"
 #include "msg_info.h"
 
 struct BlockUserData : public QTextBlockUserData {
@@ -21,30 +21,40 @@ struct BlockUserData : public QTextBlockUserData {
 
     UserDataFlags flags;
 
-    TokenCell * begin_token;
-    TokenCell * end_token;
+    TokenCell * token_begin;
+    TokenCell * token_end; // maybe no need to store end token ?
+
+    ParaCell * para_begin;
+    ParaCell * para_end; // maybe no need to store end token ?
 
     Stack<Lexem> * stack;
 
     QList<ParaInfo> pairs;
     QList<MsgInfo> msgs;
 
-    inline BlockUserData(TokenList * file_tokens, TokenCell * prev_token = 0, UserDataFlags data_flags = udf_has_folding/*udf_none*/)
-        : flags(data_flags), begin_token(0), end_token(0), stack(0)
+    inline BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev = 0, ParaCell * para_prev = 0, UserDataFlags data_flags = udf_has_folding/*udf_none*/)
+        : flags(data_flags), token_begin(0), token_end(0), para_begin(0), para_end(0), stack(0)
     {
-        file_tokens -> registerLine(begin_token, end_token, prev_token);
+        tokens -> registerLine(token_begin, token_end, token_prev);
+        paras -> registerLine(para_begin, para_end, para_prev);
     }
 
+    // maybe better to remove full tokens sequence in another thread instead of use sync and etc ???
     inline TokenCell * lineControlToken() {
-        end_token -> prev -> next = 0; // detach end line
-        return begin_token;
+        token_end -> prev -> next = 0; // detach end line
+        return token_begin;
     }
 
-    inline void syncLine(TokenCell * last_sync, Stack<Lexem> * stack_state) {
+    inline ParaCell * lineControlPara() {
+        para_end -> prev -> next = 0; // detach end line
+        return para_begin;
+    }
+
+    inline void syncLine(TokenCell * sync_token, ParaCell * sync_para, Stack<Lexem> * stack_state) {
         delete stack;
         stack = stack_state;
 
-        TokenCell * sync = last_sync -> next;
+        TokenCell * sync = sync_token -> next;
 
         if (sync) {
             while(sync -> next) {
@@ -55,15 +65,31 @@ struct BlockUserData : public QTextBlockUserData {
             delete sync;
         }
 
-        end_token -> prev = last_sync;
-        end_token -> prev -> next = end_token;
+        token_end -> prev = sync_token;
+        token_end -> prev -> next = token_end;
+
+
+        /////// SYNC PARA //////////
+        ParaCell * psync = sync_para -> next;
+
+        if (psync) {
+            while(psync -> next) {
+                psync = psync -> next;
+                delete psync -> prev;
+            }
+
+            delete psync;
+        }
+
+        para_end -> prev = sync_para;
+        para_end -> prev -> next = para_end;
     }
 
     inline Stack<Lexem> * stackState() { return stack; }
 
     inline ~BlockUserData() {
         delete stack;
-        TokenList::removeLine(begin_token, end_token);
+        TokenList::removeLine(token_begin, token_end);
     }
 
     inline DATA_FLAGS_TYPE foldingState() { return flags & udf_folding_flags; }
