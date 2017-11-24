@@ -25,8 +25,10 @@ public:
 
 
         setAttribute(Qt::WA_ShowWithoutActivating);
+        setAttribute(Qt::WA_TransparentForMouseEvents);
         setParent(0);
         setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        setFocusPolicy(Qt::NoFocus);
     }
 
     void showInfo(QWidget * widget, const QRect & rect, const OverlayPos & pos = op_top) {

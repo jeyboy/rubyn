@@ -1,10 +1,13 @@
 #ifndef PARA_INFO_H
 #define PARA_INFO_H
 
+#include <qhash.h>
+
 #include "misc/defines.h"
 
 struct ParaInfo {
     static QHash<QByteArray, PARA_TYPE> para_tokens;
+    static QHash<PARA_TYPE, PARA_TYPE> para_opposition;
 
     enum ParaType : PARA_TYPE {
         pt_none = 0,
@@ -34,34 +37,7 @@ struct ParaInfo {
     PARA_TYPE para_type;
     EDITOR_POS_TYPE pos;
 
-//    static char paraSymbol(const char & ch) {
-//        switch(ch) {
-//            case '(': return ')';
-//            case '[': return ']';
-//            case '{': return '}';
-
-//            default: return ch;
-//        };
-//    }
-
-//    inline char paraSymbol() { return ParaInfo::paraSymbol(symbol); }
-};
-
-QHash<QByteArray, PARA_TYPE> ParaInfo::para_tokens = {
-    { QByteArrayLiteral("{"), ParaInfo::pt_open_curly_bracket },
-    { QByteArrayLiteral("}"), ParaInfo::pt_close_curly_bracket },
-    { QByteArrayLiteral("["), ParaInfo::pt_open_square_bracket },
-    { QByteArrayLiteral("]"), ParaInfo::pt_close_square_bracket },
-    { QByteArrayLiteral("("), ParaInfo::pt_open_round_bracket },
-    { QByteArrayLiteral(")"), ParaInfo::pt_close_round_bracket },
-//    { QByteArrayLiteral("<"), ParaInfo::pt_open_angle_bracket },
-//    { QByteArrayLiteral(">"), ParaInfo::pt_close_angle_bracket },
-
-    { QByteArrayLiteral("do"), ParaInfo::pt_open_block },
-    { QByteArrayLiteral("class"), ParaInfo::pt_open_class },
-    { QByteArrayLiteral("module"), ParaInfo::pt_open_module },
-
-    { QByteArrayLiteral("end"), ParaInfo::pt_close_struct },
+    inline PARA_TYPE paraSymbol() { return ParaInfo::para_opposition.value(para_type); }
 };
 
 #endif // PARA_INFO_H

@@ -44,7 +44,7 @@ protected:
 
     virtual void handle(LexerState * state) = 0;
 
-    inline const QByteArray & opposite_para(const QByteArray & para) { return para_opositions.value(para, para); }
+    inline const QByteArray & opposite_para(const QByteArray & para) { return para_opositions[para]; }
 
 public:   
     void handle(const QString & text, Highlighter * lighter, Scope * scope, TokenList * tokens) {
@@ -76,9 +76,7 @@ public:
         udata -> syncLine(state -> token, state -> stack);
     }
 
-    Lexer() {
-        initParas();
-    }
+    inline Lexer() {}
 
     virtual ~Lexer() {}
 
