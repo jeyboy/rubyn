@@ -45,6 +45,7 @@ struct ParaInfo {
     inline PARA_TYPE paraSymbol() { return ParaInfo::para_opposition.value(para_type, pt_none); }
 
     static inline bool hasPara(const QByteArray & poss_para) { return para_tokens.contains(poss_para); }
+    static inline const PARA_TYPE & paraType(const QByteArray & poss_para) { return para_tokens[poss_para]; }
     static inline PARA_TYPE oppositePara(const PARA_TYPE & para_type) { return para_opposition.value(para_type, pt_none); }
 };
 

@@ -110,6 +110,9 @@ struct LexerState {
         cached_str_pos = bufferPos();
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
+
+        if (cached_length)
+            attachPara(cached);
     }
     inline void cachingDelimiter() {
         lex_prev_delimiter = lex_delimiter;
@@ -120,6 +123,9 @@ struct LexerState {
         cached_length = strLength();
 
         cached.setRawData(prev, cached_length);
+
+        if (cached_length)
+            attachPara(cached);
     }
     inline void dropCached() {
         next_offset = 1;
@@ -192,6 +198,19 @@ struct LexerState {
         }
 
         user_data -> msgs.append(MsgInfo{lexem, last_light_pos, last_light_len, msg});
+    }
+
+    inline void attachPara(const QByteArray & pos_para) {
+        const PARA_TYPE & ptype = ParaInfo::paraType(pos_para);
+        if (!ptype)
+            return;
+
+        if (para -> next) {
+            para = para -> next;
+            para -> para_type = ptype;
+            para -> pos = cached_str_pos;
+        }
+        else para = ParaList::insert(para, ptype, cached_str_pos);
     }
 };
 
