@@ -12,31 +12,48 @@ struct ParaInfo {
     enum ParaType : PARA_TYPE {
         pt_none = 0,
 
-        pt_open_curly_bracket = 1 << 0, //{
-        pt_close_curly_bracket = 1 << 1, //}
+        pt_open = 1 << 0,
+        pt_close = 1 << 1,
 
-        pt_open_square_bracket = 1 << 2, //[
-        pt_close_square_bracket = 1 << 3, //]
+        pt_selectable = 1 << 2,
+        pt_foldable = 1 << 3,
 
-        pt_open_round_bracket = 1 << 4, //(
-        pt_close_round_bracket = 1 << 5, //)
+        pt_curly_bracket = 1 << 4 | pt_selectable,
 
-        pt_open_angle_bracket = 1 << 6, //<
-        pt_close_angle_bracket = 1 << 7, //>
+        pt_open_curly_bracket = pt_curly_bracket | pt_open | pt_foldable, //{
+        pt_close_curly_bracket = pt_curly_bracket | pt_close, //}
 
-        pt_open_block = 1 << 8,
+        pt_square_bracket = 1 << 5 | pt_selectable,
 
-        pt_open_class = 1 << 9,
+        pt_open_square_bracket = pt_square_bracket | pt_open, //[
+        pt_close_square_bracket = pt_square_bracket | pt_close, //]
 
-        pt_open_module = 1 << 10,
+        pt_round_bracket = 1 << 6 | pt_selectable,
 
-        pt_open_struct = pt_open_block | pt_open_class | pt_open_module,
-        pt_close_struct = 1 << 11,
+        pt_open_round_bracket = pt_round_bracket | pt_open, //(
+        pt_close_round_bracket = pt_round_bracket | pt_close, //)
 
+//        pt_angle_bracket = 1 << 7 | pt_selectable, //<
 
+//        pt_open_angle_bracket = pt_angle_bracket | pt_open, //<
+//        pt_close_angle_bracket = pt_angle_bracket | pt_close, //>
 
-        pt_block_max = 1 << 14,
-        pt_max = 1 << 15
+        pt_open_do_block = 1 << 8 | pt_foldable,
+
+        pt_open_begin_block = 1 << 9 | pt_foldable,
+
+        pt_open_class = 1 << 10 | pt_foldable,
+
+        pt_open_module = 1 << 11 | pt_foldable,
+
+        pt_open_struct = pt_open_do_block | pt_open_class | pt_open_module,
+        pt_close_struct = 1 << 12,
+
+        // 13
+        // 14
+
+        pt_max = 1 << 15,
+        pt_max_end = pt_max | pt_close
     };
 
     PARA_TYPE para_type;

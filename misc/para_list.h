@@ -37,7 +37,7 @@ class ParaList {
 public:
     inline ParaList() : root(0), last(0) {
         root = new ParaCell(ParaInfo::pt_none, 0);
-        last = new ParaCell(ParaInfo::pt_max, 0, root);
+        last = new ParaCell(ParaInfo::pt_max_end, 0, root);
     }
 
     inline ~ParaList() {
@@ -62,7 +62,7 @@ public:
             prev_end = last -> prev;
 
         left = new ParaCell(ParaInfo::pt_none, 0, prev_end);
-        right = new ParaCell(ParaInfo::pt_block_max, 0, left);
+        right = new ParaCell(ParaInfo::pt_max, 0, left);
     }
 
     static void removeLine(ParaCell * left, ParaCell * right) {

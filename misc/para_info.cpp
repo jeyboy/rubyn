@@ -10,7 +10,8 @@ QHash<QByteArray, PARA_TYPE> ParaInfo::para_tokens = {
 //    { QByteArrayLiteral("<"), ParaInfo::pt_open_angle_bracket },
 //    { QByteArrayLiteral(">"), ParaInfo::pt_close_angle_bracket },
 
-    { QByteArrayLiteral("do"), ParaInfo::pt_open_block },
+    { QByteArrayLiteral("do"), ParaInfo::pt_open_do_block },
+    { QByteArrayLiteral("begin"), ParaInfo::pt_open_begin_block },
     { QByteArrayLiteral("class"), ParaInfo::pt_open_class },
     { QByteArrayLiteral("module"), ParaInfo::pt_open_module },
 
@@ -25,7 +26,7 @@ QHash<PARA_TYPE, PARA_TYPE> ParaInfo::para_opposition = {
     { ParaInfo::pt_open_round_bracket, ParaInfo::pt_close_round_bracket },
     { ParaInfo::pt_close_round_bracket, ParaInfo::pt_open_round_bracket },
 
-    { ParaInfo::ParaInfo::pt_open_block, ParaInfo::pt_close_struct },
+    { ParaInfo::ParaInfo::pt_open_do_block, ParaInfo::pt_close_struct },
     { ParaInfo::ParaInfo::pt_open_class, ParaInfo::pt_close_struct },
     { ParaInfo::ParaInfo::pt_open_module, ParaInfo::pt_close_struct },
 
