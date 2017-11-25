@@ -9,13 +9,13 @@
 #include <qfiledialog.h>
 #include <qsplitter>
 #include <qcompleter.h>
+#include <qlabel.h>
 
 IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), editors_spliter(0) {
     ui -> setupUi(this);
 
     setAcceptDrops(true);
     connect(&Projects::obj(), SIGNAL(textAdded(QObject*,QUrl)), this, SLOT(textDocumentAdded(QObject*,QUrl)));
-
 
 //    void projectAdded(QObject * project);
 //    void projectRemoved(QObject * project);
@@ -37,6 +37,11 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     setupEditor();
 
     active_editor -> hide();
+
+    QLabel * pos_status = new QLabel();
+    connect(active_editor, SIGNAL(cursorPosChanged(QString)), pos_status, SLOT(setText(QString)));
+    ui -> status_bar -> addPermanentWidget(pos_status);
+
 
     openFile(QUrl::fromLocalFile("F://rubyn test//ruby//test1.rb"));
 

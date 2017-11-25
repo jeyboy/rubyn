@@ -179,6 +179,7 @@ protected:
 
 signals:
     void fileDropped(const QUrl & uri, bool multiple); // Multiple files are dropped?
+    void cursorPosChanged(const QString & pos_coords);
 
 private slots:
     void applyCompletion(const QString & completion);
