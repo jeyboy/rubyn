@@ -391,7 +391,7 @@ void CodeEditor::highlightCurrentLine() {
     QTextCursor cursor = textCursor();
     curr_block_number = cursor.blockNumber();
 
-    emit cursorPosChanged(QStringLiteral("%1, %2").arg(curr_block_number + 1).arg(cursor.positionInBlock()));
+    emit cursorPosChanged(QStringLiteral("Line: %1, Col: %2").arg(curr_block_number + 1).arg(cursor.positionInBlock()));
 
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;

@@ -163,7 +163,7 @@ protected:
     bool canInsertFromMimeData(const QMimeData * source) const {
         return source -> hasUrls() || QPlainTextEdit::canInsertFromMimeData(source);
     }
-    void insertFromMimeData(const QMimeData* source) {
+    void insertFromMimeData(const QMimeData * source) {
         if (source -> hasUrls()) {
             QList<QUrl> urls = source -> urls();
             bool multiple(urls.count() > 1);

@@ -39,6 +39,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     active_editor -> hide();
 
     QLabel * pos_status = new QLabel();
+    pos_status -> setStyleSheet("border: 1px solid gray; border-radius: 6px;");
     connect(active_editor, SIGNAL(cursorPosChanged(QString)), pos_status, SLOT(setText(QString)));
     ui -> status_bar -> addPermanentWidget(pos_status);
 
