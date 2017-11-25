@@ -26,6 +26,53 @@ class OverlayInfo;
 
 #define PREPARE_PIXMAP(name, size) QPixmap(name).scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation)
 
+
+//static QColor blendColors(const QColor &a, const QColor &b, int alpha)
+//{
+//    return QColor((a.red()   * (256 - alpha) + b.red()   * alpha) / 256,
+//                  (a.green() * (256 - alpha) + b.green() * alpha) / 256,
+//                  (a.blue()  * (256 - alpha) + b.blue()  * alpha) / 256);
+//}
+
+//static QColor calcBlendColor(const QColor &baseColor, int level, int count)
+//{
+//    QColor color80;
+//    QColor color90;
+
+//    if (baseColor.value() > 128) {
+//        const int f90 = 15;
+//        const int f80 = 30;
+//        color80.setRgb(qMax(0, baseColor.red() - f80),
+//                       qMax(0, baseColor.green() - f80),
+//                       qMax(0, baseColor.blue() - f80));
+//        color90.setRgb(qMax(0, baseColor.red() - f90),
+//                       qMax(0, baseColor.green() - f90),
+//                       qMax(0, baseColor.blue() - f90));
+//    } else {
+//        const int f90 = 20;
+//        const int f80 = 40;
+//        color80.setRgb(qMin(255, baseColor.red() + f80),
+//                       qMin(255, baseColor.green() + f80),
+//                       qMin(255, baseColor.blue() + f80));
+//        color90.setRgb(qMin(255, baseColor.red() + f90),
+//                       qMin(255, baseColor.green() + f90),
+//                       qMin(255, baseColor.blue() + f90));
+//    }
+
+//    if (level == count)
+//        return baseColor;
+//    if (level == 0)
+//        return color80;
+//    if (level == count - 1)
+//        return color90;
+
+//    const int blendFactor = level * (256 / (count - 2));
+
+//    return blendColors(color80, color90, blendFactor);
+//}
+
+
+
 class CodeEditor : public QPlainTextEdit {
     Q_OBJECT
 
@@ -59,6 +106,8 @@ class CodeEditor : public QPlainTextEdit {
 
     int folding_offset_x;
 
+    qreal symbol_width;
+
     int line_number_height;
     int line_number_width;
     QFont curr_line_font;
@@ -86,6 +135,8 @@ public:
         QPlainTextEdit::setFont(font);
 
         line_number_height = fontMetrics().height();
+
+        symbol_width = QFontMetricsF(font).averageCharWidth();
     }
 protected:
     void prepareIcons(const uint & size = FOLDING_WIDTH);
@@ -103,7 +154,8 @@ protected:
     inline QColor currentLineColor(const int & transparency = 16) { return QColor::fromRgb(128, 128, 128, transparency); } // QColor lineColor = QColor(Qt::yellow).lighter(160);
 
     bool event(QEvent * event);
-    void resizeEvent(QResizeEvent * event) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent * e);
+    void resizeEvent(QResizeEvent * e) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
     void focusInEvent(QFocusEvent * e);

@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     parts/lexer/lexer_factory.cpp \
     parts/editor_parts/projects.cpp \
     parts/document_types/text_document.cpp \
-    misc/para_info.cpp
+    misc/para_info.cpp \
+    parts/editor_parts/body_overlay_info.cpp
 
 HEADERS  += ide_window.h \
     parts/editor_parts/highlighter.h \
@@ -73,7 +74,8 @@ HEADERS  += ide_window.h \
     misc/defines.h \
     parts/editor_parts/overlay_info.h \
     misc/para_list.h \
-    misc/para_info.h
+    misc/para_info.h \
+    parts/editor_parts/body_overlay_info.h
 
 FORMS    += ide_window.ui
 

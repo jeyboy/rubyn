@@ -34,7 +34,7 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0),
     updateExtraAreaWidth(0);
 //    highlightCurrentLine();
 
-//    setLineWrapMode(NoWrap);
+    setLineWrapMode(NoWrap);
 
     verticalScrollBar() -> setSingleStep(2);
 //    scrollBarWidgets()
@@ -96,7 +96,7 @@ void CodeEditor::openDocument(File * file) {
 
 int CodeEditor::foldingOffset() {
     int digits = qMax(1, QString::number(blockCount()).length());
-    return HPADDING * 2 + fontMetrics().width(QLatin1Char('9')) * digits;
+    return HPADDING * 2 + symbol_width * digits;
 }
 
 int CodeEditor::extraAreaWidth() {
@@ -167,6 +167,93 @@ bool CodeEditor::event(QEvent * event) {
     }
 
     return QPlainTextEdit::event(event);
+}
+
+void CodeEditor::paintEvent(QPaintEvent * e) {
+    QPainter painter(viewport());
+
+    if (lineWrapMode() == NoWrap) {
+        painter.setPen(QColor::fromRgb(192, 192, 192, 72));
+        int x = round(symbol_width * 80.0) + contentOffset().x() + document() -> documentMargin();
+
+        painter.drawLine(x, 0, x, height());
+    }
+
+    QPlainTextEdit::paintEvent(e);
+
+/////////// HIGHLIGHT BLOCKS ////////////////
+
+//    if (!d->m_highlightBlocksInfo.isEmpty()) {
+//        const QColor baseColor = palette().base().color();
+
+//        // extra pass for the block highlight
+
+//        const int margin = 5;
+//        QTextBlock blockFP = block;
+//        QPointF offsetFP = offset;
+//        while (blockFP.isValid()) {
+//            QRectF r = blockBoundingRect(blockFP).translated(offsetFP);
+
+//            int n = blockFP.blockNumber();
+//            int depth = 0;
+//            foreach (int i, d->m_highlightBlocksInfo.open)
+//                if (n >= i)
+//                    ++depth;
+//            foreach (int i, d->m_highlightBlocksInfo.close)
+//                if (n > i)
+//                    --depth;
+
+//            int count = d->m_highlightBlocksInfo.count();
+//            if (count) {
+//                for (int i = 0; i <= depth; ++i) {
+//                    const QColor &blendedColor = calcBlendColor(baseColor, i, count);
+//                    int vi = i > 0 ? d->m_highlightBlocksInfo.visualIndent.at(i-1) : 0;
+//                    QRectF oneRect = r;
+//                    oneRect.setWidth(qMax(viewport()->width(), documentWidth));
+//                    oneRect.adjust(vi, 0, 0, 0);
+//                    if (oneRect.left() >= oneRect.right())
+//                        continue;
+//                    if (lineX > 0 && oneRect.left() < lineX && oneRect.right() > lineX) {
+//                        QRectF otherRect = r;
+//                        otherRect.setLeft(lineX + 1);
+//                        otherRect.setRight(oneRect.right());
+//                        oneRect.setRight(lineX - 1);
+//                        painter.fillRect(otherRect, blendedColor);
+//                    }
+//                    painter.fillRect(oneRect, blendedColor);
+//                }
+//            }
+//            offsetFP.ry() += r.height();
+
+//            if (offsetFP.y() > viewportRect.height() + margin)
+//                break;
+
+//            blockFP = blockFP.next();
+//            if (!blockFP.isVisible()) {
+//                // invisible blocks do have zero line count
+//                blockFP = doc->findBlockByLineNumber(blockFP.firstLineNumber());
+//            }
+//        }
+//    }
+//////////////////////////////////////////////////////////////////
+
+//////////////// DRAW OVERLAYS
+//    if (!d->m_findScopeStart.isNull() && d->m_findScopeVerticalBlockSelectionFirstColumn < 0) {
+
+//        TextEditorOverlay *overlay = new TextEditorOverlay(this);
+//        overlay->addOverlaySelection(d->m_findScopeStart.position(),
+//                                     d->m_findScopeEnd.position(),
+//                                     searchScopeFormat.foreground().color(),
+//                                     searchScopeFormat.background().color(),
+//                                     TextEditorOverlay::ExpandBegin);
+//        overlay->setAlpha(false);
+//        overlay->paint(&painter, e->rect());
+//        delete overlay;
+//    }
+/// //////////////////////////////////
+
+//drawCollapsedBlockPopup()
+
 }
 
 void CodeEditor::resizeEvent(QResizeEvent * e) {
@@ -504,6 +591,61 @@ void CodeEditor::prepareIcons(const uint & size) {
         PREPARE_PIXMAP(QStringLiteral(":/folding_open_hover"), size)
     );
 }
+
+//void TextEditorWidget::drawCollapsedBlockPopup(QPainter &painter,
+//                                             const QTextBlock &block,
+//                                             QPointF offset,
+//                                             const QRect &clip)
+//{
+//    int margin = block.document()->documentMargin();
+//    qreal maxWidth = 0;
+//    qreal blockHeight = 0;
+//    QTextBlock b = block;
+
+//    while (!b.isVisible()) {
+//        b.setVisible(true); // make sure block bounding rect works
+//        QRectF r = blockBoundingRect(b).translated(offset);
+
+//        QTextLayout *layout = b.layout();
+//        for (int i = layout->lineCount()-1; i >= 0; --i)
+//            maxWidth = qMax(maxWidth, layout->lineAt(i).naturalTextWidth() + 2*margin);
+
+//        blockHeight += r.height();
+
+//        b.setVisible(false); // restore previous state
+//        b.setLineCount(0); // restore 0 line count for invisible block
+//        b = b.next();
+//    }
+
+//    painter.save();
+//    painter.setRenderHint(QPainter::Antialiasing, true);
+//    painter.translate(.5, .5);
+//    QBrush brush = palette().base();
+//    const QTextCharFormat &ifdefedOutFormat
+//            = textDocument()->fontSettings().toTextCharFormat(C_DISABLED_CODE);
+//    if (ifdefedOutFormat.hasProperty(QTextFormat::BackgroundBrush))
+//        brush = ifdefedOutFormat.background();
+//    painter.setBrush(brush);
+//    painter.drawRoundedRect(QRectF(offset.x(),
+//                                   offset.y(),
+//                                   maxWidth, blockHeight).adjusted(0, 0, 0, 0), 3, 3);
+//    painter.restore();
+
+//    QTextBlock end = b;
+//    b = block;
+//    while (b != end) {
+//        b.setVisible(true); // make sure block bounding rect works
+//        QRectF r = blockBoundingRect(b).translated(offset);
+//        QTextLayout *layout = b.layout();
+//        QVector<QTextLayout::FormatRange> selections;
+//        layout->draw(&painter, offset, selections, clip);
+
+//        b.setVisible(false); // restore previous state
+//        b.setLineCount(0); // restore 0 line count for invisible block
+//        offset.ry() += r.height();
+//        b = b.next();
+//    }
+//}
 
 void CodeEditor::showOverlay(const QTextBlock & block) {
     if (blockOnScreen(block)) {
