@@ -44,15 +44,14 @@ struct ParaInfo {
 
         pt_open_begin_block = 1 << 9 | pt_open_foldable,
 
-        pt_open_class = 1 << 10 | pt_open_foldable,
+        pt_open_method = 1 << 11 | pt_open_foldable,
 
-        pt_open_module = 1 << 11 | pt_open_foldable,
+        pt_open_class = 1 << 12 | pt_open_foldable,
 
-        pt_open_struct = pt_open_do_block | pt_open_class | pt_open_module,
-        pt_close_struct = 1 << 12 | pt_close,
+        pt_open_module = 1 << 13 | pt_open_foldable,
 
-        // 13
-        // 14
+        pt_open_struct = pt_open_do_block | pt_open_method | pt_open_class | pt_open_module,
+        pt_close_struct = 1 << 14 | pt_close,
 
         pt_max = 1 << 15,
         pt_max_end = pt_max | pt_close

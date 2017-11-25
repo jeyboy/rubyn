@@ -74,7 +74,7 @@ public:
 //        qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
 
         block.setUserState(state -> status);
-        udata -> syncLine(state -> token, state -> para, state -> stack);
+        udata -> syncLine(state -> token, state -> para, state -> control_para, state -> stack);
     }
 
     inline Lexer() {}

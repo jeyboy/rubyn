@@ -62,6 +62,7 @@ struct LexerState {
 
     TokenCell * token;
     ParaCell * para;
+    ParaCell * control_para;
 
     EDITOR_POS_TYPE cached_str_pos;
     EDITOR_LEN_TYPE cached_length;
@@ -76,13 +77,11 @@ struct LexerState {
     Status status;
     BlockUserData * user_data;
 
-    PARA_TYPE folding_type;
-
     LexerState(Scope * scope, BlockUserData * user_data, Stack<Lexem> * stack_state = 0, Highlighter * lighter = 0) : lighter(lighter),
         lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
         scope(scope), stack(stack_state == 0 ? new Stack<Lexem>(lex_none) : new Stack<Lexem>(stack_state)),
-        next_offset(1), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()), cached_length(0),
-        start(0), buffer(0), prev(0), status(ls_handled), user_data(user_data), folding_type(ParaInfo::pt_none)
+        next_offset(1), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()), control_para(0),
+        cached_length(0), start(0), buffer(0), prev(0), status(ls_handled), user_data(user_data)
     {}
 
     ~LexerState() {
@@ -218,17 +217,18 @@ struct LexerState {
         }
 
         if (ptype & ParaInfo::pt_foldable) {
-            if (folding_type) {
-                qDebug() << "DOUBLE FOLDING: " << folding_type << ptype;
+            if (control_para) {
+                qDebug() << "DOUBLE FOLDING: " << control_para -> para_type << ptype;
             }
+
+            control_para = para;
         }
 
-        if (ptype & ParaInfo::pt_close) {
-            if (ParaInfo::oppositePara(ptype) & folding_type == folding_type) {
-                // TODO something
-            } else {
-                qDebug() << "WRONG FOLDING CLOSE: " << folding_type << ptype;
+        if (control_para && ptype & ParaInfo::pt_close) {
+            if ((ParaInfo::oppositePara(ptype) & control_para -> para_type) != control_para -> para_type) {
+                qDebug() << "WRONG FOLDING CLOSE: " << control_para -> para_type << ptype;
             }
+            else control_para = 0;
         }
     }
 };
