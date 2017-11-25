@@ -18,9 +18,11 @@ struct ParaInfo {
         pt_selectable = 1 << 2,
         pt_foldable = 1 << 3,
 
+        pt_open_foldable = pt_open | pt_foldable,
+
         pt_curly_bracket = 1 << 4 | pt_selectable,
 
-        pt_open_curly_bracket = pt_curly_bracket | pt_open | pt_foldable, //{
+        pt_open_curly_bracket = pt_curly_bracket | pt_open_foldable, //{
         pt_close_curly_bracket = pt_curly_bracket | pt_close, //}
 
         pt_square_bracket = 1 << 5 | pt_selectable,
@@ -38,16 +40,16 @@ struct ParaInfo {
 //        pt_open_angle_bracket = pt_angle_bracket | pt_open, //<
 //        pt_close_angle_bracket = pt_angle_bracket | pt_close, //>
 
-        pt_open_do_block = 1 << 8 | pt_foldable,
+        pt_open_do_block = 1 << 8 | pt_open_foldable,
 
-        pt_open_begin_block = 1 << 9 | pt_foldable,
+        pt_open_begin_block = 1 << 9 | pt_open_foldable,
 
-        pt_open_class = 1 << 10 | pt_foldable,
+        pt_open_class = 1 << 10 | pt_open_foldable,
 
-        pt_open_module = 1 << 11 | pt_foldable,
+        pt_open_module = 1 << 11 | pt_open_foldable,
 
         pt_open_struct = pt_open_do_block | pt_open_class | pt_open_module,
-        pt_close_struct = 1 << 12,
+        pt_close_struct = 1 << 12 | pt_close,
 
         // 13
         // 14

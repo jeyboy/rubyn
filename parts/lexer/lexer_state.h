@@ -76,13 +76,14 @@ struct LexerState {
     Status status;
     BlockUserData * user_data;
 
-    bool has_folding;
+    PARA_TYPE folding_type;
 
     LexerState(Scope * scope, BlockUserData * user_data, Stack<Lexem> * stack_state = 0, Highlighter * lighter = 0) : lighter(lighter),
         lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
         scope(scope), stack(stack_state == 0 ? new Stack<Lexem>(lex_none) : new Stack<Lexem>(stack_state)),
         next_offset(1), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()), cached_length(0),
-        start(0), buffer(0), prev(0), status(ls_handled), user_data(user_data), has_folding(false) { }
+        start(0), buffer(0), prev(0), status(ls_handled), user_data(user_data), folding_type(ParaInfo::pt_none)
+    {}
 
     ~LexerState() {
         delete scope;
@@ -217,7 +218,17 @@ struct LexerState {
         }
 
         if (ptype & ParaInfo::pt_foldable) {
+            if (folding_type) {
+                qDebug() << "DOUBLE FOLDING: " << folding_type << ptype;
+            }
+        }
 
+        if (ptype & ParaInfo::pt_close) {
+            if (ParaInfo::oppositePara(ptype) & folding_type == folding_type) {
+                // TODO something
+            } else {
+                qDebug() << "WRONG FOLDING CLOSE: " << folding_type << ptype;
+            }
         }
     }
 };
