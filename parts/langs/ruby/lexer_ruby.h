@@ -73,6 +73,8 @@ class LexerRuby : public Lexer {
             Lexem prev_highlightable = lex_none;
 
             if (state -> cached_length) {
+
+
                 if (state -> lex_word == lex_word)
                     identifyWordType(state);
 

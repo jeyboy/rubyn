@@ -42,6 +42,7 @@ public:
         delete _lexer;
         delete _scope;
         delete _tokens;
+        delete _paras;
     }
 
     QTextDocument * toQDoc() { return _doc; }
