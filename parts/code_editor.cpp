@@ -486,22 +486,22 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 void CodeEditor::prepareIcons(const uint & size) {
     icons.insert(
         BlockUserData::udf_has_folding,
-        PREPARE_PIXMAP(QStringLiteral(":/folding_close"), FOLDING_WIDTH)
+        PREPARE_PIXMAP(QStringLiteral(":/folding_close"), size)
     );
 
     icons.insert(
         BlockUserData::udf_has_folding | BlockUserData::udf_folding_hovered,
-        PREPARE_PIXMAP(QStringLiteral(":/folding_close_hover"), FOLDING_WIDTH)
+        PREPARE_PIXMAP(QStringLiteral(":/folding_close_hover"), size)
     );
 
     icons.insert(
         BlockUserData::udf_folding_opened,
-        PREPARE_PIXMAP(QStringLiteral(":/folding_open"), FOLDING_WIDTH)
+        PREPARE_PIXMAP(QStringLiteral(":/folding_open"), size)
     );
 
     icons.insert(
         BlockUserData::udf_folding_opened | BlockUserData::udf_folding_hovered,
-        PREPARE_PIXMAP(QStringLiteral(":/folding_open_hover"), FOLDING_WIDTH)
+        PREPARE_PIXMAP(QStringLiteral(":/folding_open_hover"), size)
     );
 }
 

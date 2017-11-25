@@ -207,14 +207,12 @@ struct LexerState {
         if (!ptype)
             return;
 
-        if (ptype & ParaInfo::pt_selectable) {
-            if (para -> next) {
-                para = para -> next;
-                para -> para_type = ptype;
-                para -> pos = cached_str_pos;
-            }
-            else para = ParaList::insert(para, ptype, cached_str_pos);
+        if (para -> next) {
+            para = para -> next;
+            para -> para_type = ptype;
+            para -> pos = cached_str_pos;
         }
+        else para = ParaList::insert(para, ptype, cached_str_pos);
 
         if (ptype & ParaInfo::pt_foldable) {
             if (control_para) {
@@ -223,8 +221,7 @@ struct LexerState {
 
             control_para = para;
         }
-
-        if (control_para && ptype & ParaInfo::pt_close) {
+        else if (control_para && ptype & ParaInfo::pt_close) {
             if ((ParaInfo::oppositePara(ptype) & control_para -> para_type) != control_para -> para_type) {
                 qDebug() << "WRONG FOLDING CLOSE: " << control_para -> para_type << ptype;
             }

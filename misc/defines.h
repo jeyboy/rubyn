@@ -3,7 +3,7 @@
 
 #include <qobject.h>
 
-#define PARA_TYPE quint16
+#define PARA_TYPE quint32
 
 #define LEXEM_TYPE uint
 #define STACK_INT_TYPE uint

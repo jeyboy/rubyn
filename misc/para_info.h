@@ -50,10 +50,22 @@ struct ParaInfo {
 
         pt_open_module = 1 << 13 | pt_open_foldable,
 
-        pt_open_struct = pt_open_do_block | pt_open_method | pt_open_class | pt_open_module,
-        pt_close_struct = 1 << 14 | pt_close,
+        pt_open_if = 1 << 14 | pt_open_foldable,
 
-        pt_max = 1 << 15,
+        pt_open_unless = 1 << 15 | pt_open_foldable,
+
+        pt_open_case = 1 << 16 | pt_open_foldable,
+
+        pt_open_while = 1 << 17 | pt_open_foldable,
+
+        pt_open_until = 1 << 18 | pt_open_foldable,
+
+        pt_open_for = 1 << 19 | pt_open_foldable,
+
+        pt_open_struct = pt_open_do_block | pt_open_method | pt_open_class | pt_open_module | pt_open_if | pt_open_unless | pt_open_case | pt_open_while | pt_open_until | pt_open_for,
+        pt_close_struct = 1 << 20 | pt_close,
+
+        pt_max = 1 << 21,
         pt_max_end = pt_max | pt_close
     };
 
