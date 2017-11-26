@@ -588,27 +588,30 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 
 void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     QRect parent_block_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
+
+    if (!rectOnScreen(parent_block_rect))
+        return;
+
     QRect popup_rect(parent_block_rect.topLeft(), size());
 
     int view_height = height();
     int rel_pos = view_height - parent_block_rect.top();
 
-    if (!rectOnScreen(parent_block_rect))
-        return;
-
     int potential_height = 0;
 
     if (rel_pos >= view_height / 2) {
         popup_rect.translate(0, line_number_height + 2);
-        potential_height = rel_pos - line_number_height;
+        potential_height = rel_pos - line_number_height - 3;
     }
     else {
-        potential_height = parent_block_rect.top() - contentOffset().ry();
+        potential_height = parent_block_rect.top() - contentOffset().ry() - 1;
         popup_rect.translate(0, -potential_height);
     }
 
     popup_rect.translate(mapToGlobal(rect().topLeft()));
     popup_rect.setHeight(potential_height);
+    popup_rect.setWidth(widthWithoutScroll());
+
 
     QPixmap pixmap(popup_rect.size());
     pixmap.fill(palette().base().color().darker(105));
