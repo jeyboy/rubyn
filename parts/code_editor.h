@@ -142,10 +142,11 @@ public:
     }
 protected:
     void prepareIcons(const uint & size = FOLDING_WIDTH);
+    int widthWithoutScroll();
 
     void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom);
     void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const int & block_num);
-    void drawFoldingContentPopup(QPainter & painter, const QTextBlock & block);
+    void showFoldingContentPopup(const QTextBlock & block);
 
     void showOverlay(const QRect & rect, const QPixmap & overlay_img);
     void showOverlay(const QTextBlock & block);
