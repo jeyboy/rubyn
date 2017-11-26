@@ -170,7 +170,11 @@ bool CodeEditor::event(QEvent * event) {
 }
 
 void CodeEditor::paintEvent(QPaintEvent * e) {
+    QPlainTextEdit::paintEvent(e);
+
     QPainter painter(viewport());
+
+    painter.drawRect(textRect(firstVisibleBlock(), 3, 3));
 
     if (lineWrapMode() == NoWrap) {
         painter.setPen(QColor::fromRgb(192, 192, 192, 72));
@@ -178,8 +182,6 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
         painter.drawLine(x, 0, x, height());
     }
-
-    QPlainTextEdit::paintEvent(e);
 
 /////////// HIGHLIGHT BLOCKS ////////////////
 
@@ -684,7 +686,7 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
 
     QPainter painter(&pixmap);
 
-    block.layout() -> draw(&painter, QPoint(extra_zone_width + 1, 0));
+    block.layout() -> draw(&painter, QPoint(extra_zone_width + contentOffset().x(), 0));
     painter.fillRect(0,0, extra_zone_width, bl_geometry_rect.height(), QColor::fromRgb(172, 229, 238));
     painter.translate(QPoint(1, 0));
 
@@ -704,7 +706,26 @@ bool CodeEditor::blockOnScreen(const QTextBlock & block) {
     QRectF r = blockBoundingGeometry(block).translated(contentOffset());
     int view_height = height();
     int rel_pos = view_height - r.top();
-    return (rel_pos > line_number_height / 2) && (rel_pos < view_height);
+    return (rel_pos > line_number_height / 2) && (rel_pos <= view_height);
+}
+
+QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+    QTextLine line = block.layout() -> lineForTextPosition(pos);
+
+    if (!line.isValid())
+        return QRect();
+
+    QRectF rect = line.naturalTextRect();
+    rect.translate(contentOffset());
+    rect.setLeft(line.cursorToX(pos));
+    rect.setRight(line.cursorToX(pos + length));
+    return rect.toRect();
+
+
+//    QRectF block_rect = blockBoundingGeometry(block).translated(contentOffset() + QPointF(document() -> documentMargin(), 0));
+//    block_rect.setLeft((symbol_width * pos));
+//    block_rect.setWidth(symbol_width * length);
+//    return block_rect.toRect();
 }
 
 QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags) {

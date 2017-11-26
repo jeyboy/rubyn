@@ -148,6 +148,8 @@ protected:
 
     bool blockOnScreen(const QTextBlock & block);
 
+    QRect textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
+
     QString wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags = wuco_full);
     void procSelectionIndent(const bool & right = true);
 
