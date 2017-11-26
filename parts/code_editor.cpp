@@ -172,9 +172,9 @@ bool CodeEditor::event(QEvent * event) {
 void CodeEditor::paintEvent(QPaintEvent * e) {
     QPainter painter(viewport());
 
-//    painter.setPen(Qt::NoPen);
+    painter.setPen(Qt::gray);
     painter.setBrush(Qt::yellow);
-    painter.drawRoundedRect(textRect(firstVisibleBlock(), 3, 3), 3, 3);
+    painter.drawRoundedRect(textRect(document() -> findBlockByNumber(16), 76, 5), 2, 2);
 
     if (lineWrapMode() == NoWrap) {
         painter.setPen(QColor::fromRgb(192, 192, 192, 72));
@@ -714,13 +714,15 @@ bool CodeEditor::blockOnScreen(const QTextBlock & block) {
 QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
     QTextLine line = block.layout() -> lineForTextPosition(pos);
 
-    if (!line.isValid())
+    if (!line.isValid()) {
         return QRect();
+    }
 
-    QRectF rect = line.naturalTextRect();
-    rect.translate(contentOffset());
-    rect.setLeft(line.cursorToX(pos));
-    rect.setRight(line.cursorToX(pos + length));
+    qreal x_offset = -horizontalScrollBar() -> value();
+    QRectF rect = blockBoundingGeometry(block).translated(contentOffset());
+    rect.setLeft(line.cursorToX(pos) + x_offset);
+    rect.setRight(line.cursorToX(pos + length) + x_offset);
+
     return rect.toRect();
 }
 
