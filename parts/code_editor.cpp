@@ -588,43 +588,30 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 
 void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     QRect parent_block_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
-    QRect popup_rect(QPoint(parent_block_rect.left(), 0), size());
+    QRect popup_rect(parent_block_rect.topLeft(), size());
 
     int view_height = height();
     int rel_pos = view_height - parent_block_rect.top();
 
-    if (rel_pos < 0) // block is not on the screen
+    if (!rectOnScreen(parent_block_rect))
         return;
 
     int potential_height = 0;
 
     if (rel_pos >= view_height / 2) {
-        popup_rect.setTop(rel_pos + line_number_height);
-        potential_height = view_height - rel_pos;
+        popup_rect.translate(0, line_number_height + 2);
+        potential_height = rel_pos - line_number_height;
     }
-    else potential_height = rel_pos - line_number_height;
+    else {
+        potential_height = parent_block_rect.top() - contentOffset().ry();
+        popup_rect.translate(0, -potential_height);
+    }
 
     popup_rect.translate(mapToGlobal(rect().topLeft()));
     popup_rect.setHeight(potential_height);
 
-
-
-
-
-////    painter.save();
-////    painter.setRenderHint(QPainter::Antialiasing, true);
-////    painter.translate(.5, .5);
-
-//////    QBrush brush = palette().base();
-////    QBrush brush = QColor::fromRgb(242, 243, 244);
-////    painter.setBrush(brush);
-////    painter.drawRoundedRect(popup_rect, 3, 3);
-
-////    painter.restore();
-
-
     QPixmap pixmap(popup_rect.size());
-    pixmap.fill(palette().base().color());
+    pixmap.fill(palette().base().color().darker(105));
 
     QPainter painter(&pixmap);
     QTextBlock b = block.next();
@@ -651,46 +638,16 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
         pixmap = pixmap.copy(popup_rect);
     }
 
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    ////    painter.translate(.5, .5);
+
+    ////    painter.setBrush(brush);
+    ////    painter.drawRoundedRect(popup_rect, 3, 3);
+
+//    painter.drawLine(0, 0, pixmap.width(), 0);
+//    painter.drawLine(pixmap.height() - 1, 0, pixmap.width(), pixmap.height() - 1);
+
     showOverlay(popup_rect, pixmap);
-
-////    while (!b.isVisible()) {
-////        b.setVisible(true); // make sure block bounding rect works
-////        QRectF r = blockBoundingRect(b).translated(offset);
-
-////        QTextLayout *layout = b.layout();
-////        for (int i = layout->lineCount()-1; i >= 0; --i)
-////            maxWidth = qMax(maxWidth, layout->lineAt(i).naturalTextWidth() + 2*margin);
-
-////        blockHeight += r.height();
-
-////        b.setVisible(false); // restore previous state
-////        b.setLineCount(0); // restore 0 line count for invisible block
-////        b = b.next();
-////    }
-
-
-
-////    QBrush brush = palette().base();
-////    painter.setBrush(brush);
-////    painter.drawRoundedRect(QRectF(offset.x(),
-////                                   offset.y(),
-////                                   maxWidth, blockHeight).adjusted(0, 0, 0, 0), 3, 3);
-//    painter.restore();
-
-////    QTextBlock end = b;
-////    b = block;
-////    while (b != end) {
-////        b.setVisible(true); // make sure block bounding rect works
-////        QRectF r = blockBoundingRect(b).translated(offset);
-////        QTextLayout *layout = b.layout();
-////        QVector<QTextLayout::FormatRange> selections;
-////        layout->draw(&painter, offset, selections, clip);
-
-////        b.setVisible(false); // restore previous state
-////        b.setLineCount(0); // restore 0 line count for invisible block
-////        offset.ry() += r.height();
-////        b = b.next();
-////    }
 }
 
 void CodeEditor::prepareIcons(const uint & size) {
@@ -763,11 +720,14 @@ void CodeEditor::hideOverlay() {
     if (overlay) overlay -> hide();
 }
 
-bool CodeEditor::blockOnScreen(const QTextBlock & block) {
-    QRectF r = blockBoundingGeometry(block).translated(contentOffset());
+bool CodeEditor::rectOnScreen(const QRect & r) {
     int view_height = height();
     int rel_pos = view_height - r.top();
     return (rel_pos > line_number_height / 2) && (rel_pos <= view_height);
+}
+
+bool CodeEditor::blockOnScreen(const QTextBlock & block) {
+    return rectOnScreen(blockBoundingGeometry(block).translated(contentOffset()).toRect());
 }
 
 QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {

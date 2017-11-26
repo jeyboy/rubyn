@@ -152,6 +152,7 @@ protected:
     void showOverlay(const QTextBlock & block);
     void hideOverlay();
 
+    bool rectOnScreen(const QRect & r);
     bool blockOnScreen(const QTextBlock & block);
 
     QRect textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
