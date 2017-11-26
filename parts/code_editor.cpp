@@ -712,11 +712,13 @@ bool CodeEditor::blockOnScreen(const QTextBlock & block) {
 }
 
 QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+    if (!block.isValid())
+        return QRect();
+
     QTextLine line = block.layout() -> lineForTextPosition(pos);
 
-    if (!line.isValid()) {
+    if (!line.isValid())
         return QRect();
-    }
 
     qreal x_offset = -horizontalScrollBar() -> value();
     QRectF rect = blockBoundingGeometry(block).translated(contentOffset());
