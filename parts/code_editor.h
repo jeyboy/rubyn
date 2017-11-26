@@ -111,6 +111,7 @@ class CodeEditor : public QPlainTextEdit {
 
     int line_number_height;
     int line_number_width;
+
     QFont curr_line_font;
 
     QHash<DATA_FLAGS_TYPE, QPixmap> icons;
@@ -142,9 +143,11 @@ public:
 protected:
     void prepareIcons(const uint & size = FOLDING_WIDTH);
 
-    void extraAreaPaintBlock(QPainter & painter,  const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const bool & is_current, const int & block_num);
+    void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom);
+    void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const int & block_num);
     void drawFoldingContentPopup(QPainter & painter, const QTextBlock & block);
 
+    void showOverlay(const QRect & rect, const QPixmap & overlay_img);
     void showOverlay(const QTextBlock & block);
     void hideOverlay();
 

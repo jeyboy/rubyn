@@ -54,6 +54,17 @@ public:
 
         show();
     }
+
+    void showInfo(const QRect & rect, const QPixmap & pixmap) {
+        hide();
+
+        setPixmap(pixmap);
+
+        move(rect.topLeft());
+        resize(rect.size());
+
+        show();
+    }
 };
 
 #endif // OVERLAY_INFO_H
