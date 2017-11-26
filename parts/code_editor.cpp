@@ -170,11 +170,11 @@ bool CodeEditor::event(QEvent * event) {
 }
 
 void CodeEditor::paintEvent(QPaintEvent * e) {
-    QPlainTextEdit::paintEvent(e);
-
     QPainter painter(viewport());
 
-    painter.drawRect(textRect(firstVisibleBlock(), 3, 3));
+//    painter.setPen(Qt::NoPen);
+    painter.setBrush(Qt::yellow);
+    painter.drawRoundedRect(textRect(firstVisibleBlock(), 3, 3), 3, 3);
 
     if (lineWrapMode() == NoWrap) {
         painter.setPen(QColor::fromRgb(192, 192, 192, 72));
@@ -182,6 +182,8 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
         painter.drawLine(x, 0, x, height());
     }
+
+    QPlainTextEdit::paintEvent(e);
 
 /////////// HIGHLIGHT BLOCKS ////////////////
 
@@ -720,12 +722,6 @@ QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos
     rect.setLeft(line.cursorToX(pos));
     rect.setRight(line.cursorToX(pos + length));
     return rect.toRect();
-
-
-//    QRectF block_rect = blockBoundingGeometry(block).translated(contentOffset() + QPointF(document() -> documentMargin(), 0));
-//    block_rect.setLeft((symbol_width * pos));
-//    block_rect.setWidth(symbol_width * length);
-//    return block_rect.toRect();
 }
 
 QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags) {
