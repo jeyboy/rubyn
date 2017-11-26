@@ -20,6 +20,7 @@ class ExtraArea;
 class File;
 class OverlayInfo;
 
+#define CHARS_AMOUNT_LINE 80
 #define HPADDING 3
 #define FOLDING_WIDTH 16
 #define NO_FOLDING -100
@@ -142,6 +143,7 @@ protected:
     void prepareIcons(const uint & size = FOLDING_WIDTH);
 
     void extraAreaPaintBlock(QPainter & painter,  const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const bool & is_current, const int & block_num);
+    void drawFoldingContentPopup(QPainter & painter, const QTextBlock & block);
 
     void showOverlay(const QTextBlock & block);
     void hideOverlay();

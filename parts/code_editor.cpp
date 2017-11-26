@@ -172,18 +172,24 @@ bool CodeEditor::event(QEvent * event) {
 void CodeEditor::paintEvent(QPaintEvent * e) {
     QPainter painter(viewport());
 
+    painter.setRenderHint(QPainter::Antialiasing);
+
     painter.setPen(Qt::gray);
     painter.setBrush(Qt::yellow);
     painter.drawRoundedRect(textRect(document() -> findBlockByNumber(16), 76, 5), 2, 2);
 
+    painter.save();
+
+    QPlainTextEdit::paintEvent(e);
+
+    painter.restore();
+
     if (lineWrapMode() == NoWrap) {
         painter.setPen(QColor::fromRgb(192, 192, 192, 72));
-        int x = round(symbol_width * 80.0) + contentOffset().x() + document() -> documentMargin();
+        int x = round(symbol_width * CHARS_AMOUNT_LINE) + contentOffset().x() + document() -> documentMargin();
 
         painter.drawLine(x, 0, x, height());
     }
-
-    QPlainTextEdit::paintEvent(e);
 
 /////////// HIGHLIGHT BLOCKS ////////////////
 
@@ -576,6 +582,56 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     );
 }
 
+void CodeEditor::drawFoldingContentPopup(QPainter & painter, const QTextBlock & block) {
+//    int margin = block.document()->documentMargin();
+//    qreal maxWidth = 0;
+//    qreal blockHeight = 0;
+    QTextBlock b = block;
+
+
+
+//    while (!b.isVisible()) {
+//        b.setVisible(true); // make sure block bounding rect works
+//        QRectF r = blockBoundingRect(b).translated(offset);
+
+//        QTextLayout *layout = b.layout();
+//        for (int i = layout->lineCount()-1; i >= 0; --i)
+//            maxWidth = qMax(maxWidth, layout->lineAt(i).naturalTextWidth() + 2*margin);
+
+//        blockHeight += r.height();
+
+//        b.setVisible(false); // restore previous state
+//        b.setLineCount(0); // restore 0 line count for invisible block
+//        b = b.next();
+//    }
+
+    painter.save();
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.translate(.5, .5);
+
+//    QBrush brush = palette().base();
+//    painter.setBrush(brush);
+//    painter.drawRoundedRect(QRectF(offset.x(),
+//                                   offset.y(),
+//                                   maxWidth, blockHeight).adjusted(0, 0, 0, 0), 3, 3);
+    painter.restore();
+
+//    QTextBlock end = b;
+//    b = block;
+//    while (b != end) {
+//        b.setVisible(true); // make sure block bounding rect works
+//        QRectF r = blockBoundingRect(b).translated(offset);
+//        QTextLayout *layout = b.layout();
+//        QVector<QTextLayout::FormatRange> selections;
+//        layout->draw(&painter, offset, selections, clip);
+
+//        b.setVisible(false); // restore previous state
+//        b.setLineCount(0); // restore 0 line count for invisible block
+//        offset.ry() += r.height();
+//        b = b.next();
+//    }
+}
+
 void CodeEditor::prepareIcons(const uint & size) {
     icons.insert(
         BlockUserData::udf_has_folding,
@@ -597,61 +653,6 @@ void CodeEditor::prepareIcons(const uint & size) {
         PREPARE_PIXMAP(QStringLiteral(":/folding_open_hover"), size)
     );
 }
-
-//void TextEditorWidget::drawCollapsedBlockPopup(QPainter &painter,
-//                                             const QTextBlock &block,
-//                                             QPointF offset,
-//                                             const QRect &clip)
-//{
-//    int margin = block.document()->documentMargin();
-//    qreal maxWidth = 0;
-//    qreal blockHeight = 0;
-//    QTextBlock b = block;
-
-//    while (!b.isVisible()) {
-//        b.setVisible(true); // make sure block bounding rect works
-//        QRectF r = blockBoundingRect(b).translated(offset);
-
-//        QTextLayout *layout = b.layout();
-//        for (int i = layout->lineCount()-1; i >= 0; --i)
-//            maxWidth = qMax(maxWidth, layout->lineAt(i).naturalTextWidth() + 2*margin);
-
-//        blockHeight += r.height();
-
-//        b.setVisible(false); // restore previous state
-//        b.setLineCount(0); // restore 0 line count for invisible block
-//        b = b.next();
-//    }
-
-//    painter.save();
-//    painter.setRenderHint(QPainter::Antialiasing, true);
-//    painter.translate(.5, .5);
-//    QBrush brush = palette().base();
-//    const QTextCharFormat &ifdefedOutFormat
-//            = textDocument()->fontSettings().toTextCharFormat(C_DISABLED_CODE);
-//    if (ifdefedOutFormat.hasProperty(QTextFormat::BackgroundBrush))
-//        brush = ifdefedOutFormat.background();
-//    painter.setBrush(brush);
-//    painter.drawRoundedRect(QRectF(offset.x(),
-//                                   offset.y(),
-//                                   maxWidth, blockHeight).adjusted(0, 0, 0, 0), 3, 3);
-//    painter.restore();
-
-//    QTextBlock end = b;
-//    b = block;
-//    while (b != end) {
-//        b.setVisible(true); // make sure block bounding rect works
-//        QRectF r = blockBoundingRect(b).translated(offset);
-//        QTextLayout *layout = b.layout();
-//        QVector<QTextLayout::FormatRange> selections;
-//        layout->draw(&painter, offset, selections, clip);
-
-//        b.setVisible(false); // restore previous state
-//        b.setLineCount(0); // restore 0 line count for invisible block
-//        offset.ry() += r.height();
-//        b = b.next();
-//    }
-//}
 
 void CodeEditor::showOverlay(const QTextBlock & block) {
     if (blockOnScreen(block)) {
