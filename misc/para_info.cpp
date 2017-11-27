@@ -2,6 +2,7 @@
 
 QHash<QByteArray, PARA_TYPE> ParaInfo::para_tokens = {
     { QByteArrayLiteral("{"), ParaInfo::pt_open_curly_bracket },
+    { QByteArrayLiteral("#{"), ParaInfo::pt_open_curly_bracket },
     { QByteArrayLiteral("}"), ParaInfo::pt_close_curly_bracket },
     { QByteArrayLiteral("["), ParaInfo::pt_open_square_bracket },
     { QByteArrayLiteral("]"), ParaInfo::pt_close_square_bracket },

@@ -48,8 +48,8 @@ public:
     int currentBlockState() const;
     void setCurrentBlockState(const int & new_state);
 
-    void setCurrentBlockUserData(QTextBlockUserData * data);
-    QTextBlockUserData * currentBlockUserData() const;
+//    void setCurrentBlockUserData(QTextBlockUserData * data);
+//    QTextBlockUserData * currentBlockUserData() const;
 
     inline void clearExtraFormatForCurrBlock() {
         if (current_block.isValid())
@@ -86,13 +86,12 @@ protected:
 //        inReformatBlocks = true;
         int from = cursor.position();
         cursor.movePosition(operation);
-        reformatBlocks(from, 0, cursor.position() - from);
+        reformatBlocks(from, 0, cursor.position() - from); // wtf?
 //        inReformatBlocks = false;
     }
 
     void applyFormatChanges(int from, int charsRemoved, int charsAdded);
 //    void updateFormats(const FontSettings &fontSettings);
-
 public slots:
     void rehighlight();
     void rehighlightBlock(const QTextBlock & block);

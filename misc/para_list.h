@@ -2,6 +2,7 @@
 #define PARA_LIST_H
 
 #include <qhash.h>
+#include <qdebug.h>
 
 #include "para_info.h"
 
@@ -9,11 +10,14 @@ struct ParaCell {
     ParaCell * prev;
     ParaCell * next;
 
+    ParaCell * close;
+
     PARA_TYPE para_type;
+    EDITOR_POS_TYPE line_num;
     EDITOR_POS_TYPE pos;
 
     ParaCell(const PARA_TYPE & para, const EDITOR_POS_TYPE & start_pos, ParaCell * prev_token = 0)
-        : prev(0), next(0), para_type(para), pos(start_pos)
+        : prev(0), next(0), close(0), para_type(para), line_num(-1), pos(start_pos)
     {
         if ((prev = prev_token)) {
             if ((next = prev -> next))
@@ -30,6 +34,28 @@ struct ParaCell {
         if (next)
             next -> prev = prev;
     }
+
+    EDITOR_POS_TYPE linesCoverage() {
+        if (!close) {
+            qDebug() << "MISSED CLOSE";
+            return 0;
+        }
+
+        return close -> line_num - line_num;
+    }
+
+//    T & operator++() // ++A
+//    {
+//        // Do increment of "this" value
+//        return *this ;
+//    }
+
+//    T operator++(int) // A++
+//    {
+//       T temp = *this ;
+//       // Do increment of "this" value
+//       return temp ;
+//    }
 };
 
 class ParaList {
@@ -56,6 +82,9 @@ public:
             delete curr;
         }
     }
+
+    ParaCell * iter() { return root -> next; }
+    ParaCell * iter_end() { return last; }
 
     void registerLine(ParaCell *& left, ParaCell *& right, ParaCell * prev_end = 0) {
         if (!prev_end)

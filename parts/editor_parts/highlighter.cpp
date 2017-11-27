@@ -124,19 +124,19 @@ void Highlighter::setCurrentBlockState(const int & new_state) {
     current_block.setUserState(new_state);
 }
 
-void Highlighter::setCurrentBlockUserData(QTextBlockUserData * data) {
-    if (!current_block.isValid())
-        return;
+//void Highlighter::setCurrentBlockUserData(QTextBlockUserData * data) {
+//    if (!current_block.isValid())
+//        return;
 
-    current_block.setUserData(data);
-}
+//    current_block.setUserData(data);
+//}
 
-QTextBlockUserData * Highlighter::currentBlockUserData() const {
-    if (!current_block.isValid())
-        return 0;
+//QTextBlockUserData * Highlighter::currentBlockUserData() const {
+//    if (!current_block.isValid())
+//        return 0;
 
-    return current_block.userData();
-}
+//    return current_block.userData();
+//}
 
 void Highlighter::setExtraFormats(const QTextBlock & block, QVector<QTextLayout::FormatRange> & formats) {
     const int blockLength = block.length();
@@ -190,8 +190,6 @@ void Highlighter::setExtraFormats(const QTextBlock & block, QVector<QTextLayout:
 }
 
 void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
-//    foldValidator.reset();
-
 //    rehighlightPending = false;
 
     QTextBlock block = doc -> findBlock(from);
@@ -220,7 +218,7 @@ void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
 
     formatChanges.clear();
 
-//    foldValidator.finalize();
+    _doc_wrapper -> calcFoldings();
 }
 
 void Highlighter::reformatBlock(const QTextBlock & block, int from, int charsRemoved, int charsAdded) {

@@ -618,15 +618,16 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     pixmap.fill(palette().base().color().darker(105));
 
     QPainter painter(&pixmap);
-//    painter.setOpacity(.5);
-
-    painter.translate(.5, .5);
 
     QTextBlock b = block.next();
+
+    if (b.isVisible()) // ignore showing of not hidden items
+        return;
+
     QPointF offset(0, 0);
 
-    while (/*!b.isVisible() && */potential_height > 0) {
-//        b.setVisible(true); // make sure block bounding rect works
+    while (!b.isVisible() && potential_height > 0) {
+        b.setVisible(true); // make sure block bounding rect works
 
         QRectF bl_geometry_rect = blockBoundingRect(b).translated(offset);
 
@@ -635,8 +636,8 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
         offset.ry() += bl_geometry_rect.height();
         potential_height -= bl_geometry_rect.height();
 
-//        b.setVisible(false);
-//        b.setLineCount(0);
+        b.setVisible(false);
+        b.setLineCount(0);
 
         b = b.next();
     }
