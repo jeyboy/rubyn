@@ -24,11 +24,19 @@ public:
 //        setWindowFlags(/*Qt::ToolTip | */Qt::FramelessWindowHint);
 
 
+
+//        setAttribute(Qt::WA_NoSystemBackground);
+//        setAttribute(Qt::WA_TranslucentBackground);
+//        setAttribute(Qt::WA_PaintOnScreen);
+
+
         setAttribute(Qt::WA_ShowWithoutActivating);
         setAttribute(Qt::WA_TransparentForMouseEvents);
         setParent(0);
         setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         setFocusPolicy(Qt::NoFocus);
+
+
     }
 
     void showInfo(QWidget * widget, const QRect & rect, const OverlayPos & pos = op_top) {
@@ -62,6 +70,9 @@ public:
 
         move(rect.topLeft());
         resize(rect.size());
+
+//        setAutoFillBackground(false);
+//        setWindowOpacity(25);
 
         show();
     }

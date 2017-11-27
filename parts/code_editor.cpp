@@ -544,16 +544,17 @@ void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const 
 
     int block_height = block_bottom - block_top;
 
-    block.layout() -> draw(&painter, QPoint(extra_zone_width + contentOffset().rx(), paint_top));
     painter.fillRect(0, paint_top, extra_zone_width, block_height + 1, QColor::fromRgb(172, 229, 238));
+
     painter.translate(QPoint(1, 0));
+    block.layout() -> draw(&painter, QPoint(extra_zone_width + contentOffset().rx(), paint_top));
 
     extraAreaPaintBlock(painter, block, paint_top, block_top, block_bottom, block.blockNumber());
 
     painter.setRenderHint(QPainter::Antialiasing, false);
 
     painter.setPen(extra_area -> borderColor());
-    painter.drawLine(extra_zone_width - 1, paint_top, extra_zone_width - 1, block_height + 1);
+    painter.drawLine(extra_zone_width - 1, paint_top, extra_zone_width - 1, paint_top + block_height + 1);
 
     painter.restore();
 }
@@ -597,7 +598,7 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     int view_height = height();
     int rel_pos = view_height - parent_block_rect.top();
 
-    int potential_height = 0;
+    qreal potential_height = 0;
 
     if (rel_pos >= view_height / 2) {
         popup_rect.translate(0, line_number_height + 2);
@@ -617,8 +618,12 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     pixmap.fill(palette().base().color().darker(105));
 
     QPainter painter(&pixmap);
+//    painter.setOpacity(.5);
+
+    painter.translate(.5, .5);
+
     QTextBlock b = block.next();
-    QPoint offset(0, 0);
+    QPointF offset(0, 0);
 
     while (/*!b.isVisible() && */potential_height > 0) {
 //        b.setVisible(true); // make sure block bounding rect works
@@ -641,7 +646,7 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
         pixmap = pixmap.copy(popup_rect);
     }
 
-    painter.setRenderHint(QPainter::Antialiasing, true);
+//    painter.setRenderHint(QPainter::Antialiasing, true);
     ////    painter.translate(.5, .5);
 
     ////    painter.setBrush(brush);
