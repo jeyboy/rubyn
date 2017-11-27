@@ -108,6 +108,7 @@ void CodeEditor::updateExtraAreaWidth(int /* newBlockCount */) {
     setViewportMargins(extra_zone_width, 0, 0, 0);
     line_number_width = extra_zone_width - HPADDING * 2 - FOLDING_WIDTH;
     folding_offset_x = foldingOffset();
+    folding_width = extra_zone_width - folding_offset_x;
 }
 
 void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
@@ -128,8 +129,7 @@ bool CodeEditor::event(QEvent * event) {
         QTextBlock blk = cursor.block();
 
         //showOverlay(firstVisibleBlock());
-//        showOverlay(document() -> findBlockByNumber(60));
-        showFoldingContentPopup(document() -> findBlockByNumber(60));
+        showOverlay(document() -> findBlockByNumber(60));
 
         if (blk.isValid()) {
             EDITOR_POS_TYPE pos = cursor.positionInBlock();
@@ -262,8 +262,8 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 //    }
 /// //////////////////////////////////
 
-//drawCollapsedBlockPopup()
-
+    // TODO: need to use correct text block
+    showFoldingContentPopup(document() -> findBlockByNumber(60));
 }
 
 void CodeEditor::resizeEvent(QResizeEvent * e) {
@@ -515,6 +515,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     QPainter painter(extra_area);
     QTextBlock block = firstVisibleBlock();
     int screen_end_block_num = block.blockNumber();
+    EDITOR_POS_TYPE folding_lines_coverage = 0;
 
     QRectF block_geometry_rect = blockBoundingGeometry(block).translated(contentOffset());
 
@@ -526,7 +527,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
     while (block.isValid() && top <= rect_bottom) {
         if (block.isVisible() && bottom >= rect_top)
-            extraAreaPaintBlock(painter, block, top, top, bottom, screen_end_block_num);
+            extraAreaPaintBlock(painter, block, top, top, bottom, screen_end_block_num, folding_lines_coverage);
 
         block = block.next();
         top = bottom;
@@ -537,7 +538,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     event -> accept();
 }
 
-void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom) {
+void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, EDITOR_POS_TYPE & folding_lines_coverage) {
     painter.save();
 
     painter.setRenderHint(QPainter::Antialiasing);
@@ -549,7 +550,7 @@ void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const 
     painter.translate(QPoint(1, 0));
     block.layout() -> draw(&painter, QPoint(extra_zone_width + contentOffset().rx(), paint_top));
 
-    extraAreaPaintBlock(painter, block, paint_top, block_top, block_bottom, block.blockNumber());
+    extraAreaPaintBlock(painter, block, paint_top, block_top, block_bottom, block.blockNumber(), folding_lines_coverage);
 
     painter.setRenderHint(QPainter::Antialiasing, false);
 
@@ -559,7 +560,7 @@ void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const 
     painter.restore();
 }
 
-void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const int & block_num) {
+void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num, EDITOR_POS_TYPE & folding_lines_coverage) {
     bool is_current = curr_block_number == block_num;
 
     if (is_current)
@@ -569,8 +570,14 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
     if (folding_flags) {
-        if (folding_y > block_top && folding_y < block_bottom)
+        if (folding_y > block_top && folding_y < block_bottom) {
             folding_flags |= BlockUserData::udf_folding_hovered;
+
+            if ((folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened) {
+                if (!folding_lines_coverage)
+                    folding_lines_coverage = user_data -> para_control -> linesCoverage() + 1;
+            }
+        }
 
         painter.drawPixmap(
             folding_offset_x,
@@ -579,6 +586,12 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             FOLDING_WIDTH,
             icons[folding_flags]
         );
+    }
+
+    if (folding_lines_coverage > 0) {
+        painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, foldingColor());
+
+        --folding_lines_coverage;
     }
 
     painter.setFont(is_current ? curr_line_font : font());
@@ -625,13 +638,14 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
         return;
 
     QPointF offset(0, 0);
+    EDITOR_POS_TYPE folding_lines_coverage = -1;
 
     while (!b.isVisible() && potential_height > 0) {
         b.setVisible(true); // make sure block bounding rect works
 
         QRectF bl_geometry_rect = blockBoundingRect(b).translated(offset);
 
-        paintBlock(painter, b, offset.ry(), bl_geometry_rect.top(), bl_geometry_rect.bottom());
+        paintBlock(painter, b, offset.ry(), bl_geometry_rect.top(), bl_geometry_rect.bottom(), folding_lines_coverage);
 
         offset.ry() += bl_geometry_rect.height();
         potential_height -= bl_geometry_rect.height();
@@ -719,8 +733,9 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
     pixmap.fill(palette().base().color());
 
     QPainter painter(&pixmap);
+    EDITOR_POS_TYPE folding_lines_coverage = -1;
 
-    paintBlock(painter, block, 0, bl_geometry_rect.top(), bl_geometry_rect.bottom());
+    paintBlock(painter, block, 0, bl_geometry_rect.top(), bl_geometry_rect.bottom(), folding_lines_coverage);
 
     overlay -> showInfo(this, pixmap, overlay_pos);
 }
@@ -757,7 +772,6 @@ QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos
 }
 
 QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags) {
-//    QTextCursor tc = textCursor();
     QTextBlock block = tc.block();
     const int pos = tc.positionInBlock();
     const int start_pos = block.position();

@@ -106,6 +106,7 @@ class CodeEditor : public QPlainTextEdit {
     int extra_zone_width;
 
     int folding_offset_x;
+    int folding_width;
 
     qreal symbol_width;
 
@@ -144,8 +145,8 @@ protected:
     void prepareIcons(const uint & size = FOLDING_WIDTH);
     int widthWithoutScroll();
 
-    void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom);
-    void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const int & block_num);
+    void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, EDITOR_POS_TYPE & folding_lines_coverage);
+    void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num, EDITOR_POS_TYPE & folding_lines_coverage);
     void showFoldingContentPopup(const QTextBlock & block);
 
     void showOverlay(const QRect & rect, const QPixmap & overlay_img);
@@ -161,6 +162,7 @@ protected:
     void procSelectionIndent(const bool & right = true);
 
     inline QColor currentLineColor(const int & transparency = 16) { return QColor::fromRgb(128, 128, 128, transparency); } // QColor lineColor = QColor(Qt::yellow).lighter(160);
+    inline QColor foldingColor() { return QColor::fromRgb(64, 64, 64, 48); }
 
     bool event(QEvent * event);
     void paintEvent(QPaintEvent * e);
