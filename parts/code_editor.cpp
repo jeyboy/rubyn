@@ -263,7 +263,7 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 /// //////////////////////////////////
 
     // TODO: need to use correct text block
-    showFoldingContentPopup(document() -> findBlockByNumber(60));
+//    showFoldingContentPopup(document() -> findBlockByNumber(60));
 }
 
 void CodeEditor::resizeEvent(QResizeEvent * e) {
@@ -479,7 +479,23 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
                         if (folding_flags) {
                             user_data -> invertFoldingState();
-                            // TODO: some logic for folded text in editor
+
+                            bool show_blocks = (folding_flags & BlockUserData::udf_folding_opened) != BlockUserData::udf_folding_opened;
+                            EDITOR_POS_TYPE lines_coverage = user_data -> para_control -> linesCoverage();
+                            EDITOR_POS_TYPE start = blk.position() + blk.length();
+                            EDITOR_LEN_TYPE chars = 0;
+
+                            while(--lines_coverage >= 0) {
+                                blk = blk.next();
+
+//                                if (!blk.isValid())
+//                                    break;
+
+                                blk.setVisible(show_blocks);
+                                chars += blk.length();
+                            }
+
+                            document() -> markContentsDirty(start, chars);
                         }
                     }
                 }
