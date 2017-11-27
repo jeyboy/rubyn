@@ -58,7 +58,8 @@ public:
         ParaCell * iter = _paras -> iter();
         EDITOR_POS_TYPE curr_line = 0;
 
-        QVector<ParaCell *> waiters(5);
+        QVector<ParaCell *> waiters;
+        waiters.reserve(5);
 
         while(iter != _paras -> iter_end()) {
             switch(iter -> para_type) {
