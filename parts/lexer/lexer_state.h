@@ -107,13 +107,13 @@ struct LexerState {
     inline bool isBufferStart() { return buffer == start; }
     inline bool isBufferEof() { return *buffer == 0; }
 
-    inline void cachingPredicate() {
+    inline void cachingPredicate(const bool & ignore_para = false) {
         lex_prev_word = lex_word;
         cached_str_pos = bufferPos();
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
 
-        if (cached_length)
+        if (!ignore_para && cached_length)
             attachPara(cached);
     }
     inline void cachingDelimiter() {
@@ -206,6 +206,8 @@ struct LexerState {
         const PARA_TYPE & ptype = ParaInfo::paraType(pos_para);
         if (!ptype)
             return;
+
+//        parasha.append(" ").append(ParaInfo::toString(ptype));
 
         if (para -> next) {
             para = para -> next;

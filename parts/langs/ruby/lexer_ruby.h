@@ -62,9 +62,9 @@ class LexerRuby : public Lexer {
     }
 
     bool cutWord(LexerState * state, const Lexem & predefined_lexem = lex_none) {
-        state -> cachingPredicate();
-
         bool has_predefined = predefined_lexem != lex_none;
+
+        state -> cachingPredicate(has_predefined);
 
         if (state -> cached_length || has_predefined) {
             state -> lex_word =
@@ -1040,8 +1040,9 @@ protected:
                         state -> next_offset = 0;
                         state -> stack -> push(res, QByteArray(1, shorted ? '/' : GrammarRuby::obj().percentagePresentationBlocker(ECHAR2)));
 
-                        if (!cutWord(state, res))
-                            goto exit;
+                        if (state -> buffer != state -> prev)
+                            if (!cutWord(state, res))
+                                goto exit;
 
                         state -> buffer += shorted ? 2 : 3;
                         if (!parsePercentagePresenation(state))

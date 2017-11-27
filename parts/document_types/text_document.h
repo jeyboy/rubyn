@@ -85,7 +85,7 @@ public:
                         if (!waiters.isEmpty()) {
                             ParaCell * waiter = waiters.takeLast();
 
-                            if (waiter -> para_type == opposite_type) {
+                            if ((waiter -> para_type & opposite_type) == waiter -> para_type) {
                                 waiter -> close = iter;
                             } else {
                                 qWarning() << "PARA OBJECTS CLOSING IS FAILED: " << ParaInfo::toString(waiter -> para_type) << ParaInfo::toString(opposite_type);
