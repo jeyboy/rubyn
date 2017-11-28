@@ -174,10 +174,13 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     QPainter painter(viewport());
 
+    painter.save();
     painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setBrush(Qt::yellow);
-    painter.drawRoundedRect(textRect(document() -> findBlockByNumber(16), 76, 5), 2, 2);
+    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
+    painter.setBrush(QColor::fromRgb(255, 239, 11, 192));
+    painter.drawRoundedRect(textRect(document() -> findBlockByNumber(16), 76, 5), 3, 3);
+    painter.restore();
 
     painter.save();
 
