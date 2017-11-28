@@ -98,8 +98,10 @@ class CodeEditor : public QPlainTextEdit {
     EDITOR_POS_TYPE tooplip_block_num;
     EDITOR_POS_TYPE tooplip_block_pos;
 
+    EDITOR_POS_TYPE extra_overlay_block_num;
+
     int folding_y;
-//    bool folding_click;
+    int folding_overlay_y;
 
     int curr_block_number;
 
@@ -152,6 +154,7 @@ protected:
     void showOverlay(const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid = -1);
     void showOverlay(const QTextBlock & block);
     void hideOverlay();
+    void hideOverlayIfNoNeed();
 
     bool rectOnScreen(const QRect & r);
     bool blockOnScreen(const QTextBlock & block);

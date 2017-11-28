@@ -16,10 +16,10 @@
 
 #include "parts/document_types/text_document.h"
 
-QString CodeEditor::word_boundary("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
+QString CodeEditor::word_boundary("~#%^&*()+{}|\"<>,./;'[]\\-= "); // end of word // "~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), overlay(new OverlayInfo()),
-    tooplip_block_num(-1), tooplip_block_pos(-1), folding_y(NO_FOLDING)/*, folding_click(false)*/, curr_block_number(-1)
+    tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING), curr_block_number(-1)
 {
     extra_area = new ExtraArea(this);  
 
@@ -170,6 +170,8 @@ bool CodeEditor::event(QEvent * event) {
 }
 
 void CodeEditor::paintEvent(QPaintEvent * e) {
+    hideOverlayIfNoNeed();
+
     QPainter painter(viewport());
 
     painter.setRenderHint(QPainter::Antialiasing);
@@ -525,6 +527,7 @@ void CodeEditor::extraAreaLeaveEvent(QEvent *) {
 }
 
 void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
+    hideOverlayIfNoNeed();
 //    bool is_caret_redrawing = height() - event -> rect().height() > 8;
 
     QPainter painter(extra_area);
@@ -589,6 +592,8 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             folding_flags |= BlockUserData::udf_folding_hovered;
 
             if ((folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened) {
+                hideOverlay();
+
                 if (!folding_lines_coverage)
                     folding_lines_coverage = user_data -> para_control -> linesCoverage() + 1;
             }
@@ -767,6 +772,11 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
 
 void CodeEditor::hideOverlay() {
     if (overlay) overlay -> hide();
+}
+
+void CodeEditor::hideOverlayIfNoNeed() {
+    if (extra_overlay_block_num == -1 && folding_y == NO_FOLDING && folding_overlay_y == NO_FOLDING)
+        hideOverlay();
 }
 
 bool CodeEditor::rectOnScreen(const QRect & r) {
