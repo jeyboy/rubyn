@@ -75,7 +75,6 @@ public:
                 }
                 default: {
                     iter -> line_num = curr_line;
-                    qDebug() << ParaInfo::toString(iter -> para_type);
 
                     if (iter -> para_type & ParaInfo::pt_open) {
                         waiters << iter;

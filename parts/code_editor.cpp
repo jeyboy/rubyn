@@ -477,8 +477,12 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                 )
                     || ((folding_y != NO_FOLDING) == (prev_folding_y == NO_FOLDING));
 
-            if (folding_click && invalidation_required)
-                folding_click = false;
+            if (invalidation_required) {
+                if (folding_click)
+                    folding_click = false;
+
+                curr_folding_limits.ry() = NO_FOLDING;
+            }
         break;}
 
 //        case QEvent::MouseButtonPress: {
@@ -817,7 +821,7 @@ void CodeEditor::hideOverlay() {
 }
 
 void CodeEditor::hideOverlayIfNoNeed() {
-    if (extra_overlay_block_num == -1 && folding_y == NO_FOLDING && folding_overlay_y == NO_FOLDING)
+    if (extra_overlay_block_num == -1 && (folding_y == NO_FOLDING || curr_folding_limits.ry() == NO_FOLDING) && folding_overlay_y == NO_FOLDING)
         hideOverlay();
 }
 
