@@ -471,11 +471,14 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
     switch(event -> type()) {
         case QEvent::MouseMove: {
-        invalidation_required =
-            (
-                in_folding_zone && (folding_y <= curr_folding_limits.rx() || folding_y >= curr_folding_limits.ry())
-            )
-                || ((folding_y != NO_FOLDING) == (prev_folding_y == NO_FOLDING));
+            invalidation_required =
+                (
+                    in_folding_zone && (folding_y <= curr_folding_limits.rx() || folding_y >= curr_folding_limits.ry())
+                )
+                    || ((folding_y != NO_FOLDING) == (prev_folding_y == NO_FOLDING));
+
+            if (folding_click && invalidation_required)
+                folding_click = false;
         break;}
 
 //        case QEvent::MouseButtonPress: {
