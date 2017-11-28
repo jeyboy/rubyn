@@ -644,11 +644,11 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     int view_height = height();
     int rel_pos = view_height - parent_block_rect.top();
 
-    qreal potential_height = 0;
+    qreal potential_height = rel_pos - line_number_height - 3;
+    bool place_after = potential_height >= line_number_height * 3 + 3;
 
-    if (rel_pos >= view_height / 2) {
+    if (place_after) {
         popup_rect.translate(0, line_number_height + 2);
-        potential_height = rel_pos - line_number_height - 3;
     }
     else {
         potential_height = parent_block_rect.top() - contentOffset().ry() - 1;
@@ -702,6 +702,9 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
 
     if (potential_height > 0) {
         popup_rect.setHeight(popup_rect.height() - potential_height);
+        if (!place_after)
+            popup_rect.translate(0, potential_height);
+
         pixmap = pixmap.copy(0, 0, pixmap.width(), popup_rect.height());
     }
 
