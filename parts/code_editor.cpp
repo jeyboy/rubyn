@@ -461,10 +461,9 @@ void CodeEditor::highlightCurrentLine() {
 
 void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
     QPoint pos = event -> pos();
+    int prev_folding_y = folding_y;
 
-//    int prev_folding_y = folding_y;
-
-//    bool invalidation_required = false;
+    bool invalidation_required = false;
     bool in_number_zone = pos.rx() <= line_number_width;
     bool in_folding_zone = !in_number_zone && (pos.rx() >= folding_offset_x && pos.rx() < extra_zone_width - HPADDING);
 
@@ -472,10 +471,18 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
     switch(event -> type()) {
         case QEvent::MouseMove: {
-
+        invalidation_required =
+            (
+                in_folding_zone && (folding_y <= curr_folding_limits.rx() || folding_y >= curr_folding_limits.ry())
+            )
+                || ((folding_y != NO_FOLDING) == (prev_folding_y == NO_FOLDING));
         break;}
 
-        case QEvent::MouseButtonPress: {
+//        case QEvent::MouseButtonPress: {
+
+//        break;}
+
+        case QEvent::MouseButtonRelease: {
             if (event -> button() == Qt::LeftButton) {
                 if (in_number_zone || in_folding_zone) {
                     QTextCursor cursor = cursorForPosition(QPoint(1, pos.ry()));
@@ -520,10 +527,6 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
             }
         break;}
 
-//        case QEvent::MouseButtonRelease: {
-//            return;
-//        break;}
-
 //        case QEvent::MouseButtonDblClick: {
 //            return;
 //        break;}
@@ -534,7 +537,9 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
     }
 
     event -> accept();
-    update();
+
+    if (invalidation_required)
+        update();
 }
 
 void CodeEditor::extraAreaLeaveEvent(QEvent *) {
@@ -604,7 +609,12 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     BlockUserData * user_data = static_cast<BlockUserData *>(block.userData());
     DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
-    bool on_block = folding_y > 0 && folding_y > block_top && folding_y < block_bottom;
+    bool on_block = folding_y != NO_FOLDING && folding_y > block_top && folding_y < block_bottom;
+
+    if (on_block) {
+        curr_folding_limits.rx() = block_top;
+        curr_folding_limits.ry() = block_bottom;
+    }
 
     if (folding_flags) {
         if (on_block) {

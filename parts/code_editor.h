@@ -104,6 +104,8 @@ class CodeEditor : public QPlainTextEdit {
     int folding_y;
     int folding_overlay_y;
 
+    QPoint curr_folding_limits;
+
     int curr_block_number;
 
     int extra_zone_width;
