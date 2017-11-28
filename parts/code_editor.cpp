@@ -18,8 +18,9 @@
 
 QString CodeEditor::word_boundary("~#%^&*()+{}|\"<>,./;'[]\\-= "); // end of word // "~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "
 
-CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), overlay(new OverlayInfo()),
-    tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING), curr_block_number(-1)
+CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0),
+    overlay(new OverlayInfo()), tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1),
+    folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING), curr_block_number(-1)
 {
     extra_area = new ExtraArea(this);  
 
@@ -459,12 +460,15 @@ void CodeEditor::highlightCurrentLine() {
 }
 
 void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
-    int folding_offset = foldingOffset();
-    int x = event -> x();
+    QPoint pos = event -> pos();
 
-    folding_y =
-        x >= folding_offset && x < extra_area -> width() - HPADDING ?
-            event -> y() : NO_FOLDING;
+//    int prev_folding_y = folding_y;
+
+//    bool invalidation_required = false;
+    bool in_number_zone = pos.rx() <= line_number_width;
+    bool in_folding_zone = !in_number_zone && (pos.rx() >= folding_offset_x && pos.rx() < extra_zone_width - HPADDING);
+
+    folding_y = in_folding_zone ? pos.ry() : NO_FOLDING;
 
     switch(event -> type()) {
         case QEvent::MouseMove: {
@@ -473,33 +477,43 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
         case QEvent::MouseButtonPress: {
             if (event -> button() == Qt::LeftButton) {
-                if (folding_y != NO_FOLDING) {
-                    QTextCursor cursor = cursorForPosition(QPoint(1, folding_y));
+                if (in_number_zone || in_folding_zone) {
+                    QTextCursor cursor = cursorForPosition(QPoint(1, pos.ry()));
                     QTextBlock blk = cursor.block();
 
                     if (blk.isValid()) {
-                        BlockUserData * user_data = static_cast<BlockUserData *>(blk.userData());
-                        DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
+                        if (in_number_zone) {
+                            QTextCursor tc(blk);
 
-                        if (folding_flags) {
-                            user_data -> invertFoldingState();
+                            tc.setPosition(blk.position() + blk.length(), QTextCursor::MoveAnchor);
+                            tc.setPosition(blk.position(), QTextCursor::KeepAnchor);
 
-                            bool show_blocks = (folding_flags & BlockUserData::udf_folding_opened) != BlockUserData::udf_folding_opened;
-                            EDITOR_POS_TYPE lines_coverage = user_data -> para_control -> linesCoverage();
-                            EDITOR_POS_TYPE start = blk.position() + blk.length();
-                            EDITOR_LEN_TYPE chars = 0;
+                            setTextCursor(tc);
+                        } else {
+                            BlockUserData * user_data = static_cast<BlockUserData *>(blk.userData());
+                            DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
-                            while(--lines_coverage >= 0) {
-                                blk = blk.next();
+                            if (folding_flags) {
+                                folding_click = true;
+                                user_data -> invertFoldingState();
 
-//                                if (!blk.isValid())
-//                                    break;
+                                bool show_blocks = (folding_flags & BlockUserData::udf_folding_opened) != BlockUserData::udf_folding_opened;
+                                EDITOR_POS_TYPE lines_coverage = user_data -> para_control -> linesCoverage();
+                                EDITOR_POS_TYPE start = blk.position() + blk.length();
+                                EDITOR_LEN_TYPE chars = 0;
 
-                                blk.setVisible(show_blocks);
-                                chars += blk.length();
+                                while(--lines_coverage >= 0) {
+                                    blk = blk.next();
+
+    //                                if (!blk.isValid())
+    //                                    break;
+
+                                    blk.setVisible(show_blocks);
+                                    chars += blk.length();
+                                }
+
+                                document() -> markContentsDirty(start, chars);
                             }
-
-                            document() -> markContentsDirty(start, chars);
                         }
                     }
                 }
@@ -602,7 +616,11 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
                 if (!folding_lines_coverage)
                     folding_lines_coverage = user_data -> para_control -> linesCoverage() + 1;
             }
-            else showFoldingContentPopup(block);
+            else {
+                if (folding_click)
+                    folding_click = false;
+                else showFoldingContentPopup(block);
+            }
         }
 
         painter.drawPixmap(
@@ -696,8 +714,10 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
             ////    painter.setBrush(brush);
             ////    painter.drawRoundedRect(popup_rect, 3, 3);
 
-        //    painter.drawLine(0, 0, pixmap.width(), 0);
-        //    painter.drawLine(pixmap.height() - 1, 0, pixmap.width(), pixmap.height() - 1);
+//            painter.setPen(QPen(Qt::red, 2));
+
+//            painter.drawLine(0, 1, pixmap.width(), 1);
+//            painter.drawLine(0, pixmap.height() - 2, pixmap.width(), pixmap.height() - 2);
     }
 
     if (potential_height > 0) {

@@ -100,6 +100,7 @@ class CodeEditor : public QPlainTextEdit {
 
     EDITOR_POS_TYPE extra_overlay_block_num;
 
+    bool folding_click;
     int folding_y;
     int folding_overlay_y;
 
