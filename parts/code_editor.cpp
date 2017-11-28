@@ -587,8 +587,10 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     BlockUserData * user_data = static_cast<BlockUserData *>(block.userData());
     DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
+    bool on_block = folding_y > 0 && folding_y > block_top && folding_y < block_bottom;
+
     if (folding_flags) {
-        if (folding_y > block_top && folding_y < block_bottom) {
+        if (on_block) {
             folding_flags |= BlockUserData::udf_folding_hovered;
 
             if ((folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened) {
@@ -607,7 +609,8 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             FOLDING_WIDTH,
             icons[folding_flags]
         );
-    }
+    } else if (on_block)
+        hideOverlay();
 
     if (folding_lines_coverage > 0) {
         painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, foldingColor());
