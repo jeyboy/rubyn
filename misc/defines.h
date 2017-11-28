@@ -5,6 +5,8 @@
 
 #define PARA_TYPE quint32
 
+#define OVERLAY_POS_TYPE quint8
+
 #define LEXEM_TYPE uint
 #define STACK_INT_TYPE uint
 

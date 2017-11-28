@@ -18,7 +18,7 @@
 
 QString CodeEditor::word_boundary("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
 
-CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), overlay(0),
+CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0), overlay(new OverlayInfo()),
     tooplip_block_num(-1), tooplip_block_pos(-1), folding_y(NO_FOLDING)/*, folding_click(false)*/, curr_block_number(-1)
 {
     extra_area = new ExtraArea(this);  
@@ -129,7 +129,7 @@ bool CodeEditor::event(QEvent * event) {
         QTextBlock blk = cursor.block();
 
         //showOverlay(firstVisibleBlock());
-        showOverlay(document() -> findBlockByNumber(60));
+//        showOverlay(document() -> findBlockByNumber(60));
 
         if (blk.isValid()) {
             EDITOR_POS_TYPE pos = cursor.positionInBlock();
@@ -161,7 +161,6 @@ bool CodeEditor::event(QEvent * event) {
         }
 
         QToolTip::hideText();
-        hideOverlay();
         tooplip_block_num = -1;
         event -> ignore();
         return true;
@@ -593,6 +592,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
                 if (!folding_lines_coverage)
                     folding_lines_coverage = user_data -> para_control -> linesCoverage() + 1;
             }
+            else showFoldingContentPopup(block);
         }
 
         painter.drawPixmap(
@@ -619,7 +619,13 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     QRect parent_block_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
 
-    if (!rectOnScreen(parent_block_rect))
+    if (!rectOnScreen(parent_block_rect)) {
+        return;
+    }
+
+    EDITOR_POS_TYPE uid = block.blockNumber();
+
+    if (overlay -> shownFor(true, 0, uid))
         return;
 
     QRect popup_rect(parent_block_rect.topLeft(), size());
@@ -646,47 +652,49 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     QPixmap pixmap(popup_rect.size());
     pixmap.fill(palette().base().color().darker(105));
 
-    QPainter painter(&pixmap);
+    {
+        QPainter painter(&pixmap);
 
-    QTextBlock b = block.next();
+        QTextBlock b = block.next();
 
-    if (b.isVisible()) // ignore showing of not hidden items
-        return;
+        if (b.isVisible()) // ignore showing of not hidden items
+            return;
 
-    QPointF offset(0, 0);
-    EDITOR_POS_TYPE folding_lines_coverage = -1;
+        QPointF offset(0, 0);
+        EDITOR_POS_TYPE folding_lines_coverage = -1;
 
-    while (!b.isVisible() && potential_height > 0) {
-        b.setVisible(true); // make sure block bounding rect works
+        while (!b.isVisible() && potential_height > 0) {
+            b.setVisible(true); // make sure block bounding rect works
 
-        QRectF bl_geometry_rect = blockBoundingRect(b).translated(offset);
+            QRectF bl_geometry_rect = blockBoundingRect(b).translated(offset);
 
-        paintBlock(painter, b, offset.ry(), bl_geometry_rect.top(), bl_geometry_rect.bottom(), folding_lines_coverage);
+            paintBlock(painter, b, offset.ry(), bl_geometry_rect.top(), bl_geometry_rect.bottom(), folding_lines_coverage);
 
-        offset.ry() += bl_geometry_rect.height();
-        potential_height -= bl_geometry_rect.height();
+            offset.ry() += bl_geometry_rect.height();
+            potential_height -= bl_geometry_rect.height();
 
-        b.setVisible(false);
-        b.setLineCount(0);
+            b.setVisible(false);
+            b.setLineCount(0);
 
-        b = b.next();
+            b = b.next();
+        }
+
+        //    painter.setRenderHint(QPainter::Antialiasing, true);
+            ////    painter.translate(.5, .5);
+
+            ////    painter.setBrush(brush);
+            ////    painter.drawRoundedRect(popup_rect, 3, 3);
+
+        //    painter.drawLine(0, 0, pixmap.width(), 0);
+        //    painter.drawLine(pixmap.height() - 1, 0, pixmap.width(), pixmap.height() - 1);
     }
 
     if (potential_height > 0) {
         popup_rect.setHeight(popup_rect.height() - potential_height);
-        pixmap = pixmap.copy(popup_rect);
+        pixmap = pixmap.copy(0, 0, pixmap.width(), popup_rect.height());
     }
 
-//    painter.setRenderHint(QPainter::Antialiasing, true);
-    ////    painter.translate(.5, .5);
-
-    ////    painter.setBrush(brush);
-    ////    painter.drawRoundedRect(popup_rect, 3, 3);
-
-//    painter.drawLine(0, 0, pixmap.width(), 0);
-//    painter.drawLine(pixmap.height() - 1, 0, pixmap.width(), pixmap.height() - 1);
-
-    showOverlay(popup_rect, pixmap);
+    showOverlay(popup_rect, pixmap, uid);
 }
 
 void CodeEditor::prepareIcons(const uint & size) {
@@ -715,10 +723,8 @@ int CodeEditor::widthWithoutScroll() {
     return width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0);
 }
 
-void CodeEditor::showOverlay(const QRect & rect, const QPixmap & overlay_img) {
-    if (!overlay)
-        overlay = new OverlayInfo();
-
+void CodeEditor::showOverlay(const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid) {
+    overlay -> registerShowing(true, 0, subuid);
     overlay -> showInfo(rect, overlay_img);
 }
 
@@ -726,13 +732,15 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
     if (blockOnScreen(block)) {
         hideOverlay();
         return;
-    }
+    }  
 
-    if (!overlay)
-        overlay = new OverlayInfo();
+    EDITOR_POS_TYPE block_number = block.blockNumber();
 
     OverlayInfo::OverlayPos overlay_pos =
-        textCursor().blockNumber() < block.blockNumber() ? OverlayInfo::op_bottom : OverlayInfo::op_top;
+        textCursor().blockNumber() < block_number ? OverlayInfo::op_bottom : OverlayInfo::op_top;
+
+    if (overlay -> shownFor(false, overlay_pos, block_number))
+        return;
 
     QRect bl_geometry_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
     bl_geometry_rect.setWidth(widthWithoutScroll());
@@ -753,6 +761,7 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
 
     paintBlock(painter, block, 0, bl_geometry_rect.top(), bl_geometry_rect.bottom(), folding_lines_coverage);
 
+    overlay -> registerShowing(false, overlay_pos, block_number);
     overlay -> showInfo(this, pixmap, overlay_pos);
 }
 

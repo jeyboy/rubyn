@@ -4,11 +4,14 @@
 #include <qlabel.h>
 #include <qdebug.h>
 
+#include "misc/defines.h"
+
+#define GENERATE_UID(by_rect, pos, sub_uid) QStringLiteral("%1%2%3").arg(by_rect).arg(pos).arg(sub_uid)
+
 class OverlayInfo : public QLabel {
     Q_OBJECT
-
 public:
-    enum OverlayPos {
+    enum OverlayPos : OVERLAY_POS_TYPE {
         op_top = 0,
         op_bottom
     };
@@ -35,8 +38,19 @@ public:
         setParent(0);
         setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         setFocusPolicy(Qt::NoFocus);
+    }
 
+    void registerShowing(const bool & by_rect, const OVERLAY_POS_TYPE & pos, const qint32 & uid) {
+        setProperty("by_rect", by_rect);
+        setProperty("uid", GENERATE_UID(by_rect, pos, uid));
+    }
 
+    bool shownFor(const bool & by_rect, const OVERLAY_POS_TYPE & pos, const qint32 & uid) {
+        return isVisible() && property("uid").toString() == GENERATE_UID(by_rect, pos, uid);
+    }
+
+    bool shownFor(const bool & by_rect) {
+        return isVisible() && property("by_rect").toBool() == by_rect;
     }
 
     void showInfo(QWidget * widget, const QRect & rect, const OverlayPos & pos = op_top) {
@@ -47,8 +61,6 @@ public:
     }
 
     void showInfo(QWidget * widget, const QPixmap & pixmap, const OverlayPos & pos = op_top) {
-        hide();
-
         setPixmap(pixmap);
 
         QPoint new_pos =
@@ -64,8 +76,6 @@ public:
     }
 
     void showInfo(const QRect & rect, const QPixmap & pixmap) {
-        hide();
-
         setPixmap(pixmap);
 
         move(rect.topLeft());

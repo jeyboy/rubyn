@@ -141,7 +141,7 @@ public:
 
         symbol_width = QFontMetricsF(font).averageCharWidth();
     }
-protected:
+protected:   
     void prepareIcons(const uint & size = FOLDING_WIDTH);
     int widthWithoutScroll();
 
@@ -149,7 +149,7 @@ protected:
     void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num, EDITOR_POS_TYPE & folding_lines_coverage);
     void showFoldingContentPopup(const QTextBlock & block);
 
-    void showOverlay(const QRect & rect, const QPixmap & overlay_img);
+    void showOverlay(const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid = -1);
     void showOverlay(const QTextBlock & block);
     void hideOverlay();
 
