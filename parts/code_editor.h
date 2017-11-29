@@ -183,19 +183,19 @@ protected:
     void insertFromMimeData(const QMimeData * source) {
         if (source -> hasUrls()) {
             QList<QUrl> urls = source -> urls();
-            bool multiple(urls.count() > 1);
+//            bool multiple(urls.count() > 1);
 
             for(QList<QUrl>::Iterator url = urls.begin(); url != urls.end(); url++)
                 emit fileDropped(
-                    (*url).adjusted(QUrl::NormalizePathSegments), // KDE may give a double slash
-                    multiple
+                    (*url).adjusted(QUrl::NormalizePathSegments)/*,*/ // KDE may give a double slash
+//                    multiple
                 );
         }
         else QPlainTextEdit::insertFromMimeData(source);
 }
 
 signals:
-    void fileDropped(const QUrl & uri, bool multiple); // Multiple files are dropped?
+    void fileDropped(const QUrl & uri/*, bool multiple*/); // Multiple files are dropped?
     void cursorPosChanged(const QString & pos_coords);
 
 private slots:

@@ -43,6 +43,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     connect(active_editor, SIGNAL(cursorPosChanged(QString)), pos_status, SLOT(setText(QString)));
     ui -> status_bar -> addPermanentWidget(pos_status);
 
+    connect(active_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(openFile(QUrl)));
 
     openFile(QUrl::fromLocalFile("F://rubyn test//ruby//test1.rb"));
 
@@ -161,7 +162,7 @@ void IDEWindow::dropEvent(QDropEvent * event) {
     if (event -> mimeData() -> hasUrls()) {
         QList<QUrl> urls = event -> mimeData() -> urls();
         for(QList<QUrl>::Iterator url = urls.begin(); url != urls.end(); url++)
-            openFile(*url);
+            openFile((*url).adjusted(QUrl::NormalizePathSegments));
 
         event -> accept();
     } else event -> ignore();

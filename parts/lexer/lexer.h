@@ -18,6 +18,7 @@
 
 //unsigned int hCount{0}; for(const auto& c : str) if(c == '#') ++hCount;
 
+#define ERROR_STATE(msg, lex1, lex2) msg + QByteArrayLiteral(" (") + Lexems::toStr(lex1) + QByteArrayLiteral(" VS ") + Lexems::toStr(lex2) + QByteArrayLiteral(")")
 
 class Lexer {
 protected:

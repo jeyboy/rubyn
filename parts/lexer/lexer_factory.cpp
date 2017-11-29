@@ -1,6 +1,7 @@
 #include "lexer_factory.h"
 
 #include "parts/langs/ruby/lexer_ruby.h"
+#include "parts/langs/ruby/lexer_log.h"
 
 QHash<QByteArray, FormatType> LexerFactory::types = {
     { QByteArrayLiteral("rb"), ft_rb },
@@ -16,6 +17,8 @@ QHash<QByteArray, FormatType> LexerFactory::types = {
     { QByteArrayLiteral("haml"), ft_haml },
     { QByteArrayLiteral("slim"), ft_slim },
     { QByteArrayLiteral("yml"), ft_yml },
+    { QByteArrayLiteral("log"), ft_log },
+
 
 //    { QByteArrayLiteral("c"), ft_c },
 //    { QByteArrayLiteral("h"), ft_h },
@@ -65,6 +68,7 @@ bool LexerFactory::determine(const QString & path, Lexer *& lexer) {
     exit:
         switch(format_type) {
             case ft_rb: { lexer = new LexerRuby(); break;}
+            case ft_log: { lexer = new LexerLog(); break;}
             default: lexer = 0;
         }
 

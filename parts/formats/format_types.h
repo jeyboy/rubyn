@@ -24,6 +24,8 @@ enum FormatType {
     ft_slim = (1 << 14) | ft_text,
     ft_yml = (1 << 15) | ft_text,
 
+    ft_log = (1 << 16) | ft_text,
+
 //        ft_c,
 //        ft_h,
 //        ft_cpp,

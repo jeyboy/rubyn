@@ -75,7 +75,8 @@ HEADERS  += ide_window.h \
     parts/editor_parts/overlay_info.h \
     misc/para_list.h \
     misc/para_info.h \
-    parts/editor_parts/body_overlay_info.h
+    parts/editor_parts/body_overlay_info.h \
+    parts/langs/ruby/lexer_log.h
 
 FORMS    += ide_window.ui
 
