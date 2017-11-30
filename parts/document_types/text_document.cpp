@@ -34,8 +34,8 @@ TextDocument::TextDocument(File * file, Lexer * lexer)
         QTextCursor * cursor = new QTextCursor(_doc);
 
         while(!stream.atEnd()) {
-            cursor -> insertBlock();
             cursor -> insertText(stream.readLine());
+            cursor -> insertBlock();
         }
 
         delete cursor;

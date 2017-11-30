@@ -84,10 +84,7 @@ struct LexerState {
         cached_length(0), start(0), buffer(0), prev(0), status(ls_handled), user_data(user_data)
     {}
 
-    ~LexerState() {
-        delete scope;
-        delete stack;
-    }
+    ~LexerState() {}
 
     inline void setStatus(const Status & new_status) {
         if (status != ls_error)

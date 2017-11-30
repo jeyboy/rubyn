@@ -76,6 +76,7 @@ public:
 
         block.setUserState(state -> status);
         udata -> syncLine(state -> token, state -> para, state -> control_para, state -> stack);
+        delete state;
     }
 
     inline Lexer() {}
