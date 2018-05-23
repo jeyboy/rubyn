@@ -22,10 +22,18 @@ TextDocument::TextDocument(File * file, Lexer * lexer)
     timer.start();
 
     if (content_length < 50000000) { // ~ 50 MB
+//        char * buff = new char[content_length];
+
         QByteArray ar = _file -> source() -> readAll();
+//        _file -> source() -> read(buff, content_length);
+        qDebug() << "readed";
         ar.replace('\t', TextDocument::tab_space);
+        qDebug() << "replaced";
+//        _doc = new QTextDocument(QString(buff));
         _doc = new QTextDocument(ar);
         _doc -> setProperty("tab_space", TextDocument::tab_space);
+
+//        delete [] buff;
     } else {
         _doc = new QTextDocument();
         _doc -> setProperty("tab_space", QLatin1String("\t"));
@@ -41,7 +49,6 @@ TextDocument::TextDocument(File * file, Lexer * lexer)
         delete cursor;
     }
 
-    qDebug() << "ELAPSED: " << timer.elapsed();
 
     _doc -> setDocumentLayout(new QPlainTextDocumentLayout(_doc));
 

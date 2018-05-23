@@ -35,18 +35,6 @@ enum FormatType {
 //        ft_php,
 //        ft_py,
 //        ft_vb,
-
-    // COMPLEX
-
-    ft_erhtml = ft_html | ft_erb,
-    ft_hahtml = ft_html | ft_haml,
-    ft_slhtml = ft_html | ft_slim,
-
-    ft_ercss = ft_css | ft_erb,
-
-    ft_erjs = ft_js | ft_erb,
-    ft_hajs = ft_js | ft_haml,
-    ft_sljs = ft_js | ft_slim,
 };
 
 #endif // FORMAT_TYPES_H
