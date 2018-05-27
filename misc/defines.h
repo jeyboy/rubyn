@@ -1,7 +1,11 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#include <qdebug.h>
 #include <qobject.h>
+
+#define PROJECT_FORMAT_TYPE quint8
+
 
 #define PARA_TYPE quint32
 

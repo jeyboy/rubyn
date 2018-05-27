@@ -11,7 +11,7 @@
 
 class QSplitter;
 
-#include "parts/code_editor.h"
+#include "editor/code_editor.h"
 
 namespace Ui { class IDEWindow; }
 

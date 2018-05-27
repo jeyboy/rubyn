@@ -12,71 +12,51 @@ TARGET = rubyn
 TEMPLATE = app
 
 SOURCES += main.cpp\
-    parts/editor_parts/highlighter.cpp \
     ide_window.cpp \
-    parts/code_editor.cpp \
-    parts/editor_parts/project.cpp \
-    parts/editor_parts/file.cpp \
-    parts/lexer/lexer_factory.cpp \
-    parts/editor_parts/projects.cpp \
-    parts/document_types/text_document.cpp \
-    misc/para_info.cpp \
-    parts/editor_parts/body_overlay_info.cpp
+    editor/document_types/text_document.cpp \
+    editor/parts/body_overlay_info.cpp \
+    editor/code_editor.cpp \
+    highlighter/highlighter.cpp \
+    highlighter/para_info.cpp \
+    project/file.cpp \
+    project/project.cpp \
+    project/projects.cpp
 
 HEADERS  += ide_window.h \
-    parts/editor_parts/highlighter.h \
-    parts/code_editor.h \
-    misc/singleton.h \
-    parts/highligters/highlight_format_factory.h \
     dock_widgets.h \
-    parts/document_types/text_document.h \
-    parts/document_types/image_document.h \
-    parts/document_types/documents_types.h \
-    parts/formats/format_types.h \
-    parts/langs/c_plus_preset.h \
-    parts/langs/c_preset.h \
-    parts/langs/java_preset.h \
-    parts/editor_parts/extra_area.h \
-    parts/document_types/binary_document.h \
-    parts/editor_parts/block_user_data.h \
-    parts/editor_parts/project.h \
-    parts/editor_parts/file.h \
-    parts/lexer/lexer.h \
-    parts/lexer/lexems.h \
-    parts/lexer/scopes/file_point.h \
-    parts/langs/ruby/preset_ruby.h \
-    parts/langs/css/preset_css.h \
-    parts/langs/erb/preset_erb.h \
-    parts/langs/haml/preset_haml.h \
-    parts/langs/html/preset_html.h \
-    parts/langs/javascript/preset_javascript.h \
-    parts/langs/json/preset_json.h \
-    parts/langs/sass/preset_sass.h \
-    parts/langs/sql/preset_sql.h \
-    parts/langs/xml/preset_xml.h \
-    parts/langs/yaml/preset_yaml.h \
-    parts/langs/ruby/lexer_ruby.h \
-    parts/langs/ruby/predefined_ruby.h \
-    misc/stack.h \
-    parts/lexer/scopes/scope.h \
+    editor/idocument.h \
+    editor/document_types/binary_document.h \
+    editor/document_types/documents_types.h \
+    editor/document_types/image_document.h \
+    editor/document_types/text_document.h \
+    editor/parts/body_overlay_info.h \
+    editor/parts/extra_area.h \
+    editor/parts/overlay_info.h \
+    editor/code_editor.h \
+    highlighter/block_user_data.h \
+    highlighter/msg_info.h \
+    highlighter/highlight_format_factory.h \
+    highlighter/highlighter.h \
+    highlighter/para_info.h \
+    highlighter/para_list.h \
+    lexer/ruby/flags_ruby.h \
+    lexer/ruby/grammar_ruby.h \
+    lexer/ruby/lexer_log.h \
+    lexer/ruby/lexer_ruby.h \
+    lexer/ruby/lexer_ruby_regexp.h \
+    lexer/ruby/predefined_ruby.h \
+    lexer/ruby/preset_ruby.h \
     misc/chain.h \
-    parts/langs/ruby/flags_ruby.h \
-    parts/lexer/lexer_state.h \
-    parts/langs/ruby/lexer_ruby_regexp.h \
-    parts/lexer/lexer_factory.h \
-    misc/utils.h \
-    parts/lexer/grammar.h \
-    parts/langs/ruby/grammar_ruby.h \
-    misc/token_list.h \
-    parts/editor_parts/projects.h \
-    parts/document_types/idocument.h \
-    parts/editor_parts/msg_info.h \
     misc/defines.h \
-    parts/editor_parts/overlay_info.h \
-    misc/para_list.h \
-    misc/para_info.h \
-    parts/editor_parts/body_overlay_info.h \
-    parts/langs/ruby/lexer_log.h
+    misc/singleton.h \
+    misc/stack.h \
+    misc/token_list.h \
+    misc/utils.h \
+    project/file.h \
+    project/project.h \
+    project/projects.h \
+    project/project_format.h \
+    project/code_formats.h
 
 FORMS    += ide_window.ui
 

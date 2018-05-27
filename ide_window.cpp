@@ -1,9 +1,9 @@
 #include "ide_window.h"
 #include "ui_ide_window.h"
 
-#include "parts/editor_parts/projects.h"
-#include "parts/editor_parts/project.h"
-#include "parts/editor_parts/file.h"
+#include "project/projects.h"
+#include "project/project.h"
+#include "project/file.h"
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
