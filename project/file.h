@@ -12,10 +12,11 @@
 #include "editor/idocument.h"
 #include "code_formats.h"
 
-class Project;
+//class Project;
 class TextDocument;
 class ImageDocument;
 class BinaryDocument;
+class Folder;
 
 class File {
     bool identifyType(const QString & name);
@@ -24,15 +25,13 @@ protected:
     QIODevice * _device;
 
     FormatType _main_format;
-    Project * _project;
 
     QString _path;
     QString _name;
 public:
-    void init(const QString & name, const QString & path, const bool & is_local);
+    void init(const QString & name, const QString & path);
 
-    File(const QString & name, const QString & path = QString(), Project * project = 0);
-    File(const QUrl & uri, Project * project = 0);
+    File(const QString & name, const QString & path);
 
     virtual ~File() {
         delete _doc;

@@ -53,25 +53,25 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 IDEWindow::~IDEWindow() { delete ui; }
 
 void IDEWindow::textDocumentAdded(QObject * project, const QUrl & file_uri) {
-    Project * _project = reinterpret_cast<Project *>(project);
-    File * _file = _project -> file(file_uri);
-//    IDocument * doc = _file -> document();
+//    Project * _project = reinterpret_cast<Project *>(project);
+//    File * _file = _project -> file(file_uri);
+////    IDocument * doc = _file -> document();
 
-    switch(_file -> formatType()) {
-        case ft_text: {
-            active_editor -> openDocument(_file);
+//    switch(_file -> formatType()) {
+//        case ft_text: {
+//            active_editor -> openDocument(_file);
 
-            QStringList wordList;
-            wordList << "alpha" << "omega" << "omicron" << "zeta";
-            QCompleter * completer = new QCompleter(wordList, this);
-            active_editor -> setCompleter(completer);
+//            QStringList wordList;
+//            wordList << "alpha" << "omega" << "omicron" << "zeta";
+//            QCompleter * completer = new QCompleter(wordList, this);
+//            active_editor -> setCompleter(completer);
 
-            active_editor -> show();
-        break;}
-        case ft_image: //{ emit parent() -> imageAdded(url); break;}
-        case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
-        default:;
-    };
+//            active_editor -> show();
+//        break;}
+//        case ft_image: //{ emit parent() -> imageAdded(url); break;}
+//        case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
+//        default:;
+//    };
 }
 
 void IDEWindow::about() {
@@ -83,18 +83,18 @@ void IDEWindow::newFile() {
 }
 
 void IDEWindow::openFile(const QUrl & url) {
-    QUrl file_url = url;
+//    QUrl file_url = url;
 
-    if (file_url.isEmpty())
-        file_url = QUrl::fromLocalFile(
-            QFileDialog::getOpenFileName(
-                this,
-                tr("Open File"), "", "All (*.*);;Ruby Files (*.rb);;SQL (*.sql)" // ;;C Sharp (*.cs);;C++ Files (*.cpp *.h)
-            )
-        );
+//    if (file_url.isEmpty())
+//        file_url = QUrl::fromLocalFile(
+//            QFileDialog::getOpenFileName(
+//                this,
+//                tr("Open File"), "", "All (*.*);;Ruby Files (*.rb);;SQL (*.sql)" // ;;C Sharp (*.cs);;C++ Files (*.cpp *.h)
+//            )
+//        );
 
-    if (!file_url.isEmpty())
-        Projects::obj().defaultProject() -> addFile(file_url);
+//    if (!file_url.isEmpty())
+//        Projects::obj().defaultProject() -> addFile(file_url);
 }
 
 void IDEWindow::setupEditor() {

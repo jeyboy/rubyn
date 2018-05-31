@@ -1,9 +1,17 @@
 #include "file.h"
 
-#include <qfileinfo.h>
-
 #include "editor/document_types/documents_types.h"
 //#include "parts/lexer/lexer_factory.h"
+
+
+//QFile::setPermissions(path,
+//    QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
+//    QFile::ReadUser | QFile::WriteUser | QFile::ExeUser |
+//    QFile::ReadGroup | QFile::WriteGroup | QFile::ExeGroup /*|
+//    QFile::ReadOther | QFile::WriteOther | QFile::ExeOther*/
+//);
+
+
 
 bool File::identifyType(const QString & name) {
 //    _main_format =
@@ -47,7 +55,7 @@ bool File::identifyType(const QString & name) {
 //    }
 }
 
-void File::init(const QString & name, const QString & path, const bool & is_local) {
+void File::init(const QString & name, const QString & path) {
 //    Lexer * lexer;
 
 //    bool res = LexerFactory::determine(name, lexer);
@@ -62,25 +70,21 @@ void File::init(const QString & name, const QString & path, const bool & is_loca
     bool is_text = _main_format & ft_text, is_bynary = _main_format & ft_binary;
 
     if (is_text || is_bynary) {
-        if (is_local) {
-            QFile * file = new QFile(path);
+        QFile * file = new QFile(path);
 
-            //TODO: update permissions for file before opening
+        //TODO: update permissions for file before opening
 
-            QFile::OpenMode omode = QFile::ReadOnly;
-            if (is_text)
-                omode |= QFile::Text;
+        QFile::OpenMode omode = QFile::ReadOnly;
+        if (is_text)
+            omode |= QFile::Text;
 
-            if (file -> open(omode)) {
-                _device = file;
-            } else {
-                file -> deleteLater();
-                return;
-            }
+        if (file -> open(omode)) {
+            _device = file;
         } else {
-            //TODO: proceed remote file
-            return; // but not now ...
+            file -> deleteLater();
+            return;
         }
+
 
         //TODO: return BynaryDocument if is_bynary
 
@@ -90,23 +94,23 @@ void File::init(const QString & name, const QString & path, const bool & is_loca
 //        _doc = new ImageDocument(path, name, device, project, f);
 }
 
-File::File(const QString & name, const QString & path, Project * project)
-    : _doc(0), _device(0), _project(project), _path(path), _name(name)
+File::File(const QString & name, const QString & path)
+    : _doc(0), _device(0), _path(path), _name(name)
 {
-    init(_name, _path, true);
+    init(_name, _path);
 }
 
-File::File(const QUrl & uri, Project * project) : _doc(0), _device(0), _project(project) {
-    bool is_local = uri.isLocalFile();
-    _path = is_local ? uri.toLocalFile() : uri.toString();
+//File::File(const QUrl & uri, Project * project) : _doc(0), _device(0), _project(project) {
+//    bool is_local = uri.isLocalFile();
+//    _path = is_local ? uri.toLocalFile() : uri.toString();
 
-    if (is_local)
-        _name = _path.section('/', -1, -1);
-    else
-        _name = _path;
+//    if (is_local)
+//        _name = _path.section('/', -1, -1);
+//    else
+//        _name = _path;
 
-    init(_name, _path, is_local);
-}
+//    init(_name, _path, is_local);
+//}
 
 TextDocument * File::asText() { return dynamic_cast<TextDocument *>(_doc); }
 ImageDocument * File::asImage() { return dynamic_cast<ImageDocument *>(_doc); }

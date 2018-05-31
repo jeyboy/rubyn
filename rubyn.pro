@@ -20,7 +20,10 @@ SOURCES += main.cpp\
     highlighter/para_info.cpp \
     project/file.cpp \
     project/project.cpp \
-    project/projects.cpp
+    project/projects.cpp \
+    project_tree.cpp \
+    dock_widget.cpp \
+    project/folder.cpp
 
 HEADERS  += ide_window.h \
     dock_widgets.h \
@@ -56,7 +59,10 @@ HEADERS  += ide_window.h \
     project/project.h \
     project/projects.h \
     project/project_format.h \
-    project/code_formats.h
+    project/code_formats.h \
+    project_tree.h \
+    dock_widget.h \
+    project/folder.h
 
 FORMS    += ide_window.ui
 

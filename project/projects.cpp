@@ -5,7 +5,7 @@ Projects::Projects(QObject * parent) : QObject(parent) {
     Project * project = new Project(this);
     _projects.insert(QUrl(), project);
 
-    project -> addFile();
+//    project -> addFile();
 }
 
 bool Projects::open(const QUrl & uri) {
