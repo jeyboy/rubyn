@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     project/projects.cpp \
     project_tree.cpp \
     dock_widget.cpp \
-    project/folder.cpp
+    project/folder.cpp \
+    dock_widgets.cpp
 
 HEADERS  += ide_window.h \
     dock_widgets.h \

@@ -5,17 +5,30 @@
 #include "project/project.h"
 #include "project/file.h"
 
+#include "dock_widgets.h"
+#include "project_tree.h"
+
 #include <qmessagebox.h>
 #include <qfiledialog.h>
 #include <qsplitter>
 #include <qcompleter.h>
 #include <qlabel.h>
 
-IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), editors_spliter(0) {
+IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), editors_spliter(0), tree(0) {
     ui -> setupUi(this);
 
+    DockWidgets::obj().registerContainer(this);
+
+    tree = new ProjectTree(this);
+    DockWidget * widget =
+        DockWidgets::obj().createWidget(QLatin1Literal("Files"), false, tree);
+
+    DockWidgets::obj().append(widget);
+
     setAcceptDrops(true);
+
     connect(&Projects::obj(), SIGNAL(textAdded(QObject*,QUrl)), this, SLOT(textDocumentAdded(QObject*,QUrl)));
+    connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
 
 //    void projectAdded(QObject * project);
 //    void projectRemoved(QObject * project);
@@ -97,6 +110,18 @@ void IDEWindow::openFile(const QUrl & url) {
 //        Projects::obj().defaultProject() -> addFile(file_url);
 }
 
+void IDEWindow::openFolder(const QUrl & url) {
+    QUrl folder_url = url;
+
+    if (folder_url.isEmpty()) {
+        folder_url =
+            QFileDialog::getExistingDirectory(this, QLatin1Literal("Select Project Folder"), QDir::currentPath());
+    }
+
+    if (!folder_url.isEmpty())
+        Projects::obj().open(folder_url);
+}
+
 void IDEWindow::setupEditor() {
     editors << (active_editor = new CodeEditor(this));
 
@@ -115,6 +140,7 @@ void IDEWindow::setupFileMenu() {
 
     file_menu -> addAction(tr("&New"), this, SLOT(newFile()), QKeySequence::New);
     file_menu -> addAction(tr("&Open..."), this, SLOT(openFile()), QKeySequence::Open);
+    file_menu -> addAction(tr("&Open project..."), this, SLOT(openFolder()), QKeySequence::Open);
     file_menu -> addAction(tr("E&xit"), qApp, SLOT(quit()), QKeySequence::Quit);
 }
 
@@ -161,8 +187,9 @@ void IDEWindow::dragMoveEvent(QDragMoveEvent * event) {
 void IDEWindow::dropEvent(QDropEvent * event) {
     if (event -> mimeData() -> hasUrls()) {
         QList<QUrl> urls = event -> mimeData() -> urls();
-        for(QList<QUrl>::Iterator url = urls.begin(); url != urls.end(); url++)
+        for(QList<QUrl>::Iterator url = urls.begin(); url != urls.end(); url++) {
             openFile((*url).adjusted(QUrl::NormalizePathSegments));
+        }
 
         event -> accept();
     } else event -> ignore();

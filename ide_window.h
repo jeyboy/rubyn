@@ -10,6 +10,7 @@
 //https://github.com/deivid-rodriguez/byebug/blob/master/GUIDE.md
 
 class QSplitter;
+class ProjectTree;
 
 #include "editor/code_editor.h"
 
@@ -22,6 +23,7 @@ class IDEWindow : public QMainWindow {
     CodeEditor * active_editor;
     QSplitter * editors_spliter;
     QList<CodeEditor *> editors;
+    ProjectTree * tree;
 
     void setupEditor();
     void setupFileMenu();
@@ -41,6 +43,7 @@ public slots:
     void about();
     void newFile();
     void openFile(const QUrl & url = QUrl());
+    void openFolder(const QUrl & url = QUrl());
 };
 
 #endif // IDE_WINDOW_H
