@@ -44,7 +44,7 @@ void Folder::proc(QTreeWidgetItem * view_item, const QString & path) {
     }
 }
 
-Folder::Folder(QString & path, bool create) : _valid(true), _parent(0), _name(path) {
+Folder::Folder(const QString & path, bool create) : _valid(true), _parent(0), _name(path) {
     if (create) {
         QDir dir(path);
 
@@ -64,7 +64,7 @@ Folder::Folder(QString & path, bool create) : _valid(true), _parent(0), _name(pa
     }
 }
 
-Folder::Folder(Folder * parent, QTreeWidgetItem * view_parent, QString & folder_name, bool create) : _name(folder_name) {
+Folder::Folder(Folder * parent, QTreeWidgetItem * view_parent, const QString & folder_name, bool create) : _valid(true), _parent(parent), _name(folder_name) {
     if (create) {
         QDir dir(parent -> fullPath());
 

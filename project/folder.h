@@ -23,8 +23,8 @@ class Folder {
 
     void proc(QTreeWidgetItem * view_parent,const QString & path);
 public:
-    Folder(QString & path, bool create = true);
-    Folder(Folder * parent, QTreeWidgetItem * view_parent, QString & name, bool create = true);
+    Folder(const QString & path, bool create = true);
+    Folder(Folder * parent, QTreeWidgetItem * view_parent, const QString & name, bool create = true);
 
     ~Folder();
 
