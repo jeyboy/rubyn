@@ -28,6 +28,8 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     setAcceptDrops(true);
 
     connect(&Projects::obj(), SIGNAL(textAdded(QObject*,QUrl)), this, SLOT(textDocumentAdded(QObject*,QUrl)));
+    connect(tree, SIGNAL(fileClicked(void *)), this, SLOT(fileOpenRequired(void *)));
+
     connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
 
 //    void projectAdded(QObject * project);
@@ -65,7 +67,11 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 IDEWindow::~IDEWindow() { delete ui; }
 
-void IDEWindow::textDocumentAdded(QObject * project, const QUrl & file_uri) {
+void IDEWindow::fileOpenRequired(void * file) {
+
+}
+
+void IDEWindow::textDocumentAdded(void * file, const QUrl & file_uri) {
 //    Project * _project = reinterpret_cast<Project *>(project);
 //    File * _file = _project -> file(file_uri);
 ////    IDocument * doc = _file -> document();
@@ -188,7 +194,14 @@ void IDEWindow::dropEvent(QDropEvent * event) {
     if (event -> mimeData() -> hasUrls()) {
         QList<QUrl> urls = event -> mimeData() -> urls();
         for(QList<QUrl>::Iterator url = urls.begin(); url != urls.end(); url++) {
-            openFile((*url).adjusted(QUrl::NormalizePathSegments));
+            QFileInfo info((*url).toLocalFile());
+
+//            (*url).adjusted(QUrl::NormalizePathSegments)
+
+            if (info.isFile())
+                openFile(*url);
+            else
+                openFolder(*url);
         }
 
         event -> accept();

@@ -28,10 +28,17 @@ protected:
 
     QString _path;
     QString _name;
-public:
-    void init(const QString & name, const QString & path);
 
-    File(const QString & name, const QString & path);
+    bool userAskFileType();
+public:
+    enum FileOps {
+        fo_none = 0,
+        fo_open = 1,
+    };
+
+    void open(const QString & name, const QString & path);
+
+    File(const QString & name, const QString & path, const FileOps & ops = fo_none);
 
     virtual ~File() {
         delete _doc;

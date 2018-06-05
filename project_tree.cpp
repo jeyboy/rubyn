@@ -10,8 +10,8 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
 }
 
 void ProjectTree::branchAdded(QTreeWidgetItem * item) {
-    qDebug() << "BRANCH";
     addTopLevelItem(item);
+    item -> setExpanded(true);
 }
 
 void ProjectTree::folderAdded(const QString & name) {

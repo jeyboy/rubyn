@@ -2,7 +2,6 @@
 
 #include "projects.h"
 #include "folder.h"
-//#include "file.h"
 
 Project::Project(QObject * parent, const QUrl & uri) : QObject(parent) {
     root = new Folder(uri.toLocalFile(), false);

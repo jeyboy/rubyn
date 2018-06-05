@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <qhash.h>
+
 enum FormatType {
     ft_unknown = 0,
 
@@ -37,6 +39,19 @@ enum FormatType {
 //        ft_vb,
 
    ft_base = ft_image | ft_text | ft_binary
+};
+
+class CodeFormats {
+    static QHash<QString, FormatType> _formats;
+    static QHash<QString, FormatType> _user_mappings;
+public:
+    static FormatType identify(const QString & ext);
+
+    static void addMappings(const QString & ext, const FormatType & format);
+    static void removeMappings(const QString & ext);
+
+    static void loadMappings();
+    static void saveMappings();
 };
 
 #endif // CODE_FORMATS_H

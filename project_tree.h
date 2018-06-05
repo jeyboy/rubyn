@@ -12,6 +12,8 @@ public slots:
     void branchAdded(QTreeWidgetItem * item);
     void folderAdded(const QString & name);
     void fileAdded(const QString & name, void *);
+
+    void itemDoubleClicked(QTreeWidgetItem * item, int column);
 };
 
 #endif // PROJECT_TREE_H
