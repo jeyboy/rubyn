@@ -36,7 +36,7 @@ public:
         fo_open = 1,
     };
 
-    void open(const QString & name, const QString & path);
+    bool open();
 
     File(const QString & name, const QString & path, const FileOps & ops = fo_none);
 

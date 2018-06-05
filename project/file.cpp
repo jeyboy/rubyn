@@ -43,20 +43,20 @@ bool File::identifyType(const QString & name) {
 //    }
 }
 
-void File::open(const QString & /*name*/, const QString & path) {
+bool File::open() {
     if (_main_format == ft_unknown)
         userAskFileType();
 
     if (_main_format == ft_unknown)
-        return;
+        return false;
 
     bool is_text = _main_format & ft_text;
     bool is_bynary = _main_format & ft_binary;
 
     if (is_text || is_bynary) {
-        QFile * file = new QFile(path);
+        QFile * file = new QFile(_path);
 
-        QFile::setPermissions(path,
+        QFile::setPermissions(_path,
             QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
             QFile::ReadUser | QFile::WriteUser | QFile::ExeUser |
             QFile::ReadGroup | QFile::WriteGroup | QFile::ExeGroup /*|
@@ -71,16 +71,18 @@ void File::open(const QString & /*name*/, const QString & path) {
             _device = file;
         } else {
             file -> deleteLater();
-            return;
+            return false;
         }
 
 
         //TODO: return BynaryDocument if is_bynary
 
         _doc = new TextDocument(this, _main_format);
+
+        return true;
     }
 //    else if (_main_format & ft_image)
-//        _doc = new ImageDocument(path, name, device, project, f);
+//        _doc = new ImageDocument(_path, _name, device, project, f);
 }
 
 File::File(const QString & name, const QString & path, const FileOps & ops)
@@ -89,7 +91,7 @@ File::File(const QString & name, const QString & path, const FileOps & ops)
     identifyType(_name);
 
     if (ops & fo_open) {
-        open(_name, _path);
+        open();
     }
 }
 

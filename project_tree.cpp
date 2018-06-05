@@ -5,6 +5,8 @@
 ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setHeaderHidden(true);
 
+    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*,int)));
+
 //    setSortingEnabled(true);
 //    sortByColumn(0, Qt::AscendingOrder);
 }

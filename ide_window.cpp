@@ -27,8 +27,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
     setAcceptDrops(true);
 
-    connect(&Projects::obj(), SIGNAL(textAdded(QObject*,QUrl)), this, SLOT(textDocumentAdded(QObject*,QUrl)));
-    connect(tree, SIGNAL(fileClicked(void *)), this, SLOT(fileOpenRequired(void *)));
+    connect(tree, SIGNAL(fileActivated(void*)), this, SLOT(fileOpenRequired(void*)));
 
     connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
 
@@ -68,29 +67,35 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 IDEWindow::~IDEWindow() { delete ui; }
 
 void IDEWindow::fileOpenRequired(void * file) {
+    File * _file = (File *)file;
 
-}
+    qDebug() << "OPEN";
+    qDebug() << _file -> path();
 
-void IDEWindow::textDocumentAdded(void * file, const QUrl & file_uri) {
-//    Project * _project = reinterpret_cast<Project *>(project);
-//    File * _file = _project -> file(file_uri);
-////    IDocument * doc = _file -> document();
+    if (!_file -> isOpened()) {
+        if (!_file -> open()) {
+            // notify user
+            return;
+        }
+    }
 
-//    switch(_file -> formatType()) {
-//        case ft_text: {
-//            active_editor -> openDocument(_file);
+//    IDocument * doc = _file -> document();
 
-//            QStringList wordList;
-//            wordList << "alpha" << "omega" << "omicron" << "zeta";
-//            QCompleter * completer = new QCompleter(wordList, this);
-//            active_editor -> setCompleter(completer);
+    switch(_file -> formatType()) {
+        case ft_text: {
+            active_editor -> openDocument(_file);
 
-//            active_editor -> show();
-//        break;}
-//        case ft_image: //{ emit parent() -> imageAdded(url); break;}
-//        case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
-//        default:;
-//    };
+            QStringList wordList;
+            wordList << "alpha" << "omega" << "omicron" << "zeta";
+            QCompleter * completer = new QCompleter(wordList, this);
+            active_editor -> setCompleter(completer);
+
+            active_editor -> show();
+        break;}
+        case ft_image: //{ emit parent() -> imageAdded(url); break;}
+        case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
+        default:;
+    };
 }
 
 void IDEWindow::about() {

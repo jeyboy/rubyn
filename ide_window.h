@@ -38,7 +38,6 @@ public:
     ~IDEWindow();
 
 protected slots:
-    void textDocumentAdded(void * file, const QUrl & file_uri);
     void fileOpenRequired(void * file);
 
 public slots:
