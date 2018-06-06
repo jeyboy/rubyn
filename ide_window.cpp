@@ -7,7 +7,9 @@
 #include "project/folder.h"
 
 #include "dock_widgets.h"
+#include "dock_widget.h"
 #include "project_tree.h"
+#include "logger.h"
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
@@ -18,18 +20,7 @@
 IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), editors_spliter(0), tree(0) {
     ui -> setupUi(this);
 
-    DockWidgets::obj().registerContainer(this);
-
-    tree = new ProjectTree(this);
-    DockWidget * widget =
-        DockWidgets::obj().createWidget(
-            QLatin1Literal("Files"),
-            false,
-            tree,
-            (Qt::DockWidgetAreas)(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea)
-        );
-
-    DockWidgets::obj().append(widget);
+    setupToolWindows();
 
     setAcceptDrops(true);
 
@@ -192,6 +183,34 @@ void IDEWindow::setupHelpMenu() {
 void IDEWindow::setupSplitter() {
     editors_spliter = new QSplitter(this);
     setCentralWidget(editors_spliter);
+}
+
+void IDEWindow::setupToolWindows() {
+    DockWidgets::obj().registerContainer(this);
+
+    tree = new ProjectTree(this);
+    DockWidget * widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Files"),
+            tree,
+            (Qt::DockWidgetAreas)(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea)
+        );
+
+    widget -> setBehaviour(DockWidget::dwf_movable);
+
+    DockWidgets::obj().append(widget);
+
+
+    Logger::obj().initiate(QLatin1Literal("loh.txt"), true);
+
+    DockWidget * log_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Loh"),
+            Logger::obj().getEditor(),
+            (Qt::DockWidgetAreas)(Qt::BottomDockWidgetArea)
+        );
+
+    DockWidgets::obj().append(log_widget, Qt::BottomDockWidgetArea);
 }
 
 void IDEWindow::dragEnterEvent(QDragEnterEvent * event) {

@@ -30,6 +30,8 @@ class IDEWindow : public QMainWindow {
     void setupHelpMenu();
     void setupSplitter();
 protected:
+    void setupToolWindows();
+
     void dragEnterEvent(QDragEnterEvent *);
     void dragMoveEvent(QDragMoveEvent *);
     void dropEvent(QDropEvent *);

@@ -6,7 +6,26 @@
 class DockWidget : public QDockWidget {
     Q_OBJECT
 public:
-    explicit DockWidget(const QString & title, QWidget * parent = nullptr, bool closable = true, const Qt::DockWidgetAreas & areas = Qt::AllDockWidgetAreas);
+    enum Features {
+        dwf_none        = 0,
+        dwf_closable    = DockWidgetClosable,
+        dwf_movable     = DockWidgetMovable,
+        dwf_floatable   = DockWidgetFloatable,
+
+        dwf_destroyable = 128
+    };
+    Q_DECLARE_FLAGS(DockFeatures, Features)
+    Q_FLAG(DockFeatures)
+
+    explicit DockWidget(const QString & title, QWidget * parent = nullptr, const Qt::DockWidgetAreas & areas = Qt::AllDockWidgetAreas);
+
+    void setBehaviour(const DockFeatures & params) {
+        if (params & dwf_destroyable)
+            setAttribute(Qt::WA_DeleteOnClose, true);
+
+        setFeatures((DockWidgetFeatures)(int)(params & (dwf_destroyable - 1)));
+    }
+
 //    DockBar(const QString & title, QWidget * parent = 0, bool closable = true, Qt::WindowFlags flags = 0, const QString & objName = QString());
 
 //    inline void setWindowTitle(const QString & newTitle) {

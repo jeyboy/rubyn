@@ -4,8 +4,8 @@
 
 #include <qmainwindow.h>
 
-DockWidget * DockWidgets::createWidget(const QString & name, const bool & closable, QWidget * content, const Qt::DockWidgetAreas & areas) {
-    DockWidget * dock = new DockWidget(name, container, closable, areas);
+DockWidget * DockWidgets::createWidget(const QString & name, QWidget * content, const Qt::DockWidgetAreas & areas) {
+    DockWidget * dock = new DockWidget(name, container, areas);
 
 //    connect(dock, SIGNAL(closing()), this, SLOT(barClosed()));
 //    connect(dock, SIGNAL(topLevelChanged(bool)), this, SLOT(updateActiveTabIcon(bool)));

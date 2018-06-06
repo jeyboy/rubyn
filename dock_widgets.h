@@ -11,7 +11,7 @@ class DockWidgets : public Singleton<DockWidgets> {
 public:
     void registerContainer(QMainWindow * target) { container = target; }
 
-    DockWidget * createWidget(const QString & name, const bool & closable, QWidget * content, const Qt::DockWidgetAreas & areas = Qt::AllDockWidgetAreas);
+    DockWidget * createWidget(const QString & name, QWidget * content, const Qt::DockWidgetAreas & areas = Qt::AllDockWidgetAreas);
 
     void append(DockWidget * bar, const Qt::DockWidgetArea & area = Qt::LeftDockWidgetArea);
     void insert(DockWidget * bar, DockWidget * dock);

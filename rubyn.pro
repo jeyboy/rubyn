@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     dock_widget.cpp \
     project/folder.cpp \
     dock_widgets.cpp \
-    project/code_formats.cpp
+    project/code_formats.cpp \
+    logger.cpp
 
 HEADERS  += ide_window.h \
     dock_widgets.h \
@@ -64,7 +65,8 @@ HEADERS  += ide_window.h \
     project/code_formats.h \
     project_tree.h \
     dock_widget.h \
-    project/folder.h
+    project/folder.h \
+    logger.h
 
 FORMS    += ide_window.ui
 
