@@ -4,6 +4,7 @@
 #include "project/projects.h"
 #include "project/project.h"
 #include "project/file.h"
+#include "project/folder.h"
 
 #include "dock_widgets.h"
 #include "project_tree.h"
@@ -21,13 +22,18 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
     tree = new ProjectTree(this);
     DockWidget * widget =
-        DockWidgets::obj().createWidget(QLatin1Literal("Files"), false, tree);
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Files"),
+            false,
+            tree,
+            (Qt::DockWidgetAreas)(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea)
+        );
 
     DockWidgets::obj().append(widget);
 
     setAcceptDrops(true);
 
-    connect(tree, SIGNAL(fileActivated(void*)), this, SLOT(fileOpenRequired(void*)));
+    connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
 
     connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
 
@@ -59,15 +65,36 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
     connect(active_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(openFile(QUrl)));
 
-    openFile(QUrl::fromLocalFile("F://rubyn test//ruby//test1.rb"));
+    openFolder(QUrl::fromLocalFile("F://rubyn test//RebelsMarketplace"));
+//    openFile(QUrl::fromLocalFile("F://rubyn test//ruby//test1.rb"));
 
     setWindowTitle(tr("Bla bla blashka"));
 }
 
 IDEWindow::~IDEWindow() { delete ui; }
 
-void IDEWindow::fileOpenRequired(void * file) {
-    File * _file = (File *)file;
+void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
+    File * _file = 0;
+
+    if (folder) {
+        Folder * _folder = reinterpret_cast<Folder *>(folder);
+
+        if (_folder == 0) {
+            // alert
+            return;
+        }
+
+        _file = _folder -> getFile(name);
+    } else {
+        // need to register somewhere temp files
+        return;
+    }
+
+    if (_file == 0) {
+        qDebug() << "FILE IS NULL";
+        // alert
+        return;
+    }
 
     qDebug() << "OPEN";
     qDebug() << _file -> path();
@@ -107,17 +134,18 @@ void IDEWindow::newFile() {
 }
 
 void IDEWindow::openFile(const QUrl & url) {
-//    QUrl file_url = url;
+    QUrl file_url = url;
 
-//    if (file_url.isEmpty())
-//        file_url = QUrl::fromLocalFile(
-//            QFileDialog::getOpenFileName(
-//                this,
-//                tr("Open File"), "", "All (*.*);;Ruby Files (*.rb);;SQL (*.sql)" // ;;C Sharp (*.cs);;C++ Files (*.cpp *.h)
-//            )
-//        );
+    if (file_url.isEmpty())
+        file_url = QUrl::fromLocalFile(
+            QFileDialog::getOpenFileName(
+                this,
+                tr("Open File"), "", "All (*.*);;Ruby Files (*.rb);;SQL (*.sql)" // ;;C Sharp (*.cs);;C++ Files (*.cpp *.h)
+            )
+        );
 
-//    if (!file_url.isEmpty())
+    if (!file_url.isEmpty())
+        fileOpenRequired(url.toLocalFile(), 0);
 //        Projects::obj().defaultProject() -> addFile(file_url);
 }
 

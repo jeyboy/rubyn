@@ -6,7 +6,7 @@
 class DockWidget : public QDockWidget {
     Q_OBJECT
 public:
-    explicit DockWidget(const QString & title, QWidget * parent = nullptr, bool closable = true);
+    explicit DockWidget(const QString & title, QWidget * parent = nullptr, bool closable = true, const Qt::DockWidgetAreas & areas = Qt::AllDockWidgetAreas);
 //    DockBar(const QString & title, QWidget * parent = 0, bool closable = true, Qt::WindowFlags flags = 0, const QString & objName = QString());
 
 //    inline void setWindowTitle(const QString & newTitle) {

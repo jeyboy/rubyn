@@ -45,10 +45,8 @@ bool File::identifyType(const QString & name) {
 
 bool File::open() {
     if (_main_format == ft_unknown)
-        userAskFileType();
-
-    if (_main_format == ft_unknown)
-        return false;
+        if (!userAskFileType())
+            return false;
 
     bool is_text = _main_format & ft_text;
     bool is_bynary = _main_format & ft_binary;

@@ -21,7 +21,7 @@ void Folder::proc(QTreeWidgetItem * view_item, const QString & path) {
 
         Folder * folder = new Folder(this, view_item, dir_name, false);
         if (folder -> _valid) {
-            folders.insert(dir_name, folder);
+            _folders.insert(dir_name, folder);
         } else {
             QString source = dir_path % '/' % dir_name;
             QString msg = QLatin1Literal("Cant process");
@@ -38,7 +38,7 @@ void Folder::proc(QTreeWidgetItem * view_item, const QString & path) {
         QString name = files_it.fileName();
 
         File * file = new File(name, path);
-        files.insert(name, file);
+        _files.insert(name, file);
 
         new QTreeWidgetItem(view_item, QStringList() << name);
     }
@@ -81,8 +81,8 @@ Folder::Folder(Folder * parent, QTreeWidgetItem * view_parent, const QString & f
 }
 
 Folder::~Folder() {
-    qDeleteAll(folders);
-    qDeleteAll(files);
+    qDeleteAll(_folders);
+    qDeleteAll(_files);
 }
 
 QString Folder::name() {

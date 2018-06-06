@@ -18,8 +18,8 @@ class Folder {
 
     QString _name;
 
-    FileList files;
-    FolderList folders;
+    FileList _files;
+    FolderList _folders;
 
     void proc(QTreeWidgetItem * view_parent,const QString & path);
 public:
@@ -30,6 +30,13 @@ public:
 
     QString name();
     QString fullPath();
+
+    File * getFile(const QString & name) {
+        if (_files.contains(name))
+            return _files[name];
+        else
+            return 0;
+    }
 };
 
 #endif // FOLDER_H

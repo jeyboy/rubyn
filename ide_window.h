@@ -38,7 +38,7 @@ public:
     ~IDEWindow();
 
 protected slots:
-    void fileOpenRequired(void * file);
+    void fileOpenRequired(const QString & name, void * folder);
 
 public slots:
     void about();

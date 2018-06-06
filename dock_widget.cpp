@@ -2,8 +2,9 @@
 
 //#include <qdatetime.h>
 
-DockWidget::DockWidget(const QString & title, QWidget * parent, bool closable) : QDockWidget(title, parent, Qt::WindowCloseButtonHint) {
+DockWidget::DockWidget(const QString & title, QWidget * parent, bool closable, const Qt::DockWidgetAreas & areas) : QDockWidget(title, parent, Qt::WindowCloseButtonHint) {
     setAttribute(Qt::WA_DeleteOnClose, closable);
+    setAllowedAreas(areas);
 }
 
 void DockWidget::closeEvent(QCloseEvent * e) {
