@@ -3,8 +3,11 @@
 
 #include <qhash.h>
 #include <qurl.h>
+#include <qicon.h>
 
 #include "misc/singleton.h"
+
+#define PREPARE_PIXMAP(name, size) QPixmap(name).scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation)
 
 class Project;
 class File;
@@ -14,6 +17,7 @@ class Projects : public QObject, public Singleton<Projects> {
     Q_OBJECT
 
     QHash<QUrl, Project *> _projects;
+    QHash<QString, QIcon> _icons;
 public:
     Projects(QObject * parent = 0);
     inline ~Projects() { _projects.clear(); }
@@ -21,6 +25,8 @@ public:
     bool open(const QUrl & uri);
 
     inline Project * project(const QUrl & uri) { return _projects.value(uri, 0); }
+
+    QIcon & getIco(const QString & ext, const uint & size = 32);
 signals:
     void errorOccurred(QString & source, QString & info);
 

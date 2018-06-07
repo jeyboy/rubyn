@@ -56,6 +56,7 @@ public:
 
     inline QString name() const { return _name; }
     inline QString path() const { return _path; }
+    QString icoType();
 
     inline bool isOpened() const { return _device && _device -> isOpen(); }
     inline bool isFullyReaded() const { return _device && _doc && _doc -> isFullyReaded(); }

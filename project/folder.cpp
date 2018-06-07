@@ -40,7 +40,8 @@ void Folder::proc(QTreeWidgetItem * view_item, const QString & path) {
         File * file = new File(name, path);
         _files.insert(name, file);
 
-        new QTreeWidgetItem(view_item, QStringList() << name);
+        QTreeWidgetItem * item = new QTreeWidgetItem(view_item, QStringList() << name);
+        item -> setIcon(0, Projects::obj().getIco(file -> icoType()));
     }
 }
 
@@ -55,6 +56,7 @@ Folder::Folder(const QString & path, bool create) : _valid(true), _parent(0), _n
     if (!create) {
         QTreeWidgetItem * view_item = new QTreeWidgetItem(QStringList() << name());
         view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
+        view_item -> setIcon(0, Projects::obj().getIco(QLatin1Literal("folder")));
 
 //        (Folder *)view_item -> data(0, Qt::UserRole).value<void *>() -> name();
 
@@ -75,6 +77,7 @@ Folder::Folder(Folder * parent, QTreeWidgetItem * view_parent, const QString & f
     if (!create) {
         QTreeWidgetItem * curr_view_item = new QTreeWidgetItem(view_parent, QStringList() << name());
         curr_view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
+        curr_view_item -> setIcon(0, Projects::obj().getIco(QLatin1Literal("folder")));
 
         proc(curr_view_item, fullPath());
     }

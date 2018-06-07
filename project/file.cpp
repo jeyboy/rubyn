@@ -3,8 +3,14 @@
 #include "editor/document_types/documents_types.h"
 //#include "parts/lexer/lexer_factory.h"
 
+QString File::icoType() {
+    //TODO: write me
+    return QLatin1Literal("txt");
+}
+
 bool File::userAskFileType() {
-    // ask user about file type
+    //TODO: ask user about file type
+    return false;
 }
 
 bool File::identifyType(const QString & name) {
