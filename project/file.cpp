@@ -5,7 +5,7 @@
 
 QString File::icoType() {
     //TODO: write me
-    return QLatin1Literal("txt");
+    return QLatin1Literal("rb");
 }
 
 bool File::userAskFileType() {
@@ -19,7 +19,6 @@ bool File::identifyType(const QString & name) {
     if (parts.length() > 1) {
         for(QStringList::Iterator it = ++parts.begin(); it != parts.end(); it++) {
             FormatType ft = CodeFormats::identify(*it);
-
             _main_format = (FormatType)(_main_format | ft);
         }
     }

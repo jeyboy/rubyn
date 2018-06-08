@@ -9,10 +9,9 @@ Project::Project(QObject * parent, const QUrl & uri) : QObject(parent) {
 
 Project::~Project() {
     delete root;
-//    qDeleteAll(_files);
 }
 
-void Project::rename(const QString & new_name) {
+void Project::rename(const QString & /*new_name*/) {
     // TODO: write me
 }
 

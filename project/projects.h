@@ -26,7 +26,7 @@ public:
 
     inline Project * project(const QUrl & uri) { return _projects.value(uri, 0); }
 
-    QIcon & getIco(const QString & ext, const uint & size = 32);
+    QIcon & getIco(const QString & ext, const uint & size = 24);
 signals:
     void errorOccurred(QString & source, QString & info);
 
