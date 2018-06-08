@@ -6,7 +6,7 @@
         <file alias="folding_open_hover">icons/folding_opened_hover.png</file>
     </qresource>
     <qresource prefix="/doc_types">
-        <file alias="rb">icons/file_ruby.png</file>
         <file alias="folder">icons/folder.png</file>
+        <file alias="rb">icons/file_ruby.png</file>
     </qresource>
 </RCC>
