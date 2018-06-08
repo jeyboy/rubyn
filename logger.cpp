@@ -17,7 +17,7 @@ Logger::~Logger() {
     fm = 0;
 }
 
-void Logger::write(const QString & initiator, const QString & value, LogLevel level) {
+void Logger::write(const QString & initiator, const QString & value, const LogLevel & level) {
     QMetaObject::invokeMethod(
         this,
         "writeToStream",
@@ -27,7 +27,7 @@ void Logger::write(const QString & initiator, const QString & value, LogLevel le
         Q_ARG(int, level)
     );
 }
-void Logger::write(const QString & initiator, const QString & value, const QString & attr, LogLevel level) {
+void Logger::write(const QString & initiator, const QString & value, const QString & attr, const LogLevel & level) {
     QMetaObject::invokeMethod(
         this,
         "writeToStream",
@@ -38,7 +38,7 @@ void Logger::write(const QString & initiator, const QString & value, const QStri
         Q_ARG(int, level)
     );
 }
-void Logger::write(const QString & initiator, const QString & value, const QStringList & attrs, LogLevel level) {
+void Logger::write(const QString & initiator, const QString & value, const QStringList & attrs, const LogLevel & level) {
     QMetaObject::invokeMethod(
         this,
         "writeToStream",

@@ -37,9 +37,9 @@ public:
         }
     }
 
-    void write(const QString & initiator, const QString & value, LogLevel level = log_info);
-    void write(const QString & initiator, const QString & value, const QString & attr, LogLevel level = log_info);
-    void write(const QString & initiator, const QString & value, const QStringList & attrs, LogLevel level = log_info);
+    void write(const QString & initiator, const QString & value, const LogLevel & level = log_info);
+    void write(const QString & initiator, const QString & value, const QString & attr, const LogLevel & level = log_info);
+    void write(const QString & initiator, const QString & value, const QStringList & attrs, const LogLevel & level = log_info);
 
     void initiate(const QString & fileName = "", const bool & create_editor = false);
     inline void setShowDateTime(bool show) { m_showDate = show; }

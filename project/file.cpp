@@ -17,8 +17,11 @@ bool File::identifyType(const QString & name) {
     QStringList parts = name.split('.', QString::SkipEmptyParts);
 
     if (parts.length() > 1) {
-        for(QStringList::Iterator it = ++parts.begin(); it != parts.end(); it++)
-            _main_format = (FormatType)(_main_format | CodeFormats::identify(*it));
+        for(QStringList::Iterator it = ++parts.begin(); it != parts.end(); it++) {
+            FormatType ft = CodeFormats::identify(*it);
+
+            _main_format = (FormatType)(_main_format | ft);
+        }
     }
 
     return _main_format > ft_unknown;
@@ -87,10 +90,12 @@ bool File::open() {
     }
 //    else if (_main_format & ft_image)
 //        _doc = new ImageDocument(_path, _name, device, project, f);
+
+    return false;
 }
 
 File::File(const QString & name, const QString & path, const FileOps & ops)
-    : _doc(0), _device(0), _path(path), _name(name)
+    : _doc(0), _device(0), _main_format(ft_unknown), _path(path), _name(name)
 {
     identifyType(_name);
 

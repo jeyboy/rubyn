@@ -83,6 +83,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
 
     if (_file == 0) {
         qDebug() << "FILE IS NULL";
+        Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Cant find file: '") % name % '\'',  Logger::log_error);
         // alert
         return;
     }
@@ -112,7 +113,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
         break;}
         case ft_image: //{ emit parent() -> imageAdded(url); break;}
         case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
-        default:;
+        default: Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Undefined format of file: '") % QString::number(_file -> formatType()) % '\'',  Logger::log_error); ;
     };
 }
 
