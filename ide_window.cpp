@@ -194,7 +194,7 @@ void IDEWindow::setupToolWindows() {
         DockWidgets::obj().createWidget(
             QLatin1Literal("Files"),
             tree,
-            (Qt::DockWidgetAreas)(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea)
+            (Qt::DockWidgetAreas)(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea)
         );
 
     widget -> setBehaviour(DockWidget::dwf_movable);
