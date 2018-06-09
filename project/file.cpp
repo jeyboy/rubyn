@@ -23,6 +23,11 @@ bool File::identifyType(const QString & name) {
         }
     }
 
+    ////////////// temp
+    if (_main_format == ft_unknown)
+        _main_format = ft_text;
+    ///////////////////
+
     return _main_format > ft_unknown;
 //    QByteArray ch_arr = name.toUtf8();
 //    const char * str = ch_arr.constData();
