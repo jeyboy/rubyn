@@ -5,9 +5,7 @@
 
 #include <qurl.h>
 
-class File;
-class Folder;
-class IDocument;
+class IFolder;
 
 class Project : public QObject {
     Q_OBJECT
@@ -15,7 +13,7 @@ class Project : public QObject {
     QUrl _project_uri;
     PROJECT_FORMAT_TYPE _project_format;
 
-    Folder * root;
+    IFolder * root;
 public:
     Project(QObject * parent, const QUrl & uri = QUrl());
     ~Project();
@@ -25,14 +23,6 @@ public:
     void rename(const QString & new_name);
 
 //    bool addFile(const QUrl & uri = QUrl(), const bool & open = true);
-
-//    inline File * file(const QUrl & url) { return _files.value(url, 0); }
-//    IDocument * document(const QUrl & url);
-
-//signals:
-//    void fileAdded(File *);
-//    void fileRenamed(File *);
-//    void fileRemoved(File *);
 };
 
 #endif // PROJECT_H

@@ -1,10 +1,10 @@
 #include "project.h"
 
 #include "projects.h"
-#include "folder.h"
+#include "recursive_folder.h"
 
 Project::Project(QObject * parent, const QUrl & uri) : QObject(parent) {
-    root = new Folder(uri.toLocalFile(), false);
+    root = new RecursiveFolder(uri.toLocalFile());
 }
 
 Project::~Project() {
@@ -39,19 +39,4 @@ void Project::rename(const QString & /*new_name*/) {
 //    }
 
 //    return true;
-//}
-
-//void Project::renameFile(const QUrl & uri, const QUrl & new_uri) {
-//    // TODO: write me
-//}
-
-//void Project::removeFile(const QUrl & uri) {
-//    // TODO: write me
-
-////    emit fileRemoved(project_uri, uri);
-//}
-
-//inline IDocument * Project::document(const QUrl & url) {
-//    File * file = _files.value(url, 0);
-//    return file ? file -> document() : 0;
 //}

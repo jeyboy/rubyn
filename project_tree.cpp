@@ -3,11 +3,12 @@
 ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setHeaderHidden(true);
 
-    setIconSize(QSize(22, 22));
-
     QFont f(font());
     f.setPointSize(11);
     setFont(f);
+
+    //TODO: need to set double font size
+    setIconSize(QSize(22, 22));
 
     connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*,int)));
 

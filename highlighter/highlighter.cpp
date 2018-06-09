@@ -47,7 +47,7 @@ Highlighter::~Highlighter() {
     setDocument(0);
 }
 
-void Highlighter::highlightBlock(const QString & text) {
+void Highlighter::highlightBlock(const QString & /*text*/) {
 //    qDebug() << "*** " << currentBlock().firstLineNumber();
 
 //    _doc_wrapper -> lexicate(text, this);

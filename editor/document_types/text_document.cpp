@@ -10,7 +10,7 @@
 
 QLatin1String TextDocument::tab_space = QLatin1Literal("  ");
 
-TextDocument::TextDocument(File * file, FormatType & format) // , _tokens(new TokenList()), _paras(new ParaList()), _scope(new Scope()), _lexer(lexer)
+TextDocument::TextDocument(File * file, FormatType & /*format*/) // , _tokens(new TokenList()), _paras(new ParaList()), _scope(new Scope()), _lexer(lexer)
     : IDocument(), _doc(0), _file(file) {
 
     qint64 content_length = _file -> source() -> size();

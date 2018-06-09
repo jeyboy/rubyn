@@ -4,7 +4,7 @@
 #include "project/projects.h"
 #include "project/project.h"
 #include "project/file.h"
-#include "project/folder.h"
+#include "project/ifolder.h"
 
 #include "dock_widgets.h"
 #include "dock_widget.h"
@@ -68,7 +68,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
     File * _file = 0;
 
     if (folder) {
-        Folder * _folder = reinterpret_cast<Folder *>(folder);
+        IFolder * _folder = reinterpret_cast<IFolder *>(folder);
 
         if (_folder == 0) {
             // alert

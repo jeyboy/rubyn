@@ -23,10 +23,11 @@ SOURCES += main.cpp\
     project/projects.cpp \
     project_tree.cpp \
     dock_widget.cpp \
-    project/folder.cpp \
     dock_widgets.cpp \
     project/code_formats.cpp \
-    logger.cpp
+    logger.cpp \
+    project/ifolder.cpp \
+    project/recursive_folder.cpp
 
 HEADERS  += ide_window.h \
     dock_widgets.h \
@@ -65,8 +66,9 @@ HEADERS  += ide_window.h \
     project/code_formats.h \
     project_tree.h \
     dock_widget.h \
-    project/folder.h \
-    logger.h
+    logger.h \
+    project/ifolder.h \
+    project/recursive_folder.h
 
 FORMS    += ide_window.ui
 
