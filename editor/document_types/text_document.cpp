@@ -2,6 +2,7 @@
 
 #include "project/file.h"
 
+#include "lexer/ilexer.h"
 //#include "parts/langs/ruby/lexer_ruby.h"
 
 #include <qtextdocument.h>
@@ -13,10 +14,12 @@
 QLatin1String TextDocument::tab_space = QLatin1Literal("  ");
 
 bool TextDocument::identificateLexer() {
-    FormatType format = _file -> formatType();
+//    FormatType format = _file -> formatType();
 
     //    if (lexer)
     //        new Highlighter(this);
+
+    return false;
 }
 
 TextDocument::TextDocument(File * file) : IDocument(), _doc(0), _lexer(0), _file(file) {

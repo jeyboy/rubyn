@@ -83,7 +83,7 @@ bool File::open() {
 
         //TODO: return BynaryDocument if is_bynary
 
-        _doc = new TextDocument(this, _main_format);
+        _doc = new TextDocument(this);
 
         return true;
     }

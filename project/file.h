@@ -62,6 +62,7 @@ public:
     inline bool isFullyReaded() const { return _device && _doc && _doc -> isFullyReaded(); }
 
     inline FormatType formatType() const { return _main_format; }
+    inline int baseFormatType() const { return _main_format & ft_base; }
 
     inline bool isText() const { return _main_format & ft_text; }
     inline bool isImage() const { return _main_format & ft_image; }

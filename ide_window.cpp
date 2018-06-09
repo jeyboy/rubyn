@@ -100,7 +100,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
 
 //    IDocument * doc = _file -> document();
 
-    switch(_file -> formatType()) {
+    switch(_file -> baseFormatType()) {
         case ft_text: {
             active_editor -> openDocument(_file);
 
