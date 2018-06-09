@@ -27,7 +27,10 @@ SOURCES += main.cpp\
     project/code_formats.cpp \
     logger.cpp \
     project/ifolder.cpp \
-    project/recursive_folder.cpp
+    project/recursive_folder.cpp \
+    lexer/ilexer.cpp \
+    lexer/regexp_lexer.cpp \
+    lexer/ab_lexer.cpp
 
 HEADERS  += ide_window.h \
     dock_widgets.h \
@@ -68,7 +71,10 @@ HEADERS  += ide_window.h \
     dock_widget.h \
     logger.h \
     project/ifolder.h \
-    project/recursive_folder.h
+    project/recursive_folder.h \
+    lexer/ilexer.h \
+    lexer/regexp_lexer.h \
+    lexer/ab_lexer.h
 
 FORMS    += ide_window.ui
 

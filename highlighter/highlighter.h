@@ -8,8 +8,6 @@
 #include <qtextdocument.h>
 #include <qpointer.h>
 
-class Lexer;
-class LexerState;
 class TextDocument;
 
 class Highlighter : public QObject {

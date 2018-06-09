@@ -2,6 +2,8 @@
 
 #include "project/file.h"
 
+//#include "parts/langs/ruby/lexer_ruby.h"
+
 #include <qtextdocument.h>
 #include <qtextcursor>
 #include <QPlainTextDocumentLayout>
@@ -10,9 +12,14 @@
 
 QLatin1String TextDocument::tab_space = QLatin1Literal("  ");
 
-TextDocument::TextDocument(File * file, FormatType & /*format*/) // , _tokens(new TokenList()), _paras(new ParaList()), _scope(new Scope()), _lexer(lexer)
-    : IDocument(), _doc(0), _file(file) {
+bool TextDocument::identificateLexer() {
+    FormatType format = _file -> formatType();
 
+    //    if (lexer)
+    //        new Highlighter(this);
+}
+
+TextDocument::TextDocument(File * file) : IDocument(), _doc(0), _lexer(0), _file(file) {
     qint64 content_length = _file -> source() -> size();
 
     setFullyReaded(true);
@@ -70,16 +77,23 @@ TextDocument::TextDocument(File * file, FormatType & /*format*/) // , _tokens(ne
 //            readNextBlock();
 //        }
 
-//    if (lexer)
-//        new Highlighter(this);
+
+    identificateLexer();
 }
 
 TextDocument::~TextDocument() {
     delete _doc;
-//        delete _lexer;
-//        delete _scope;
-//        delete _tokens;
-//        delete _paras;
+    delete _lexer;
+}
+
+void TextDocument::lexicate(const QString & text, Highlighter * highlighter) {
+    if (_lexer)
+        _lexer -> handle(text, highlighter);
+}
+
+void TextDocument::calcFoldings() {
+    if (_lexer)
+        _lexer -> calcFoldings();
 }
 
 void TextDocument::readNextBlock() {

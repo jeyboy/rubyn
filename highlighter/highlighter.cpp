@@ -4,8 +4,6 @@
 
 #include "editor/document_types/text_document.h"
 
-//#include "parts/lexer/lexer.h"
-
 #include <qtimer.h>
 
 void Highlighter::setDocument(TextDocument * new_doc) {
@@ -47,10 +45,10 @@ Highlighter::~Highlighter() {
     setDocument(0);
 }
 
-void Highlighter::highlightBlock(const QString & /*text*/) {
+void Highlighter::highlightBlock(const QString & text) {
 //    qDebug() << "*** " << currentBlock().firstLineNumber();
 
-//    _doc_wrapper -> lexicate(text, this);
+    _doc_wrapper -> lexicate(text, this);
 }
 
 void Highlighter::rehighlight() {

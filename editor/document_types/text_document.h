@@ -8,18 +8,13 @@
 
 #include "project/code_formats.h"
 #include "editor/idocument.h"
-//#include "parts/lexer/lexer.h"
-//#include "parts/lexer/scopes/scope.h"
-//#include "parts/editor_parts/highlighter.h"
-//#include "misc/para_list.h"
-
-////#include "parts/langs/ruby/lexer_ruby.h"
-
 
 #define READ_LIMIT (qint64)(512000) // ~512 kb
 
 class Project;
 class File;
+class ILexer;
+class Highlighter;
 
 class TextDocument : public QObject, public IDocument {
     Q_OBJECT
@@ -27,18 +22,18 @@ class TextDocument : public QObject, public IDocument {
     static QLatin1String tab_space;
 protected:
     QPointer<QTextDocument> _doc;
-//    TokenList * _tokens;
-//    ParaList * _paras;
-//    Scope * _scope;
-//    Lexer * _lexer;
+
+    ILexer * _lexer;
+
     File * _file;
 
+    bool identificateLexer();
 signals:
     void enterPressed();
     void wordHovered(const QPoint & point, const int & start, const int & end);
 //    QTextDocument::contentsChange(int position, int charsRemoved, int charsAdded)
 public:
-    TextDocument(File * file, FormatType & format);
+    TextDocument(File * file);
 
     ~TextDocument();
 
@@ -46,57 +41,9 @@ public:
 
     void readNextBlock();
 
-//    void lexicate(const QString & text, Highlighter * highlighter) {
-//        if (_lexer)
-//            _lexer -> handle(text, highlighter, _scope, _tokens, _paras);
-//    }
+    void lexicate(const QString & text, Highlighter * highlighter);
 
-    void calcFoldings() {
-//        ParaCell * iter = _paras -> iter();
-//        EDITOR_POS_TYPE curr_line = 0;
-
-//        QVector<ParaCell *> waiters;
-//        waiters.reserve(5);
-
-//        while(iter != _paras -> iter_end()) {
-//            switch(iter -> para_type) {
-//                case ParaInfo::pt_none: { break; }
-//                case ParaInfo::pt_max: { ++curr_line; break;}
-//                case ParaInfo::pt_max_end: {
-//                    if (!waiters.isEmpty()) {
-//                        qWarning() << "PARA OBJECTS VERIFICATION IS FAILED: " << waiters.count();
-//                        waiters.clear();
-//                    }
-
-//                    return;
-//                }
-//                default: {
-//                    iter -> line_num = curr_line;
-
-//                    if (iter -> para_type & ParaInfo::pt_open) {
-//                        waiters << iter;
-//                    } else {
-//                        PARA_TYPE opposite_type = ParaInfo::oppositePara(iter -> para_type);
-
-//                        if (!waiters.isEmpty()) {
-//                            ParaCell * waiter = waiters.takeLast();
-
-//                            if ((waiter -> para_type & opposite_type) == waiter -> para_type) {
-//                                waiter -> close = iter;
-//                            } else {
-//                                qWarning() << "PARA OBJECTS CLOSING IS FAILED: " << ParaInfo::toString(waiter -> para_type) << ParaInfo::toString(opposite_type);
-//                                // TODO: do something with wrong state
-//                            }
-//                        } else {
-//                            qWarning() << "PARA OBJECTS CLOSING WITHOUT OPEN: " << ParaInfo::toString(opposite_type);
-//                        }
-//                    }
-//                }
-//            };
-
-//            iter = iter -> next;
-//        }
-    }
+    void calcFoldings();
 };
 
 #endif // TEXT_DOCUMENT
