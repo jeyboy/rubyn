@@ -3,32 +3,19 @@
 
 #include "ilexer.h"
 
-#include <QTextCharFormat>
-#include <QRegularExpression>
+#include "highlighter/highlight_rule.h"
+
+typedef QVector<HighlightingRule> RulesList;
 
 class RegexpLexer : public ILexer {
+    QVector<HighlightingRule> _rules;
+protected:
+    inline void addRule(const HighlightingRule & rule) { _rules.append(rule); }
+
 public:
     RegexpLexer();
 
     void handle(const QString & text, Highlighter * lighter);
-private:
-    struct HighlightingRule {
-        QRegularExpression pattern;
-        QTextCharFormat format;
-    };
-
-    QVector<HighlightingRule> rules;
-
-
-//    QRegularExpression commentStartExpression;
-//    QRegularExpression commentEndExpression;
-
-//    QTextCharFormat keywordFormat;
-//    QTextCharFormat classFormat;
-//    QTextCharFormat singleLineCommentFormat;
-//    QTextCharFormat multiLineCommentFormat;
-//    QTextCharFormat quotationFormat;
-//    QTextCharFormat functionFormat;
 };
 
 #endif // REGEXP_LEXER_H

@@ -74,7 +74,8 @@ HEADERS  += ide_window.h \
     project/recursive_folder.h \
     lexer/ilexer.h \
     lexer/regexp_lexer.h \
-    lexer/ab_lexer.h
+    lexer/ab_lexer.h \
+    highlighter/highlight_rule.h
 
 FORMS    += ide_window.ui
 

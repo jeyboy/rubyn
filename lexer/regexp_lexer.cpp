@@ -1,5 +1,9 @@
 #include "regexp_lexer.h"
 
+#include "highlighter/highlight_format_factory.h"
+
+//HighlightFormatFactory
+
 RegexpLexer::RegexpLexer() : ILexer() {
 //    HighlightingRule rule;
 
@@ -51,8 +55,45 @@ RegexpLexer::RegexpLexer() : ILexer() {
 }
 
 void RegexpLexer::handle(const QString & text, Highlighter * lighter) {
+    lighter -> setCurrentBlockState(0);
+
+    for(RulesList::ConstIterator it = _rules.cbegin(); it != _rules.cend(); it++) {
+        const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor((*it).format_lexem);
+
+        if ((*it).end_pattern) {
+            int start_index = 0;
+            if (lighter -> previousBlockState() != 1)
+                start_index = text.indexOf(*(*it).start_pattern);
+
+            while (start_index >= 0) {
+                QRegularExpressionMatch match = (*it).end_pattern -> match(text, start_index);
+
+                int end_index = match.capturedStart();
+                int captured_length = 0;
+
+                if (end_index == -1) {
+                    lighter -> setCurrentBlockState(1);
+                    captured_length = text.length() - start_index;
+                } else {
+                    captured_length =
+                        end_index - start_index + match.capturedLength();
+                }
+
+                lighter -> setFormat(start_index, captured_length, format);
+                start_index = text.indexOf(*(*it).start_pattern, start_index + captured_length);
+            }
+        } else {
+            QRegularExpressionMatchIterator match_iterator = (*it).start_pattern -> globalMatch(text);
+
+            while (match_iterator.hasNext()) {
+                QRegularExpressionMatch match = match_iterator.next();
+                lighter -> setFormat(match.capturedStart(), match.capturedLength(), format);
+            }
+        }
+    }
+
 //    foreach (const HighlightingRule &rule, highlightingRules) {
-//        QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+//
 //        while (matchIterator.hasNext()) {
 //            QRegularExpressionMatch match = matchIterator.next();
 //            setFormat(match.capturedStart(), match.capturedLength(), rule.format);
