@@ -11,8 +11,7 @@
 
 class QSplitter;
 class ProjectTree;
-
-#include "editor/code_editor.h"
+class TabsBlock;
 
 namespace Ui { class IDEWindow; }
 
@@ -21,8 +20,8 @@ class IDEWindow : public QMainWindow {
 
     Ui::IDEWindow * ui;
 
-    CodeEditor * active_editor;
-    QList<CodeEditor *> editors;
+    TabsBlock * active_editor;
+    QList<TabsBlock *> editors;
 
     QSplitter * editors_spliter;
 

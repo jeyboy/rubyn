@@ -3,7 +3,6 @@
 
 #include "project/projects.h"
 #include "project/project.h"
-#include "project/file.h"
 #include "project/ifolder.h"
 
 #include "dock_widgets.h"
@@ -55,7 +54,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     connect(active_editor, SIGNAL(cursorPosChanged(QString)), pos_status, SLOT(setText(QString)));
     ui -> status_bar -> addPermanentWidget(pos_status);
 
-    connect(active_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(openFile(QUrl)));
+//    connect(active_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(openFile(QUrl)));
 
     openFolder(QUrl::fromLocalFile("F://rubyn test//RebelsMarketplace"));
 //    openFile(QUrl::fromLocalFile("F://rubyn test//ruby//test1.rb"));
@@ -155,17 +154,12 @@ void IDEWindow::openFolder(const QUrl & url) {
 }
 
 void IDEWindow::setupEditor() {
-    editors << (active_editor = new CodeEditor(this));
+    TabsBlock * new_editor = new TabsBlock(editor, this);
+    active_editor = new_editor;
 
-    TabsBlock * tabs = new TabsBlock(active_editor, this);
+    editors_spliter -> addWidget(new_editor);
 
-    QFont font;
-    font.setFamily("Courier");
-    font.setFixedPitch(true);
-    font.setPointSize(11);
-
-    active_editor -> setFont(font);
-    editors_spliter -> addWidget(tabs);
+    editors << new_editor;
 }
 
 void IDEWindow::setupFileMenu() {
@@ -186,6 +180,7 @@ void IDEWindow::setupHelpMenu() {
 
 void IDEWindow::setupSplitter() {
     editors_spliter = new QSplitter(this);
+    editors_spliter -> setOrientation(Qt::Vertical);
     setCentralWidget(editors_spliter);
 }
 

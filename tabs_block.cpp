@@ -1,10 +1,13 @@
 #include "tabs_block.h"
 
+#include "editor/code_editor.h"
+#include "project/file.h"
+
 #include <qtabbar.h>
 #include <qboxlayout.h>
 #include <qpushbutton.h>
 
-TabsBlock::TabsBlock(QWidget * content, QWidget * parent) : QWidget(parent), bar(0), list_btn(0) {
+TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0) {
     bar = new QTabBar(this);
 
     QVBoxLayout * col_layout = new QVBoxLayout(this);
@@ -22,9 +25,23 @@ TabsBlock::TabsBlock(QWidget * content, QWidget * parent) : QWidget(parent), bar
     row_layout -> addWidget(list_btn, 0);
 
     col_layout -> addWidget(row, 0);
-    col_layout -> addWidget(content, 1);
+
+
+    QFont font;
+    font.setFamily("Courier");
+    font.setFixedPitch(true);
+    font.setPointSize(11);
+
+    CodeEditor * editor = new CodeEditor(this);
+    editor -> setFont(font);
+
+    col_layout -> addWidget(editor, 1);
 }
 
 TabsBlock::~TabsBlock() {
     delete bar;
+}
+
+void TabsBlock::openFile(File * file) {
+
 }
