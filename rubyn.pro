@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     project/recursive_folder.cpp \
     lexer/ilexer.cpp \
     lexer/regexp_lexer.cpp \
-    lexer/ab_lexer.cpp
+    lexer/ab_lexer.cpp \
+    tabs_block.cpp
 
 HEADERS  += ide_window.h \
     dock_widgets.h \
@@ -75,7 +76,8 @@ HEADERS  += ide_window.h \
     lexer/ilexer.h \
     lexer/regexp_lexer.h \
     lexer/ab_lexer.h \
-    highlighter/highlight_rule.h
+    highlighter/highlight_rule.h \
+    tabs_block.h
 
 FORMS    += ide_window.ui
 

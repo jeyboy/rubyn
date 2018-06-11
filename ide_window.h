@@ -20,9 +20,12 @@ class IDEWindow : public QMainWindow {
     Q_OBJECT
 
     Ui::IDEWindow * ui;
+
     CodeEditor * active_editor;
-    QSplitter * editors_spliter;
     QList<CodeEditor *> editors;
+
+    QSplitter * editors_spliter;
+
     ProjectTree * tree;
 
     void setupEditor();

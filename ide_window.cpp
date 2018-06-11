@@ -9,6 +9,7 @@
 #include "dock_widgets.h"
 #include "dock_widget.h"
 #include "project_tree.h"
+#include "tabs_block.h"
 #include "logger.h"
 
 #include <qmessagebox.h>
@@ -156,13 +157,15 @@ void IDEWindow::openFolder(const QUrl & url) {
 void IDEWindow::setupEditor() {
     editors << (active_editor = new CodeEditor(this));
 
+    TabsBlock * tabs = new TabsBlock(active_editor, this);
+
     QFont font;
     font.setFamily("Courier");
     font.setFixedPitch(true);
     font.setPointSize(11);
 
     active_editor -> setFont(font);
-    editors_spliter -> addWidget(active_editor);
+    editors_spliter -> addWidget(tabs);
 }
 
 void IDEWindow::setupFileMenu() {
