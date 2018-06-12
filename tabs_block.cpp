@@ -52,7 +52,7 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0) {
     connect(bar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
     connect(bar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabRemoved(int)));
     connect(bar, SIGNAL(layoutChanged()), this, SLOT(tabsLayoutChanged()));
-//    void tabMoved(int from, int to);
+    connect(bar, SIGNAL(tabMoved(int,int)), this, SLOT(tabMoved(int,int)));
 }
 
 TabsBlock::~TabsBlock() {
@@ -152,4 +152,38 @@ void TabsBlock::tabRemoved(int index) {
 
     if (bar -> count() == 0)
         hide();
+}
+
+void TabsBlock::tabMoved(int from, int to) {
+//    int direction = from > to ? -1 : 1;
+
+//    qDebug() << "MOVE" << from << to;
+
+//    QMutableHashIterator<QString, int> i(tab_links);
+
+//    while (i.hasNext()) {
+//        i.next();
+
+//        int pos = i.value();
+
+//        qDebug() << "!!!" << pos << from << to;
+
+//        if (direction < 0) {
+//            if (pos > from && pos <= to)
+//                --i.value();
+//        } else {
+//            if (pos <= from && pos > to)
+//                ++i.value();
+//        }
+//    }
+
+
+    QVariant from_tab_data = bar -> tabData(from);
+    File * from_file = (File *)from_tab_data.value<void *>();
+
+    QVariant to_tab_data = bar -> tabData(to);
+    File * to_file = (File *)to_tab_data.value<void *>();
+
+    tab_links[from_file -> uid()] = from;
+    tab_links[to_file -> uid()] = to;
 }

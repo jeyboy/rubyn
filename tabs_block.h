@@ -36,6 +36,7 @@ protected slots:
     void tabsLayoutChanged();
     void currentTabChanged(int);
     void tabRemoved(int);
+    void tabMoved(int, int);
 };
 
 #endif // TABS_BLOCK_H
