@@ -2,6 +2,7 @@
 #define TABS_BLOCK_H
 
 #include <qwidget.h>
+#include <qhash.h>
 
 class TabBar;
 class QPushButton;
@@ -17,8 +18,11 @@ class TabsBlock : public QWidget {
     QPushButton * list_btn;
     CodeEditor * editor;
 
+    QHash<QString, int> tab_links;
+
     void setupLayout();
     bool openFileInEditor(File * file);
+    void rebuildIndexes(const int & rindex);
 public:
     TabsBlock(QWidget * parent = 0);
     ~TabsBlock();

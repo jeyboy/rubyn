@@ -1,5 +1,7 @@
 #include "file.h"
 
+#include <qdatetime.h>
+#include <qstringbuilder.h>
 #include "editor/document_types/documents_types.h"
 
 QString File::icoType() {
@@ -10,6 +12,10 @@ QString File::icoType() {
 bool File::userAskFileType() {
     //TODO: ask user about file type
     return false;
+}
+
+void File::initUid() {
+    _uid = _name % QString::number(_device -> size()) % QString::number(QDateTime::currentMSecsSinceEpoch());
 }
 
 bool File::identifyType(const QString & name) {
@@ -79,6 +85,7 @@ bool File::open() {
 
         if (file -> open(omode)) {
             _device = file;
+            initUid();
         } else {
             file -> deleteLater();
             return false;

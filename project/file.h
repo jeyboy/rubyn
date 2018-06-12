@@ -28,8 +28,10 @@ protected:
 
     QString _path;
     QString _name;
+    QString _uid;
 
     bool userAskFileType();
+    void initUid();
 public:
     enum FileOps {
         fo_none = 0,
@@ -54,8 +56,9 @@ public:
     inline IDocument * document() { return _doc; }
     inline QIODevice * source() { return _device; }
 
-    inline QString name() const { return _name; }
-    inline QString path() const { return _path; }
+    inline const QString & name() { return _name; }
+    inline const QString & path() { return _path; }
+    inline const QString & uid() { return _uid; }
 
     QString icoType();
     QIcon & ico() { return Projects::obj().getIco(icoType()); }

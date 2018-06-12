@@ -9,6 +9,7 @@
 #include <qboxlayout.h>
 #include <qpushbutton.h>
 #include <qcompleter.h>
+#include <qdebug.h>
 
 void TabsBlock::setupLayout() {
     QVBoxLayout * col_layout = new QVBoxLayout(this);
@@ -63,15 +64,25 @@ void TabsBlock::registerCursorPosOutput(QLabel * output) {
 }
 
 bool TabsBlock::openFile(File * file) {
-    if (!openFileInEditor(file))
-        return false;
+    if (tab_links.contains(file -> uid())) {
+        int new_index = tab_links[file -> uid()];
+        currentTabChanged(new_index);
+        bar -> setCurrentIndex(new_index);
 
-    int index = bar -> addTab(file -> ico(), file -> name());
-    bar -> setTabData(index, QVariant::fromValue<void *>(file));
-    bar -> setCurrentIndex(index);
+        return true;
+    } else {
+        if (!openFileInEditor(file))
+            return false;
 
-    if (isHidden())
-        show();
+        int index = bar -> addTab(file -> ico(), file -> name());
+        bar -> setTabData(index, QVariant::fromValue<void *>(file));
+        bar -> setCurrentIndex(index);
+
+        tab_links.insert(file -> uid(), index);
+
+        if (isHidden())
+            show();
+    }
 
     return true;
 }
@@ -97,6 +108,21 @@ bool TabsBlock::openFileInEditor(File * file) {
     return true;
 }
 
+void TabsBlock::rebuildIndexes(const int & rindex) {
+    QMutableHashIterator<QString, int> i(tab_links);
+
+    while (i.hasNext()) {
+        i.next();
+
+        if (i.value() == rindex)
+            i.remove();
+        else {
+            if (i.value() > rindex)
+                --i.value();
+        }
+    }
+}
+
 void TabsBlock::showTabsList() {
     //TODO: implement me
 }
@@ -120,6 +146,8 @@ void TabsBlock::currentTabChanged(int index) {
 }
 
 void TabsBlock::tabRemoved(int index) {
+    rebuildIndexes(index);
+
     bar -> removeTab(index);
 
     if (bar -> count() == 0)
