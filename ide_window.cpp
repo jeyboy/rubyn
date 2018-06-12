@@ -3,6 +3,7 @@
 
 #include "project/projects.h"
 #include "project/project.h"
+#include "project/file.h"
 #include "project/ifolder.h"
 
 #include "dock_widgets.h"
@@ -14,10 +15,13 @@
 #include <qmessagebox.h>
 #include <qfiledialog.h>
 #include <qsplitter>
-#include <qcompleter.h>
 #include <qlabel.h>
+#include <qplaintextedit.h>
 
-IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), editors_spliter(0), tree(0) {
+#include <qevent.h>
+#include <qmimedata.h>
+
+IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), editors_spliter(0), tree(0), pos_status(0) {
     ui -> setupUi(this);
 
     setupToolWindows();
@@ -40,19 +44,11 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 //    void fileRemoved(QObject * project, const QUrl & file_uri);
 //    void fileRenamed(QObject * project, const QUrl & from_uri, const QUrl & to_uri);
 
-
-
+    setupPosOutput();
     setupFileMenu();
     setupHelpMenu();
     setupSplitter();
     setupEditor();
-
-    active_editor -> hide();
-
-    QLabel * pos_status = new QLabel();
-    pos_status -> setStyleSheet("border: 1px solid gray; border-radius: 6px;");
-    connect(active_editor, SIGNAL(cursorPosChanged(QString)), pos_status, SLOT(setText(QString)));
-    ui -> status_bar -> addPermanentWidget(pos_status);
 
 //    connect(active_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(openFile(QUrl)));
 
@@ -71,7 +67,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
         IFolder * _folder = reinterpret_cast<IFolder *>(folder);
 
         if (_folder == 0) {
-            // alert
+            Logger::obj().write(QStringLiteral("IDE"), QStringLiteral("Cant find folder for file: '") % name % '\'', Logger::log_error);
             return;
         }
 
@@ -84,7 +80,6 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
     if (_file == 0) {
         qDebug() << "FILE IS NULL";
         Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Cant find file: '") % name % '\'',  Logger::log_error);
-        // alert
         return;
     }
 
@@ -93,28 +88,12 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
 
     if (!_file -> isOpened()) {
         if (!_file -> open()) {
-            // notify user
+            Logger::obj().write(QStringLiteral("IDE"), QStringLiteral("Cant open file: '") % name % '\'', Logger::log_error);
             return;
         }
     }
 
-//    IDocument * doc = _file -> document();
-
-    switch(_file -> baseFormatType()) {
-        case ft_text: {
-            active_editor -> openDocument(_file);
-
-            QStringList wordList;
-            wordList << "alpha" << "omega" << "omicron" << "zeta";
-            QCompleter * completer = new QCompleter(wordList, this);
-            active_editor -> setCompleter(completer);
-
-            active_editor -> show();
-        break;}
-        case ft_image: //{ emit parent() -> imageAdded(url); break;}
-        case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
-        default: Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Undefined format of file: '") % QString::number(_file -> formatType()) % '\'',  Logger::log_error); ;
-    };
+    active_editor -> openFile(_file);
 }
 
 void IDEWindow::about() {
@@ -153,13 +132,22 @@ void IDEWindow::openFolder(const QUrl & url) {
         Projects::obj().open(folder_url);
 }
 
+void IDEWindow::setupPosOutput() {
+    pos_status = new QLabel();
+    pos_status -> setStyleSheet("border: 1px solid gray; border-radius: 6px;");
+    ui -> status_bar -> addPermanentWidget(pos_status);
+}
+
 void IDEWindow::setupEditor() {
-    TabsBlock * new_editor = new TabsBlock(editor, this);
+    TabsBlock * new_editor = new TabsBlock(this);
     active_editor = new_editor;
+    new_editor -> registerCursorPosOutput(pos_status);
 
     editors_spliter -> addWidget(new_editor);
 
     editors << new_editor;
+
+    active_editor -> hide();
 }
 
 void IDEWindow::setupFileMenu() {

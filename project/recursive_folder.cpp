@@ -1,6 +1,5 @@
 #include "recursive_folder.h"
 
-#include "projects.h"
 #include "file.h"
 
 #include <qtreewidget.h>
@@ -35,7 +34,7 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path) {
         _files.insert(name, file);
 
         QTreeWidgetItem * item = new QTreeWidgetItem(view_item, QStringList() << name);
-        item -> setIcon(0, Projects::obj().getIco(file -> icoType()));
+        item -> setIcon(0, file -> ico());
     }
 }
 

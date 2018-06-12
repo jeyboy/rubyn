@@ -1,7 +1,6 @@
 #include "file.h"
 
 #include "editor/document_types/documents_types.h"
-//#include "parts/lexer/lexer_factory.h"
 
 QString File::icoType() {
     //TODO: write me

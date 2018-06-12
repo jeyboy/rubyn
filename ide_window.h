@@ -3,6 +3,7 @@
 
 #include <qmainwindow.h>
 #include <qlist.h>
+#include <qurl.h>
 
 //https://www.youtube.com/watch?v=GwgF8GcynV0
 //http://rusrails.ru/debugging-rails-applications
@@ -12,6 +13,10 @@
 class QSplitter;
 class ProjectTree;
 class TabsBlock;
+class QLabel;
+class QDragEnterEvent;
+class QDragMoveEvent;
+class QDropEvent;
 
 namespace Ui { class IDEWindow; }
 
@@ -27,6 +32,9 @@ class IDEWindow : public QMainWindow {
 
     ProjectTree * tree;
 
+    QLabel * pos_status;
+
+    void setupPosOutput();
     void setupEditor();
     void setupFileMenu();
     void setupHelpMenu();
