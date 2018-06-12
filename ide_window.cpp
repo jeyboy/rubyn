@@ -96,6 +96,11 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
     active_editor -> openFile(_file);
 }
 
+void IDEWindow::newEditorRequired(File * file) {
+    setupEditor();
+    active_editor -> openFile(file);
+}
+
 void IDEWindow::about() {
     QMessageBox::about(this, tr("About"), tr("<p>At this time this is a <b> simple editor with syntax highlighting</b>.</p>"));
 }
@@ -141,7 +146,9 @@ void IDEWindow::setupPosOutput() {
 void IDEWindow::setupEditor() {
     TabsBlock * new_editor = new TabsBlock(this);
     active_editor = new_editor;
+
     new_editor -> registerCursorPosOutput(pos_status);
+    connect(new_editor, SIGNAL(newTabsBlockRequested(File*)), this, SLOT(newEditorRequired(File*)));
 
     editors_spliter -> addWidget(new_editor);
 

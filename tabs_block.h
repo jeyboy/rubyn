@@ -20,6 +20,8 @@ class TabsBlock : public QWidget {
 
     QHash<QString, int> tab_links;
 
+    int menu_target_index;
+
     void setupLayout();
     bool openFileInEditor(File * file);
     void rebuildIndexes(const int & rindex);
@@ -31,12 +33,18 @@ public:
 
     bool openFile(File * file);
 
+signals:
+    void newTabsBlockRequested(File *);
+
 protected slots:
     void showTabsList();
     void tabsLayoutChanged();
-    void currentTabChanged(int);
-    void tabRemoved(int);
-    void tabMoved(int, int);
+    void currentTabChanged(const int &);
+    void tabRemoved(const int &);
+    void tabMoved(const int &, const int &);
+    void showTabsContextMenu(const QPoint &);
+
+    void newTabsBlockRequest();
 };
 
 #endif // TABS_BLOCK_H

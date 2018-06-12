@@ -9,6 +9,7 @@
 #include <qboxlayout.h>
 #include <qpushbutton.h>
 #include <qcompleter.h>
+#include <qmenu.h>
 #include <qdebug.h>
 
 void TabsBlock::setupLayout() {
@@ -40,12 +41,13 @@ void TabsBlock::setupLayout() {
     col_layout -> addWidget(editor, 1);
 }
 
-TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0) {
+TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0), menu_target_index(-1) {
     bar = new TabBar(this);
     bar -> setTabsClosable(true);
     bar -> setExpanding(false);
     bar -> setMovable(true);
     bar -> setChangeCurrentOnDrag(true);
+    bar -> setContextMenuPolicy(Qt::CustomContextMenu);
 
     setupLayout();
 
@@ -53,6 +55,7 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0) {
     connect(bar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabRemoved(int)));
     connect(bar, SIGNAL(layoutChanged()), this, SLOT(tabsLayoutChanged()));
     connect(bar, SIGNAL(tabMoved(int,int)), this, SLOT(tabMoved(int,int)));
+    connect(bar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showTabsContextMenu(const QPoint &)));
 }
 
 TabsBlock::~TabsBlock() {
@@ -131,7 +134,7 @@ void TabsBlock::tabsLayoutChanged() {
     list_btn -> setText(QString::number(bar -> count()));
 }
 
-void TabsBlock::currentTabChanged(int index) {
+void TabsBlock::currentTabChanged(const int & index) {
     QVariant tab_data = bar -> tabData(index);
 
     if (!tab_data.isNull()) {
@@ -145,7 +148,7 @@ void TabsBlock::currentTabChanged(int index) {
     }
 }
 
-void TabsBlock::tabRemoved(int index) {
+void TabsBlock::tabRemoved(const int & index) {
     rebuildIndexes(index);
 
     bar -> removeTab(index);
@@ -154,7 +157,7 @@ void TabsBlock::tabRemoved(int index) {
         hide();
 }
 
-void TabsBlock::tabMoved(int from, int to) {
+void TabsBlock::tabMoved(const int & from, const int & to) {
 //    int direction = from > to ? -1 : 1;
 
 //    qDebug() << "MOVE" << from << to;
@@ -186,4 +189,27 @@ void TabsBlock::tabMoved(int from, int to) {
 
     tab_links[from_file -> uid()] = from;
     tab_links[to_file -> uid()] = to;
+}
+
+void TabsBlock::showTabsContextMenu(const QPoint & point) {
+    if (point.isNull())
+        return;
+
+    menu_target_index = bar -> tabAt(point);
+
+    QMenu menu(this);
+
+    if (menu_target_index >= 0) {
+        qDebug() << "CONT MENU : SHOW";
+
+        menu.addAction(tr("In separate editor"), this, SLOT(newTabsBlockRequest()));
+        menu.exec(bar -> mapToGlobal(point));
+    }
+}
+
+void TabsBlock::newTabsBlockRequest() {
+    QVariant tab_data = bar -> tabData(menu_target_index);
+    File * file = (File *)tab_data.value<void *>();
+
+    emit newTabsBlockRequested(file);
 }

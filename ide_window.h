@@ -17,6 +17,7 @@ class QLabel;
 class QDragEnterEvent;
 class QDragMoveEvent;
 class QDropEvent;
+class File;
 
 namespace Ui { class IDEWindow; }
 
@@ -51,6 +52,7 @@ public:
 
 protected slots:
     void fileOpenRequired(const QString & name, void * folder);
+    void newEditorRequired(File * file);
 
 public slots:
     void about();
