@@ -120,8 +120,8 @@ void TabsBlock::currentTabChanged(int index) {
 }
 
 void TabsBlock::tabRemoved(int index) {
+    bar -> removeTab(index);
+
     if (bar -> count() == 0)
         hide();
-
-    bar -> removeTab(index);
 }
