@@ -3,7 +3,7 @@
 
 #include <qwidget.h>
 
-class QTabBar;
+class TabBar;
 class QPushButton;
 class CodeEditor;
 class File;
@@ -12,12 +12,13 @@ class QLabel;
 class TabsBlock : public QWidget {
     Q_OBJECT
 
-    QTabBar * bar;
+    TabBar * bar;
 
     QPushButton * list_btn;
     CodeEditor * editor;
 
     void setupLayout();
+    bool openFileInEditor(File * file);
 public:
     TabsBlock(QWidget * parent = 0);
     ~TabsBlock();
@@ -25,6 +26,12 @@ public:
     void registerCursorPosOutput(QLabel * output);
 
     bool openFile(File * file);
+
+protected slots:
+    void showTabsList();
+    void tabsLayoutChanged();
+    void currentTabChanged(int);
+    void tabRemoved(int);
 };
 
 #endif // TABS_BLOCK_H

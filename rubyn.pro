@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     lexer/ilexer.cpp \
     lexer/regexp_lexer.cpp \
     lexer/ab_lexer.cpp \
-    tabs_block.cpp
+    tabs_block.cpp \
+    tab_bar.cpp
 
 HEADERS  += ide_window.h \
     dock_widgets.h \
@@ -77,7 +78,8 @@ HEADERS  += ide_window.h \
     lexer/regexp_lexer.h \
     lexer/ab_lexer.h \
     highlighter/highlight_rule.h \
-    tabs_block.h
+    tabs_block.h \
+    tab_bar.h
 
 FORMS    += ide_window.ui
 

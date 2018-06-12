@@ -1,11 +1,11 @@
 #include "tabs_block.h"
 
+#include "tab_bar.h"
 #include "logger.h"
 #include "editor/code_editor.h"
 #include "project/file.h"
 
 #include <qlabel.h>
-#include <qtabbar.h>
 #include <qboxlayout.h>
 #include <qpushbutton.h>
 #include <qcompleter.h>
@@ -20,7 +20,7 @@ void TabsBlock::setupLayout() {
 
     row_layout -> setContentsMargins(1,1,1,1);
 
-    list_btn = new QPushButton(QLatin1Literal("10"), this);
+    list_btn = new QPushButton(QLatin1Literal("0"), this);
 
     row_layout -> addWidget(bar, 1);
     row_layout -> addWidget(list_btn, 0);
@@ -40,10 +40,18 @@ void TabsBlock::setupLayout() {
 }
 
 TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0) {
-    bar = new QTabBar(this);
+    bar = new TabBar(this);
     bar -> setTabsClosable(true);
+    bar -> setExpanding(false);
+    bar -> setMovable(true);
+    bar -> setChangeCurrentOnDrag(true);
 
     setupLayout();
+
+    connect(bar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
+    connect(bar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabRemoved(int)));
+    connect(bar, SIGNAL(layoutChanged()), this, SLOT(tabsLayoutChanged()));
+//    void tabMoved(int from, int to);
 }
 
 TabsBlock::~TabsBlock() {
@@ -55,6 +63,20 @@ void TabsBlock::registerCursorPosOutput(QLabel * output) {
 }
 
 bool TabsBlock::openFile(File * file) {
+    if (!openFileInEditor(file))
+        return false;
+
+    int index = bar -> addTab(file -> ico(), file -> name());
+    bar -> setTabData(index, QVariant::fromValue<void *>(file));
+    bar -> setCurrentIndex(index);
+
+    if (isHidden())
+        show();
+
+    return true;
+}
+
+bool TabsBlock::openFileInEditor(File * file) {
     switch(file -> baseFormatType()) {
         case ft_text: {
             editor -> openDocument(file);
@@ -72,12 +94,34 @@ bool TabsBlock::openFile(File * file) {
         }
     };
 
-    int index = bar -> addTab(file -> ico(), file -> name());
-    bar -> setTabData(index, QVariant::fromValue<void *>(file));
-    bar -> setCurrentIndex(index);
-
-    if (isHidden())
-        show();
-
     return true;
+}
+
+void TabsBlock::showTabsList() {
+    //TODO: implement me
+}
+
+void TabsBlock::tabsLayoutChanged() {
+    list_btn -> setText(QString::number(bar -> count()));
+}
+
+void TabsBlock::currentTabChanged(int index) {
+    QVariant tab_data = bar -> tabData(index);
+
+    if (!tab_data.isNull()) {
+        File * file = (File *)tab_data.value<void *>();
+
+        if (!openFileInEditor(file)) {
+            // notify user
+        }
+    } else {
+        // notify user
+    }
+}
+
+void TabsBlock::tabRemoved(int index) {
+    if (bar -> count() == 0)
+        hide();
+
+    bar -> removeTab(index);
 }
