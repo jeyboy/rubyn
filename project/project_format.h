@@ -10,4 +10,11 @@ enum ProjectFormat : PROJECT_FORMAT_TYPE {
     pft_rails
 };
 
+class ProjectIdentificator {
+public:
+    static PROJECT_FORMAT_TYPE proc(const QUrl & url) {
+
+    }
+};
+
 #endif // PROJECT_FORMAT_H

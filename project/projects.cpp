@@ -1,5 +1,6 @@
 #include "projects.h"
 #include "project.h"
+#include "project_format.h"
 
 #include <qpixmap.h>
 
@@ -19,8 +20,15 @@ Projects::Projects(QObject * parent) : QObject(parent) {
 
 }
 
+Projects::~Projects() {
+    qDeleteAll(_projects);
+    _projects.clear();
+}
+
 bool Projects::open(const QUrl & uri) {
-    Project * project = new Project(this, uri);
+    PROJECT_FORMAT_TYPE format_type = ProjectIdentificator::proc(uri);
+
+    Project * project = new Project(uri);
 
    _projects.insert(uri, project);
 

@@ -3,7 +3,7 @@
 #include "projects.h"
 #include "recursive_folder.h"
 
-Project::Project(QObject * parent, const QUrl & uri) : QObject(parent) {
+Project::Project(const QUrl & uri) {
     root = new RecursiveFolder(uri.toLocalFile());
 }
 

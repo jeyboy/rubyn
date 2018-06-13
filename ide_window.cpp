@@ -36,7 +36,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
     connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
 
-    openFolder(QUrl::fromLocalFile("F://rubyn test//RebelsMarketplace"));
+    openFolder(QUrl::fromLocalFile("F://rubyn test//projects//rails 4 - RebelsMarketplace"));
 //    openFile(QUrl::fromLocalFile("F://rubyn test//ruby//test1.rb"));
 
     setWindowTitle(tr("Bla bla blashka"));

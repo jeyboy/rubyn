@@ -20,7 +20,7 @@ class Projects : public QObject, public Singleton<Projects> {
     QHash<QString, QIcon> _icons;
 public:
     Projects(QObject * parent = 0);
-    inline ~Projects() { _projects.clear(); }
+    ~Projects();
 
     bool open(const QUrl & uri);
 
@@ -31,9 +31,9 @@ public:
 signals:
     void errorOccurred(QString & source, QString & info);
 
-    void projectAdded(QObject * project);
-    void projectRemoved(QObject * project);
-    void projectRenamed(QObject * project, const QString & prev_name);
+    void projectAdded(void * project);
+    void projectRemoved(void * project);
+    void projectRenamed(void * project, const QString & prev_name);
 
     void projectInitiated(QTreeWidgetItem *);
 

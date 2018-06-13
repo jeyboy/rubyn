@@ -7,15 +7,13 @@
 
 class IFolder;
 
-class Project : public QObject {
-    Q_OBJECT
-
+class Project {
     QUrl _project_uri;
     PROJECT_FORMAT_TYPE _project_format;
 
     IFolder * root;
 public:
-    Project(QObject * parent, const QUrl & uri = QUrl());
+    Project(const QUrl & uri = QUrl());
     ~Project();
 
     inline PROJECT_FORMAT_TYPE projectFormat() { return _project_format; }
