@@ -31,6 +31,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     setupFileMenu();
     setupHelpMenu();
     setupSplitter();
+    setupEditor();
 
     connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
     connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
@@ -144,13 +145,15 @@ void IDEWindow::openResource(TabsBlock * target_editor, const QUrl & url) {
 void IDEWindow::openFile(const QUrl & url) {
     QUrl file_url = url;
 
-    if (file_url.isEmpty())
-        file_url = QUrl::fromLocalFile(
-            QFileDialog::getOpenFileName(
-                this,
-                tr("Open File"), "", "All (*.*);;Ruby Files (*.rb);;SQL (*.sql)" // ;;C Sharp (*.cs);;C++ Files (*.cpp *.h)
-            )
-        );
+    if (file_url.isEmpty()) {
+        file_url =
+            QUrl::fromLocalFile(
+                QFileDialog::getOpenFileName(
+                    this,
+                    tr("Open File"), "", "All (*.*);;Ruby Files (*.rb);;SQL (*.sql)" // ;;C Sharp (*.cs);;C++ Files (*.cpp *.h)
+                )
+            );
+    }
 
     if (!file_url.isEmpty())
         fileOpenRequired(url.toLocalFile(), 0);
@@ -162,7 +165,9 @@ void IDEWindow::openFolder(const QUrl & url) {
 
     if (folder_url.isEmpty()) {
         folder_url =
-            QFileDialog::getExistingDirectory(this, QLatin1Literal("Select Project Folder"), QDir::currentPath());
+            QUrl::fromLocalFile(
+                QFileDialog::getExistingDirectory(this, QLatin1Literal("Select Project Folder"), QDir::currentPath())
+            );
     }
 
     if (!folder_url.isEmpty())
