@@ -10,7 +10,6 @@
 #include <qtoolbutton.h>
 #include <qcompleter.h>
 #include <qmenu.h>
-#include <qdebug.h>
 
 void TabsBlock::setupLayout() {
     QVBoxLayout * col_layout = new QVBoxLayout(this);
@@ -69,8 +68,7 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0), f
     connect(bar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showTabsContextMenu(const QPoint &)));
 
     connect(editor, SIGNAL(inFocus()), this, SLOT(inFocus()));
-
-//    connect(editor, SIGNAL(fileDropped(QUrl)), this, SLOT(openFile(QUrl)));
+    connect(editor, SIGNAL(fileDropped(QUrl)), this, SLOT(resourceDrop(QUrl)));
 
     connect(files_list, SIGNAL(aboutToShow()), this, SLOT(buildFilesList()));
 }

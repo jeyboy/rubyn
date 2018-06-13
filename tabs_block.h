@@ -3,6 +3,8 @@
 
 #include <qwidget.h>
 #include <qhash.h>
+#include <qurl.h>
+#include <qdebug.h>
 
 class TabBar;
 class QToolButton;
@@ -39,11 +41,13 @@ public:
     bool openFile(File * file);
 
 signals:
+    void resourceDropped(TabsBlock *, const QUrl &);
     void activated(TabsBlock *);
     void newTabsBlockRequested(File *);
     void moveToBlankState(TabsBlock *);
 
 protected slots:
+    inline void resourceDrop(const QUrl & url) { emit resourceDropped(this, url); }
     inline void inFocus() { emit activated(this); }
 
     void buildFilesList();

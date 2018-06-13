@@ -56,6 +56,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
 
         _file = _folder -> getFile(name);
     } else {
+        Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Open of dropped resources not finished yet"),  Logger::log_error);
         // need to register somewhere temp files
         return;
     }
@@ -123,6 +124,23 @@ void IDEWindow::newFile() {
     // need to show dialog for name and type inputing
 }
 
+void IDEWindow::openResource(TabsBlock * target_editor, const QUrl & url) {
+    if (url.isLocalFile()) {
+        active_editor = target_editor;
+
+        QFileInfo f(url.toLocalFile());
+
+        if (f.isDir()) {
+//            openFolder(url);
+            Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Unsupported resource: DIR: '") % url.toString() % '\'',  Logger::log_error);
+        } else {
+            openFile(url);
+        }
+    } else {
+        Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Unsupported resource: '") % url.toString() % '\'',  Logger::log_error);
+    }
+}
+
 void IDEWindow::openFile(const QUrl & url) {
     QUrl file_url = url;
 
@@ -165,6 +183,7 @@ void IDEWindow::setupEditor() {
     connect(new_editor, SIGNAL(newTabsBlockRequested(File*)), this, SLOT(newEditorRequired(File*)));
     connect(new_editor, SIGNAL(moveToBlankState(TabsBlock*)), this, SLOT(editorIsEmpty(TabsBlock*)));
     connect(new_editor, SIGNAL(activated(TabsBlock*)), this, SLOT(editorActivated(TabsBlock*)));
+    connect(new_editor, SIGNAL(resourceDropped(TabsBlock*,QUrl)), this, SLOT(openResource(TabsBlock*,QUrl)));
 
     widgets_list -> addWidget(new_editor);
 

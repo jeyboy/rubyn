@@ -53,6 +53,7 @@ protected slots:
     void newEditorRequired(File * file);
     void editorActivated(TabsBlock *);
     void editorIsEmpty(TabsBlock *);
+    void openResource(TabsBlock * target_editor, const QUrl & url);
 
 public slots:
     void about();
