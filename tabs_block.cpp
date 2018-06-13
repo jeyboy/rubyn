@@ -33,10 +33,14 @@ void TabsBlock::setupLayout() {
 
     row_layout -> addWidget(bar, 1);
 
+    files_list = new QMenu(QLatin1Literal("Files"), this);
+
     list_btn = new QToolButton(this);
     list_btn -> setText(QLatin1Literal("0"));
     list_btn -> setIcon(QIcon(QLatin1Literal(":/list")));
     list_btn -> setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    list_btn -> setPopupMode(QToolButton::InstantPopup);
+    list_btn -> setMenu(files_list);
 
     row_layout -> addWidget(list_btn, 0);
 
@@ -53,7 +57,7 @@ void TabsBlock::setupLayout() {
     col_layout -> addWidget(editor, 1);
 }
 
-TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0), menu_target_index(-1) {
+TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0), files_list(0), menu_target_index(-1) {
 //    setStyleSheet("QWidget:focus {background-color: #FFFFCC;}");
 
     setupLayout();
@@ -67,6 +71,8 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0), m
     connect(editor, SIGNAL(inFocus()), this, SLOT(inFocus()));
 
 //    connect(editor, SIGNAL(fileDropped(QUrl)), this, SLOT(openFile(QUrl)));
+
+    connect(files_list, SIGNAL(aboutToShow()), this, SLOT(buildFilesList()));
 }
 
 TabsBlock::~TabsBlock() {
@@ -81,7 +87,6 @@ bool TabsBlock::openFile(File * file) {
     if (tab_links.contains(file -> uid())) {
         int new_index = tab_links[file -> uid()];
         currentTabChanged(new_index);
-        bar -> setCurrentIndex(new_index);
 
         return true;
     } else {
@@ -137,8 +142,27 @@ void TabsBlock::rebuildIndexes(const int & rindex) {
     }
 }
 
-void TabsBlock::showTabsList() {
-    //TODO: implement me
+void TabsBlock::buildFilesList() {
+    files_list -> clear();
+
+    int current_index = bar -> currentIndex();
+
+    for(int i = 0; i < bar -> count(); i++) {
+        QAction * action =
+            files_list -> addAction(bar -> tabIcon(i), bar -> tabText(i), this, SLOT(fileListClicked()));
+
+        action -> setDisabled(i == current_index);
+
+        action -> setProperty("id", i);
+    }
+}
+
+void TabsBlock::fileListClicked() {
+    QObject * obj = sender();
+
+    int index = obj -> property("id").toInt();
+
+    currentTabChanged(index);
 }
 
 void TabsBlock::tabsLayoutChanged() {
@@ -153,10 +177,14 @@ void TabsBlock::currentTabChanged(const int & index) {
 
         if (!openFileInEditor(file)) {
             // notify user
+            return;
         }
     } else {
         // notify user
+        return;
     }
+
+    bar -> setCurrentIndex(index);
 }
 
 void TabsBlock::tabRemoved(const int & index) {
@@ -213,8 +241,6 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
     QMenu menu(this);
 
     if (menu_target_index >= 0) {
-        qDebug() << "CONT MENU : SHOW";
-
         menu.addAction(tr("In separate editor"), this, SLOT(newTabsBlockRequest()));
         menu.exec(bar -> mapToGlobal(point));
     }

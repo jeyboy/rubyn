@@ -10,6 +10,7 @@ class CodeEditor;
 class File;
 class QLabel;
 class QFocusEvent;
+class QMenu;
 
 class TabsBlock : public QWidget {
     Q_OBJECT
@@ -18,6 +19,8 @@ class TabsBlock : public QWidget {
 
     QToolButton * list_btn;
     CodeEditor * editor;
+
+    QMenu * files_list;
 
     QHash<QString, int> tab_links;
 
@@ -43,7 +46,9 @@ signals:
 protected slots:
     inline void inFocus() { emit activated(this); }
 
-    void showTabsList();
+    void buildFilesList();
+    void fileListClicked();
+
     void tabsLayoutChanged();
     void currentTabChanged(const int &);
     void tabRemoved(const int &);
