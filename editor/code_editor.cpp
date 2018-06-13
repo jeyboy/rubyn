@@ -400,6 +400,8 @@ void CodeEditor::focusInEvent(QFocusEvent * e) {
     if (completer)
         completer -> setWidget(this);
 
+    emit inFocus();
+
     QPlainTextEdit::focusInEvent(e);
 }
 

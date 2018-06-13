@@ -27,9 +27,7 @@ class IDEWindow : public QMainWindow {
     Ui::IDEWindow * ui;
 
     TabsBlock * active_editor;
-    QList<TabsBlock *> editors;
-
-    QSplitter * editors_spliter;
+    QSplitter * widgets_list;
 
     ProjectTree * tree;
 
@@ -53,6 +51,8 @@ public:
 protected slots:
     void fileOpenRequired(const QString & name, void * folder);
     void newEditorRequired(File * file);
+    void editorActivated(TabsBlock *);
+    void editorIsEmpty(TabsBlock *);
 
 public slots:
     void about();

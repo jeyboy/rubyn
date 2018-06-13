@@ -21,36 +21,19 @@
 #include <qevent.h>
 #include <qmimedata.h>
 
-IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), editors_spliter(0), tree(0), pos_status(0) {
+IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), widgets_list(0), tree(0), pos_status(0) {
     ui -> setupUi(this);
-
-    setupToolWindows();
 
     setAcceptDrops(true);
 
-    connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
-
-    connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
-
-//    void projectAdded(QObject * project);
-//    void projectRemoved(QObject * project);
-//    void projectRenamed(QObject * project, const QString & prev_name);
-
-//    void textAdded(QObject * project, const QUrl & file_uri);
-//    void imageAdded(QObject * project, const QUrl & file_uri);
-//    void binaryAdded(QObject * project, const QUrl & file_uri);
-
-//    void fileAdded(QObject * project, const QUrl & file_uri);
-//    void fileRemoved(QObject * project, const QUrl & file_uri);
-//    void fileRenamed(QObject * project, const QUrl & from_uri, const QUrl & to_uri);
-
+    setupToolWindows();
     setupPosOutput();
     setupFileMenu();
     setupHelpMenu();
     setupSplitter();
-    setupEditor();
 
-//    connect(active_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(openFile(QUrl)));
+    connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
+    connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
 
     openFolder(QUrl::fromLocalFile("F://rubyn test//RebelsMarketplace"));
 //    openFile(QUrl::fromLocalFile("F://rubyn test//ruby//test1.rb"));
@@ -93,12 +76,43 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
         }
     }
 
-    active_editor -> openFile(_file);
+    if (!active_editor)
+        newEditorRequired(_file);
+    else
+        active_editor -> openFile(_file);
 }
 
 void IDEWindow::newEditorRequired(File * file) {
     setupEditor();
     active_editor -> openFile(file);
+}
+
+void IDEWindow::editorActivated(TabsBlock * target_editor) {
+    active_editor = target_editor;
+}
+
+void IDEWindow::editorIsEmpty(TabsBlock * target_editor) {
+    if (active_editor == target_editor) {
+        int index = widgets_list -> indexOf(active_editor);
+
+        if (index - 1 >= 0)
+            --index;
+        else if (index + 1 < widgets_list -> count())
+            ++index;
+        else {
+            active_editor = 0;
+            return;
+        }
+
+        QWidget * widget = widgets_list -> widget(index);
+        active_editor = dynamic_cast<TabsBlock *>(widget);
+
+        if (active_editor) {
+            active_editor -> setFocus();
+        }
+    }
+
+    target_editor -> deleteLater();
 }
 
 void IDEWindow::about() {
@@ -149,10 +163,10 @@ void IDEWindow::setupEditor() {
 
     new_editor -> registerCursorPosOutput(pos_status);
     connect(new_editor, SIGNAL(newTabsBlockRequested(File*)), this, SLOT(newEditorRequired(File*)));
+    connect(new_editor, SIGNAL(moveToBlankState(TabsBlock*)), this, SLOT(editorIsEmpty(TabsBlock*)));
+    connect(new_editor, SIGNAL(activated(TabsBlock*)), this, SLOT(editorActivated(TabsBlock*)));
 
-    editors_spliter -> addWidget(new_editor);
-
-    editors << new_editor;
+    widgets_list -> addWidget(new_editor);
 
     active_editor -> hide();
 }
@@ -174,9 +188,9 @@ void IDEWindow::setupHelpMenu() {
 }
 
 void IDEWindow::setupSplitter() {
-    editors_spliter = new QSplitter(this);
-    editors_spliter -> setOrientation(Qt::Vertical);
-    setCentralWidget(editors_spliter);
+    widgets_list = new QSplitter(this);
+    widgets_list -> setOrientation(Qt::Vertical);
+    setCentralWidget(widgets_list);
 }
 
 void IDEWindow::setupToolWindows() {

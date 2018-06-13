@@ -5,17 +5,18 @@
 #include <qhash.h>
 
 class TabBar;
-class QPushButton;
+class QToolButton;
 class CodeEditor;
 class File;
 class QLabel;
+class QFocusEvent;
 
 class TabsBlock : public QWidget {
     Q_OBJECT
 
     TabBar * bar;
 
-    QPushButton * list_btn;
+    QToolButton * list_btn;
     CodeEditor * editor;
 
     QHash<QString, int> tab_links;
@@ -25,6 +26,7 @@ class TabsBlock : public QWidget {
     void setupLayout();
     bool openFileInEditor(File * file);
     void rebuildIndexes(const int & rindex);
+
 public:
     TabsBlock(QWidget * parent = 0);
     ~TabsBlock();
@@ -34,9 +36,13 @@ public:
     bool openFile(File * file);
 
 signals:
+    void activated(TabsBlock *);
     void newTabsBlockRequested(File *);
+    void moveToBlankState(TabsBlock *);
 
 protected slots:
+    inline void inFocus() { emit activated(this); }
+
     void showTabsList();
     void tabsLayoutChanged();
     void currentTabChanged(const int &);

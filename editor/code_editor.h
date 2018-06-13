@@ -195,6 +195,7 @@ protected:
 }
 
 signals:
+    void inFocus();
     void fileDropped(const QUrl & uri/*, bool multiple*/); // Multiple files are dropped?
     void cursorPosChanged(const QString & pos_coords);
 

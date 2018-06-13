@@ -7,7 +7,7 @@
 
 #include <qlabel.h>
 #include <qboxlayout.h>
-#include <qpushbutton.h>
+#include <qtoolbutton.h>
 #include <qcompleter.h>
 #include <qmenu.h>
 #include <qdebug.h>
@@ -22,13 +22,23 @@ void TabsBlock::setupLayout() {
 
     row_layout -> setContentsMargins(1,1,1,1);
 
-    list_btn = new QPushButton(QLatin1Literal("0"), this);
+    bar = new TabBar(this);
+    bar -> setTabsClosable(true);
+    bar -> setExpanding(false);
+    bar -> setMovable(true);
+    bar -> setChangeCurrentOnDrag(true);
+    bar -> setContextMenuPolicy(Qt::CustomContextMenu);
 
     row_layout -> addWidget(bar, 1);
+
+    list_btn = new QToolButton(this);
+    list_btn -> setText(QLatin1Literal("0"));
+    list_btn -> setIcon(QIcon(QLatin1Literal(":/list")));
+    list_btn -> setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
     row_layout -> addWidget(list_btn, 0);
 
     col_layout -> addWidget(row, 0);
-
 
     QFont font;
     font.setFamily("Courier");
@@ -42,12 +52,7 @@ void TabsBlock::setupLayout() {
 }
 
 TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0), menu_target_index(-1) {
-    bar = new TabBar(this);
-    bar -> setTabsClosable(true);
-    bar -> setExpanding(false);
-    bar -> setMovable(true);
-    bar -> setChangeCurrentOnDrag(true);
-    bar -> setContextMenuPolicy(Qt::CustomContextMenu);
+//    setStyleSheet("QWidget:focus {background-color: #FFFFCC;}");
 
     setupLayout();
 
@@ -56,6 +61,10 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0), m
     connect(bar, SIGNAL(layoutChanged()), this, SLOT(tabsLayoutChanged()));
     connect(bar, SIGNAL(tabMoved(int,int)), this, SLOT(tabMoved(int,int)));
     connect(bar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showTabsContextMenu(const QPoint &)));
+
+    connect(editor, SIGNAL(inFocus()), this, SLOT(inFocus()));
+
+//    connect(editor, SIGNAL(fileDropped(QUrl)), this, SLOT(openFile(QUrl)));
 }
 
 TabsBlock::~TabsBlock() {
@@ -153,8 +162,10 @@ void TabsBlock::tabRemoved(const int & index) {
 
     bar -> removeTab(index);
 
-    if (bar -> count() == 0)
+    if (bar -> count() == 0) {
+        emit moveToBlankState(this);
         hide();
+    }
 }
 
 void TabsBlock::tabMoved(const int & from, const int & to) {
