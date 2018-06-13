@@ -16,11 +16,13 @@ void TabsBlock::setupLayout() {
     QVBoxLayout * col_layout = new QVBoxLayout(this);
 
     col_layout -> setContentsMargins(1,1,1,1);
+    col_layout -> setSpacing(1);
 
     QWidget * row = new QWidget(this);
     QHBoxLayout * row_layout = new QHBoxLayout(row);
 
     row_layout -> setContentsMargins(1,1,1,1);
+    row_layout -> setSpacing(1);
 
     bar = new TabBar(this);
     bar -> setTabsClosable(true);
