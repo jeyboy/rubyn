@@ -39,9 +39,13 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path) {
 }
 
 RecursiveFolder::RecursiveFolder(const QString & path) : IFolder(path, false) {
-    QTreeWidgetItem * view_item = new QTreeWidgetItem(QStringList() << name());
+    QString obj_name = name();
+
+    QTreeWidgetItem * view_item = new QTreeWidgetItem(QStringList() << obj_name);
     view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
-    view_item -> setIcon(0, Projects::obj().getIco(QLatin1Literal("folder")));
+    view_item -> setIcon(0, Projects::obj().getIco(icoType(obj_name)));
+
+//    view_item -> setBackgroundColor();
 
 //        (Folder *)view_item -> data(0, Qt::UserRole).value<void *>() -> name();
 
@@ -51,9 +55,9 @@ RecursiveFolder::RecursiveFolder(const QString & path) : IFolder(path, false) {
 }
 
 RecursiveFolder::RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent, const QString & folder_name) : IFolder(parent, folder_name, false) {
-    QTreeWidgetItem * curr_view_item = new QTreeWidgetItem(view_parent, QStringList() << name());
+    QTreeWidgetItem * curr_view_item = new QTreeWidgetItem(view_parent, QStringList() << folder_name);
     curr_view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
-    curr_view_item -> setIcon(0, Projects::obj().getIco(QLatin1Literal("folder")));
+    curr_view_item -> setIcon(0, Projects::obj().getIco(icoType(folder_name)));
 
     proc(curr_view_item, fullPath());
 }

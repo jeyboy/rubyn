@@ -3,6 +3,18 @@
 #include "file.h"
 #include <qdir.h>
 
+QString IFolder::icoType(const QString & name) {
+    if (name == QLatin1Literal("tmp")) {
+        return QLatin1Literal("folder_temp");
+    } else if (name == QLatin1Literal("test") || name == QLatin1Literal("spec")) {
+        return QLatin1Literal("folder_test");
+    } else if (name == QLatin1Literal("log")) {
+        return QLatin1Literal("folder_log");
+    }
+
+    return QLatin1Literal("folder");
+}
+
 IFolder::IFolder(const QString & path, const bool & create) : _valid(true), _parent(0), _name(path) {
     if (create) {
         QDir dir(path);

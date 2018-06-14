@@ -9,5 +9,19 @@
     <qresource prefix="/doc_types">
         <file alias="folder">icons/folder.png</file>
         <file alias="rb">icons/file_ruby.png</file>
+        <file alias="img">icons/file_img.png</file>
+        <file alias="folder_log">icons/folder_logs.png</file>
+        <file alias="folder_temp">icons/folder_temp.png</file>
+        <file alias="folder_test">icons/folder_tests.png</file>
+    </qresource>
+    <qresource prefix="/tools">
+        <file alias="pause_off">icons/pause_off.png</file>
+        <file alias="pause">icons/pause_on.png</file>
+        <file alias="play_off">icons/play_off.png</file>
+        <file alias="play">icons/play_on.png</file>
+        <file alias="start_bug">icons/start_bug.png</file>
+        <file alias="start_bug_off">icons/start_bug_off.png</file>
+        <file alias="stop_off">icons/stop_off.png</file>
+        <file alias="stop">icons/stop_on.png</file>
     </qresource>
 </RCC>

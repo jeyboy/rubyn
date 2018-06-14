@@ -159,7 +159,7 @@ enum ProjectFormat : PROJECT_FORMAT_TYPE {
 class ProjectIdentificator {
 
 public:
-    static PROJECT_FORMAT_TYPE proc(const QUrl & url) {
+    static PROJECT_FORMAT_TYPE proc(const QString & path) {
         QDirIterator dir_it(path, QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
         while(dir_it.hasNext()) {

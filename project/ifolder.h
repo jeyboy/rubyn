@@ -21,6 +21,8 @@ protected:
 
     FileList _files;
     FolderList _folders;
+
+    QString icoType(const QString & name);
 public:
     IFolder(const QString & path, const bool & create = true);
     IFolder(IFolder * parent, const QString & folder_name, const bool & create = true);

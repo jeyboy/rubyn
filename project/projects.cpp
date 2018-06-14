@@ -26,7 +26,7 @@ Projects::~Projects() {
 }
 
 bool Projects::open(const QUrl & uri) {
-    PROJECT_FORMAT_TYPE format_type = ProjectIdentificator::proc(uri);
+    PROJECT_FORMAT_TYPE format_type = ProjectIdentificator::proc(uri.toLocalFile());
 
     Project * project = new Project(uri);
 
