@@ -35,8 +35,6 @@ QString CodeFormats::formatIcoPath(const FormatType & ft) {
     QString res = QLatin1Literal(":/doc_types/");
 
     switch(ft) {
-        case ft_unknown: return res %  QLatin1Literal("file_unknown");
-
         case ft_folder: return res %  QLatin1Literal("folder");
 
         case ft_image: return res %  QLatin1Literal("file_img");
@@ -65,6 +63,8 @@ QString CodeFormats::formatIcoPath(const FormatType & ft) {
         case ft_folder_log: return res %  QLatin1Literal("folder_log");
         case ft_folder_temp: return res %  QLatin1Literal("folder_temp");
         case ft_folder_test: return res %  QLatin1Literal("folder_test");
+
+        default: return res %  QLatin1Literal("file_unknown");
     }
 }
 

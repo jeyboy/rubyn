@@ -13,7 +13,7 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path, QC
         QString dir_path = dir_it.next();
         QString dir_name = dir_it.fileName();
 
-        RecursiveFolder * folder = new RecursiveFolder(this, view_item, dir_name);
+        RecursiveFolder * folder = new RecursiveFolder(this, view_item, dir_name, color);
         if (folder -> _valid) {
             _folders.insert(dir_name, folder);
         } else {
@@ -36,11 +36,21 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path, QC
 
         QTreeWidgetItem * item = new QTreeWidgetItem(view_item, QStringList() << name);
         item -> setIcon(0, file -> ico());
+
+        if (color) {
+            item -> setBackgroundColor(0, *color);
+        }
     }
 }
 
 QColor * RecursiveFolder::identifyColor(const FormatType & ico_type) {
-    return 0;
+    switch(ico_type) {
+        case ft_folder_public: return new QColor(0, 255, 255, 48);
+        case ft_folder_log: return new QColor(255, 39, 220, 48);
+        case ft_folder_temp: return new QColor(255, 215, 0, 48);
+        case ft_folder_test: return new QColor(75, 255, 0, 48);
+        default: return 0;
+    }
 }
 
 RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder(path, false) {
@@ -51,15 +61,24 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
     view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
     view_item -> setIcon(0, Projects::obj().getIco(ico_type));
 
-    if (!color)
-        color = identifyColor(ico_type);
+    bool color_clearing_required = false;
 
-    if (color)
+    if (!color) {
+        color = identifyColor(ico_type);
+        color_clearing_required = color != 0;
+    }
+
+    if (color) {
         view_item -> setBackgroundColor(0, *color);
+    }
 
 //        (Folder *)view_item -> data(0, Qt::UserRole).value<void *>() -> name();
 
     proc(view_item, path, color);
+
+    if (color_clearing_required) {
+        delete color;
+    }
 
     emit Projects::obj().projectInitiated(view_item);
 }
@@ -71,11 +90,20 @@ RecursiveFolder::RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent
     curr_view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
     curr_view_item -> setIcon(0, Projects::obj().getIco(ico_type));
 
-    if (!color)
-        color = identifyColor(ico_type);
+    bool color_clearing_required = false;
 
-    if (color)
+    if (!color) {
+        color = identifyColor(ico_type);
+        color_clearing_required = color != 0;
+    }
+
+    if (color) {
         curr_view_item -> setBackgroundColor(0, *color);
+    }
 
     proc(curr_view_item, fullPath(), color);
+
+    if (color_clearing_required) {
+        delete color;
+    }
 }

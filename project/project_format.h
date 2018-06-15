@@ -177,6 +177,8 @@ public:
 //                delete folder;
 //            }
         }
+
+        return pft_unknow;
     }
 };
 
