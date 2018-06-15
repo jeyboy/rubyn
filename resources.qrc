@@ -17,6 +17,7 @@
         <file alias="folder_test">icons/folder_tests.png</file>
         <file alias="file_bin">icons/file_bin.png</file>
         <file alias="file_txt">icons/file_txt.png</file>
+        <file alias="folder_db">icons/folder_db.png</file>
     </qresource>
     <qresource prefix="/tools">
         <file alias="pause_off">icons/pause_off.png</file>

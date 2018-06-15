@@ -45,10 +45,11 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path, QC
 
 QColor * RecursiveFolder::identifyColor(const FormatType & ico_type) {
     switch(ico_type) {
-        case ft_folder_public: return new QColor(0, 255, 255, 48);
-        case ft_folder_log: return new QColor(255, 39, 220, 48);
-        case ft_folder_temp: return new QColor(255, 215, 0, 48);
-        case ft_folder_test: return new QColor(75, 255, 0, 48);
+        case ft_folder_public: return new QColor(0, 255, 255, 32);
+        case ft_folder_log: return new QColor(255, 39, 220, 32);
+        case ft_folder_temp: return new QColor(255, 215, 0, 32);
+        case ft_folder_test: return new QColor(75, 255, 0, 32);
+//        case ft_folder_db: return new QColor(75, 255, 0, 32);
         default: return 0;
     }
 }

@@ -12,6 +12,8 @@ FormatType IFolder::icoType(const QString & name) {
         return FormatType::ft_folder_log;
     } else if (name == QLatin1Literal("public")) {
         return FormatType::ft_folder_public;
+    } else if (name == QLatin1Literal("db")) {
+        return FormatType::ft_folder_db;
     }
 
     return FormatType::ft_folder;

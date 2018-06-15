@@ -40,6 +40,7 @@ enum FormatType : quint16 {
     ft_file_log =           500 | ft_text,
 
 
+    ft_folder_db =          995 | ft_folder,
     ft_folder_public =      996 | ft_folder,
     ft_folder_log =         997 | ft_folder,
     ft_folder_temp =        998 | ft_folder,
