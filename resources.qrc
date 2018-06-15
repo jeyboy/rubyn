@@ -8,11 +8,15 @@
     </qresource>
     <qresource prefix="/doc_types">
         <file alias="folder">icons/folder.png</file>
-        <file alias="rb">icons/file_ruby.png</file>
-        <file alias="img">icons/file_img.png</file>
+        <file alias="file_ruby">icons/file_ruby.png</file>
+        <file alias="file_img">icons/file_img.png</file>
+        <file alias="file_unknown">icons/file_unknown.png</file>
         <file alias="folder_log">icons/folder_logs.png</file>
+        <file alias="folder_public">icons/folder_public.png</file>
         <file alias="folder_temp">icons/folder_temp.png</file>
         <file alias="folder_test">icons/folder_tests.png</file>
+        <file alias="file_bin">icons/file_bin.png</file>
+        <file alias="file_txt">icons/file_txt.png</file>
     </qresource>
     <qresource prefix="/tools">
         <file alias="pause_off">icons/pause_off.png</file>

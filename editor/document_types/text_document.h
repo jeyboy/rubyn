@@ -5,7 +5,6 @@
 #include <qdebug.h>
 #include <qtextdocument.h>
 
-
 #include "project/code_formats.h"
 #include "editor/idocument.h"
 

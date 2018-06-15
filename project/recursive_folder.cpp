@@ -4,8 +4,9 @@
 
 #include <qtreewidget.h>
 #include <qdiriterator.h>
+#include <qcolor.h>
 
-void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path) {
+void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path, QColor * color) {
     QDirIterator dir_it(path, QDir::AllDirs | QDir::NoDotAndDotDot);
 
     while(dir_it.hasNext()) {
@@ -38,26 +39,43 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path) {
     }
 }
 
-RecursiveFolder::RecursiveFolder(const QString & path) : IFolder(path, false) {
+QColor * RecursiveFolder::identifyColor(const QString & ico_type) {
+
+}
+
+RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder(path, false) {
     QString obj_name = name();
+    QString ico_type = icoType(obj_name);
 
     QTreeWidgetItem * view_item = new QTreeWidgetItem(QStringList() << obj_name);
     view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
-    view_item -> setIcon(0, Projects::obj().getIco(icoType(obj_name)));
+    view_item -> setIcon(0, Projects::obj().getIco(ico_type));
 
-//    view_item -> setBackgroundColor();
+    if (!color)
+        color = identifyColor(ico_type);
+
+    if (color)
+        view_item -> setBackgroundColor(0, *color);
 
 //        (Folder *)view_item -> data(0, Qt::UserRole).value<void *>() -> name();
 
-    proc(view_item, path);
+    proc(view_item, path, color);
 
     emit Projects::obj().projectInitiated(view_item);
 }
 
-RecursiveFolder::RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent, const QString & folder_name) : IFolder(parent, folder_name, false) {
+RecursiveFolder::RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent, const QString & folder_name, QColor * color) : IFolder(parent, folder_name, false) {
+    FormatType ico_type = icoType(folder_name);
+
     QTreeWidgetItem * curr_view_item = new QTreeWidgetItem(view_parent, QStringList() << folder_name);
     curr_view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
-    curr_view_item -> setIcon(0, Projects::obj().getIco(icoType(folder_name)));
+    curr_view_item -> setIcon(0, Projects::obj().getIco(ico_type));
 
-    proc(curr_view_item, fullPath());
+    if (!color)
+        color = identifyColor(ico_type);
+
+    if (color)
+        view_item -> setBackgroundColor(0, *color);
+
+    proc(curr_view_item, fullPath(), color);
 }

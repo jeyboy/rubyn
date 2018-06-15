@@ -3,22 +3,27 @@
 #include "project_format.h"
 
 #include <qpixmap.h>
+#include <qdebug.h>
 
-QIcon & Projects::getIco(const QString & ico_type, const uint & size) {
-    if (!_icons.contains(ico_type)) {
+QIcon & Projects::getIco(const FormatType & format_type, const uint & size) {
+    if (!_icons.contains(format_type)) {
         QIcon ico;
-        QPixmap pix = PREPARE_PIXMAP(QLatin1Literal(":/doc_types/") + ico_type, size);
+        QPixmap pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(format_type), size);
+
+        if (pix.isNull()) {
+            qDebug() << "UNKNOW ICO FORMAT: " << ico_type;
+            pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(ft_unknown), size);
+        }
+
         ico.addPixmap(pix);
 
-        _icons.insert(ico_type, ico);
+        _icons.insert(format_type, ico);
     }
 
-    return _icons[ico_type];
+    return _icons[format_type];
 }
 
-Projects::Projects(QObject * parent) : QObject(parent) {
-
-}
+Projects::Projects(QObject * parent) : QObject(parent) {}
 
 Projects::~Projects() {
     qDeleteAll(_projects);

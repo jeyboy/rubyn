@@ -4,9 +4,9 @@
 #include <qstringbuilder.h>
 #include "editor/document_types/documents_types.h"
 
-QString File::icoType() {
+FormatType File::icoType() {
     //TODO: write me
-    return QLatin1Literal("rb");
+    return FormatType::ft_file_rb;
 }
 
 bool File::userAskFileType() {

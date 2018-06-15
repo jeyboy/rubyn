@@ -5,10 +5,6 @@
 #include <qurl.h>
 //#include <qhash.h>
 
-//#include "misc/token_list.h"
-//#include "parts/lexer/scopes/scope.h"
-//#include "parts/formats/format_types.h"
-
 #include "editor/idocument.h"
 #include "code_formats.h"
 #include "projects.h"
@@ -60,7 +56,7 @@ public:
     inline const QString & path() { return _path; }
     inline const QString & uid() { return _uid; }
 
-    QString icoType();
+    FormatType icoType();
     QIcon & ico() { return Projects::obj().getIco(icoType()); }
 
     inline bool isOpened() const { return _device && _device -> isOpen(); }

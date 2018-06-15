@@ -6,6 +6,7 @@
 #include <qicon.h>
 
 #include "misc/singleton.h"
+#include "code_formats.h"
 
 #define PREPARE_PIXMAP(name, size) QPixmap(name).scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation)
 
@@ -17,7 +18,7 @@ class Projects : public QObject, public Singleton<Projects> {
     Q_OBJECT
 
     QHash<QUrl, Project *> _projects;
-    QHash<QString, QIcon> _icons;
+    QHash<FormatType, QIcon> _icons;
 public:
     Projects(QObject * parent = 0);
     ~Projects();
@@ -27,7 +28,7 @@ public:
     inline Project * project(const QUrl & uri) { return _projects.value(uri, 0); }
 
     //TODO: need sync size with project tree
-    QIcon & getIco(const QString & ext, const uint & size = 22);
+    QIcon & getIco(const FormatType & format_type, const uint & size = 22);
 signals:
     void errorOccurred(QString & source, QString & info);
 

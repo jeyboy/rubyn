@@ -16,6 +16,10 @@ ABLexer::~ABLexer() {
     //        delete _paras;
 }
 
+void ABLexer::handle(const QString & text, Highlighter * lighter) {
+
+}
+
 void ABLexer::calcFoldings() {
 //        ParaCell * iter = _paras -> iter();
 //        EDITOR_POS_TYPE curr_line = 0;
