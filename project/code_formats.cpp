@@ -1,5 +1,7 @@
 #include "code_formats.h"
 
+#include <qstringbuilder.h>
+
 QHash<QString, FormatType> CodeFormats::_formats = {
     { QLatin1Literal("txt"),    ft_text },
     { QLatin1Literal("rb"),     ft_file_rb },

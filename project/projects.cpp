@@ -11,7 +11,7 @@ QIcon & Projects::getIco(const FormatType & format_type, const uint & size) {
         QPixmap pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(format_type), size);
 
         if (pix.isNull()) {
-            qDebug() << "UNKNOW ICO FORMAT: " << ico_type;
+            qDebug() << "UNKNOW ICO FORMAT: " << format_type;
             pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(ft_unknown), size);
         }
 
