@@ -57,7 +57,12 @@ public:
     inline const QString & uid() { return _uid; }
 
     FormatType icoType() { return _main_format; }
-    QIcon & ico() { return Projects::obj().getIco(icoType()); }
+    QIcon ico() {
+        if (_main_format == ft_file_ico) {
+            return QIcon(_path);
+        }
+        else return Projects::obj().getIco(icoType());
+    }
 
     inline bool isOpened() const { return _device && _device -> isOpen(); }
     inline bool isFullyReaded() const { return _device && _doc && _doc -> isFullyReaded(); }

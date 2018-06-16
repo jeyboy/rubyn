@@ -3,7 +3,31 @@
 #include <qstringbuilder.h>
 
 QHash<QString, FormatType> CodeFormats::_formats = {
-    { QLatin1Literal("txt"),    ft_text },
+    { QLatin1Literal("txt"),    ft_file_text },
+    { QLatin1Literal("text"),   ft_file_text },
+    { QLatin1Literal("plain"),  ft_file_text },
+
+    { QLatin1Literal("rich"),   ft_file_text },
+
+    { QLatin1Literal("ico"),    ft_file_ico },
+
+    { QLatin1Literal("svg"),    ft_file_image },
+    { QLatin1Literal("png"),    ft_file_image },
+    { QLatin1Literal("jpg"),    ft_file_image },
+    { QLatin1Literal("jpeg"),   ft_file_image },
+    { QLatin1Literal("jfif"),   ft_file_image },
+    { QLatin1Literal("tiff"),   ft_file_image },
+    { QLatin1Literal("gif"),    ft_file_image },
+    { QLatin1Literal("bmp"),    ft_file_image },
+
+
+    { QLatin1Literal("eot"),    ft_file_font },
+    { QLatin1Literal("ttf"),    ft_file_font },
+    { QLatin1Literal("otf"),    ft_file_font },
+    { QLatin1Literal("woff"),   ft_file_font },
+    { QLatin1Literal("woff2"),  ft_file_font },
+
+
     { QLatin1Literal("rb"),     ft_file_rb },
     { QLatin1Literal("sql"),    ft_file_sql },
     { QLatin1Literal("html"),   ft_file_html },

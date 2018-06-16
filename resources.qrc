@@ -33,6 +33,7 @@
         <file>icons/file_x.png</file>
         <file alias="file_xml">icons/file_xml.png</file>
         <file alias="file_yml">icons/file_yml.png</file>
+        <file alias="file_font">icons/file_font.png</file>
     </qresource>
     <qresource prefix="/tools">
         <file alias="pause_off">icons/pause_off.png</file>
