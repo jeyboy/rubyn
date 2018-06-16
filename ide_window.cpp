@@ -46,6 +46,7 @@ IDEWindow::~IDEWindow() { delete ui; }
 
 void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
     File * _file = 0;
+    bool is_external = false;
 
     if (folder) {
         IFolder * _folder = reinterpret_cast<IFolder *>(folder);
@@ -57,9 +58,11 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
 
         _file = _folder -> getFile(name);
     } else {
-        Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Open of dropped resources not finished yet"),  Logger::log_error);
-        // need to register somewhere temp files
-        return;
+        QFileInfo finfo(name);
+        _file = new File(0, finfo.baseName(), name);
+
+        is_external = true;
+//        Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Open of dropped resources not finished yet"),  Logger::log_error);
     }
 
     if (_file == 0) {
@@ -73,20 +76,24 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
 
     if (!_file -> isOpened()) {
         if (!_file -> open()) {
+            if (is_external) {
+                delete _file;
+            }
+
             Logger::obj().write(QStringLiteral("IDE"), QStringLiteral("Cant open file: '") % name % '\'', Logger::log_error);
             return;
         }
     }
 
     if (!active_editor)
-        newEditorRequired(_file);
+        newEditorRequired(_file, is_external);
     else
-        active_editor -> openFile(_file);
+        active_editor -> openFile(_file, is_external);
 }
 
-void IDEWindow::newEditorRequired(File * file) {
+void IDEWindow::newEditorRequired(File * file, const bool & is_external) {
     setupEditor();
-    active_editor -> openFile(file);
+    active_editor -> openFile(file, is_external);
 }
 
 void IDEWindow::editorActivated(TabsBlock * target_editor) {

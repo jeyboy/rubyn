@@ -50,7 +50,7 @@ public:
 
 protected slots:
     void fileOpenRequired(const QString & name, void * folder);
-    void newEditorRequired(File * file);
+    void newEditorRequired(File * file, const bool & is_external = false);
     void editorActivated(TabsBlock *);
     void editorIsEmpty(TabsBlock *);
     void openResource(TabsBlock * target_editor, const QUrl & url);

@@ -75,27 +75,41 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0), f
 
 TabsBlock::~TabsBlock() {
     delete bar;
+
+    qDeleteAll(external_files);
 }
 
 void TabsBlock::registerCursorPosOutput(QLabel * output) {
     connect(editor, SIGNAL(cursorPosChanged(QString)), output, SLOT(setText(QString)));
 }
 
-bool TabsBlock::openFile(File * file) {
-    if (tab_links.contains(file -> uid())) {
-        int new_index = tab_links[file -> uid()];
+bool TabsBlock::openFile(File * file, const bool & is_external) {
+    QString file_uid = file -> uid();
+
+    if (tab_links.contains(file_uid)) {
+        int new_index = tab_links[file_uid];
         currentTabChanged(new_index);
 
         return true;
     } else {
-        if (!openFileInEditor(file))
+        if (!openFileInEditor(file)) {
+            if (is_external)
+                delete file;
+
             return false;
+        }
 
         int index = bar -> addTab(file -> ico(), file -> name());
         bar -> setTabData(index, QVariant::fromValue<void *>(file));
-        bar -> setCurrentIndex(index);
 
-        tab_links.insert(file -> uid(), index);
+        tab_links.insert(file_uid, index);
+
+        if (is_external) {
+            external_files.insert(file_uid, file);
+            bar -> setTabTextColor(index, QColor::fromRgb(0,0,255));
+        }
+
+        bar -> setCurrentIndex(index);
 
         if (isHidden())
             show();

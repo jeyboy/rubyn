@@ -43,6 +43,7 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path, QC
     }
 }
 
+
 RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder(path, false) {
     QString obj_name = name();
     FormatType ico_type = icoType(obj_name);

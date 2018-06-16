@@ -25,6 +25,7 @@ class TabsBlock : public QWidget {
     QMenu * files_list;
 
     QHash<QString, int> tab_links;
+    QHash<QString, File *> external_files;
 
     int menu_target_index;
 
@@ -38,7 +39,7 @@ public:
 
     void registerCursorPosOutput(QLabel * output);
 
-    bool openFile(File * file);
+    bool openFile(File * file, const bool & is_external = false);
 
 signals:
     void resourceDropped(TabsBlock *, const QUrl &);
