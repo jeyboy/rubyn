@@ -9,6 +9,7 @@
 
 class File;
 class IFolder;
+class QColor;
 
 typedef QHash<QString, File *> FileList;
 typedef QHash<QString, IFolder *> FolderList;
@@ -25,6 +26,7 @@ protected:
     FolderList _folders;
 
     FormatType icoType(const QString & name);
+    QColor * identifyColor(const FormatType & ico_type);
 public:
     IFolder(const QString & path, const bool & create = true);
     IFolder(IFolder * parent, const QString & folder_name, const bool & create = true);

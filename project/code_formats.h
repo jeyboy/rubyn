@@ -40,6 +40,8 @@ enum FormatType : quint32 {
     ft_file_haml =           12 | ft_text | ft_level_two,
     ft_file_slim =           13 | ft_text | ft_level_two,
     ft_file_yml =            14 | ft_text | ft_level_one,
+    ft_file_lock =           15 | ft_text | ft_level_one,
+    ft_file_gemfile =        16 | ft_text | ft_level_one,
 
 
     //        ft_c,

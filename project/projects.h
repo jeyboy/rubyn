@@ -19,6 +19,7 @@ class Projects : public QObject, public Singleton<Projects> {
 
     QHash<QUrl, Project *> _projects;
     QHash<FormatType, QIcon> _icons;
+    QHash<QString, FormatType> _special_files_formats;
 public:
     Projects(QObject * parent = 0);
     ~Projects();
@@ -29,6 +30,7 @@ public:
 
     //TODO: need sync size with project tree
     QIcon & getIco(const FormatType & format_type, const uint & size = 22);
+    FormatType identificateName(const QString & name);
 signals:
     void errorOccurred(QString & source, QString & info);
 

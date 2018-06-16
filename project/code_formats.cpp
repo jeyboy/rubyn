@@ -6,10 +6,11 @@ QHash<QString, FormatType> CodeFormats::_formats = {
     { QLatin1Literal("txt"),    ft_file_text },
     { QLatin1Literal("text"),   ft_file_text },
     { QLatin1Literal("plain"),  ft_file_text },
-
     { QLatin1Literal("rich"),   ft_file_text },
 
+
     { QLatin1Literal("ico"),    ft_file_ico },
+
 
     { QLatin1Literal("svg"),    ft_file_image },
     { QLatin1Literal("png"),    ft_file_image },
@@ -41,6 +42,9 @@ QHash<QString, FormatType> CodeFormats::_formats = {
     { QLatin1Literal("erb"),    ft_file_erb },
     { QLatin1Literal("haml"),   ft_file_haml },
     { QLatin1Literal("slim"),   ft_file_slim },
+
+
+    { QLatin1Literal("lock"),   ft_file_lock },
     { QLatin1Literal("yml"),    ft_file_yml },
     { QLatin1Literal("log"),    ft_file_log },
 };
@@ -84,6 +88,8 @@ QString CodeFormats::formatIcoPath(const FormatType & ft) {
         case ft_file_slim: return res %  QLatin1Literal("file_slim");
         case ft_file_yml: return res %  QLatin1Literal("file_yml");
 
+        case ft_file_lock: return res %  QLatin1Literal("file_lock");
+        case ft_file_gemfile: return res %  QLatin1Literal("file_gemfile");
         case ft_file_font: return res %  QLatin1Literal("file_font");
         case ft_file_log: return res %  QLatin1Literal("file_log");
 

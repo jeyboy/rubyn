@@ -23,7 +23,20 @@ QIcon & Projects::getIco(const FormatType & format_type, const uint & size) {
     return _icons[format_type];
 }
 
-Projects::Projects(QObject * parent) : QObject(parent) {}
+FormatType Projects::identificateName(const QString & name) {
+    if (_special_files_formats.contains(name))
+        return _special_files_formats[name];
+    else
+        return ft_unknown;
+}
+
+Projects::Projects(QObject * parent) : QObject(parent) {
+    _special_files_formats.insert(QLatin1Literal("gemfile"), ft_file_gemfile);
+    _special_files_formats.insert(QLatin1Literal("rakefile"), ft_file_rb);
+    _special_files_formats.insert(QLatin1Literal("capfile"), ft_file_rb);
+    _special_files_formats.insert(QLatin1Literal("config.ru"), ft_file_rb);
+    _special_files_formats.insert(QLatin1Literal("procfile"), ft_file_yml);
+}
 
 Projects::~Projects() {
     qDeleteAll(_projects);

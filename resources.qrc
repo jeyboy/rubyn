@@ -35,6 +35,8 @@
         <file alias="file_yml">icons/file_yml.png</file>
         <file alias="file_font">icons/file_font.png</file>
         <file alias="file_log">icons/file_log.png</file>
+        <file alias="file_lock">icons/file_lock.png</file>
+        <file alias="file_gemfile">icons/gemfile.png</file>
     </qresource>
     <qresource prefix="/tools">
         <file alias="pause_off">icons/pause_off.png</file>

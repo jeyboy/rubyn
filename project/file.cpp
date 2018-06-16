@@ -16,7 +16,8 @@ void File::initUid() {
 }
 
 bool File::identifyType(const QString & name) {
-    QStringList parts = name.split('.', QString::SkipEmptyParts);
+    QString lower_name = name.toLower();
+    QStringList parts = lower_name.split('.', QString::SkipEmptyParts);
 
     if (parts.length() > 1) {
         for(QStringList::Iterator it = ++parts.begin(); it != parts.end(); it++) {
@@ -30,6 +31,10 @@ bool File::identifyType(const QString & name) {
 //                Logger::obj().write(QLatin1Literal("File"), QLatin1Literal("Cant identify file type for: ") % _name % '(' % name % ')');
             }
         }
+    }
+
+    if (_main_format == ft_unknown && level == 0) {
+        _main_format = Projects::obj().identificateName(lower_name);
     }
 
     ////////////// temp
@@ -108,8 +113,8 @@ bool File::open() {
     return false;
 }
 
-File::File(const QString & name, const QString & path, const FileOps & ops)
-    : _doc(0), _device(0), _main_format(ft_unknown), _path(path), _name(name)
+File::File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops)
+    : _doc(0), _device(0), _main_format(ft_unknown), _path(path), _name(name), level(inproject_level)
 {
     identifyType(_name);
 

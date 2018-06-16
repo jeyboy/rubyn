@@ -26,6 +26,8 @@ protected:
     QString _name;
     QString _uid;
 
+    uint level;
+
     bool userAskFileType();
     void initUid();
 public:
@@ -36,7 +38,7 @@ public:
 
     bool open();
 
-    File(const QString & name, const QString & path, const FileOps & ops = fo_none);
+    File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops = fo_none);
 
     virtual ~File() {
         delete _doc;

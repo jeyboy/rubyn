@@ -19,6 +19,17 @@ FormatType IFolder::icoType(const QString & name) {
     return FormatType::ft_folder;
 }
 
+QColor * IFolder::identifyColor(const FormatType & ico_type) {
+    switch(ico_type) {
+        case ft_folder_public: return new QColor(0, 255, 255, 16);
+        case ft_folder_log: return new QColor(255, 39, 220, 16);
+        case ft_folder_temp: return new QColor(255, 215, 0, 16);
+        case ft_folder_test: return new QColor(75, 255, 0, 16);
+        case ft_folder_db: return new QColor(255, 0, 0, 16);
+        default: return 0;
+    }
+}
+
 IFolder::IFolder(const QString & path, const bool & create) : _valid(true), _parent(0), _name(path) {
     if (create) {
         QDir dir(path);
