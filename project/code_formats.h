@@ -54,7 +54,7 @@ enum FormatType : quint32 {
 
 
     ft_file_bin =           95 | ft_binary | ft_level_one,
-    ft_file_text =          96 | ft_text | ft_level_one,
+    ft_file_text =          96 | ft_text | ft_level_four,
     ft_file_ico =           97 | ft_image | ft_level_one,
     ft_file_image =         98 | ft_image | ft_level_one,
     ft_file_font =          99 | ft_system | ft_level_one,
@@ -67,7 +67,7 @@ enum FormatType : quint32 {
     ft_folder_temp =        198 | ft_folder,
     ft_folder_test =        199 | ft_folder,
 
-    ft_user_defined =       200 | ft_level_three,
+    ft_user_defined =       200 | ft_level_four,
 
     ft_base_file_types =    ft_image | ft_text | ft_binary,
     ft_priority =           ft_level_one | ft_level_two | ft_level_three | ft_level_four
