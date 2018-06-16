@@ -34,6 +34,7 @@ QHash<QString, FormatType> CodeFormats::_formats = {
     { QLatin1Literal("css"),    ft_file_css },
     { QLatin1Literal("xml"),    ft_file_xml },
     { QLatin1Literal("js"),     ft_file_js },
+    { QLatin1Literal("coffee"), ft_file_coffee },
     { QLatin1Literal("scss"),   ft_file_scss },
     { QLatin1Literal("sass"),   ft_file_sass },
     { QLatin1Literal("json"),   ft_file_json },
@@ -61,9 +62,9 @@ QString CodeFormats::formatIcoPath(const FormatType & ft) {
     switch(ft) {
         case ft_folder: return res %  QLatin1Literal("folder");
 
-        case ft_image: return res %  QLatin1Literal("file_img");
-        case ft_text: return res %  QLatin1Literal("file_txt");
-        case ft_binary: return res %  QLatin1Literal("file_bin");
+        case ft_file_image: return res %  QLatin1Literal("file_img");
+        case ft_file_text: return res %  QLatin1Literal("file_txt");
+        case ft_file_bin: return res %  QLatin1Literal("file_bin");
 
         case ft_file_rb: return res %  QLatin1Literal("file_ruby");
         case ft_file_sql: return res %  QLatin1Literal("file_sql");
@@ -74,6 +75,7 @@ QString CodeFormats::formatIcoPath(const FormatType & ft) {
         case ft_file_sass: return res %  QLatin1Literal("file_sass");
 
         case ft_file_js: return res %  QLatin1Literal("file_js");
+        case ft_file_coffee: return res %  QLatin1Literal("file_coffee");
 
         case ft_file_xml: return res %  QLatin1Literal("file_xml");
         case ft_file_json: return res %  QLatin1Literal("file_json");
@@ -81,6 +83,8 @@ QString CodeFormats::formatIcoPath(const FormatType & ft) {
         case ft_file_haml: return res %  QLatin1Literal("file_haml");
         case ft_file_slim: return res %  QLatin1Literal("file_slim");
         case ft_file_yml: return res %  QLatin1Literal("file_yml");
+
+        case ft_file_font: return res %  QLatin1Literal("file_font");
         case ft_file_log: return res %  QLatin1Literal("file_log");
 
         case ft_folder_db: return res %  QLatin1Literal("folder_db");

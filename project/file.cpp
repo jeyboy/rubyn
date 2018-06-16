@@ -22,10 +22,12 @@ bool File::identifyType(const QString & name) {
         for(QStringList::Iterator it = ++parts.begin(); it != parts.end(); it++) {
             FormatType ft = CodeFormats::identify(*it);
 
+            if (ft == ft_unknown) continue;
+
             if ((_main_format & ft_priority) < (ft & ft_priority)) {
                 _main_format = ft;
-            } else {
-                Logger::obj().write(QLatin1Literal("File"), QLatin1Literal("Cant identify file type for: ") % name);
+//            } else {
+//                Logger::obj().write(QLatin1Literal("File"), QLatin1Literal("Cant identify file type for: ") % _name % '(' % name % ')');
             }
         }
     }
