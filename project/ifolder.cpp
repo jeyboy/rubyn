@@ -25,7 +25,8 @@ QColor * IFolder::identifyColor(const FormatType & ico_type) {
         case ft_folder_log: return new QColor(255, 39, 220, 16);
         case ft_folder_temp: return new QColor(255, 215, 0, 16);
         case ft_folder_test: return new QColor(75, 255, 0, 16);
-        case ft_folder_db: return new QColor(255, 0, 0, 16);
+//        case ft_folder_db: return new QColor(255, 0, 0, 16);
+        case ft_folder_db: return new QColor(220, 220, 220, 108);
         default: return 0;
     }
 }
