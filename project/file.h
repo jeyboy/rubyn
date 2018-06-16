@@ -56,7 +56,7 @@ public:
     inline const QString & path() { return _path; }
     inline const QString & uid() { return _uid; }
 
-    FormatType icoType();
+    FormatType icoType() { return _main_format; }
     QIcon & ico() { return Projects::obj().getIco(icoType()); }
 
     inline bool isOpened() const { return _device && _device -> isOpen(); }

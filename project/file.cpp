@@ -4,10 +4,7 @@
 #include <qstringbuilder.h>
 #include "editor/document_types/documents_types.h"
 
-FormatType File::icoType() {
-    //TODO: write me
-    return FormatType::ft_file_rb;
-}
+#include "logger.h"
 
 bool File::userAskFileType() {
     //TODO: ask user about file type
@@ -24,7 +21,12 @@ bool File::identifyType(const QString & name) {
     if (parts.length() > 1) {
         for(QStringList::Iterator it = ++parts.begin(); it != parts.end(); it++) {
             FormatType ft = CodeFormats::identify(*it);
-            _main_format = (FormatType)(_main_format | ft);
+
+            if ((_main_format & ft_priority) < (ft & ft_priority)) {
+                _main_format = ft;
+            } else {
+                Logger::obj().write(QLatin1Literal("File"), QLatin1Literal("Cant identify file type for: ") % name);
+            }
         }
     }
 

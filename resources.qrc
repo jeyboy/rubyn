@@ -15,9 +15,24 @@
         <file alias="folder_public">icons/folder_public.png</file>
         <file alias="folder_temp">icons/folder_temp.png</file>
         <file alias="folder_test">icons/folder_tests.png</file>
-        <file alias="file_bin">icons/file_bin.png</file>
+        <file alias="file_bin2">icons/file_bin.png</file>
         <file alias="file_txt">icons/file_txt.png</file>
         <file alias="folder_db">icons/folder_db.png</file>
+        <file alias="file_bin">icons/file_bin2.png</file>
+        <file alias="file_coffee">icons/file_coffee.png</file>
+        <file alias="file_css">icons/file_css.png</file>
+        <file alias="file_erb">icons/file_erb.png</file>
+        <file alias="file_haml">icons/file_haml.png</file>
+        <file alias="file_html">icons/file_html.png</file>
+        <file alias="file_js">icons/file_js.png</file>
+        <file alias="file_json">icons/file_json.png</file>
+        <file alias="file_sass">icons/file_sass.png</file>
+        <file alias="file_scss">icons/file_scss.png</file>
+        <file alias="file_slim">icons/file_slim.png</file>
+        <file alias="file_sql">icons/file_sql.png</file>
+        <file>icons/file_x.png</file>
+        <file alias="file_xml">icons/file_xml.png</file>
+        <file alias="file_yml">icons/file_yml.png</file>
     </qresource>
     <qresource prefix="/tools">
         <file alias="pause_off">icons/pause_off.png</file>
