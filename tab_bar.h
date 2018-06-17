@@ -12,10 +12,8 @@ public:
     QListWidgetItem * addTab(const QIcon & ico, const QString & text);
     void removeTab(QListWidgetItem *);
 protected:
-//    void dragEnterEvent(QDragEnterEvent *event);
-//    void dragMoveEvent(QDragMoveEvent *event);
-//    void dragLeaveEvent(QDragLeaveEvent *event);
-//    void dropEvent(QDropEvent *event);
+    QMimeData * mimeData(const QList<QListWidgetItem *> items) const;
+    bool dropMimeData(int index, const QMimeData * data, Qt::DropAction action);
 signals:
     void layoutChanged();
 
