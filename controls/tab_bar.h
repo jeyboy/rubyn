@@ -15,8 +15,12 @@ protected:
     Qt::DropActions supportedDropActions() const;
     QMimeData * mimeData(const QList<QListWidgetItem *> items) const;
     bool dropMimeData(int index, const QMimeData * data, Qt::DropAction action);
+
+    void rowsInserted(const QModelIndex & parent, int start, int end);
+    void rowsAboutToBeRemoved(const QModelIndex & parent, int start, int end);
+    QSize viewportSizeHint() const;
 signals:
-    void layoutChanged();
+    void itemsCountChanged(const int & correction = 0);
     void tabCloseRequested(QListWidgetItem*);
 protected slots:
     void itemCloseRequested(const QModelIndex &);

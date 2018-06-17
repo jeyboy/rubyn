@@ -21,16 +21,11 @@ TabBar::TabBar(QWidget * parent) : QListWidget(parent) {
 QListWidgetItem * TabBar::addTab(const QIcon & ico, const QString & text) {
     QListWidgetItem * item = new QListWidgetItem(ico, text);
     addItem(item);
-
-    emit layoutChanged();
-
     return item;
 }
 
 void TabBar::removeTab(QListWidgetItem * tab) {
     delete tab;
-
-    emit layoutChanged();
 }
 
 Qt::DropActions TabBar::supportedDropActions() const {
@@ -50,6 +45,19 @@ QMimeData * TabBar::mimeData(const QList<QListWidgetItem *> items) const {
 bool TabBar::dropMimeData(int index, const QMimeData * data, Qt::DropAction action) {
     qDebug() << this << data -> parent();
     return QListWidget::dropMimeData(index, data, action);
+}
+
+void TabBar::rowsInserted(const QModelIndex &parent, int start, int end) {
+    QListWidget::rowsInserted(parent, start, end);
+    emit itemsCountChanged();
+}
+void TabBar::rowsAboutToBeRemoved(const QModelIndex &parent, int start, int end) {
+    QListWidget::rowsAboutToBeRemoved(parent, start, end);
+    emit itemsCountChanged(start - (end + 1));
+}
+
+QSize TabBar::viewportSizeHint() const {
+    return QListWidget::viewportSizeHint();
 }
 
 void TabBar::itemCloseRequested(const QModelIndex & index) {

@@ -73,7 +73,7 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(0), _list_btn(0),
 
     connect(_bar, SIGNAL(currentRowChanged(int)), this, SLOT(currentTabIndexChanged(int)));
     connect(_bar, SIGNAL(tabCloseRequested(QListWidgetItem*)), this, SLOT(tabRemoved(QListWidgetItem*)));
-    connect(_bar, SIGNAL(layoutChanged()), this, SLOT(tabsLayoutChanged()));
+    connect(_bar, SIGNAL(itemsCountChanged(int)), this, SLOT(tabsCountChanged(int)));
     connect(_bar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showTabsContextMenu(const QPoint &)));
 
     connect(_scroll_left_btn, SIGNAL(clicked()), _bar, SLOT(scrollBackward()));
@@ -186,8 +186,10 @@ void TabsBlock::fileListClicked() {
     currentTabChanged(tab);
 }
 
-void TabsBlock::tabsLayoutChanged() {
-    _list_btn -> setText(QString::number(_bar -> count()));
+void TabsBlock::tabsCountChanged(const int & correction) {
+    qDebug() << "tabsCountChanged" << correction << _bar -> count();
+
+    _list_btn -> setText(QString::number(_bar -> count() + correction));
 }
 
 void TabsBlock::currentTabIndexChanged(const int & index) {
