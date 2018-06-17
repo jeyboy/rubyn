@@ -6,6 +6,8 @@
 
 class TabBar : public QListWidget {
     Q_OBJECT
+
+    bool _internal_move;
 public:
     TabBar(QWidget * parent = 0);
 
@@ -13,7 +15,8 @@ public:
     void removeTab(QListWidgetItem *);
 protected:
     Qt::DropActions supportedDropActions() const;
-    QMimeData * mimeData(const QList<QListWidgetItem *> items) const;
+    void dropEvent(QDropEvent * event);
+//    QMimeData * mimeData(const QList<QListWidgetItem *> items) const;
     bool dropMimeData(int index, const QMimeData * data, Qt::DropAction action);
 
     void rowsInserted(const QModelIndex & parent, int start, int end);
@@ -22,7 +25,7 @@ protected:
 signals:
     void scrollsRequired(const bool & show);
     void itemsCountChanged(const int & correction = 0);
-    void tabCloseRequested(QListWidgetItem*);
+    void tabCloseRequested(QListWidgetItem *);
 protected slots:
     void itemCloseRequested(const QModelIndex &);
 public slots:

@@ -207,6 +207,8 @@ void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
 
     File * file = tabFile(tab);
 
+    qDebug() << "currentTabChanged" << tab -> text();
+
     if (!file || (file && !openFileInEditor(file))) {
         // notify user
         return;
@@ -216,6 +218,8 @@ void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
 }
 
 void TabsBlock::tabRemoved(QListWidgetItem * tab) {
+    qDebug() << "tabRemoved";
+
     File * file = tabFile(tab);
 
     if (file) {
