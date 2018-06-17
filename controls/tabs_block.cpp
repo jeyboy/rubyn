@@ -215,6 +215,8 @@ void TabsBlock::tabRemoved(QListWidgetItem * tab) {
         if (_external_files.contains(file_uid)) {
             delete _external_files.take(file_uid);
         }
+
+        _tab_links.remove(file_uid);
     }
 
     _bar -> removeTab(tab);
