@@ -4,15 +4,22 @@
 #include <qtabbar.h>
 #include <qlistwidget.h>
 
+class File;
+
 class TabBar : public QListWidget {
     Q_OBJECT
 
     bool _internal_move;
+    QHash<QString, QListWidgetItem *> * _tabs_linkages;
 public:
     TabBar(QWidget * parent = 0);
 
     QListWidgetItem * addTab(const QIcon & ico, const QString & text);
     void removeTab(QListWidgetItem *);
+
+    File * tabFile(QListWidgetItem * tab);
+
+    inline void setTabsLinkages(QHash<QString, QListWidgetItem *> * linkages = 0) { _tabs_linkages = linkages; }
 protected:
     Qt::DropActions supportedDropActions() const;
     void dropEvent(QDropEvent * event);

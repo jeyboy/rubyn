@@ -1,12 +1,13 @@
 #include "tab_bar.h"
 
 #include "tab_bar_item_delegate.h"
+#include "project/file.h"
 
 #include <qscrollbar.h>
 #include <qmimedata.h>
 #include <qdebug.h>
 
-TabBar::TabBar(QWidget * parent) : QListWidget(parent), _internal_move(false) {
+TabBar::TabBar(QWidget * parent) : QListWidget(parent), _internal_move(false), _tabs_linkages(0) {
     setMaximumHeight(26);
     setSelectionMode(QAbstractItemView::SingleSelection);
     setFlow(QListView::LeftToRight);
@@ -29,20 +30,42 @@ void TabBar::removeTab(QListWidgetItem * tab) {
     delete tab;
 }
 
+File * TabBar::tabFile(QListWidgetItem * tab) {
+    QVariant tab_data = tab -> data(Qt::UserRole);
+
+    if (!tab_data.isNull()) {
+        return reinterpret_cast<File *>(tab_data.value<quintptr>());
+    }
+
+    return 0;
+}
+
 Qt::DropActions TabBar::supportedDropActions() const {
     return Qt::MoveAction | Qt::CopyAction;
 }
 
 void TabBar::dropEvent(QDropEvent * event) {
     QListWidgetItem * copy_source = 0;
+    QListWidgetItem * target_item = 0;
 
     if ((_internal_move = event -> source() == this)) {
         copy_source = currentItem();
     } else {
         copy_source = reinterpret_cast<TabBar *>(event -> source()) -> currentItem();
+
+        File * file = tabFile(copy_source);
+
+        if (file && _tabs_linkages -> contains(file -> uid())) {
+            target_item = _tabs_linkages -> operator [](file -> uid());
+        }
     }
 
-    QListWidget::dropEvent(event);
+    if (target_item) { // if we already have this file in tabs
+        setCurrentItem(target_item);
+        event -> accept();
+    } else {
+        QListWidget::dropEvent(event);
+    }
 
     _internal_move = false;
 
@@ -60,13 +83,6 @@ void TabBar::dropEvent(QDropEvent * event) {
 //}
 
 bool TabBar::dropMimeData(int index, const QMimeData * data, Qt::DropAction action) {
-    //TODO: reject drop if this file already exists in current tab bar and
-    //   drop is not eternal + find this file and set like current
-
-    if (!_internal_move) {
-
-    }
-
     bool res = QListWidget::dropMimeData(index, data, action);
 
     emit currentRowChanged(index);

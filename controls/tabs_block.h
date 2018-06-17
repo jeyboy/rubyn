@@ -1,6 +1,8 @@
 #ifndef TABS_BLOCK_H
 #define TABS_BLOCK_H
 
+// !TODO: if opened two tabs with same names need to extend names with path parts
+
 #include <qwidget.h>
 #include <qhash.h>
 #include <qurl.h>
@@ -33,7 +35,6 @@ class TabsBlock : public QWidget {
 
     void setupLayout();
     bool openFileInEditor(File * file);
-    File * tabFile(QListWidgetItem * tab);
 public:
     TabsBlock(QWidget * parent = 0);
     ~TabsBlock();

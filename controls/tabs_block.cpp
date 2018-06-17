@@ -27,6 +27,7 @@ void TabsBlock::setupLayout() {
 //    bar -> setTabsClosable(true);
     _bar -> setMovement(QListView::Free);
     _bar -> setContextMenuPolicy(Qt::CustomContextMenu);
+    _bar -> setTabsLinkages(&_tab_links);
 
     row_layout -> addWidget(_bar, 1);
 
@@ -155,16 +156,6 @@ bool TabsBlock::openFileInEditor(File * file) {
     return true;
 }
 
-File * TabsBlock::tabFile(QListWidgetItem * tab) {
-    QVariant tab_data = tab -> data(Qt::UserRole);
-
-    if (!tab_data.isNull()) {
-        return reinterpret_cast<File *>(tab_data.value<quintptr>());
-    }
-
-    return 0;
-}
-
 void TabsBlock::buildFilesList() {
     _files_list -> clear();
 
@@ -195,7 +186,14 @@ void TabsBlock::scrollsVisiabilityChange(const bool & show) {
 }
 
 void TabsBlock::tabsCountChanged(const int & correction) {
-    _list_btn -> setText(QString::number(_bar -> count() + correction));
+    int new_amount = _bar -> count() + correction;
+
+    _list_btn -> setText(QString::number(new_amount));
+
+    if (new_amount == 0) {
+        emit moveToBlankState(this);
+        hide();
+    }
 }
 
 void TabsBlock::currentTabIndexChanged(const int & index) {
@@ -205,12 +203,10 @@ void TabsBlock::currentTabIndexChanged(const int & index) {
 void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
     if (!tab) return;
 
-    File * file = tabFile(tab);
-
-    qDebug() << "currentTabChanged" << tab -> text();
+    File * file = _bar -> tabFile(tab);
 
     if (!file || (file && !openFileInEditor(file))) {
-        // notify user
+        Logger::obj().write(QLatin1Literal("Editor"), QLatin1Literal("Cant open file: ") % file -> name());
         return;
     }
 
@@ -218,9 +214,7 @@ void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
 }
 
 void TabsBlock::tabRemoved(QListWidgetItem * tab) {
-    qDebug() << "tabRemoved";
-
-    File * file = tabFile(tab);
+    File * file = _bar -> tabFile(tab);
 
     if (file) {
         QString file_uid = file -> uid();
@@ -232,11 +226,6 @@ void TabsBlock::tabRemoved(QListWidgetItem * tab) {
     }
 
     _bar -> removeTab(tab);
-
-    if (_bar -> count() == 0) {
-        emit moveToBlankState(this);
-        hide();
-    }
 }
 
 void TabsBlock::showTabsContextMenu(const QPoint & point) {
@@ -249,7 +238,7 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
         QMenu menu(this);
 
         QAction * action = menu.addAction(tr("In separate editor"), this, SLOT(newTabsBlockRequest()));
-        File * file = tabFile(tab);
+        File * file = _bar -> tabFile(tab);
         action -> setProperty("uid", file -> uid());
 
         menu.exec(_bar -> mapToGlobal(point));
@@ -261,7 +250,7 @@ void TabsBlock::newTabsBlockRequest() {
 
     QListWidgetItem * tab = _tab_links[obj -> property("uid").toString()];
 
-    File * file = tabFile(tab);
+    File * file = _bar -> tabFile(tab);
 
     if (file) {
         emit newTabsBlockRequested(file);
