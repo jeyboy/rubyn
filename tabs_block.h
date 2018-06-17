@@ -13,26 +13,24 @@ class File;
 class QLabel;
 class QFocusEvent;
 class QMenu;
+class QListWidgetItem;
 
 class TabsBlock : public QWidget {
     Q_OBJECT
 
-    TabBar * bar;
+    TabBar * _bar;
 
-    QToolButton * list_btn;
-    CodeEditor * editor;
+    QToolButton * _list_btn;
+    CodeEditor * _editor;
 
-    QMenu * files_list;
+    QMenu * _files_list;
 
-    QHash<QString, int> tab_links;
-    QHash<QString, File *> external_files;
-
-    int menu_target_index;
+    QHash<QString, QListWidgetItem *> _tab_links;
+    QHash<QString, File *> _external_files;
 
     void setupLayout();
     bool openFileInEditor(File * file);
-    void rebuildIndexes(const int & rindex);
-
+    File * tabFile(QListWidgetItem * tab);
 public:
     TabsBlock(QWidget * parent = 0);
     ~TabsBlock();
@@ -55,9 +53,9 @@ protected slots:
     void fileListClicked();
 
     void tabsLayoutChanged();
-    void currentTabChanged(const int &);
-    void tabRemoved(const int &);
-    void tabMoved(const int &, const int &);
+    void currentTabIndexChanged(const int & index);
+    void currentTabChanged(QListWidgetItem * tab);
+    void tabRemoved(QListWidgetItem * tab);
     void showTabsContextMenu(const QPoint &);
 
     void newTabsBlockRequest();

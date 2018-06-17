@@ -23,25 +23,24 @@ void TabsBlock::setupLayout() {
     row_layout -> setContentsMargins(1,1,1,1);
     row_layout -> setSpacing(1);
 
-    bar = new TabBar(this);
-    bar -> setTabsClosable(true);
-    bar -> setExpanding(false);
-    bar -> setMovable(true);
-    bar -> setChangeCurrentOnDrag(true);
-    bar -> setContextMenuPolicy(Qt::CustomContextMenu);
+    _bar = new TabBar(this);
+//    bar -> setTabsClosable(true);
+//    bar -> setMovable(true);
+    _bar -> setContextMenuPolicy(Qt::CustomContextMenu);
 
-    row_layout -> addWidget(bar, 1);
+    row_layout -> addWidget(_bar, 1);
 
-    files_list = new QMenu(QLatin1Literal("Files"), this);
+    _files_list = new QMenu(QLatin1Literal("Files"), this);
 
-    list_btn = new QToolButton(this);
-    list_btn -> setText(QLatin1Literal("0"));
-    list_btn -> setIcon(QIcon(QLatin1Literal(":/list")));
-    list_btn -> setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    list_btn -> setPopupMode(QToolButton::InstantPopup);
-    list_btn -> setMenu(files_list);
+    _list_btn = new QToolButton(this);
+    _list_btn -> setText(QLatin1Literal("0"));
+    _list_btn -> setIcon(QIcon(QLatin1Literal(":/list")));
+    _list_btn -> setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    _list_btn -> setPopupMode(QToolButton::InstantPopup);
+    _list_btn -> setMenu(_files_list);
+    _list_btn -> setMenu(_files_list);
 
-    row_layout -> addWidget(list_btn, 0);
+    row_layout -> addWidget(_list_btn, 0);
 
     col_layout -> addWidget(row, 0);
 
@@ -50,45 +49,44 @@ void TabsBlock::setupLayout() {
     font.setFixedPitch(true);
     font.setPointSize(11);
 
-    editor = new CodeEditor(this);
-    editor -> setFont(font);
+    _editor = new CodeEditor(this);
+    _editor -> setFont(font);
 
-    col_layout -> addWidget(editor, 1);
+    col_layout -> addWidget(_editor, 1);
 }
 
-TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), bar(0), list_btn(0), files_list(0), menu_target_index(-1) {
+TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(0), _list_btn(0), _files_list(0) {
 //    setStyleSheet("QWidget:focus {background-color: #FFFFCC;}");
 
     setupLayout();
 
-    connect(bar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
-    connect(bar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabRemoved(int)));
-    connect(bar, SIGNAL(layoutChanged()), this, SLOT(tabsLayoutChanged()));
-    connect(bar, SIGNAL(tabMoved(int,int)), this, SLOT(tabMoved(int,int)));
-    connect(bar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showTabsContextMenu(const QPoint &)));
+    connect(_bar, SIGNAL(currentRowChanged(int)), this, SLOT(currentTabIndexChanged(int)));
+//    connect(bar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabRemoved(int)));
+    connect(_bar, SIGNAL(layoutChanged()), this, SLOT(tabsLayoutChanged()));
+    connect(_bar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showTabsContextMenu(const QPoint &)));
 
-    connect(editor, SIGNAL(inFocus()), this, SLOT(inFocus()));
-    connect(editor, SIGNAL(fileDropped(QUrl)), this, SLOT(resourceDrop(QUrl)));
+    connect(_editor, SIGNAL(inFocus()), this, SLOT(inFocus()));
+    connect(_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(resourceDrop(QUrl)));
 
-    connect(files_list, SIGNAL(aboutToShow()), this, SLOT(buildFilesList()));
+    connect(_files_list, SIGNAL(aboutToShow()), this, SLOT(buildFilesList()));
 }
 
 TabsBlock::~TabsBlock() {
-    delete bar;
+    delete _bar;
 
-    qDeleteAll(external_files);
+    qDeleteAll(_external_files);
 }
 
 void TabsBlock::registerCursorPosOutput(QLabel * output) {
-    connect(editor, SIGNAL(cursorPosChanged(QString)), output, SLOT(setText(QString)));
+    connect(_editor, SIGNAL(cursorPosChanged(QString)), output, SLOT(setText(QString)));
 }
 
 bool TabsBlock::openFile(File * file, const bool & is_external) {
     QString file_uid = file -> uid();
 
-    if (tab_links.contains(file_uid)) {
-        int new_index = tab_links[file_uid];
-        currentTabChanged(new_index);
+    if (_tab_links.contains(file_uid)) {
+        QListWidgetItem * item = _tab_links[file_uid];
+        currentTabChanged(item);
 
         return true;
     } else {
@@ -99,17 +97,18 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
             return false;
         }
 
-        int index = bar -> addTab(file -> ico(), file -> name());
-        bar -> setTabData(index, QVariant::fromValue<void *>(file));
 
-        tab_links.insert(file_uid, index);
+        QListWidgetItem * item = _bar -> addTab(file -> ico(), file -> name());
+        item -> setData(Qt::UserRole, QVariant::fromValue<void *>(file));
+
+        _tab_links.insert(file_uid, item);
 
         if (is_external) {
-            external_files.insert(file_uid, file);
-            bar -> setTabTextColor(index, QColor::fromRgb(0,0,255));
+            _external_files.insert(file_uid, file);
+            item -> setBackgroundColor(QColor(255, 0, 0, 16));
         }
 
-        bar -> setCurrentIndex(index);
+        _bar -> setCurrentItem(item);
 
         if (isHidden())
             show();
@@ -121,12 +120,12 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
 bool TabsBlock::openFileInEditor(File * file) {
     switch(file -> baseFormatType()) {
         case ft_text: {
-            editor -> openDocument(file);
+            _editor -> openDocument(file);
 
             QStringList wordList;
             wordList << "alpha" << "omega" << "omicron" << "zeta";
             QCompleter * completer = new QCompleter(wordList, this);
-            editor -> setCompleter(completer);
+            _editor -> setCompleter(completer);
         break;}
         case ft_image: //{ emit parent() -> imageAdded(url); break;}
         case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
@@ -139,128 +138,102 @@ bool TabsBlock::openFileInEditor(File * file) {
     return true;
 }
 
-void TabsBlock::rebuildIndexes(const int & rindex) {
-    QMutableHashIterator<QString, int> i(tab_links);
+File * TabsBlock::tabFile(QListWidgetItem * tab) {
+    QVariant tab_data = tab -> data(Qt::UserRole);
 
-    while (i.hasNext()) {
-        i.next();
-
-        if (i.value() == rindex)
-            i.remove();
-        else {
-            if (i.value() > rindex)
-                --i.value();
-        }
+    if (!tab_data.isNull()) {
+        return (File *)tab_data.value<void *>();
     }
+
+    return 0;
 }
 
 void TabsBlock::buildFilesList() {
-    files_list -> clear();
+    _files_list -> clear();
 
-    int current_index = bar -> currentIndex();
+    QListWidgetItem * current_tab = _bar -> currentItem();
 
-    for(int i = 0; i < bar -> count(); i++) {
+    for(QHash<QString, QListWidgetItem *>::Iterator it = _tab_links.begin(); it != _tab_links.end(); it++) {
+        QListWidgetItem * tab = it.value();
+
         QAction * action =
-            files_list -> addAction(bar -> tabIcon(i), bar -> tabText(i), this, SLOT(fileListClicked()));
+            _files_list -> addAction(tab -> icon(), tab -> text(), this, SLOT(fileListClicked()));
 
-        action -> setDisabled(i == current_index);
-
-        action -> setProperty("id", i);
+        action -> setDisabled(current_tab == tab);
+        action -> setProperty("uid", it.key());
     }
 }
 
 void TabsBlock::fileListClicked() {
     QObject * obj = sender();
 
-    int index = obj -> property("id").toInt();
+    QListWidgetItem * tab = _tab_links[obj -> property("uid").toString()];
 
-    currentTabChanged(index);
+    currentTabChanged(tab);
 }
 
 void TabsBlock::tabsLayoutChanged() {
-    list_btn -> setText(QString::number(bar -> count()));
+    _list_btn -> setText(QString::number(_bar -> count()));
 }
 
-void TabsBlock::currentTabChanged(const int & index) {
-    QVariant tab_data = bar -> tabData(index);
+void TabsBlock::currentTabIndexChanged(const int & index) {
+    currentTabChanged(_bar -> item(index));
+}
 
-    if (!tab_data.isNull()) {
-        File * file = (File *)tab_data.value<void *>();
+void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
+    File * file = tabFile(tab);
 
-        if (!openFileInEditor(file)) {
-            // notify user
-            return;
-        }
-    } else {
+    if (!file || (file && !openFileInEditor(file))) {
         // notify user
         return;
     }
 
-    bar -> setCurrentIndex(index);
+    _bar -> setCurrentItem(tab);
 }
 
-void TabsBlock::tabRemoved(const int & index) {
-    rebuildIndexes(index);
+void TabsBlock::tabRemoved(QListWidgetItem * tab) {
+    File * file = tabFile(tab);
 
-    bar -> removeTab(index);
+    if (file) {
+        QString file_uid = file -> uid();
+        if (_external_files.contains(file_uid)) {
+            delete _external_files.take(file_uid);
+        }
+    }
 
-    if (bar -> count() == 0) {
+    _bar -> removeTab(tab);
+
+    if (_bar -> count() == 0) {
         emit moveToBlankState(this);
         hide();
     }
-}
-
-void TabsBlock::tabMoved(const int & from, const int & to) {
-//    int direction = from > to ? -1 : 1;
-
-//    qDebug() << "MOVE" << from << to;
-
-//    QMutableHashIterator<QString, int> i(tab_links);
-
-//    while (i.hasNext()) {
-//        i.next();
-
-//        int pos = i.value();
-
-//        qDebug() << "!!!" << pos << from << to;
-
-//        if (direction < 0) {
-//            if (pos > from && pos <= to)
-//                --i.value();
-//        } else {
-//            if (pos <= from && pos > to)
-//                ++i.value();
-//        }
-//    }
-
-
-    QVariant from_tab_data = bar -> tabData(from);
-    File * from_file = (File *)from_tab_data.value<void *>();
-
-    QVariant to_tab_data = bar -> tabData(to);
-    File * to_file = (File *)to_tab_data.value<void *>();
-
-    tab_links[from_file -> uid()] = from;
-    tab_links[to_file -> uid()] = to;
 }
 
 void TabsBlock::showTabsContextMenu(const QPoint & point) {
     if (point.isNull())
         return;
 
-    menu_target_index = bar -> tabAt(point);
+    QListWidgetItem * tab = _bar -> itemAt(point);
 
-    QMenu menu(this);
+    if (tab) {
+        QMenu menu(this);
 
-    if (menu_target_index >= 0) {
-        menu.addAction(tr("In separate editor"), this, SLOT(newTabsBlockRequest()));
-        menu.exec(bar -> mapToGlobal(point));
+        QAction * action = menu.addAction(tr("In separate editor"), this, SLOT(newTabsBlockRequest()));
+        File * file = tabFile(tab);
+        action -> setProperty("uid", file -> uid());
+
+        menu.exec(_bar -> mapToGlobal(point));
     }
 }
 
 void TabsBlock::newTabsBlockRequest() {
-    QVariant tab_data = bar -> tabData(menu_target_index);
-    File * file = (File *)tab_data.value<void *>();
+    QObject * obj = sender();
 
-    emit newTabsBlockRequested(file);
+    QListWidgetItem * tab = _tab_links[obj -> property("uid").toString()];
+
+    File * file = tabFile(tab);
+
+    if (file) {
+        emit newTabsBlockRequested(file);
+    }
 }
