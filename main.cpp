@@ -3,6 +3,8 @@
 
 //http://www.iconarchive.com/show/windows-8-icons-by-icons8.3.html
 
+//https://stackoverflow.com/questions/16286064/customizing-scrollbar-over-qlistwidget
+
 // TODO:
 // LOGING!
 // DEBUG!

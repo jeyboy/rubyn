@@ -21,6 +21,9 @@ class TabsBlock : public QWidget {
     TabBar * _bar;
 
     QToolButton * _list_btn;
+    QToolButton * _scroll_left_btn;
+    QToolButton * _scroll_right_btn;
+
     CodeEditor * _editor;
 
     QMenu * _files_list;

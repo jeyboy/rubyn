@@ -18,6 +18,10 @@ protected:
 //    void dropEvent(QDropEvent *event);
 signals:
     void layoutChanged();
+
+public slots:
+    void scrollForward();
+    void scrollBackward();
 };
 
 #endif // TABBAR_H

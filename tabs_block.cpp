@@ -30,6 +30,17 @@ void TabsBlock::setupLayout() {
 
     row_layout -> addWidget(_bar, 1);
 
+
+    _scroll_left_btn = new QToolButton(this);
+    _scroll_left_btn -> setText(QLatin1Literal("<"));
+    row_layout -> addWidget(_scroll_left_btn, 0);
+
+
+    _scroll_right_btn = new QToolButton(this);
+    _scroll_right_btn -> setText(QLatin1Literal(">"));
+    row_layout -> addWidget(_scroll_right_btn, 0);
+
+
     _files_list = new QMenu(QLatin1Literal("Files"), this);
 
     _list_btn = new QToolButton(this);
@@ -38,9 +49,9 @@ void TabsBlock::setupLayout() {
     _list_btn -> setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     _list_btn -> setPopupMode(QToolButton::InstantPopup);
     _list_btn -> setMenu(_files_list);
-    _list_btn -> setMenu(_files_list);
 
     row_layout -> addWidget(_list_btn, 0);
+
 
     col_layout -> addWidget(row, 0);
 
@@ -55,7 +66,7 @@ void TabsBlock::setupLayout() {
     col_layout -> addWidget(_editor, 1);
 }
 
-TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(0), _list_btn(0), _files_list(0) {
+TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(0), _list_btn(0), _scroll_left_btn(0), _scroll_right_btn(0), _files_list(0) {
 //    setStyleSheet("QWidget:focus {background-color: #FFFFCC;}");
 
     setupLayout();
@@ -64,6 +75,9 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(0), _list_btn(0),
 //    connect(bar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabRemoved(int)));
     connect(_bar, SIGNAL(layoutChanged()), this, SLOT(tabsLayoutChanged()));
     connect(_bar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showTabsContextMenu(const QPoint &)));
+
+    connect(_scroll_left_btn, SIGNAL(clicked()), _bar, SLOT(scrollBackward()));
+    connect(_scroll_right_btn, SIGNAL(clicked()), _bar, SLOT(scrollForward()));
 
     connect(_editor, SIGNAL(inFocus()), this, SLOT(inFocus()));
     connect(_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(resourceDrop(QUrl)));
