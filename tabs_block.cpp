@@ -25,7 +25,7 @@ void TabsBlock::setupLayout() {
 
     _bar = new TabBar(this);
 //    bar -> setTabsClosable(true);
-//    bar -> setMovable(true);
+    _bar -> setMovement(QListView::Free);
     _bar -> setContextMenuPolicy(Qt::CustomContextMenu);
 
     row_layout -> addWidget(_bar, 1);
@@ -113,7 +113,7 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
 
 
         QListWidgetItem * item = _bar -> addTab(file -> ico(), file -> name());
-        item -> setData(Qt::UserRole, QVariant::fromValue<void *>(file));
+        item -> setData(Qt::UserRole, QVariant::fromValue(reinterpret_cast<quintptr>(file)));
 
         _tab_links.insert(file_uid, item);
 
@@ -156,7 +156,7 @@ File * TabsBlock::tabFile(QListWidgetItem * tab) {
     QVariant tab_data = tab -> data(Qt::UserRole);
 
     if (!tab_data.isNull()) {
-        return (File *)tab_data.value<void *>();
+        return reinterpret_cast<File *>(tab_data.value<quintptr>());
     }
 
     return 0;

@@ -3,7 +3,7 @@
 #include <qscrollbar.h>
 
 TabBar::TabBar(QWidget * parent) : QListWidget(parent) {
-    setMaximumHeight(50);
+    setMaximumHeight(30);
     setSelectionMode(QAbstractItemView::SingleSelection);
     setFlow(QListView::LeftToRight);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
