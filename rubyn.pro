@@ -21,21 +21,22 @@ SOURCES += main.cpp\
     project/file.cpp \
     project/project.cpp \
     project/projects.cpp \
-    project_tree.cpp \
-    dock_widget.cpp \
-    dock_widgets.cpp \
+    controls/project_tree.cpp \
+    controls/dock_widget.cpp \
+    controls/dock_widgets.cpp \
     project/code_formats.cpp \
-    logger.cpp \
+    controls/logger.cpp \
     project/ifolder.cpp \
     project/recursive_folder.cpp \
     lexer/ilexer.cpp \
     lexer/regexp_lexer.cpp \
     lexer/ab_lexer.cpp \
-    tabs_block.cpp \
-    tab_bar.cpp
+    controls/tabs_block.cpp \
+    controls/tab_bar.cpp \
+    controls/tab_bar_item_delegate.cpp
 
 HEADERS  += ide_window.h \
-    dock_widgets.h \
+    controls/dock_widgets.h \
     editor/idocument.h \
     editor/document_types/binary_document.h \
     editor/document_types/documents_types.h \
@@ -69,17 +70,18 @@ HEADERS  += ide_window.h \
     project/projects.h \
     project/project_format.h \
     project/code_formats.h \
-    project_tree.h \
-    dock_widget.h \
-    logger.h \
+    controls/project_tree.h \
+    controls/dock_widget.h \
+    controls/logger.h \
     project/ifolder.h \
     project/recursive_folder.h \
     lexer/ilexer.h \
     lexer/regexp_lexer.h \
     lexer/ab_lexer.h \
     highlighter/highlight_rule.h \
-    tabs_block.h \
-    tab_bar.h
+    controls/tabs_block.h \
+    controls/tab_bar.h \
+    controls/tab_bar_item_delegate.h
 
 FORMS    += ide_window.ui
 

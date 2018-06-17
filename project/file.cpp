@@ -4,7 +4,7 @@
 #include <qstringbuilder.h>
 #include "editor/document_types/documents_types.h"
 
-#include "logger.h"
+#include "controls/logger.h"
 
 bool File::userAskFileType() {
     //TODO: ask user about file type

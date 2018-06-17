@@ -6,11 +6,11 @@
 #include "project/file.h"
 #include "project/ifolder.h"
 
-#include "dock_widgets.h"
-#include "dock_widget.h"
-#include "project_tree.h"
-#include "tabs_block.h"
-#include "logger.h"
+#include "controls/dock_widgets.h"
+#include "controls/dock_widget.h"
+#include "controls/project_tree.h"
+#include "controls/tabs_block.h"
+#include "controls/logger.h"
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>

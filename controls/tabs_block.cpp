@@ -72,7 +72,7 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(0), _list_btn(0),
     setupLayout();
 
     connect(_bar, SIGNAL(currentRowChanged(int)), this, SLOT(currentTabIndexChanged(int)));
-//    connect(bar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabRemoved(int)));
+    connect(_bar, SIGNAL(tabCloseRequested(QListWidgetItem*)), this, SLOT(tabRemoved(QListWidgetItem*)));
     connect(_bar, SIGNAL(layoutChanged()), this, SLOT(tabsLayoutChanged()));
     connect(_bar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showTabsContextMenu(const QPoint &)));
 
@@ -195,6 +195,8 @@ void TabsBlock::currentTabIndexChanged(const int & index) {
 }
 
 void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
+    if (!tab) return;
+
     File * file = tabFile(tab);
 
     if (!file || (file && !openFileInEditor(file))) {

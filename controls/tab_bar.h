@@ -12,10 +12,14 @@ public:
     QListWidgetItem * addTab(const QIcon & ico, const QString & text);
     void removeTab(QListWidgetItem *);
 protected:
+    Qt::DropActions supportedDropActions() const;
     QMimeData * mimeData(const QList<QListWidgetItem *> items) const;
     bool dropMimeData(int index, const QMimeData * data, Qt::DropAction action);
 signals:
     void layoutChanged();
+    void tabCloseRequested(QListWidgetItem*);
+protected slots:
+    void itemCloseRequested(const QModelIndex &);
 
 public slots:
     void scrollForward();
