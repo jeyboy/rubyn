@@ -33,11 +33,13 @@ void TabsBlock::setupLayout() {
 
     _scroll_left_btn = new QToolButton(this);
     _scroll_left_btn -> setText(QLatin1Literal("<"));
+    _scroll_left_btn -> hide();
     row_layout -> addWidget(_scroll_left_btn, 0);
 
 
     _scroll_right_btn = new QToolButton(this);
     _scroll_right_btn -> setText(QLatin1Literal(">"));
+    _scroll_right_btn -> hide();
     row_layout -> addWidget(_scroll_right_btn, 0);
 
 
@@ -75,6 +77,7 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(0), _list_btn(0),
     connect(_bar, SIGNAL(tabCloseRequested(QListWidgetItem*)), this, SLOT(tabRemoved(QListWidgetItem*)));
     connect(_bar, SIGNAL(itemsCountChanged(int)), this, SLOT(tabsCountChanged(int)));
     connect(_bar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showTabsContextMenu(const QPoint &)));
+    connect(_bar, SIGNAL(scrollsRequired(bool)), this, SLOT(scrollsVisiabilityChange(bool)));
 
     connect(_scroll_left_btn, SIGNAL(clicked()), _bar, SLOT(scrollBackward()));
     connect(_scroll_right_btn, SIGNAL(clicked()), _bar, SLOT(scrollForward()));
@@ -186,9 +189,12 @@ void TabsBlock::fileListClicked() {
     currentTabChanged(tab);
 }
 
-void TabsBlock::tabsCountChanged(const int & correction) {
-    qDebug() << "tabsCountChanged" << correction << _bar -> count();
+void TabsBlock::scrollsVisiabilityChange(const bool & show) {
+    _scroll_left_btn -> setVisible(show);
+    _scroll_right_btn -> setVisible(show);
+}
 
+void TabsBlock::tabsCountChanged(const int & correction) {
     _list_btn -> setText(QString::number(_bar -> count() + correction));
 }
 

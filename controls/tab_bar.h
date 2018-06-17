@@ -18,13 +18,13 @@ protected:
 
     void rowsInserted(const QModelIndex & parent, int start, int end);
     void rowsAboutToBeRemoved(const QModelIndex & parent, int start, int end);
-    QSize viewportSizeHint() const;
+    void updateGeometries();
 signals:
+    void scrollsRequired(const bool & show);
     void itemsCountChanged(const int & correction = 0);
     void tabCloseRequested(QListWidgetItem*);
 protected slots:
     void itemCloseRequested(const QModelIndex &);
-
 public slots:
     void scrollForward();
     void scrollBackward();

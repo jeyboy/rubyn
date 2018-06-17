@@ -56,8 +56,10 @@ void TabBar::rowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
     emit itemsCountChanged(start - (end + 1));
 }
 
-QSize TabBar::viewportSizeHint() const {
-    return QListWidget::viewportSizeHint();
+void TabBar::updateGeometries() {
+    QListWidget::updateGeometries();
+
+    emit scrollsRequired(horizontalScrollBar() -> maximum() > 0);
 }
 
 void TabBar::itemCloseRequested(const QModelIndex & index) {

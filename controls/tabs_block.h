@@ -55,6 +55,7 @@ protected slots:
     void buildFilesList();
     void fileListClicked();
 
+    void scrollsVisiabilityChange(const bool & show);
     void tabsCountChanged(const int & correction);
     void currentTabIndexChanged(const int & index);
     void currentTabChanged(QListWidgetItem * tab);
