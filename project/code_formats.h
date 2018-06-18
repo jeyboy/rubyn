@@ -18,7 +18,9 @@ enum FormatType : quint32 {
 
     // ...
 
-    ft_system = (1 << 26),
+    ft_broken = (1 << 24),
+    ft_system = (1 << 25),
+    ft_datum = (1 << 26),
     ft_folder = (1 << 27),
     ft_image = (1 << 28),
     ft_text = (1 << 29),
@@ -55,6 +57,7 @@ enum FormatType : quint32 {
     //        ft_vb,
 
 
+    ft_file_datum =         95 | ft_datum | ft_system | ft_level_one,
     ft_file_bin =           95 | ft_binary | ft_level_one,
     ft_file_text =          96 | ft_text | ft_level_four,
     ft_file_ico =           97 | ft_image | ft_level_one,

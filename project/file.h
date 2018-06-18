@@ -61,7 +61,12 @@ public:
     FormatType icoType() { return _main_format; }
     QIcon ico() {
         if (_main_format == ft_file_ico) {
-            return QIcon(_path);
+            QIcon ico(_path);
+
+            if (ico.isNull() || ico.availableSizes().isEmpty())
+                return Projects::obj().getIco(ft_broken);
+            else
+                return ico;
         }
         else return Projects::obj().getIco(icoType());
     }

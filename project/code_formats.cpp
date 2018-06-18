@@ -9,6 +9,11 @@ QHash<QString, FormatType> CodeFormats::_formats = {
     { QLatin1Literal("rich"),   ft_file_text },
 
 
+    { QLatin1Literal("xls"),   ft_file_datum },
+    { QLatin1Literal("csv"),   ft_file_datum },
+    { QLatin1Literal("xlsx"),  ft_file_datum },
+
+
     { QLatin1Literal("ico"),    ft_file_ico },
 
 
@@ -65,6 +70,7 @@ QString CodeFormats::formatIcoPath(const FormatType & ft) {
 
     switch(ft) {
         case ft_folder: return res %  QLatin1Literal("folder");
+        case ft_broken: return res %  QLatin1Literal("file_broken");
 
         case ft_file_image: return res %  QLatin1Literal("file_img");
         case ft_file_text: return res %  QLatin1Literal("file_txt");
@@ -92,6 +98,8 @@ QString CodeFormats::formatIcoPath(const FormatType & ft) {
         case ft_file_gemfile: return res %  QLatin1Literal("file_gemfile");
         case ft_file_font: return res %  QLatin1Literal("file_font");
         case ft_file_log: return res %  QLatin1Literal("file_log");
+        case ft_file_datum: return res %  QLatin1Literal("file_datum");
+
 
         case ft_folder_db: return res %  QLatin1Literal("folder_db");
         case ft_folder_public: return res %  QLatin1Literal("folder_public");

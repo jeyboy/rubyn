@@ -8,7 +8,9 @@
 #include <qdebug.h>
 
 TabBar::TabBar(QWidget * parent) : QListWidget(parent), _internal_move(false), _tabs_linkages(0) {
-    setMaximumHeight(26);
+    setMaximumHeight(30);
+    setIconSize(QSize(22, 22));
+
     setSelectionMode(QAbstractItemView::SingleSelection);
     setFlow(QListView::LeftToRight);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
