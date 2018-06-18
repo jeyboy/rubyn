@@ -20,6 +20,8 @@ TabBar::TabBar(QWidget * parent) : QListWidget(parent), _internal_move(false) {
     TabBarItemDelegate * item_delegate = new TabBarItemDelegate(this);
     setItemDelegate(item_delegate);
     connect(item_delegate, SIGNAL(closeTabRequested(QModelIndex)), this , SLOT(itemCloseRequested(QModelIndex)));
+
+    connect(horizontalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(scrollUpdated(int,int)));
 }
 
 QListWidgetItem * TabBar::addTab(const QIcon & ico, const QString & text) {
@@ -107,12 +109,6 @@ void TabBar::rowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
     emit itemsCountChanged(start - (end + 1));
 }
 
-void TabBar::updateGeometries() {
-    QListWidget::updateGeometries();
-
-    emit scrollsRequired(horizontalScrollBar() -> maximum() > 0);
-}
-
 void TabBar::itemCloseRequested(const QModelIndex & index) {
     QListWidgetItem * item = itemFromIndex(index);
 
@@ -120,10 +116,14 @@ void TabBar::itemCloseRequested(const QModelIndex & index) {
         emit tabCloseRequested(item);
 }
 
+void TabBar::scrollUpdated(int /*min*/, int max) {
+    emit scrollsRequired(max > 0);
+}
+
 void TabBar::scrollForward() {
-    horizontalScrollBar() -> triggerAction(QAbstractSlider::SliderPageStepAdd);
+    horizontalScrollBar() -> triggerAction(QAbstractSlider::SliderSingleStepAdd);
 }
 void TabBar::scrollBackward() {
-    horizontalScrollBar() -> triggerAction(QAbstractSlider::SliderPageStepSub);
+    horizontalScrollBar() -> triggerAction(QAbstractSlider::SliderSingleStepSub);
 }
 
