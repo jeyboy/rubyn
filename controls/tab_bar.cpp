@@ -7,7 +7,7 @@
 #include <qmimedata.h>
 #include <qdebug.h>
 
-TabBar::TabBar(QWidget * parent) : QListWidget(parent), _internal_move(false) {
+TabBar::TabBar(QWidget * parent) : QListWidget(parent), hscroll_range(-1), _internal_move(false) {
     setMaximumHeight(30);
     setIconSize(QSize(22, 22));
 
@@ -117,7 +117,10 @@ void TabBar::itemCloseRequested(const QModelIndex & index) {
 }
 
 void TabBar::scrollUpdated(int /*min*/, int max) {
-    emit scrollsRequired(max > 0);
+    if (hscroll_range == -1 || (hscroll_range == 0 && max > 0) || (hscroll_range > 0 && max == 0))
+        emit scrollsRequired(max > 0);
+
+    hscroll_range = max;
 }
 
 void TabBar::scrollForward() {

@@ -181,14 +181,14 @@ void TabsBlock::fileListClicked() {
 }
 
 void TabsBlock::scrollsVisiabilityChange(const bool & show) {
-    qDebug() << "scrollsVisiabilityChange" << show;
-
     _scroll_left_btn -> setVisible(show);
     _scroll_right_btn -> setVisible(show);
 
     // Monkeypatch - toolbuttons not drawn after maximize and return to normal view
-    layout() -> update();
-//    resize(size() + QSize(1, 0));
+    if (show) {
+        resize(size() + QSize(1, 0));
+        _bar -> scrollToItem(_bar -> currentItem());
+    }
     ///////////////////////
 }
 
