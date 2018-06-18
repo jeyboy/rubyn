@@ -30,7 +30,6 @@ class TabsBlock : public QWidget {
 
     QMenu * _files_list;
 
-    QHash<QString, QListWidgetItem *> _tab_links;
     QHash<QString, File *> _external_files;
 
     void setupLayout();

@@ -7,7 +7,7 @@
 #include <qmimedata.h>
 #include <qdebug.h>
 
-TabBar::TabBar(QWidget * parent) : QListWidget(parent), _internal_move(false), _tabs_linkages(0) {
+TabBar::TabBar(QWidget * parent) : QListWidget(parent), _internal_move(false) {
     setMaximumHeight(30);
     setIconSize(QSize(22, 22));
 
@@ -47,18 +47,20 @@ Qt::DropActions TabBar::supportedDropActions() const {
 }
 
 void TabBar::dropEvent(QDropEvent * event) {
+    TabBar * copy_parent = this;
     QListWidgetItem * copy_source = 0;
     QListWidgetItem * target_item = 0;
 
     if ((_internal_move = event -> source() == this)) {
         copy_source = currentItem();
     } else {
-        copy_source = reinterpret_cast<TabBar *>(event -> source()) -> currentItem();
+        copy_parent = reinterpret_cast<TabBar *>(event -> source());
+        copy_source = copy_parent -> currentItem();
 
         File * file = tabFile(copy_source);
 
-        if (file && _tabs_linkages -> contains(file -> uid())) {
-            target_item = _tabs_linkages -> operator [](file -> uid());
+        if (file && _tabs_linkages.contains(file -> uid())) {
+            target_item = _tabs_linkages[file -> uid()];
         }
     }
 
@@ -69,9 +71,12 @@ void TabBar::dropEvent(QDropEvent * event) {
         QListWidget::dropEvent(event);
     }
 
-    _internal_move = false;
+    if (_internal_move)
+        delete copy_source;
+    else
+        emit copy_parent -> tabCloseRequested(copy_source);
 
-    delete copy_source;
+    _internal_move = false;
 }
 
 //QMimeData * TabBar::mimeData(const QList<QListWidgetItem *> items) const {

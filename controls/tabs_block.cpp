@@ -27,7 +27,6 @@ void TabsBlock::setupLayout() {
 //    bar -> setTabsClosable(true);
     _bar -> setMovement(QListView::Free);
     _bar -> setContextMenuPolicy(Qt::CustomContextMenu);
-    _bar -> setTabsLinkages(&_tab_links);
 
     row_layout -> addWidget(_bar, 1);
 
@@ -102,8 +101,8 @@ void TabsBlock::registerCursorPosOutput(QLabel * output) {
 bool TabsBlock::openFile(File * file, const bool & is_external) {
     QString file_uid = file -> uid();
 
-    if (_tab_links.contains(file_uid)) {
-        QListWidgetItem * item = _tab_links[file_uid];
+    if (_bar -> _tabs_linkages.contains(file_uid)) {
+        QListWidgetItem * item = _bar -> _tabs_linkages[file_uid];
         currentTabChanged(item);
 
         return true;
@@ -119,7 +118,7 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
         QListWidgetItem * item = _bar -> addTab(file -> ico(), file -> name());
         item -> setData(Qt::UserRole, QVariant::fromValue(reinterpret_cast<quintptr>(file)));
 
-        _tab_links.insert(file_uid, item);
+        _bar -> _tabs_linkages.insert(file_uid, item);
 
         if (is_external) {
             _external_files.insert(file_uid, file);
@@ -161,7 +160,9 @@ void TabsBlock::buildFilesList() {
 
     QListWidgetItem * current_tab = _bar -> currentItem();
 
-    for(QHash<QString, QListWidgetItem *>::Iterator it = _tab_links.begin(); it != _tab_links.end(); it++) {
+    QHash<QString, QListWidgetItem *> & tabs_links = _bar -> _tabs_linkages;
+
+    for(QHash<QString, QListWidgetItem *>::Iterator it = tabs_links.begin(); it != tabs_links.end(); it++) {
         QListWidgetItem * tab = it.value();
 
         QAction * action =
@@ -175,7 +176,7 @@ void TabsBlock::buildFilesList() {
 void TabsBlock::fileListClicked() {
     QObject * obj = sender();
 
-    QListWidgetItem * tab = _tab_links[obj -> property("uid").toString()];
+    QListWidgetItem * tab = _bar -> _tabs_linkages[obj -> property("uid").toString()];
 
     currentTabChanged(tab);
 }
@@ -222,7 +223,7 @@ void TabsBlock::tabRemoved(QListWidgetItem * tab) {
             delete _external_files.take(file_uid);
         }
 
-        _tab_links.remove(file_uid);
+        _bar -> _tabs_linkages.remove(file_uid);
     }
 
     _bar -> removeTab(tab);
@@ -248,7 +249,7 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
 void TabsBlock::newTabsBlockRequest() {
     QObject * obj = sender();
 
-    QListWidgetItem * tab = _tab_links[obj -> property("uid").toString()];
+    QListWidgetItem * tab = _bar -> _tabs_linkages[obj -> property("uid").toString()];
 
     File * file = _bar -> tabFile(tab);
 
