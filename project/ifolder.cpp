@@ -3,17 +3,19 @@
 #include "file.h"
 #include <qdir.h>
 
-FormatType IFolder::icoType(const QString & name) {
-    if (name == QLatin1Literal("tmp")) {
-        return FormatType::ft_folder_temp;
-    } else if (name == QLatin1Literal("test") || name == QLatin1Literal("spec")) {
-        return FormatType::ft_folder_test;
-    } else if (name == QLatin1Literal("log")) {
-        return FormatType::ft_folder_log;
-    } else if (name == QLatin1Literal("public")) {
-        return FormatType::ft_folder_public;
-    } else if (name == QLatin1Literal("db")) {
-        return FormatType::ft_folder_db;
+FormatType IFolder::icoType(const QString & name, const uint & level) {
+    if (level == 1) {
+        if (name == QLatin1Literal("tmp")) {
+            return FormatType::ft_folder_temp;
+        } else if (name == QLatin1Literal("test") || name == QLatin1Literal("spec")) {
+            return FormatType::ft_folder_test;
+        } else if (name == QLatin1Literal("log")) {
+            return FormatType::ft_folder_log;
+        } else if (name == QLatin1Literal("public")) {
+            return FormatType::ft_folder_public;
+        } else if (name == QLatin1Literal("db")) {
+            return FormatType::ft_folder_db;
+        }
     }
 
     return FormatType::ft_folder;

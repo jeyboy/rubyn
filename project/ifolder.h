@@ -25,7 +25,7 @@ protected:
     FileList _files;
     FolderList _folders;
 
-    FormatType icoType(const QString & name);
+    FormatType icoType(const QString & name, const uint & level = 0);
     QColor * identifyColor(const FormatType & ico_type);
 public:
     IFolder(const QString & path, const bool & create = true);
