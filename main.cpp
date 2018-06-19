@@ -9,6 +9,12 @@
 //http://www.iconarchive.com/show/windows-8-icons-by-icons8.3.html
 
 //https://stackoverflow.com/questions/16286064/customizing-scrollbar-over-qlistwidget
+//http://www.qtcentre.org/threads/7134-QTreeWidget-Weights-Sorting
+
+
+// QTextEdit: Как заполучить «универсальное» событие вставки символа?
+//https://www.linux.org.ru/forum/development/12255845
+
 
 // get ruby version
 // ruby --version
