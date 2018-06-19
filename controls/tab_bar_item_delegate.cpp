@@ -4,22 +4,30 @@
 #include <qapplication.h>
 
 TabBarItemDelegate::TabBarItemDelegate(QObject * parent) : QStyledItemDelegate(parent) {
-    _close_btn_width = QApplication::style() -> pixelMetric(QStyle::PM_TabCloseIndicatorWidth, 0);
-    _close_btn_height = QApplication::style() -> pixelMetric(QStyle::PM_TabCloseIndicatorHeight, 0);
-    _close_btn_double_padd = (_close_btn_padd = 10) * 2;
+    uint _close_btn_width = QApplication::style() -> pixelMetric(QStyle::PM_TabCloseIndicatorWidth, 0);
+    uint _close_btn_height = QApplication::style() -> pixelMetric(QStyle::PM_TabCloseIndicatorHeight, 0);
+    uint _close_btn_padd = 10;
+
+    QSize parent_size = reinterpret_cast<QWidget *>(parent) -> size();
+
+    uint top = parent_size.height() / 2 - _close_btn_height / 2 - 2;
+
+    close_btn_rect = QRect(_close_btn_padd, top, _close_btn_width, _close_btn_height);
+
+    _close_btn_area_width = _close_btn_padd * 2 + close_btn_rect.width();
 }
 
 QSize TabBarItemDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const {
     QSize size = QStyledItemDelegate::sizeHint(option, index);
 
-    return size + QSize(_close_btn_width + _close_btn_double_padd, 0);
+    return size + QSize(_close_btn_area_width, 0);
 }
 
 void TabBarItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const {
     QStyledItemDelegate::paint(painter, option, index);
 
     QStyleOption opt;
-    opt.rect = QRect(option.rect.topRight() - QPoint(_close_btn_width + _close_btn_double_padd, 0), option.rect.bottomRight());
+    opt.rect = close_btn_rect.translated(option.rect.topRight() - QPoint(_close_btn_area_width, 0));
 
     opt.state = option.state;
     opt.state |= QStyle::State_AutoRaise;
@@ -42,14 +50,9 @@ bool TabBarItemDelegate::editorEvent(QEvent * event, QAbstractItemModel * model,
             QMouseEvent * e = reinterpret_cast<QMouseEvent *>(event);
 
             if (e) {
-                QRect btn_area(option.rect.topRight() - QPoint(_close_btn_width + _close_btn_double_padd, 0), option.rect.bottomRight());
+                QRect btn_rect = close_btn_rect.translated(option.rect.topRight() - QPoint(_close_btn_area_width, 0));
 
-                QRectF btn_rect(
-                    btn_area.center() - QPoint(_close_btn_width / 2, _close_btn_height / 2 - 1),
-                    QSize(_close_btn_width - 1, _close_btn_height - 1)
-                );
-
-                if (btn_rect.contains(e -> localPos())) {
+                if (btn_rect.contains(e -> pos())) {
                     emit closeTabRequested(index);
                     return true;
                 }

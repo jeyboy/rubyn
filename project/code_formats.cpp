@@ -34,7 +34,8 @@ QHash<QString, FormatType> CodeFormats::_formats = {
     { QLatin1Literal("woff2"),  ft_file_font },
 
 
-    { QLatin1Literal("rb"),     ft_file_rb },
+    { QLatin1Literal("rb"),     ft_file_rb }, // script will open up a console window
+    { QLatin1Literal("rbw"),    ft_file_rb }, // script will run, but with no console window
     { QLatin1Literal("sql"),    ft_file_sql },
     { QLatin1Literal("html"),   ft_file_html },
     { QLatin1Literal("css"),    ft_file_css },

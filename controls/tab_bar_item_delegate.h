@@ -9,10 +9,8 @@
 class TabBarItemDelegate  : public QStyledItemDelegate {
     Q_OBJECT
 
-    uint _close_btn_width;
-    uint _close_btn_height;
-    uint _close_btn_padd;
-    uint _close_btn_double_padd;
+    uint _close_btn_area_width;
+    QRect close_btn_rect;
 public:
     TabBarItemDelegate(QObject * parent);
 
