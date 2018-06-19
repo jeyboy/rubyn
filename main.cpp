@@ -1,6 +1,9 @@
 #include "ide_window.h"
 #include <QApplication>
 
+
+//https://github.com/hanami/hanami
+
 //docs
 //https://ruby-doc.org/downloads/
 //https://www.jstorimer.com/blogs/workingwithcode/7766081-5-reasons-you-should-use-ri-to-read-ruby-documentation
@@ -30,14 +33,40 @@
 // Kernel.global_variables
 
 
+//http://doc.qt.io/qt-5/qprocess.html
+//http://doc.qt.io/qt-5/qprocessenvironment.html#systemEnvironment
+
+
 
 // TODO:
 // LOGING!
 // DEBUG!
 // catch all errors from rails - send it po the socket port of app and putput list of errors for developer
+// build in converters:
+//      JS <-> coffee
+//      ERB <-> SLIM
+//      ERB <-> HAML
 
-int main(int argc, char *argv[])
-{
+
+
+//completer icons:
+// - add template: green round - inside right arrow // t
+//      example: "def method_name; end" and etc...
+
+// - local variable: var // #
+// - instance variable: @var // @
+// - class variable: @@var // @@
+// - global variable: #var // $
+
+// - module constant // (C)
+// - module 'member' method // (member)
+// - module 'self' method // (self)
+// - class constant // <C>
+// - class instance method // <instance>
+// - class self method // <self>
+
+
+int main(int argc, char * argv[]) {
     QApplication a(argc, argv);
     IDEWindow w;
     w.show();
