@@ -5,6 +5,8 @@
         <file alias="folding_open">icons/folding_opened.png</file>
         <file alias="folding_open_hover">icons/folding_opened_hover.png</file>
         <file alias="list">icons/list.png</file>
+        <file alias="row_left">icons/row_left.png</file>
+        <file alias="row_right">icons/row_right.png</file>
     </qresource>
     <qresource prefix="/doc_types">
         <file alias="folder">icons/folder.png</file>

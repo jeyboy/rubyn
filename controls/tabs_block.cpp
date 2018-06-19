@@ -31,13 +31,15 @@ void TabsBlock::setupLayout() {
 
 
     _scroll_left_btn = new QToolButton(this);
-    _scroll_left_btn -> setText(QLatin1Literal("<"));
+    _scroll_left_btn -> setIcon(QIcon(":/row_left"));
+    _scroll_left_btn -> setFixedHeight(_bar -> height());
     _scroll_left_btn -> hide();
     row_layout -> addWidget(_scroll_left_btn, 0);
 
 
     _scroll_right_btn = new QToolButton(this);
-    _scroll_right_btn -> setText(QLatin1Literal(">"));
+    _scroll_right_btn -> setIcon(QIcon(":/row_right"));
+    _scroll_right_btn -> setFixedHeight(_bar -> height());
     _scroll_right_btn -> hide();
     row_layout -> addWidget(_scroll_right_btn, 0);
 
@@ -47,6 +49,7 @@ void TabsBlock::setupLayout() {
     _list_btn = new QToolButton(this);
     _list_btn -> setText(QLatin1Literal("0"));
     _list_btn -> setIcon(QIcon(QLatin1Literal(":/list")));
+    _list_btn -> setFixedHeight(_bar -> height());
     _list_btn -> setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     _list_btn -> setPopupMode(QToolButton::InstantPopup);
     _list_btn -> setMenu(_files_list);
@@ -121,7 +124,7 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
 
         if (is_external) {
             _external_files.insert(file_uid, file);
-            item -> setBackgroundColor(QColor(255, 0, 0, 16));
+            item -> setBackgroundColor(QColor(255, 0, 0, 128));
         }
 
         _bar -> setCurrentItem(item);
