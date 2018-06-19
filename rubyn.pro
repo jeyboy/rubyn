@@ -81,7 +81,8 @@ HEADERS  += ide_window.h \
     highlighter/highlight_rule.h \
     controls/tabs_block.h \
     controls/tab_bar.h \
-    controls/tab_bar_item_delegate.h
+    controls/tab_bar_item_delegate.h \
+    controls/tab_bar_no_focus_style.h
 
 FORMS    += ide_window.ui
 

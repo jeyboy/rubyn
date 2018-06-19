@@ -8,6 +8,62 @@
 #include <qdebug.h>
 
 TabBar::TabBar(QWidget * parent) : QListWidget(parent), hscroll_range(-1), _internal_move(false) {
+//    setStyleSheet(
+//        QLatin1Literal(
+//            "QListView {"
+//            "    show-decoration-selected: 1;" /* make the selection span the entire width of the view */
+//            "}"
+
+//            "QListView::item:alternate {"
+//            "    background: #EEEEEE;"
+//            "}"
+
+//            "QListView::item:selected:active {"
+//            "   color: #000;"
+//            "   background: rgba(141,188,222, .6);"
+//            "}"
+
+//            "QListView::item:selected:!active {"
+//            "   background: rgba(141,188,222, .3);"
+//            "}"
+//        )
+
+
+////                "QListView::item:selected:active {"
+////                "   color: #000000;"
+////                "   background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgba(126, 192, 238, .5), stop: 1 rgba(113,172,214, .5));"
+////                "}"
+
+////                "QListView::item:selected:!active {"
+////                "   background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgba(177,217,244, .8), stop: 1 rgba(192,224,246, .8));"
+////                "}"
+
+////                "QListView::item:selected:active {"
+////                "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #7ec0ee, stop: 1 #71acd6);"
+////                "}"
+
+////                "QListView::item:selected:!active {"
+////                "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #b1d9f4, stop: 1 #c0e0f6);"
+////                "}"
+
+////                "QListView::item {"
+////                "    border-right: 3px dotted #000000;"
+////                "    color: #000000;"
+////                "}"
+
+
+////                "QListView::item:selected {"
+////                "    border: 1px solid #6a6ea9;"
+////                "}"
+
+
+////                "QListView::item:hover {"
+////                "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FAFBFE, stop: 1 #DCDEF1);"
+////                "}"
+//    );
+
+//    setAlternatingRowColors(true);
+
     setMaximumHeight(30);
     setIconSize(QSize(22, 22));
 

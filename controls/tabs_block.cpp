@@ -4,6 +4,7 @@
 #include "logger.h"
 #include "editor/code_editor.h"
 #include "project/file.h"
+#include "tab_bar_no_focus_style.h"
 
 #include <qlabel.h>
 #include <qboxlayout.h>
@@ -24,6 +25,7 @@ void TabsBlock::setupLayout() {
     row_layout -> setSpacing(1);
 
     _bar = new TabBar(this);
+    _bar -> setStyle(new TabBarNoFocusStyle());
     _bar -> setMovement(QListView::Free);
     _bar -> setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -124,7 +126,7 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
 
         if (is_external) {
             _external_files.insert(file_uid, file);
-            item -> setBackgroundColor(QColor(255, 0, 0, 128));
+            item -> setBackgroundColor(QColor(255, 0, 0, 92));
         }
 
         _bar -> setCurrentItem(item);

@@ -3,6 +3,8 @@
 #include <qpainter.h>
 #include <qapplication.h>
 
+//TODO: fill all except icon zone - icon should output in white circle
+
 TabBarItemDelegate::TabBarItemDelegate(QObject * parent) : QStyledItemDelegate(parent) {
     uint _close_btn_width = QApplication::style() -> pixelMetric(QStyle::PM_TabCloseIndicatorWidth, 0);
     uint _close_btn_height = QApplication::style() -> pixelMetric(QStyle::PM_TabCloseIndicatorHeight, 0);
@@ -42,6 +44,8 @@ void TabBarItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & 
 //    qDebug() << "STATE:" << opt.state;
 
     QApplication::style() -> drawPrimitive(QStyle::PE_IndicatorTabClose, &opt, painter);
+
+    painter -> drawLine(option.rect.topRight(), option.rect.bottomRight());
 }
 
 bool TabBarItemDelegate::editorEvent(QEvent * event, QAbstractItemModel * model, const QStyleOptionViewItem & option, const QModelIndex & index) {
