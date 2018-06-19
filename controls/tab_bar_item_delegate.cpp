@@ -43,6 +43,17 @@ void TabBarItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & 
 
 //    qDebug() << "STATE:" << opt.state;
 
+//STATE: QFlags<QStyle::StateFlag>(State_Enabled|State_AutoRaise|State_Selected)
+//STATE: QFlags<QStyle::StateFlag>(State_Enabled|State_AutoRaise|State_MouseOver|State_Selected)
+//STATE: QFlags<QStyle::StateFlag>(State_Enabled|State_HasFocus|State_AutoRaise|State_MouseOver|State_Selected|State_Active)
+//STATE: QFlags<QStyle::StateFlag>(State_Enabled|State_HasFocus|State_AutoRaise|State_MouseOver|State_Selected|State_Active)
+//STATE: QFlags<QStyle::StateFlag>(State_Enabled|State_HasFocus|State_AutoRaise|State_Selected|State_Active)
+//STATE: QFlags<QStyle::StateFlag>(State_Enabled|State_AutoRaise|State_Selected)
+
+    if (option.state & QStyle::State_Selected) {
+        painter -> fillRect(QRect(option.rect.bottomLeft() - QPoint(0, 2), option.rect.bottomRight() + QPoint(0, 2)), QBrush(QColor::fromRgb(0,0,0, 192)));
+    }
+
     QApplication::style() -> drawPrimitive(QStyle::PE_IndicatorTabClose, &opt, painter);
 
     painter -> drawLine(option.rect.topRight(), option.rect.bottomRight());

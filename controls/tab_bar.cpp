@@ -10,24 +10,22 @@
 TabBar::TabBar(QWidget * parent) : QListWidget(parent), hscroll_range(-1), _internal_move(false) {
 //    setStyleSheet(
 //        QLatin1Literal(
-//            "QListView {"
-//            "    show-decoration-selected: 1;" /* make the selection span the entire width of the view */
-//            "}"
-
-//            "QListView::item:alternate {"
-//            "    background: #EEEEEE;"
-//            "}"
-
-//            "QListView::item:selected:active {"
-//            "   color: #000;"
-//            "   background: rgba(141,188,222, .6);"
-//            "}"
-
 //            "QListView::item:selected:!active {"
-//            "   background: rgba(141,188,222, .3);"
+//            "   background: qlineargradient(x1: 0, y1: 0.5, x2: 0, y2: 1, stop: 0 rgba(177,217,244, .4), stop: 1 rgba(192,224,246, .4));"
 //            "}"
 //        )
+//                "QListView::item:alternate {"
+//                "    background: #EEEEEE;"
+//                "}"
 
+//                "QListView::item:selected:active {"
+//                "   color: #000;"
+//                "   background: rgba(141,188,222, .6);"
+//                "}"
+
+//                "QListView::item:selected:!active {"
+//                "   background: rgba(141,188,222, .3);"
+//                "}"
 
 ////                "QListView::item:selected:active {"
 ////                "   color: #000000;"
