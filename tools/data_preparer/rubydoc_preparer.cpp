@@ -9,5 +9,5 @@ RubyDocPreparer::RubyDocPreparer() {
 bool RubyDocPreparer::prepare(const QString & version) {
     Web::Manager * manager = Web::Manager::prepare();
 
-    manager -> sendGet()
+//    manager -> sendGet()
 }

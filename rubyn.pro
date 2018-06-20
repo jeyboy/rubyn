@@ -43,7 +43,17 @@ SOURCES += main.cpp\
     tools/web_manager/web_proxy.cpp \
     tools/web_manager/web_request.cpp \
     tools/web_manager/web_response.cpp \
-    tools/data_preparer/rubydoc_preparer.cpp
+    tools/data_preparer/rubydoc_preparer.cpp \
+    tools/json/json.cpp \
+    tools/json/json_arr.cpp \
+    tools/json/json_obj.cpp \
+    tools/html/html_decoding.cpp \
+    tools/html/html_keys.cpp \
+    tools/html/html_page.cpp \
+    tools/html/html_selector.cpp \
+    tools/html/html_set.cpp \
+    tools/html/html_tag.cpp \
+    tools/html/unicode.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
