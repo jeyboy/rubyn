@@ -162,7 +162,9 @@ namespace Html {
         inline QByteArray src() const { return _attrs.value(attr_src); }
         QByteArray src(QByteArray * base_url) const;
         inline QByteArray link() const { return _attrs.value(attr_href); }
+        QByteArray link(QByteArray * base_url) const;
         inline QByteArray action() const { return _attrs.value(attr_action); }
+        QByteArray action(QByteArray * base_url) const;
 
         inline Set children() const { return _tags; }
 

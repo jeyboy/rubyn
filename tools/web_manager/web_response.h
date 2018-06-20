@@ -49,13 +49,13 @@ namespace Web {
 
         QUrlQuery toQuery(const bool & destroy = true);
         QByteArray toBytes(const bool & destroy = true);
-        QString toText(const bool &  destroy = true);
+        QString toText(const bool & destroy = true);
         Json toJson(const QString & wrap = QString(), const bool &  destroy = true);
-        Html::Page toHtml(const bool &  = true);
-        QImage toImage(const bool &  destroy = true);
-        QPixmap toPixmap(const bool &  destroy = true);
+        Html::Page toHtml(const bool & destroy = true);
+        QImage toImage(const bool & destroy = true);
+        QPixmap toPixmap(const bool & destroy = true);
         QUrl toUrl(const bool &  destroy = true);
-        QUrl toRedirectUrl(const bool &  destroy = true);
+        QUrl toRedirectUrl(const bool & destroy = true);
         QByteArray toHeader(const QByteArray & header_field, const bool &  destroy = true);
     protected:
         static QHash<QByteArray, ResponseType> response_predefined_types;

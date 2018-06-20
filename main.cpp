@@ -4,10 +4,6 @@
 
 //https://github.com/hanami/hanami
 
-//docs
-//https://ruby-doc.org/downloads/
-//https://www.jstorimer.com/blogs/workingwithcode/7766081-5-reasons-you-should-use-ri-to-read-ruby-documentation
-//http://api.rubyonrails.org/
 
 //http://www.iconarchive.com/show/windows-8-icons-by-icons8.3.html
 

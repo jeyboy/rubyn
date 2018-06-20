@@ -126,6 +126,14 @@ QByteArray Tag::src(QByteArray * base_url) const {
     QByteArray val = src();
     return Decoding::decodeUrl(val, base_url);
 }
+QByteArray Tag::link(QByteArray * base_url) const {
+    QByteArray val = link();
+    return Decoding::decodeUrl(val, base_url);
+}
+QByteArray Tag::action(QByteArray * base_url) const {
+    QByteArray val = action();
+    return Decoding::decodeUrl(val, base_url);
+}
 
 QByteArray Tag::value(const QByteArray & name) const {
     bool is_default_val = name == attr_default;
@@ -154,8 +162,12 @@ QByteArray Tag::texts() const {
     else {
         QByteArray result;
 
-        for(Set::ConstIterator tag = _tags.cbegin(); tag != _tags.cend(); tag++)
-            result += (*tag) -> texts();
+        for(Set::ConstIterator tag = _tags.cbegin(); tag != _tags.cend(); tag++) {
+            QByteArray child_texts((*tag) -> texts());
+
+            if (!child_texts.isEmpty())
+                result = result % ' ' % child_texts;
+        }
 
         return result;
     }

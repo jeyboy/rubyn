@@ -21,6 +21,9 @@
 #include <qevent.h>
 #include <qmimedata.h>
 
+/////////////// TEST
+#include "tools/data_preparer/rubydoc_preparer.h"
+
 IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), widgets_list(0), tree(0), pos_status(0) {
     ui -> setupUi(this);
 
@@ -40,6 +43,9 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 //    openFile(QUrl::fromLocalFile("F://rubyn test//ruby//test1.rb"));
 
     setWindowTitle(tr("Bla bla blashka"));
+
+    QStringList res;
+    RubyDocPreparer().takeListOfVersions(res);
 }
 
 IDEWindow::~IDEWindow() { delete ui; }

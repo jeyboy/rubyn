@@ -12,6 +12,8 @@ class RubyDocPreparer : public IRubyStubsPreparer {
 public:
     RubyDocPreparer();
 
+    bool takeListOfVersions(QStringList & versions);
+
     void prepare(const QString & version);
 
 protected slots:
