@@ -140,16 +140,19 @@ Response * Manager::setupCallback(QNetworkReply * m_http, RequestParams * params
 }
 
 Response * Manager::proceed(QNetworkReply * m_http, RequestParams * params) {
-    m_http -> setProperty(MANAGER_PROPERTY_NAME, VariantPtr<RequestParams>::asQVariant(params));
-
-    if (params -> isAsync())
+    if (params -> isAsync()) {
+        m_http -> setProperty(MANAGER_PROPERTY_NAME, VariantPtr<RequestParams>::asQVariant(params));
         return setupCallback(m_http, params);
-    else {
+    } else {
         Response * resp = synchronizeRequest(m_http);
-        if (params -> isFollowed())
+        if (params -> isFollowed()) {
+            m_http -> setProperty(MANAGER_PROPERTY_NAME, VariantPtr<RequestParams>::asQVariant(params));
             resp = resp -> followByRedirect();
+        }
 
         emit requestCompleted(resp);
+
+        params -> erase(); // need to test
 
         return resp;
     }

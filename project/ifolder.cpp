@@ -1,7 +1,7 @@
 #include "ifolder.h"
 
 #include "file.h"
-#include <qdir.h>
+#include "misc/dir.h"
 
 FormatType IFolder::icoType(const QString & name, const uint & level) {
     if (level == 1) {
@@ -35,17 +35,13 @@ QColor * IFolder::identifyColor(const FormatType & ico_type) {
 
 IFolder::IFolder(const QString & path, const bool & create) : _valid(true), _parent(0), _name(path) {
     if (create) {
-        QDir dir(path);
-
-        _valid = dir.mkpath(_name);
+        _valid = Dir::createPath(path, _name);
     }
 }
 
 IFolder::IFolder(IFolder * parent, const QString & folder_name, const bool & create) : _valid(true), _parent(parent), _name(folder_name) {
     if (create) {
-        QDir dir(parent -> fullPath());
-
-        _valid = dir.mkdir(_name);
+        _valid = Dir::createFolder(parent -> fullPath(), _name);
     }
 }
 

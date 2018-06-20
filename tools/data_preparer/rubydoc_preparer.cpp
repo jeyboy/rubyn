@@ -6,8 +6,14 @@ RubyDocPreparer::RubyDocPreparer() {
 
 }
 
-bool RubyDocPreparer::prepare(const QString & version) {
+void RubyDocPreparer::prepare(const QString & version) {
     Web::Manager * manager = Web::Manager::prepare();
 
+
+
 //    manager -> sendGet()
+}
+
+void RubyDocPreparer::responseReady(Web::Response * response) {
+
 }

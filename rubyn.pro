@@ -53,7 +53,9 @@ SOURCES += main.cpp\
     tools/html/html_selector.cpp \
     tools/html/html_set.cpp \
     tools/html/html_tag.cpp \
-    tools/html/unicode.cpp
+    tools/html/unicode.cpp \
+    tools/archive.cpp \
+    misc/dir.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -131,7 +133,11 @@ HEADERS  += ide_window.h \
     tools/web_manager/web_response.h \
     tools/web_manager/web_utils.h \
     tools/data_preparer/iruby_stubs_preparer.h \
-    tools/data_preparer/rubydoc_preparer.h
+    tools/data_preparer/rubydoc_preparer.h \
+    tools/archive.h \
+    tools/thread_cell.h \
+    tools/thread_utils.h \
+    misc/dir.h
 
 FORMS    += ide_window.ui
 

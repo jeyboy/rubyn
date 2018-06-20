@@ -36,6 +36,7 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path, QC
 
         QTreeWidgetItem * item = new QTreeWidgetItem(view_item, QStringList() << name);
         item -> setIcon(0, file -> ico());
+        item -> setToolTip(0, name);
 
         if (color) {
             item -> setBackgroundColor(0, *color);
@@ -52,6 +53,7 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
     view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
     view_item -> setData(0, Qt::UserRole + 1, 0);
     view_item -> setIcon(0, Projects::obj().getIco(ico_type));
+    view_item -> setToolTip(0, obj_name);
 
     bool color_clearing_required = false;
 
@@ -82,6 +84,7 @@ RecursiveFolder::RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent
     curr_view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
     curr_view_item -> setData(0, Qt::UserRole + 1, level);
     curr_view_item -> setIcon(0, Projects::obj().getIco(ico_type));
+    curr_view_item -> setToolTip(0, folder_name);
 
     bool color_clearing_required = false;
 
