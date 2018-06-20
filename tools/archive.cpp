@@ -6,8 +6,12 @@
 #include <qfile.h>
 #include <qprocess.h>
 
-QString Archive::store_path = Dir::appPath(QLatin1Literal("data"), true);
+QString Archive::store_path;
 QString Archive::store_ext = QLatin1Literal("pup");
+
+Archive::Archive() {
+    Archive::store_path = Dir::appPath(QLatin1Literal("data"), true);
+}
 
 void Archive::decompress(const QString & path) {
     #ifdef Q_OS_WIN

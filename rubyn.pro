@@ -55,7 +55,8 @@ SOURCES += main.cpp\
     tools/html/html_tag.cpp \
     tools/html/unicode.cpp \
     tools/archive.cpp \
-    misc/dir.cpp
+    misc/dir.cpp \
+    tools/files_proc_manager.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -137,7 +138,8 @@ HEADERS  += ide_window.h \
     tools/archive.h \
     tools/thread_cell.h \
     tools/thread_utils.h \
-    misc/dir.h
+    misc/dir.h \
+    tools/files_proc_manager.h
 
 FORMS    += ide_window.ui
 
