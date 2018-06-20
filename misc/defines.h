@@ -3,9 +3,9 @@
 
 #include <qdebug.h>
 #include <qobject.h>
+#include <qstringbuilder.h>
 
 #define PROJECT_FORMAT_TYPE quint8
-
 
 #define PARA_TYPE quint32
 
@@ -18,5 +18,11 @@
 #define EDITOR_LEN_TYPE uint
 
 #define DATA_FLAGS_TYPE quint8
+
+////////////////////////////////
+
+#define USTR(str) QStringLiteral(str)
+#define LSTR(str) QLatin1Literal(str)
+#define QSTR_TO_CHAR(str) str.toUtf8().constData()
 
 #endif // DEFINES_H

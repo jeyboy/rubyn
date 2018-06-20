@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -33,7 +33,17 @@ SOURCES += main.cpp\
     lexer/ab_lexer.cpp \
     controls/tabs_block.cpp \
     controls/tab_bar.cpp \
-    controls/tab_bar_item_delegate.cpp
+    controls/tab_bar_item_delegate.cpp \
+    controls/completer.cpp \
+    misc/variant_convertor.cpp \
+    misc/country.cpp \
+    tools/web_manager/web_connection.cpp \
+    tools/web_manager/web_cookies.cpp \
+    tools/web_manager/web_manager.cpp \
+    tools/web_manager/web_proxy.cpp \
+    tools/web_manager/web_request.cpp \
+    tools/web_manager/web_response.cpp \
+    tools/data_preparer/rubydoc_preparer.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -82,7 +92,36 @@ HEADERS  += ide_window.h \
     controls/tabs_block.h \
     controls/tab_bar.h \
     controls/tab_bar_item_delegate.h \
-    controls/tab_bar_no_focus_style.h
+    controls/tab_bar_no_focus_style.h \
+    controls/completer.h \
+    misc/func.h \
+    misc/variant_convertor.h \
+    misc/variant_ptr.h \
+    misc/country.h \
+    tools/html/html_decoding.h \
+    tools/html/html_global.h \
+    tools/html/html_keys.h \
+    tools/html/html_page.h \
+    tools/html/html_selector.h \
+    tools/html/html_set.h \
+    tools/html/html_tag.h \
+    tools/html/unicode.h \
+    tools/json/json.h \
+    tools/json/json_arr.h \
+    tools/json/json_global.h \
+    tools/json/json_obj.h \
+    tools/web_manager/web_connection.h \
+    tools/web_manager/web_cookies.h \
+    tools/web_manager/web_headers.h \
+    tools/web_manager/web_manager.h \
+    tools/web_manager/web_manager_global.h \
+    tools/web_manager/web_proxy.h \
+    tools/web_manager/web_request.h \
+    tools/web_manager/web_request_params.h \
+    tools/web_manager/web_response.h \
+    tools/web_manager/web_utils.h \
+    tools/data_preparer/iruby_stubs_preparer.h \
+    tools/data_preparer/rubydoc_preparer.h
 
 FORMS    += ide_window.ui
 
