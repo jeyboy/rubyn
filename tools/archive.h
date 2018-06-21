@@ -5,10 +5,11 @@
 #include <qbytearray.h>
 
 class Archive : public QObject {
-    static QString store_path;
     static QString store_ext;
 protected:
     Archive();
+
+    static const QString & storePath();
 public:
     static void init();
 

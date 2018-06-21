@@ -7,11 +7,12 @@
 #include <qfile.h>
 #include <qprocess.h>
 
-QString Archive::store_path;
 QString Archive::store_ext = QLatin1Literal("pup");
 
-Archive::Archive() {
-    Archive::store_path = FilesProcManager::obj().dataPath();
+Archive::Archive() {}
+
+const QString & Archive::storePath() {
+    return FilesProcManager::obj().dataPath();
 }
 
 void Archive::decompress(const QString & path) {
@@ -68,7 +69,7 @@ void Archive::decompress(const QString & path) {
 }
 
 bool Archive::load(const QString & name, QByteArray & buf) {
-    QFile file(store_path % '/' % name % '.' % store_ext);
+    QFile file(storePath() % '/' % name % '.' % store_ext);
 
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning("Couldn't open save file.");
@@ -83,7 +84,7 @@ bool Archive::load(const QString & name, QByteArray & buf) {
 }
 
 bool Archive::save(const QString & name, const QByteArray & buf) {
-    QFile file(store_path % '/' % name % '.' % store_ext);
+    QFile file(storePath() % '/' % name % '.' % store_ext);
 
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning("Couldn't open save file.");
