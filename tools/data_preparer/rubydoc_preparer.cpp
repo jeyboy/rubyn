@@ -20,15 +20,15 @@ RubyDocPreparer::RubyDocPreparer() {}
 bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
     Web::Manager * manager = Web::Manager::prepare();
 
+    QByteArray host("https://ruby-doc.org/");
+
+    //    Web::RequestParams * params = new Web::RequestParams(
+    //        QUrl::fromLocalFile("F://rubyn test//Ruby-Doc.org  Documenting the Ruby Language.htm")
+    //    );
+
     Web::RequestParams * params = new Web::RequestParams(
-        QUrl::fromLocalFile("F://rubyn test//Ruby-Doc.org  Documenting the Ruby Language.htm")
+        QUrl(host % QLatin1Literal("downloads/"))
     );
-
-//    QByteArray host("https://ruby-doc.org/");
-
-//    Web::RequestParams * params = new Web::RequestParams(
-//        QUrl(host % QLatin1Literal("downloads/"))
-//    );
 
     Html::Page html = manager -> sendGet(params) -> toHtml();
 
@@ -38,7 +38,7 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
         Json cache;
 
         for(Html::Set::Iterator result = results.begin(); result != results.end(); result++) {
-            QString href = (*result) -> link(/*&host*/);
+            QString href = (*result) -> link(&host);
 
             QRegularExpression re("ruby((_\\d+)+)([_\\w]+)?_([\\w]+)_rdocs", QRegularExpression::CaseInsensitiveOption);
             QRegularExpressionMatch match = re.match(href);

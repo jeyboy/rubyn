@@ -8,8 +8,8 @@ namespace Web {
 }
 
 struct VersionUrls {
-    static QString core_type; // (QLatin1Literal("core"))
-    static QString stdlib_type; // (QLatin1Literal("stdlib"))
+    static QString core_type;
+    static QString stdlib_type;
 
     QString core_url;
     QString stdlib_url;

@@ -140,7 +140,8 @@ HEADERS  += ide_window.h \
     tools/thread_utils.h \
     misc/dir.h \
     tools/files_proc_manager.h \
-    tools/fuzzy_comparison.h
+    tools/fuzzy_comparison.h \
+    lexer/yaml/yml_lexer.h
 
 FORMS    += ide_window.ui
 

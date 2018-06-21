@@ -44,8 +44,8 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
     setWindowTitle(tr("Bla bla blashka"));
 
-    DocsList res;
-    RubyDocPreparer().takeListOfAvailableDocs(res);
+//    DocsList res;
+//    RubyDocPreparer().takeListOfAvailableDocs(res);
 }
 
 IDEWindow::~IDEWindow() { delete ui; }
