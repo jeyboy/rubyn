@@ -40,7 +40,7 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
         for(Html::Set::Iterator result = results.begin(); result != results.end(); result++) {
             QString href = (*result) -> link(/*&host*/);
 
-            QRegularExpression re("ruby((_\\d+)+)([_\\w]+)_rdocs", QRegularExpression::CaseInsensitiveOption);
+            QRegularExpression re("ruby((_\\d+)+)([_\\w]+)?_([\\w]+)_rdocs", QRegularExpression::CaseInsensitiveOption);
             QRegularExpressionMatch match = re.match(href);
 
             if (match.hasMatch()) {
@@ -55,7 +55,9 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
 
                 VersionUrls & ver_urls = list[version];
 
-                QStringRef url_type = match.capturedRef(3).mid(1);
+//                match.capturedRef(3).mid(1); // if presents then we have preview
+
+                QStringRef url_type = match.capturedRef(4);
 
                 if (url_type == VersionUrls::core_type)
                     ver_urls.core_url = href;
