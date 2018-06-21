@@ -1,8 +1,9 @@
 #include "archive.h"
 
 #include "tools/thread_utils.h"
-#include "misc/dir.h"
+#include "tools/files_proc_manager.h"
 
+#include <qstringbuilder.h>
 #include <qfile.h>
 #include <qprocess.h>
 
@@ -10,7 +11,7 @@ QString Archive::store_path;
 QString Archive::store_ext = QLatin1Literal("pup");
 
 Archive::Archive() {
-    Archive::store_path = Dir::appPath(QLatin1Literal("data"), true);
+    Archive::store_path = FilesProcManager::obj().dataPath();
 }
 
 void Archive::decompress(const QString & path) {
@@ -50,7 +51,7 @@ void Archive::decompress(const QString & path) {
 //               -t (Type of archive)
 //               -x (Exclude)
 
-        QString cmd = Dir::appPath(QLatin1Literal("tools/7za.exe"));
+        QString cmd = FilesProcManager::obj().appPath(QLatin1Literal("tools/7za.exe"));
 
         c.start(cmd % QLatin1Literal(" e \"") % path % QLatin1Literal("\" -y "));
 
@@ -67,7 +68,7 @@ void Archive::decompress(const QString & path) {
 }
 
 bool Archive::load(const QString & name, QByteArray & buf) {
-    QFile file(store_path % '/' % name);
+    QFile file(store_path % '/' % name % '.' % store_ext);
 
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning("Couldn't open save file.");
@@ -82,7 +83,7 @@ bool Archive::load(const QString & name, QByteArray & buf) {
 }
 
 bool Archive::save(const QString & name, const QByteArray & buf) {
-    QFile file(store_path % '/' % name);
+    QFile file(store_path % '/' % name % '.' % store_ext);
 
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning("Couldn't open save file.");

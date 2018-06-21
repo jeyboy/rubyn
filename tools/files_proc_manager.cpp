@@ -16,6 +16,10 @@ FilesProcManager::FilesProcManager() : cleaner_proc_delay(1800000) { // 1/2 hr
     clearTemps();
 }
 
+QString FilesProcManager::appPath(const QString & name) {
+    return Dir::appPath(name);
+}
+
 void FilesProcManager::cleanerProc() {
     QDirIterator files_it(temp_path, QDir::Files | QDir::Hidden);
 

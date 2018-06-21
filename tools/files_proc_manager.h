@@ -26,6 +26,7 @@ public:
 
     static const QString & tempPath() { return temp_path; }
     static const QString & dataPath() { return data_path; }
+    static QString appPath(const QString & name = QString());
 
     inline void registerFileProc(const QUrl & path, const ProcState & state = ps_proc) {
         _proc_files.insert(path, state);

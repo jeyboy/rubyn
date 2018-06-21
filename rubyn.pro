@@ -139,7 +139,8 @@ HEADERS  += ide_window.h \
     tools/thread_cell.h \
     tools/thread_utils.h \
     misc/dir.h \
-    tools/files_proc_manager.h
+    tools/files_proc_manager.h \
+    tools/fuzzy_comparison.h
 
 FORMS    += ide_window.ui
 
