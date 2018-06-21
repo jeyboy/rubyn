@@ -28,7 +28,7 @@ class RubyDocPreparer : public IRubyStubsPreparer {
     void unpackRubyPack(const QByteArray & buf);
     void downloadAndParsePacks(const VersionUrls & urls);
     bool findNearestVersion(const QString & target_version, const DocsList & available_versions, QString & nearest_res);
-    QString buildPatternPart(QVector<QStringRef> & parts, int index);
+    quint64 uVersion(const QString & version);
 public:
     RubyDocPreparer();
 

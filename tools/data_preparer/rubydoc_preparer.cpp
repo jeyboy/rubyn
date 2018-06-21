@@ -146,34 +146,32 @@ void RubyDocPreparer::downloadAndParsePacks(const VersionUrls & urls) {
 }
 
 bool RubyDocPreparer::findNearestVersion(const QString & target_version, const DocsList & available_versions, QString & nearest_res) {
-    QVector<QStringRef> parts = target_version.splitRef('.');
+    quint64 target_uversion = uVersion(target_version);
 
-    QString pattern = parts.takeFirst() % buildPatternPart(parts, 1);
-
-    qDebug() << "PATTERN: " << pattern;
-
-    QRegularExpression r(pattern);
-
-    int score = 0;
+    quint64 nearest_uversion = 0;
 
     for(DocsList::ConstIterator it = available_versions.cbegin(); it != available_versions.cend(); it++) {
-        QRegularExpressionMatch match = r.match(it.key());
+        quint64 uversion = uVersion(it.key());
 
-        int i = 0;
-
-        if (match.hasMatch()) {
-            int val_score = match.capturedLength();
-
-            if (val_score > score) {
-                score = val_score;
-                nearest_res = it.key();
-            }
+        if (uversion > nearest_uversion && uversion <= target_uversion) {
+            nearest_uversion = uversion;
+            nearest_res = it.key();
         }
     }
+
+    return nearest_uversion > 0;
 }
 
-QString RubyDocPreparer::buildPatternPart(QVector<QStringRef> & parts, int index) {
-    return '(' % parts[index] % (index + 1 < parts.length() ? buildPatternPart(parts, index + 1) : QString()) % ')' % '?';
+quint64 RubyDocPreparer::uVersion(const QString & version) {
+    QStringList parts = version.split('.');
+
+    QString res('1');
+
+    for(QStringList::Iterator it = parts.begin(); it != parts.end(); it++) {
+        res = res % (*it).leftJustified(3, '0');
+    }
+
+    return res.toULongLong();
 }
 
 void RubyDocPreparer::unpackRubyPack(const QByteArray & buf) {
