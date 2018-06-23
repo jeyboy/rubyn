@@ -48,7 +48,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
             if (!metadata_block) {
                 Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse metadata block in file: ") % inpath);
-                datafile.close(); outfile.close();
+                datafile.close(); out.flush(); outfile.close();
                 return false;
             }
 
@@ -56,7 +56,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
             if (!doc_block) {
                 Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse documentation block in file: ") % inpath);
-                datafile.close(); outfile.close();
+                datafile.close(); out.flush(); outfile.close();
                 return false;
             }
 
@@ -64,7 +64,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
             if (!doc_header) {
                 Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse doc header in file: ") % inpath);
-                datafile.close(); outfile.close();
+                datafile.close(); out.flush(); outfile.close();
                 return false;
             }
 
@@ -95,7 +95,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
             if (!doc_description) {
                 Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse doc description in file: ") % inpath);
-                datafile.close(); outfile.close();
+                datafile.close(); out.flush(); outfile.close();
                 return false;
             }
 
@@ -168,6 +168,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 //            #private-instance-method-details
             }
 
+            out.flush();
             outfile.close();
         } else {
             Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant open output file: ") % inpath);
