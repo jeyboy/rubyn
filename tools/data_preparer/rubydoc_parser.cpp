@@ -8,6 +8,9 @@
 #include <qdiriterator.h>
 
 bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
+    QByteArray description_prefix("# ");
+    QByteArray description_example_prefix("#     ");
+
 // title text -> split : -> take first
 
 // #method-list-section li a text
@@ -37,12 +40,15 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
         if (outfile.open(QFile::WriteOnly | QFile::Text)) {
             QTextStream out(&outfile);
 
+            out << "# encoding: UTF-8";
+
             Html::Page page(&datafile, Html::Decoding::charset_utf8, Html::Page::pf_skip_comment);
 
             Html::Tag * metadata_block = page.findFirst("#metadata");
 
             if (!metadata_block) {
                 Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse metadata block in file: ") % inpath);
+                datafile.close(); outfile.close();
                 return false;
             }
 
@@ -50,6 +56,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
             if (!doc_block) {
                 Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse documentation block in file: ") % inpath);
+                datafile.close(); outfile.close();
                 return false;
             }
 
@@ -57,6 +64,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
             if (!doc_header) {
                 Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse doc header in file: ") % inpath);
+                datafile.close(); outfile.close();
                 return false;
             }
 
@@ -87,6 +95,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
             if (!doc_description) {
                 Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse doc description in file: ") % inpath);
+                datafile.close(); outfile.close();
                 return false;
             }
 
@@ -95,15 +104,36 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
             for(Html::Set::Iterator tag = descrition_parts.begin(); tag != descrition_parts.end(); tag++) {
                 switch((*tag) -> tagID()) {
                     case Html::Tag::tg_p: {
-
+                        writeLine(description_prefix, QString((*tag) -> texts()), &out);
                     break;}
 
                     case Html::Tag::tg_h2: {
+                        QByteArray border((*tag) -> text().length(), '-');
 
+                        out
+                            << endl
+                            << border
+                            << endl
+                            << description_prefix
+                            << (*tag) -> text()
+                            << border
+                            << endl;
                     break;}
 
                     case Html::Tag::tg_pre: {
+                        out
+                            << description_example_prefix
+                            << "-- EXAMPLE --"
+                            << endl;
 
+                        Html::Set code_parts = (*tag) -> children();
+
+                        for(Html::Set::Iterator code_tag = code_parts.begin(); code_tag != code_parts.end(); code_tag++) {
+                            if ((*code_tag) -> isNewline())
+                                out << endl;
+                            else
+                                out << QString((*code_tag) -> text());
+                        }
                     break;}
 
                     default: {
@@ -141,6 +171,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
             outfile.close();
         } else {
             Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant open output file: ") % inpath);
+            datafile.close();
             return false;
         }
 
@@ -168,6 +199,31 @@ bool RubydocParser::parseFolder(const QString & path, const QString & outpath) {
     return true;
 }
 
+void RubydocParser::writeLine(const QByteArray & prefix, const QString & datum, QTextStream * out, const uint & max_line_len) {
+    uint pos = 0;
+
+    while(true) {
+        QStringRef line = datum.midRef(pos, max_line_len + 1);
+
+        if (line.isEmpty())
+            break;
+
+        if (!line.back().isSpace()) {
+            int line_size = line.length();
+
+            for(; line_size >= 0; --line_size) {
+                if (line[line_size - 1].isSpace())
+                    break;
+            }
+
+            line = line.mid(0, line_size - 1);
+        }
+
+        (*out) << prefix << line << endl;
+
+        pos += line.length();
+    }
+}
 
 RubydocParser::RubydocParser(QObject * parent) : QObject(parent) {
 //    ThreadUtils::obj().run(

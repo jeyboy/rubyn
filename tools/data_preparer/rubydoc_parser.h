@@ -3,11 +3,15 @@
 
 #include <qobject.h>
 
+class QTextStream;
+
 class RubydocParser : public QObject {
     Q_OBJECT
 
 //    bool parseFile(const QString & inpath, const QString & outpath);
     bool parseFolder(const QString & path, const QString & outpath);
+
+    void writeLine(const QByteArray & prefix, const QString & datum, QTextStream * out, const uint & max_line_len = 80);
 public:
     RubydocParser(QObject * parent = 0);
     bool parse(const QString & inpath, const QString & outpath);
