@@ -6,6 +6,7 @@
 
 #define HTML_ANY_TAG QByteArrayLiteral("*")
 #define HTML_TEXT_BLOCK QByteArrayLiteral("text")
+#define HTML_NEWLINE_BLOCK QByteArrayLiteral("newline")
 #define HTML_TAG_DOCTYPE QByteArrayLiteral("!doctype")
 #define HTML_TAG_XML QByteArrayLiteral("?xml")
 #define HTML_TAG_INPUT QByteArrayLiteral("input")
@@ -28,6 +29,7 @@ namespace Html {
 //    extern const char tkn_split;
     Q_DECL_EXPORT extern const QByteArray tkn_any_elem;
     Q_DECL_EXPORT extern const QByteArray tkn_text_block;
+    Q_DECL_EXPORT extern const QByteArray tkn_newline_block;
     Q_DECL_EXPORT extern const QByteArray tkn_comment_block;
 
     Q_DECL_EXPORT extern const QByteArray tkn_charset;

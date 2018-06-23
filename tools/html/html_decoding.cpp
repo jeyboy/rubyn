@@ -298,10 +298,11 @@ Decoding::CharsetType Decoding::charsetType(const QByteArray & val) {
 }
 
 QByteArray & Decoding::decodeMnemonics(QByteArray & val) {
-    int pos = 0, start = -1, roffset = 0, length; // &#65; // A
+    int pos = 0, start = -1, length; // &#65; // A
     bool is_unicode = false;
 
     const char * data = val.constData();
+
     while(*data) {
         switch(*data) {
             case 38: { // &
@@ -326,13 +327,14 @@ QByteArray & Decoding::decodeMnemonics(QByteArray & val) {
 
                     val.replace(start, pos - start + 1, after);
                     start = -1;
-                    roffset += length - 1;
+                    pos -= (length + 1) - after.length();
                 }
             }
             case 32: {
                 is_unicode = false;
                 start = -1;
             break;}
+
             default:;
         }
 

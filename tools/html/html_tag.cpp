@@ -38,8 +38,9 @@
 
 using namespace Html;
 
+
 QHash<QByteArray, int> Tag::list = QHash<QByteArray, int> {
-    { HTML_ANY_TAG, Tag::tg_any }, { HTML_TEXT_BLOCK, Tag::tg_text },
+    { HTML_ANY_TAG, Tag::tg_any }, { HTML_TEXT_BLOCK, Tag::tg_text }, { HTML_NEWLINE_BLOCK, Tag::tg_newline },
     { QByteArrayLiteral("html"), Tag::tg_html }, { HTML_TAG_HEAD, Tag::tg_head },
     { HTML_TAG_BODY, Tag::tg_body }, { QByteArrayLiteral("colgroup"), Tag::tg_colgroup },
     { QByteArrayLiteral("caption"), Tag::tg_caption }, { QByteArrayLiteral("i"), Tag::tg_i },
@@ -234,6 +235,8 @@ QUrl Tag::serializeFormToUrl(const QHash<QString, QString> & vals, const FormSer
 QByteArray Tag::toByteArray() const {
     if (_tag_id == tg_text)
         return _attrs.value(tkn_text_block);
+    else if (_tag_id == tg_newline)
+        return QByteArray(1, (char)10);
     else {
         QByteArray result;
         bool root = _tag_id == tg_any;
@@ -439,9 +442,14 @@ Tag * Tag::appendTag(const QByteArray & tname) {
     _tags.append(newTag);
     return newTag;
 }
-void Tag::appendText(const QByteArray & val) {
+
+void Tag::appendNewline() {
+    appendTag(tkn_newline_block);
+}
+
+void Tag::appendText(const QByteArray & val, const bool & simplified) {
     Tag * newTag = appendTag(tkn_text_block);
-    newTag -> addAttr(tkn_text_block, val.trimmed());
+    newTag -> addAttr(tkn_text_block, simplified ? val.simplified() : val.trimmed());
 }
 void Tag::appendComment(const QByteArray & val) {
     Tag * newTag = appendTag(tkn_comment_block);

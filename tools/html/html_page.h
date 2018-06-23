@@ -59,6 +59,17 @@ class QDebug;
 
 namespace Html {
     class Page {
+    public:
+        enum ParseFlags {
+            pf_none = 0, pf_skip_text = 1, pf_skip_comment = 2,
+//            pf_skip_mnemonics_decoding = 4, pf_skip_content_decoding = 8,
+            pf_skip_links_decoding = 16,
+            pf_skip_newlines = 32,
+            pf_simplify_text = 64,
+
+            pf_default = pf_skip_comment | pf_skip_newlines | pf_simplify_text // | pf_skip_mnemonics_decoding | pf_skip_content_decoding
+        };
+    private:
         enum StateFlags {
             sf_none = 0,
             sf_html = 1,
@@ -68,14 +79,6 @@ namespace Html {
             //...
             sf_use_doc_charset = 64,
             sf_use_user_charset = 128
-        };
-        enum ParseFlags {
-            pf_none = 0, pf_skip_text = 1, pf_skip_comment = 2,
-//            pf_skip_mnemonics_decoding = 4, pf_skip_content_decoding = 8,
-            pf_skip_links_decoding = 16,
-            pf_skip_unprintable = 32,
-
-            pf_default = pf_skip_comment | pf_skip_unprintable // | pf_skip_mnemonics_decoding | pf_skip_content_decoding
         };
 
         enum PState {
@@ -98,6 +101,7 @@ namespace Html {
             open_tag = 60, // <
             close_tag_predicate = 47, // /
             close_tag = 62, // >
+            newline = 10,
             space = 32,
             service_token = 33, // !
             raw_data_token = 91, // [
@@ -162,8 +166,8 @@ namespace Html {
 
         inline bool hasErrors() const { return sflags & sf_has_errors; }
         inline bool hasIframes() const { return sflags & sf_has_iframes; }
-        inline bool hasChildren(const char * predicate) const { return root -> hasChildren(predicate); }
 
+        inline bool contains(const char * predicate) const { return root -> hasChildren(predicate); }
         Tag * findFirst(const char * predicate) const;
         Set find(const char * predicate) const;
         Set find(const Selector * selector, const bool & findFirst = false) const;
