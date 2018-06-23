@@ -59,7 +59,7 @@ void Archive::decompress(const QString & path) {
 
         QString cmd = FilesProcManager::obj().appPath(QLatin1Literal("tools/7za.exe"));
 
-        c.start(cmd % QLatin1Literal(" e \"") % path % QLatin1Literal("\" -y "));
+        proc -> start(cmd % QLatin1Literal(" e \"") % path % QLatin1Literal("\" -y "));
 
 
 

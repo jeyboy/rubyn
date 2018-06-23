@@ -77,10 +77,12 @@ void Page::parse(const char * data, Tag * root_tag) {
         }
 
         if (*pdata < 32 && *pdata > 0) { // skip not printable trash
-            if (sname && !NBUFF_VALID) sname++;
+            if (pflags & pf_skip_unprintable || state != content) {
+                if (sname && !NBUFF_VALID) sname++;
 
-            pdata++;
-            continue;
+                pdata++;
+                continue;
+            }
         }
 
         switch(state) {

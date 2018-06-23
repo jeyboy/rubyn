@@ -101,7 +101,7 @@ void RubyDocPreparer::prepare(const QString & version) {
             urls.stdlib_url = ver_obj.string(VersionUrls::stdlib_type);
 
             if (urls.isValid())
-                downloadAndParsePacks(urls);
+                downloadRubyPacks(urls);
             else
                 Logger::obj().write(
                     QLatin1Literal("RubyDocPreparer"),
@@ -115,7 +115,7 @@ void RubyDocPreparer::prepare(const QString & version) {
 
     if (takeListOfAvailableDocs(list)) {
         if (list.contains(version)) {
-            downloadAndParsePacks(list[version]);
+            downloadRubyPacks(list[version]);
         } else {
             Logger::obj().write(
                 QLatin1Literal("RubyDocPreparer"),
@@ -144,8 +144,8 @@ void RubyDocPreparer::prepare(const QString & version) {
 }
 
 void RubyDocPreparer::parseRubyPack(const VersionUrls & urls) {
-    Archive::decompress(urls.core_url);
-    Archive::decompress(urls.stdlib_url);
+//    Archive::decompress(urls.core_url);
+//    Archive::decompress(urls.stdlib_url);
 }
 
 void RubyDocPreparer::downloadRubyPacks(const VersionUrls & urls) {

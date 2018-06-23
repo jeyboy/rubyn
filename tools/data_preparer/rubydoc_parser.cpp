@@ -37,7 +37,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
         if (datafile.open(QFile::WriteOnly | QFile::Text)) {
             QTextStream out(&outfile);
 
-            Html::Page page(file);
+            Html::Page page(&datafile);
 
             Html::Tag * doc_block = page.findFirst("#documentation");
 
@@ -72,8 +72,23 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
             QByteArray description = doc_description -> texts();
 
 
-
             // target_class // target_name // description
+
+//            out <<  << endl;
+
+            Html::Set sections = doc_block -> find(".section");
+
+            while(!sections.isEmpty()) {
+                Html::Tag * section = sections.takeFirst();
+
+            //      #constants-list
+            //          dt a text // name
+            //          dd p text // description
+
+//            #public-class-method-details
+//            #public-instance-method-details
+//            #private-instance-method-details
+            }
 
             outfile.close();
         } else {
@@ -86,9 +101,11 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
         Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant open file: ") % inpath);
         return false;
     }
+
+    return true;
 }
 
-void RubydocParser::parseFolder(const QString & path) {
+bool RubydocParser::parseFolder(const QString & path, const QString & outpath) {
     QDirIterator files_it(path, QDir::Files | QDir::Hidden, QDirIterator::Subdirectories);
 
     while(files_it.hasNext()) {
@@ -96,9 +113,11 @@ void RubydocParser::parseFolder(const QString & path) {
         QString dir_name = files_it.fileName();
 
         if (dir_name[0].isUpper()) {
-            parseFile(path);
+            parseFile(path, outpath);
         }
     }
+
+    return true;
 }
 
 

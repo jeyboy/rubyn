@@ -73,8 +73,9 @@ namespace Html {
             pf_none = 0, pf_skip_text = 1, pf_skip_comment = 2,
 //            pf_skip_mnemonics_decoding = 4, pf_skip_content_decoding = 8,
             pf_skip_links_decoding = 16,
+            pf_skip_unprintable = 32,
 
-            pf_default = pf_skip_comment // | pf_skip_mnemonics_decoding | pf_skip_content_decoding
+            pf_default = pf_skip_comment | pf_skip_unprintable // | pf_skip_mnemonics_decoding | pf_skip_content_decoding
         };
 
         enum PState {

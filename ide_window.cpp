@@ -22,6 +22,7 @@
 #include <qmimedata.h>
 
 /////////////// TEST
+#include "tools/html/html_page.h"
 #include "tools/data_preparer/rubydoc_preparer.h"
 
 IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), widgets_list(0), tree(0), pos_status(0) {
@@ -52,7 +53,17 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     urls.core_url = "F://rubyn test//ruby_2_5_1_core_rdocs.tgz";
     urls.stdlib_url = "F://rubyn test//ruby_2_5_1_stdlib_rdocs.tgz";
 
-    RubyDocPreparer().parseRubyPack(urls);
+//    RubyDocPreparer().parseRubyPack(urls);
+
+    QFile f("F://rubyn test//Complex.html");
+
+    if (f.open(QFile::Text | QFile::ReadOnly)) {
+        Html::Page page(&f);
+
+        page.output();
+
+        f.close();
+    }
 }
 
 IDEWindow::~IDEWindow() { delete ui; }
