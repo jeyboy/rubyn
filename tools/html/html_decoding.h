@@ -24,7 +24,7 @@ namespace Html {
             simplify_needed = decode_mnemo * 2
         };
 
-        static QHash<QByteArray, int> html_entities;
+        static QHash<QByteArray, uint> html_entities;
 
         static CharsetType charsetType(const QByteArray & val);
 

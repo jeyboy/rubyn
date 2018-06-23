@@ -116,8 +116,9 @@ void Page::parse(const char * data, Tag * root_tag) {
 
                     case open_tag: {
                         char chr = *(pdata + 2);
+                        char nchr = *(pdata + 1);
 
-                        bool is_service = *(pdata + 1) == service_token;
+                        bool is_service = nchr == service_token;
 
                         if (is_service) {
                             if (chr == raw_data_token) {
@@ -128,9 +129,13 @@ void Page::parse(const char * data, Tag * root_tag) {
                                 goto next_step;
                             } else
                                 sflags = (StateFlags)(sflags | sf_html);
-                        } else if (*(pdata + 1) == question_token) {
+                        } else if (nchr == question_token) {
                             is_xml = true;
                             sflags = (StateFlags)(sflags | sf_xml);
+                        } else {
+                            if (nchr != close_tag_predicate && !isalpha(nchr)) { // fix for text like <a><<</a> and <a><=></a>
+                                goto next_step;
+                            }
                         }
 
                         if (NAME_BUFF_VALID) {

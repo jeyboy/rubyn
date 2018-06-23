@@ -6,11 +6,13 @@
 class RubydocParser : public QObject {
     Q_OBJECT
 
-    bool parseFile(const QString & inpath, const QString & outpath);
+//    bool parseFile(const QString & inpath, const QString & outpath);
     bool parseFolder(const QString & path, const QString & outpath);
 public:
     RubydocParser(QObject * parent = 0);
     bool parse(const QString & inpath, const QString & outpath);
+
+    bool parseFile(const QString & inpath, const QString & outpath);
 
 protected slots:
 

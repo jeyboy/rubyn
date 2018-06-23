@@ -155,6 +155,7 @@ namespace Html {
             return list.value(tag, -1);
         }
 
+        inline int tagID() { return _tag_id; }
         inline int level() const { return _level; }
         inline QByteArray name() const { return list.key(_tag_id); }
         inline QHash<QByteArray, QByteArray> attributes() const { return _attrs; }
@@ -169,6 +170,7 @@ namespace Html {
 
         inline Set children() const { return _tags; }
 
+        //INFO: all data stored like UTF-8
         // alias
         inline QByteArray attr(const QByteArray & name = attr_default) const { return value(name); }
         QByteArray value(const QByteArray & name = attr_default) const;
@@ -230,7 +232,7 @@ namespace Html {
 
         inline Tag * parent() { return _parent; }
         inline Tag * child(const int & pos) const { return pos < _tags.size() ? _tags[pos] : 0; }
-        inline Tag * lastChild() const { return _tags.last(); }
+        inline Tag * lastChild() const { return _tags.isEmpty() ? 0 : _tags.last(); }
         Tag * child(const QByteArray & name_predicate, const int & pos = 0) const;
         inline int childrenCount() { return _tags.size(); }
 

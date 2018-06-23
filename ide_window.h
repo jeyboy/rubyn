@@ -58,6 +58,7 @@ protected slots:
 public slots:
     void about();
     void newFile();
+    void newFolder();
     void openFile(const QUrl & url = QUrl());
     void openFolder(const QUrl & url = QUrl());
 };

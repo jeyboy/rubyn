@@ -1,11 +1,9 @@
 #include "html_decoding.h"
 #include "misc/defines.h"
 
-#include <qdebug.h>
-
 using namespace Html;
 
-QHash<QByteArray, int> Decoding::html_entities = {
+QHash<QByteArray, uint> Decoding::html_entities = {
     { QByteArrayLiteral("quot"), 34 },
     { QByteArrayLiteral("amp"), 38 },
     { QByteArrayLiteral("apos"), 39 },

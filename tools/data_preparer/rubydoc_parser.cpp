@@ -10,9 +10,9 @@
 bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 // title text -> split : -> take first
 
-// #parent-class-section p text
-
 // #method-list-section li a text
+
+// #parent-class-section p text
 
 // #includes-section li a text
 
@@ -34,15 +34,22 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
     if (datafile.open(QFile::ReadOnly | QFile::Text)) {
         QFile outfile(outpath);
 
-        if (datafile.open(QFile::WriteOnly | QFile::Text)) {
+        if (outfile.open(QFile::WriteOnly | QFile::Text)) {
             QTextStream out(&outfile);
 
-            Html::Page page(&datafile);
+            Html::Page page(&datafile, Html::Decoding::charset_utf8, Html::Page::pf_skip_comment);
+
+            Html::Tag * metadata_block = page.findFirst("#metadata");
+
+            if (!metadata_block) {
+                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse metadata block in file: ") % inpath);
+                return false;
+            }
 
             Html::Tag * doc_block = page.findFirst("#documentation");
 
             if (!doc_block) {
-                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse documentation_block in file: ") % inpath);
+                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse documentation block in file: ") % inpath);
                 return false;
             }
 
@@ -55,6 +62,20 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
             QByteArray target_class = doc_header -> rawClasses();
             QByteArray target_name = doc_header -> text();
+            QByteArray parent_name;
+
+            Html::Tag * parent_tag = metadata_block -> findFirst("#parent-class-section p a");
+
+            if (parent_tag)
+                parent_name = parent_tag -> text();
+
+
+
+
+
+
+            // #includes-section li a text
+
 
             /////////////////// REMOVE ME LATER
             if (target_class != "class" && target_class != "module") {
@@ -69,8 +90,35 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                 return false;
             }
 
-            QByteArray description = doc_description -> texts();
+            Html::Set descrition_parts = doc_description -> children();
 
+            for(Html::Set::Iterator tag = descrition_parts.begin(); tag != descrition_parts.end(); tag++) {
+                switch((*tag) -> tagID()) {
+                    case Html::Tag::tg_p: {
+
+                    break;}
+
+                    case Html::Tag::tg_h2: {
+
+                    break;}
+
+                    case Html::Tag::tg_pre: {
+
+                    break;}
+
+                    default: {
+                        Logger::obj().write(
+                            QLatin1Literal("RubydocParser"),
+                            QLatin1Literal("Unknown tag type in description: ") % (*tag) -> name() %
+                                QLatin1Literal("  in file: ") % inpath
+                        );
+                    }
+                }
+            }
+
+//            QString description = QString(doc_description -> texts());
+
+            int y = 0;
 
             // target_class // target_name // description
 

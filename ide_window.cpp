@@ -24,6 +24,7 @@
 /////////////// TEST
 #include "tools/html/html_page.h"
 #include "tools/data_preparer/rubydoc_preparer.h"
+#include "tools/data_preparer/rubydoc_parser.h"
 
 IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), widgets_list(0), tree(0), pos_status(0) {
     ui -> setupUi(this);
@@ -45,25 +46,33 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
     setWindowTitle(tr("Bla bla blashka"));
 
+
+    // TESTS // REMOVE LATER
+
 //    DocsList res;
 //    RubyDocPreparer().takeListOfAvailableDocs(res);
 
-    VersionUrls urls;
+//    VersionUrls urls;
 
-    urls.core_url = "F://rubyn test//ruby_2_5_1_core_rdocs.tgz";
-    urls.stdlib_url = "F://rubyn test//ruby_2_5_1_stdlib_rdocs.tgz";
+//    urls.core_url = "F://rubyn test//ruby_2_5_1_core_rdocs.tgz";
+//    urls.stdlib_url = "F://rubyn test//ruby_2_5_1_stdlib_rdocs.tgz";
 
 //    RubyDocPreparer().parseRubyPack(urls);
 
-    QFile f("F://rubyn test//Complex.html");
 
-    if (f.open(QFile::Text | QFile::ReadOnly)) {
-        Html::Page page(&f); //, Html::Decoding::charset_utf8, Html::Page::pf_skip_comment);
 
-        page.output();
+//    QFile f("F://rubyn test//Array.html");
 
-        f.close();
-    }
+//    if (f.open(QFile::Text | QFile::ReadOnly)) {
+//        Logger::obj().startMark();
+//        Html::Page page(&f, Html::Decoding::charset_utf8, Html::Page::pf_skip_comment);
+//        Logger::obj().endMark(QLatin1Literal("HTML"), QLatin1Literal("parsing"));
+//        page.output();
+
+//        f.close();
+//    }
+
+    RubydocParser().parseFile(QLatin1Literal("F://rubyn test//Array.html"), QLatin1Literal("F://rubyn test//array.rb"));
 }
 
 IDEWindow::~IDEWindow() { delete ui; }
@@ -153,6 +162,10 @@ void IDEWindow::about() {
 }
 
 void IDEWindow::newFile() {
+    // need to show dialog for name and type inputing
+}
+
+void IDEWindow::newFolder() {
     // need to show dialog for name and type inputing
 }
 
@@ -277,24 +290,6 @@ void IDEWindow::setupToolWindows() {
 }
 
 void IDEWindow::dragEnterEvent(QDragEnterEvent * event) {
-//    QList<QUrl> urls() const;
-//    void setUrls(const QList<QUrl> &urls);
-//    bool hasUrls() const;
-
-//    QString text() const;
-//    void setText(const QString &text);
-//    bool hasText() const;
-
-//    QString html() const;
-//    void setHtml(const QString &html);
-//    bool hasHtml() const;
-
-//    QVariant imageData() const;
-//    void setImageData(const QVariant &image);
-//    bool hasImage() const;
-
-
-
     if (event -> mimeData() -> hasUrls())
         event -> accept();
     else event -> ignore();
@@ -304,19 +299,11 @@ void IDEWindow::dragMoveEvent(QDragMoveEvent * event) {
         event -> accept();
     else event -> ignore();
 }
-
 void IDEWindow::dropEvent(QDropEvent * event) {
     if (event -> mimeData() -> hasUrls()) {
         QList<QUrl> urls = event -> mimeData() -> urls();
         for(QList<QUrl>::Iterator url = urls.begin(); url != urls.end(); url++) {
-            QFileInfo info((*url).toLocalFile());
-
-//            (*url).adjusted(QUrl::NormalizePathSegments)
-
-            if (info.isFile())
-                openFile(*url);
-            else
-                openFolder(*url);
+            openResource(active_editor, *url);
         }
 
         event -> accept();
