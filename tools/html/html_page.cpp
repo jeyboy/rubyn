@@ -59,7 +59,7 @@ Tag * Page::findFirst(const char * predicate) const {
 }
 
 void Page::parse(const char * data, Tag * root_tag) {
-    Tag * elem = root_tag;
+    Tag * elem = root_tag, * temp = 0;
     PState state = content;
     const char *pdata = data, *sname = 0, *sval = 0, *ename = 0;
     bool has_cdata = false, is_xml = false, simplify = pflags & pf_simplify_text; // cdata presents in text
@@ -102,8 +102,11 @@ void Page::parse(const char * data, Tag * root_tag) {
                             sname = pdata + 1;
                         }
 
-                        if (!(pflags & pf_skip_newlines))
-                            elem -> appendNewline();
+                        if (!(pflags & pf_skip_newlines)) {
+                            temp = elem -> lastChild();
+                            if (!temp || (temp && !temp -> isNewline())) // ignore creation of duplicates for newlines
+                                elem -> appendNewline();
+                        }
                     break;}
 
                     case open_tag: {

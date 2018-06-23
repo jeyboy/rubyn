@@ -209,6 +209,7 @@ namespace Html {
         bool isRequireUpParent(const int & tag_id);
         bool isRequireUpParentOnClose(const int & tag_id);
 
+        inline bool isNewline() { return _tag_id == tg_newline; }
         inline bool isStub() { return _tag_id == tg_any; }
         inline bool isText() { return _tag_id == tg_text; }
         inline bool isLink() { return _tag_id == tg_a; }
@@ -229,6 +230,7 @@ namespace Html {
 
         inline Tag * parent() { return _parent; }
         inline Tag * child(const int & pos) const { return pos < _tags.size() ? _tags[pos] : 0; }
+        inline Tag * lastChild() const { return _tags.last(); }
         Tag * child(const QByteArray & name_predicate, const int & pos = 0) const;
         inline int childrenCount() { return _tags.size(); }
 
