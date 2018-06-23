@@ -5,7 +5,6 @@
 
 #include <qstringbuilder.h>
 #include <qfile.h>
-#include <qprocess.h>
 
 QString Archive::store_ext = QLatin1Literal("pup");
 
@@ -17,7 +16,13 @@ const QString & Archive::storePath() {
 
 void Archive::decompress(const QString & path) {
     #ifdef Q_OS_WIN
-        QProcess c(qApp);
+        QProcess * proc = new QProcess(qApp);
+
+        connect(proc, SIGNAL(started()), this, SLOT(begin()));
+        connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(hasError()));
+        connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(hasOutput()));
+        connect(proc, SIGNAL(finished(int)), this, SLOT(done(int)));
+        connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(errorOccurred(QProcess::ProcessError)));
 
 //        7z x archive.zip  //Extract with full paths
 //        7z t archive.zip *.doc -r // tests *.doc files in archive archive.zip. // use * for all files testing
@@ -55,6 +60,7 @@ void Archive::decompress(const QString & path) {
         QString cmd = FilesProcManager::obj().appPath(QLatin1Literal("tools/7za.exe"));
 
         c.start(cmd % QLatin1Literal(" e \"") % path % QLatin1Literal("\" -y "));
+
 
 
 //        ThreadUtils::obj().run(
@@ -95,4 +101,26 @@ bool Archive::save(const QString & name, const QByteArray & buf) {
 
     file.close();
     return true;
+}
+
+
+void Archive::begin() {
+//    QProcess * obj = (QProcess *)sender();
+
+    emit started();
+}
+void Archive::errorOccurred(QProcess::ProcessError error) {
+//    QProcess * obj = (QProcess *)sender();
+}
+void Archive::hasError() {
+//    QProcess * obj = (QProcess *)sender();
+}
+void Archive::hasOutput() {
+//    QProcess * obj = (QProcess *)sender();
+}
+void Archive::done(int status) {
+//    QProcess * obj = (QProcess *)sender();
+
+
+    emit finished(status == 0);
 }

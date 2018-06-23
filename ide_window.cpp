@@ -46,6 +46,13 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 //    DocsList res;
 //    RubyDocPreparer().takeListOfAvailableDocs(res);
+
+    VersionUrls urls;
+
+    urls.core_url = "F://rubyn test//ruby_2_5_1_core_rdocs.tgz";
+    urls.stdlib_url = "F://rubyn test//ruby_2_5_1_stdlib_rdocs.tgz";
+
+    RubyDocPreparer().parseRubyPack(urls);
 }
 
 IDEWindow::~IDEWindow() { delete ui; }

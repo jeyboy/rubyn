@@ -26,11 +26,14 @@ class RubyDocPreparer : public IRubyStubsPreparer {
     inline QString rubyPackName(const QString & version) { return QLatin1Literal("ruby_stubs_") % version; }
 
     void unpackRubyPack(const QByteArray & buf);
-    void downloadAndParsePacks(const VersionUrls & urls);
+
+    void downloadRubyPacks(const VersionUrls & urls);
     bool findNearestVersion(const QString & target_version, const DocsList & available_versions, QString & nearest_res);
     quint64 uVersion(const QString & version);
 public:
     RubyDocPreparer();
+
+    void parseRubyPack(const VersionUrls & urls);
 
     bool takeListOfAvailableDocs(DocsList & list);
 

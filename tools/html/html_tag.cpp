@@ -165,8 +165,12 @@ QByteArray Tag::texts() const {
         for(Set::ConstIterator tag = _tags.cbegin(); tag != _tags.cend(); tag++) {
             QByteArray child_texts((*tag) -> texts());
 
-            if (!child_texts.isEmpty())
-                result = result % ' ' % child_texts;
+            if (!child_texts.isEmpty()) {
+                if (!result.isEmpty())
+                    child_texts.prepend(' ');
+
+                result = result % child_texts;
+            }
         }
 
         return result;

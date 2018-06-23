@@ -56,7 +56,8 @@ SOURCES += main.cpp\
     tools/html/unicode.cpp \
     tools/archive.cpp \
     misc/dir.cpp \
-    tools/files_proc_manager.cpp
+    tools/files_proc_manager.cpp \
+    tools/data_preparer/rubydoc_parser.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -141,7 +142,8 @@ HEADERS  += ide_window.h \
     misc/dir.h \
     tools/files_proc_manager.h \
     tools/fuzzy_comparison.h \
-    lexer/yaml/yml_lexer.h
+    lexer/yaml/yml_lexer.h \
+    tools/data_preparer/rubydoc_parser.h
 
 FORMS    += ide_window.ui
 

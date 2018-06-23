@@ -231,6 +231,7 @@ namespace Html {
         Tag * child(const QByteArray & name_predicate, const int & pos = 0) const;
         inline int childrenCount() { return _tags.size(); }
 
+        inline QByteArray rawClasses() { return _attrs.take(attr_class); }
         QHash<QByteArray, bool> * classes();
         inline bool hasId(const QByteArray & id_name) { return _attrs[attr_id] == id_name; }
         inline bool hasClass(const QByteArray & class_name) {
