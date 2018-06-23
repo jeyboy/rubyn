@@ -1,8 +1,27 @@
 #include "logger.h"
 
-#include <qplaintextedit.h>
+#include "misc/format.h"
 
-Logger::Logger() : QObject(), out(0), file(0), m_editor(0), m_showDate(true), fm(0) {}
+#include <qplaintextedit.h>
+#include <qfile.h>
+#include <qdatetime.h>
+#include <qtextstream.h>
+#include <qfontmetrics.h>
+#include <qapplication.h>
+#include <qscrollbar.h>
+#include <qstringbuilder.h>
+#include <qelapsedtimer.h>
+
+void dump(const QByteArray & content) {
+    QString p = QCoreApplication::applicationDirPath() % '/' % QDateTime::currentDateTime().toString("yyyy.MM.dd_hh.mm.ss.zzz") % QLatin1String(".html");
+    QFile f(p);
+    if (f.open(QFile::WriteOnly)) {
+        f.write(content);
+        f.close();
+    }
+}
+
+Logger::Logger() : QObject(), out(0), file(0), m_editor(0), m_showDate(true), fm(0), timer(new QElapsedTimer()) {}
 
 Logger::~Logger() {
     if (file != 0) {
@@ -13,6 +32,7 @@ Logger::~Logger() {
     delete out;
     delete file;
     delete m_editor;
+    delete timer;
 
     fm = 0;
 }
@@ -70,6 +90,12 @@ void Logger::initiate(const QString & file_name, const bool & create_editor) {
         out = new QTextStream(file);
         out -> setCodec("UTF-8");
     }
+}
+
+void Logger::startMark() { timer -> start(); }
+
+void Logger::endMark(const QString & initiator, const QString & value) {
+    write(initiator, value, QString::number(timer -> elapsed()) % QLatin1String(" ms (") % Info::paddedNumber(timer -> nsecsElapsed()) % QLatin1String(" ns)"));
 }
 
 QString Logger::path(const QString & file) {

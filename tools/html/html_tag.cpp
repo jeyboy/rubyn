@@ -447,9 +447,9 @@ void Tag::appendNewline() {
     appendTag(tkn_newline_block);
 }
 
-void Tag::appendText(const QByteArray & val, const bool & simplified) {
+void Tag::appendText(const QByteArray & val) {
     Tag * newTag = appendTag(tkn_text_block);
-    newTag -> addAttr(tkn_text_block, simplified ? val.simplified() : val.trimmed());
+    newTag -> addAttr(tkn_text_block, val);
 }
 void Tag::appendComment(const QByteArray & val) {
     Tag * newTag = appendTag(tkn_comment_block);

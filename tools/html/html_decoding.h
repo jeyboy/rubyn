@@ -20,7 +20,8 @@ namespace Html {
         enum DecodingFlags {
             decode_none = 0,
             decode_content = charset_max * 2,
-            decode_mnemo = decode_content * 2
+            decode_mnemo = decode_content * 2,
+            simplify_needed = decode_mnemo * 2
         };
 
         static QHash<QByteArray, int> html_entities;

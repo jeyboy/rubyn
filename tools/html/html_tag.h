@@ -258,7 +258,7 @@ namespace Html {
         inline void addAttr(const QByteArray & name, const QByteArray & val) { _attrs.insert(name.toLower().trimmed(), val.trimmed()); }
         Tag * appendTag(const QByteArray & tname);
         void appendNewline();
-        void appendText(const QByteArray & val, const bool & simplified = false);
+        void appendText(const QByteArray & val);
         void appendComment(const QByteArray & val);
 
         friend QDebug operator<< (QDebug debug, const Tag & c) {

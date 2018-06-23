@@ -58,7 +58,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     QFile f("F://rubyn test//Complex.html");
 
     if (f.open(QFile::Text | QFile::ReadOnly)) {
-        Html::Page page(&f, Html::Decoding::charset_utf8, Html::Page::pf_skip_comment);
+        Html::Page page(&f); //, Html::Decoding::charset_utf8, Html::Page::pf_skip_comment);
 
         page.output();
 

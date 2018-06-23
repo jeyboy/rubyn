@@ -2,20 +2,16 @@
 #define LOGGER
 
 #include <qpointer.h>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qelapsedtimer.h>
-#include <qdatetime.h>
-#include <qscrollbar.h>
-#include <qstringbuilder.h>
-#include <qapplication.h>
-#include <qfontmetrics.h>
 
 #include "misc/singleton.h"
 
 #define TIME_MARK QDateTime::currentDateTime().toString(QLatin1String("dd.MM.yyyy hh:mm:ss "))
 
 class QPlainTextEdit;
+class QFile;
+class QTextStream;
+class QFontMetrics;
+class QElapsedTimer;
 
 class Logger : public QObject, public Singleton<Logger> {
     Q_OBJECT
@@ -28,14 +24,7 @@ public:
 
     ~Logger();
 
-    static void dump(const QByteArray & content) {
-        QString p = QCoreApplication::applicationDirPath() % '/' % QDateTime::currentDateTime().toString("yyyy.MM.dd_hh.mm.ss.zzz") % QLatin1String(".html");
-        QFile f(p);
-        if (f.open(QFile::WriteOnly)) {
-            f.write(content);
-            f.close();
-        }
-    }
+    static void dump(const QByteArray & content);
 
     void write(const QString & initiator, const QString & value, const LogLevel & level = log_info);
     void write(const QString & initiator, const QString & value, const QString & attr, const LogLevel & level = log_info);
@@ -45,10 +34,8 @@ public:
     inline void setShowDateTime(bool show) { m_showDate = show; }
     inline QPointer<QPlainTextEdit> & getEditor() { return m_editor; }
 
-//    inline void startMark() { timer.start(); }
-//    inline void endMark(QString initiator, QString value) {
-//        write(initiator, value, QString::number(timer.elapsed()) % QLatin1String(" ms (") % Info::paddedNumber(timer.nsecsElapsed()) % QLatin1String(" ns)"));
-//    }
+    void startMark();
+    void endMark(const QString & initiator, const QString & value);
 
 private:
     QString path(const QString & file);
@@ -65,7 +52,7 @@ private:
     QString lastInitiator;
     QFontMetrics * fm;
 
-    QElapsedTimer timer;
+    QElapsedTimer * timer;
 
     static Logger * self;
 private slots:

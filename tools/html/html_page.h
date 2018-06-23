@@ -18,12 +18,16 @@
 #define VAL_BUFF_VALID (sval && VBUFF_VALID)
 
 
-#define DECODE_NAME(val)({ \
+#define DECODE_NAME(val, simplify)({ \
     QByteArray v = val;\
     if (tag_flags & Decoding::decode_content)\
         Decoding::decodeContent(charset, v);\
     if (tag_flags & Decoding::decode_mnemo)\
         Decoding::decodeMnemonics(v);\
+    if (simplify && tag_flags & Decoding::simplify_needed)\
+        v = v.simplified();\
+    else v = v.trimmed();\
+    \
     tag_flags = 0;\
     v; \
 })

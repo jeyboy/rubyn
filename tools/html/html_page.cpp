@@ -77,7 +77,10 @@ void Page::parse(const char * data, Tag * root_tag) {
         }
 
         if (*pdata < 32 && *pdata > 0 && *pdata != newline) { // skip not printable trash
-            if (sname && !NBUFF_VALID) sname++;
+            if (sname && !NBUFF_VALID)
+                sname++;
+            else
+                tag_flags |= Decoding::simplify_needed;
 
             pdata++;
             continue;
@@ -93,19 +96,21 @@ void Page::parse(const char * data, Tag * root_tag) {
                     case newline: {
                         if (sname && !NBUFF_VALID) sname++;
 
-                        if (NAME_BUFF_VALID) {
-                            if (!(pflags & pf_skip_text))  {
-                                QByteArray ar = NAME_BUFF;
-                                elem -> appendText(DECODE_NAME(ar), simplify);
+                        if (!(pflags & pf_skip_newlines)) {
+                            if (NAME_BUFF_VALID) {
+                                if (!(pflags & pf_skip_text))  {
+                                    QByteArray ar = NAME_BUFF;
+                                    elem -> appendText(DECODE_NAME(ar, simplify));
+                                }
+
+                                sname = pdata + 1;
                             }
 
-                            sname = pdata + 1;
-                        }
-
-                        if (!(pflags & pf_skip_newlines)) {
                             temp = elem -> lastChild();
                             if (!temp || (temp && !temp -> isNewline())) // ignore creation of duplicates for newlines
                                 elem -> appendNewline();
+                        } else if (NAME_BUFF_VALID) {
+                            tag_flags |= Decoding::simplify_needed;
                         }
                     break;}
 
@@ -135,7 +140,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                                 if (has_cdata)
                                     ar.replace(tkn_scdata, 0).replace(tkn_ecdata,  0);
 
-                                elem -> appendText(DECODE_NAME(ar), simplify);
+                                elem -> appendText(DECODE_NAME(ar, simplify));
                             }
                             has_cdata = false;
                         }
@@ -150,7 +155,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                 switch(*pdata) {
                     case close_tag:
                     case space: {
-                        elem -> addAttr(NAME_BUFF, DECODE_NAME(VAL_BUFF));
+                        elem -> addAttr(NAME_BUFF, DECODE_NAME(VAL_BUFF, false));
                         sname = 0; sval = 0; ename = 0;
                         state = attr;
                         continue;
@@ -164,7 +169,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                     case content_del2: {
                         if (*sval == *pdata) {
                             sval++;
-                            elem -> addAttr(NAME_BUFF, DECODE_NAME(VAL_BUFF));
+                            elem -> addAttr(NAME_BUFF, DECODE_NAME(VAL_BUFF, false));
                             sname = 0; sval = 0; ename = 0;
                             state = attr;
                         }
@@ -241,11 +246,18 @@ void Page::parse(const char * data, Tag * root_tag) {
                         if (sname && !NBUFF_VALID) sname++;
                     break;}
 
+                    case newline: {
+                        if (sname && !NBUFF_VALID) sname++;
+                        else tag_flags |= Decoding::simplify_needed;
+                    break;}
+
                     case open_tag: {
                         if (*(pdata + 1) == close_tag_predicate && elem -> isClosableBy(pdata + 2)) {
                             if (NAME_BUFF_VALID) {
-                                if (!(pflags & pf_skip_text))
-                                    elem -> appendText(NAME_BUFF, simplify);
+                                if (!(pflags & pf_skip_text)) {
+                                    QByteArray ar = NAME_BUFF;
+                                    elem -> appendText(DECODE_NAME(ar, simplify));
+                                }
                             }
 
                             pdata += 2;
