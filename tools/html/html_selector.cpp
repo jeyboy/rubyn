@@ -15,7 +15,7 @@ const QHash<QByteArray, QByteArray> Selector::attr_predifinitions = QHash<QByteA
 
 bool Selector::addPredicate(const SState & state, const QByteArray & token) {
     switch(state) {
-        case st_tag: { _token_id = Tag::tagId(token.toLower(), false); break;}
+        case st_tag: { _token_id = Tag::tagID(token.toLower(), false); break;}
         case st_id: { _attrs.insert(attr_id, QPair<char, QByteArray>(sel_attr_eq, token)); break; }
         case st_class: { SELECTOR_PROCEED_CLASSES(sel_attr_eq, token); break;}
         case st_attr_type: {

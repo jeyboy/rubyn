@@ -126,7 +126,7 @@ namespace Html {
         void proceedCharset(Tag * tag);
 
         bool checkTagClose(Tag *& elem, const QByteArray & tag) {
-            int tag_id = Tag::tagId(tag, false);
+            int tag_id = Tag::tagID(tag, false);
             if (tag_id == -1) return false;
 
             if (elem -> isClosableBy(tag_id, tag.size()))

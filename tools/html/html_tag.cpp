@@ -123,16 +123,16 @@ QByteArray Tag::selectValue() const {
 QByteArray Tag::radioValue() const { return hasAttr(attr_checked) ? _attrs[attr_default] : QByteArray(); }
 QByteArray Tag::textareaValue() const { return text(); }
 
-QByteArray Tag::src(QByteArray * base_url) const {
-    QByteArray val = src();
+QByteArray Tag::src(QByteArray * base_url) {
+    QByteArray val = QByteArray(src());
     return Decoding::decodeUrl(val, base_url);
 }
-QByteArray Tag::link(QByteArray * base_url) const {
-    QByteArray val = link();
+QByteArray Tag::link(QByteArray * base_url) {
+    QByteArray val = QByteArray(link());
     return Decoding::decodeUrl(val, base_url);
 }
-QByteArray Tag::action(QByteArray * base_url) const {
-    QByteArray val = action();
+QByteArray Tag::action(QByteArray * base_url) {
+    QByteArray val = QByteArray(action());
     return Decoding::decodeUrl(val, base_url);
 }
 
@@ -374,7 +374,7 @@ bool Tag::isFormProceable() const {
 }
 
 Tag * Tag::child(const QByteArray & name_predicate, const int & pos) const {
-    int i = 0, stag_id = tagId(name_predicate, false);
+    int i = 0, stag_id = tagID(name_predicate, false);
 
     if (stag_id == -1) return 0;
 
@@ -432,7 +432,7 @@ Tag * Tag::findFirst(const Selector * selector) const {
 
 Tag * Tag::appendTag(const QByteArray & tname) {
     QByteArray nname = tname.toLower().trimmed();
-    int tag_id = tagId(nname);
+    int tag_id = tagID(nname);
 
     // if name of tag eql to child tag - append child to parent
     Tag * newTag = new Tag(

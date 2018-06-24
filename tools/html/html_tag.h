@@ -139,7 +139,7 @@ namespace Html {
         static Tag * stub() { return new Tag(HTML_ANY_TAG); }
 
         inline Tag(const QByteArray & tag, Tag * parent_tag = 0) :
-            _level(parent_tag ? parent_tag -> _level + 1 : 0), _tag_id(tagId(tag)), _tag_len(tag.length()), _classes(0), _parent(parent_tag) {}
+            _level(parent_tag ? parent_tag -> _level + 1 : 0), _tag_id(tagID(tag)), _tag_len(tag.length()), _classes(0), _parent(parent_tag) {}
         inline Tag(const int & tag_id, const int & tag_length, Tag * parent_tag = 0) :
             _level(parent_tag ? parent_tag -> _level + 1 : 0), _tag_id(tag_id), _tag_len(tag_length), _classes(0), _parent(parent_tag) {}
 
@@ -148,7 +148,7 @@ namespace Html {
             delete _classes;
         }
 
-        static int tagId(const QByteArray & tag, bool append = true) {
+        static int tagID(const QByteArray & tag, bool append = true) {
             if (append && !list.contains(tag))
                 list.insert(tag, list.size() + tg_appendable);
 
@@ -158,15 +158,15 @@ namespace Html {
         inline int tagID() { return _tag_id; }
         inline int level() const { return _level; }
         inline QByteArray name() const { return list.key(_tag_id); }
-        inline QHash<QByteArray, QByteArray> attributes() const { return _attrs; }
+        inline const QHash<QByteArray, QByteArray> & attributes() const { return _attrs; }
         inline QByteArray data(const QByteArray & name) const { return value(QByteArrayLiteral("data-") + name); }
 
-        inline QByteArray src() const { return _attrs.value(attr_src); }
-        QByteArray src(QByteArray * base_url) const;
-        inline QByteArray link() const { return _attrs.value(attr_href); }
-        QByteArray link(QByteArray * base_url) const;
-        inline QByteArray action() const { return _attrs.value(attr_action); }
-        QByteArray action(QByteArray * base_url) const;
+        inline const QByteArray & src() { return _attrs[attr_src]; }
+        QByteArray src(QByteArray * base_url);
+        inline const QByteArray & link() { return _attrs[attr_href]; }
+        QByteArray link(QByteArray * base_url);
+        inline const QByteArray & action() { return _attrs[attr_action]; }
+        QByteArray action(QByteArray * base_url);
 
         inline Set children() const { return _tags; }
 
@@ -196,13 +196,13 @@ namespace Html {
 //        }
 
         inline bool isSolo() { return solo.contains(_tag_id); }
-        static inline bool isSolo(const QByteArray & tag_name) { return solo.contains(tagId(tag_name)); }
+        static inline bool isSolo(const QByteArray & tag_name) { return solo.contains(tagID(tag_name)); }
 
         inline bool isClosableBy(const char * data) {
-            return '>' == *(data + _tag_len) && _tag_id == tagId(QByteArray(data, _tag_len).toLower(), false);
+            return '>' == *(data + _tag_len) && _tag_id == tagID(QByteArray(data, _tag_len).toLower(), false);
         }
         inline bool isClosableBy(const QByteArray & tag_name) {
-            return tag_name.length() == _tag_len && _tag_id == tagId(tag_name, false);
+            return tag_name.length() == _tag_len && _tag_id == tagID(tag_name, false);
         }
         inline bool isClosableBy(const int & tag_id, const int & tag_len) {
             return tag_len == _tag_len && _tag_id == tag_id;
@@ -236,8 +236,10 @@ namespace Html {
         Tag * child(const QByteArray & name_predicate, const int & pos = 0) const;
         inline int childrenCount() { return _tags.size(); }
 
-        inline QByteArray rawClasses() { return _attrs.take(attr_class); }
+        inline const QByteArray & rawClasses() { return _attrs[attr_class]; }
         QHash<QByteArray, bool> * classes();
+
+        inline const QByteArray & id() { return _attrs[attr_id]; }
         inline bool hasId(const QByteArray & id_name) { return _attrs[attr_id] == id_name; }
         inline bool hasClass(const QByteArray & class_name) {
             QHash<QByteArray, bool> * klasses = classes();
