@@ -73,7 +73,7 @@ namespace Html {
             pf_trim_text = 64,
             pf_simplify_text = 128,
 
-            pf_default = pf_skip_comment | pf_skip_newlines | pf_simplify_text // | pf_skip_mnemonics_decoding | pf_skip_content_decoding
+            pf_default = pf_skip_comment | pf_skip_newlines | pf_trim_text // | pf_skip_mnemonics_decoding | pf_skip_content_decoding
         };
     private:
         enum StateFlags {

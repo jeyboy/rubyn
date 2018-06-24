@@ -65,7 +65,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 //    if (f.open(QFile::Text | QFile::ReadOnly)) {
 //        Logger::obj().startMark();
-//        Html::Page page(&f, Html::Decoding::charset_utf8, Html::Page::pf_skip_comment);
+//        Html::Page page(&f); //, Html::Decoding::charset_utf8, Html::Page::pf_skip_comment);
 //        Logger::obj().endMark(QLatin1Literal("HTML"), QLatin1Literal("parsing"));
 //        page.output();
 

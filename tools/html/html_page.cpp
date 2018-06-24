@@ -91,7 +91,10 @@ void Page::parse(const char * data, Tag * root_tag) {
             case content: {
                 switch(*pdata) {
                     case space: {
-                        if (trim && sname && !NBUFF_VALID) sname++;
+                        if (trim && sname && !NBUFF_VALID)
+                            sname++;
+                        else
+                            tag_flags |= Decoding::simplify_needed;
                     break;}
 
                     case newline: {
