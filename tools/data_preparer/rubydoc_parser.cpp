@@ -196,16 +196,28 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                     for(Html::Set::Iterator method_tag = methods.begin(); method_tag != methods.end(); method_tag++) {
                         Html::Set divs = (*method_tag) -> find("div");
 
-                        qDebug() << "M" << (*method_tag) -> texts();
+                        //TODO: item can have two or more .method-heading
 
-                        Html::Set details = divs[0] -> children();
+                        out << Logger::nl << target_prefix;
+                        Html::Tag * mseq = divs[0] -> findFirst(".method-callseq");
 
-                        out << Logger::nl << target_prefix << methods_prefix;
-
-                        if (details[0] -> hasClass("method-callseq")) {
-                            out << details[0] -> text();
+                        if (mseq) {
+                            out << mseq -> text();
                         } else {
-                            out << details[0] -> text() << details[1] -> text();
+                            out << methods_prefix;
+
+                            Html::Tag * mname = divs[0] -> findFirst(".method-name");
+                            Html::Tag * margs = divs[0] -> findFirst(".method-args");
+
+                            if (mname) {
+                                out << mname -> text();
+
+                                if (margs)
+                                    out << margs -> text();
+                            } else {
+                                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method name in file: ") % inpath, QStringList() << divs[0] -> texts());
+                                datafile.close(); out.flush(); outfile.close();
+                            }
                         }
 
                         out << Logger::nl << Logger::nl << target_prefix << "end" << Logger::nl;

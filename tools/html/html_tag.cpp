@@ -136,6 +136,20 @@ QByteArray Tag::action(QByteArray * base_url) {
     return Decoding::decodeUrl(val, base_url);
 }
 
+//Set Tag::trimChildren() {
+//    Set res = children();
+
+//    QMutableListIterator<Tag *> i(res);
+//    while (i.hasNext()) {
+//        Tag * t = i.next();
+
+//        if (t -> isNewline())
+//            i.remove();
+//    }
+
+//    return res;
+//}
+
 QByteArray Tag::value(const QByteArray & name) const {
     bool is_default_val = name == attr_default;
 

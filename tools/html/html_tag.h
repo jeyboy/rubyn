@@ -169,6 +169,7 @@ namespace Html {
         QByteArray action(QByteArray * base_url);
 
         inline Set children() const { return _tags; }
+//        Set trimChildren();
 
         //INFO: all data stored like UTF-8
         // alias
