@@ -259,7 +259,7 @@ namespace Html {
         //TODO: rewrite
 //        QHash<QString, QString> & findLinks(const Selector * selector, QHash<QString, QString> & links);
 
-        inline void addAttr(const QByteArray & name, const QByteArray & val) { _attrs.insert(name.toLower().trimmed(), val.trimmed()); }
+        inline void addAttr(const QByteArray & name, const QByteArray & val) { _attrs.insert(name.toLower().trimmed(), val); }
         Tag * appendTag(const QByteArray & tname);
         void appendNewline();
         void appendText(const QByteArray & val);

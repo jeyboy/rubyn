@@ -11,7 +11,7 @@ class RubydocParser : public QObject {
 //    bool parseFile(const QString & inpath, const QString & outpath);
     bool parseFolder(const QString & path, const QString & outpath);
 
-    void writeLine(const QByteArray & prefix, const QString & datum, QTextStream * out, const uint & max_line_len = 80);
+    void writeLine(const QByteArray & prefix, const QString & datum, QTextStream * out, const int & max_line_len = 80);
 public:
     RubydocParser(QObject * parent = 0);
     bool parse(const QString & inpath, const QString & outpath);

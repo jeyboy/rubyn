@@ -16,6 +16,8 @@ class QElapsedTimer;
 class Logger : public QObject, public Singleton<Logger> {
     Q_OBJECT
 public:
+    static const char * nl;
+
     enum LogLevel : int {
         log_info = 0,
         log_error = 1,

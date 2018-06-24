@@ -12,7 +12,9 @@
 #include <qstringbuilder.h>
 #include <qelapsedtimer.h>
 
-void dump(const QByteArray & content) {
+const char * Logger::nl = "\n";
+
+void Logger::dump(const QByteArray & content) {
     QString p = QCoreApplication::applicationDirPath() % '/' % QDateTime::currentDateTime().toString("yyyy.MM.dd_hh.mm.ss.zzz") % QLatin1String(".html");
     QFile f(p);
     if (f.open(QFile::WriteOnly)) {
@@ -104,7 +106,7 @@ QString Logger::path(const QString & file) {
 
 void Logger::toFile(const QString & initiator, const QString & value) {
     if (file) {
-        (*out) << TIME_MARK << " ||| " << initiator << " : " << value << "\n";
+        (*out) << TIME_MARK << " ||| " << initiator << " : " << value << nl;
         out -> flush();
     }
 }

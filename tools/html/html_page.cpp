@@ -62,7 +62,8 @@ void Page::parse(const char * data, Tag * root_tag) {
     Tag * elem = root_tag, * temp = 0;
     PState state = content;
     const char *pdata = data, *sname = 0, *sval = 0, *ename = 0;
-    bool has_cdata = false, is_xml = false, simplify = pflags & pf_simplify_text; // cdata presents in text
+    bool has_cdata = false, is_xml = false;  // cdata presents in text
+    bool simplify = pflags & pf_simplify_text, trim = pflags & pf_trim_text;
     quint8 tag_flags = 0; // charset
 
     while(*pdata) {
@@ -90,7 +91,7 @@ void Page::parse(const char * data, Tag * root_tag) {
             case content: {
                 switch(*pdata) {
                     case space: {
-                        if (sname && !NBUFF_VALID) sname++;
+                        if (trim && sname && !NBUFF_VALID) sname++;
                     break;}
 
                     case newline: {
@@ -100,7 +101,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                             if (NAME_BUFF_VALID) {
                                 if (!(pflags & pf_skip_text))  {
                                     QByteArray ar = NAME_BUFF;
-                                    elem -> appendText(DECODE_NAME(ar, simplify));
+                                    elem -> appendText(DECODE_NAME(ar, trim, simplify));
                                 }
 
                                 sname = pdata + 1;
@@ -145,7 +146,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                                 if (has_cdata)
                                     ar.replace(tkn_scdata, 0).replace(tkn_ecdata,  0);
 
-                                elem -> appendText(DECODE_NAME(ar, simplify));
+                                elem -> appendText(DECODE_NAME(ar, trim, simplify));
                             }
                             has_cdata = false;
                         }
@@ -160,7 +161,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                 switch(*pdata) {
                     case close_tag:
                     case space: {
-                        elem -> addAttr(NAME_BUFF, DECODE_NAME(VAL_BUFF, false));
+                        elem -> addAttr(NAME_BUFF, DECODE_NAME(VAL_BUFF, true, false));
                         sname = 0; sval = 0; ename = 0;
                         state = attr;
                         continue;
@@ -174,7 +175,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                     case content_del2: {
                         if (*sval == *pdata) {
                             sval++;
-                            elem -> addAttr(NAME_BUFF, DECODE_NAME(VAL_BUFF, false));
+                            elem -> addAttr(NAME_BUFF, DECODE_NAME(VAL_BUFF, true, false));
                             sname = 0; sval = 0; ename = 0;
                             state = attr;
                         }
@@ -261,7 +262,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                             if (NAME_BUFF_VALID) {
                                 if (!(pflags & pf_skip_text)) {
                                     QByteArray ar = NAME_BUFF;
-                                    elem -> appendText(DECODE_NAME(ar, simplify));
+                                    elem -> appendText(DECODE_NAME(ar, trim, simplify));
                                 }
                             }
 
