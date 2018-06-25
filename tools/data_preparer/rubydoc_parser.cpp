@@ -7,6 +7,33 @@
 
 #include <qdiriterator.h>
 
+QByteArray RubydocParser::clearLine(const QByteArray & line) {
+    QByteArray res;
+    res.reserve(line.size());
+
+    const char * ptr = line.constData();
+
+    while(*ptr) {
+        switch(*ptr) {
+            case 32: {
+                switch(*(ptr + 1)) {
+                    case 46: // .
+                    case 44: // ,
+                    case 32: {
+                        ++ptr;
+                        continue;
+                    break;}
+                }
+            break;}
+        }
+
+        res.append(*ptr);
+        ++ptr;
+    }
+
+    return res;
+}
+
 void RubydocParser::writeLine(const QByteArray & prefix, const QString & datum, QTextStream * out, const int & max_line_len) {
     uint pos = 0;
 
@@ -32,7 +59,10 @@ void RubydocParser::writeLine(const QByteArray & prefix, const QString & datum, 
             line = line.mid(0, line_size - 1);
         }
 
-        (*out) << prefix << line << Logger::nl;
+        (*out) << prefix;
+        if (pos > 0)
+            (*out) << ' ';
+        (*out) << line << Logger::nl;
 
         pos += line.length();
     }
@@ -42,7 +72,7 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
     for(Html::Set::ConstIterator tag = parts.cbegin(); tag != parts.cend(); tag++) {
         switch((*tag) -> tagID()) {
             case Html::Tag::tg_p: {
-                writeLine(prefix, QString((*tag) -> texts()), out);
+                writeLine(prefix, QString(clearLine((*tag) -> texts())), out);
             break;}
 
             case Html::Tag::tg_h2: {
@@ -69,9 +99,6 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
 
             case Html::Tag::tg_pre: {
                 (*out)
-                    << Logger::nl
-                    << prefix
-                    << "-- EXAMPLE --"
                     << Logger::nl << example_prefix;
 
                 Html::Set code_parts = (*tag) -> children();
@@ -102,7 +129,7 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
 
 bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
     QByteArray description_prefix("# ");
-    QByteArray description_example_prefix("#     ");
+    QByteArray description_example_prefix("#      ");
     QByteArray target_prefix("    ");
 
     QByteArray border(80, '-');
@@ -192,6 +219,8 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                 for(Html::Set::Iterator include_tag = includes_texts.begin(); include_tag != includes_texts.end(); include_tag++) {
                     out << target_prefix << "include " << QString((*include_tag) -> text()) << Logger::nl;
                 }
+
+                out << Logger::nl;
             }
 
             Html::Set sections = doc_block -> find(".section");
@@ -261,35 +290,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
                         Html::Set method_descriptions = divs[1] -> children();
 
-                        for(Html::Set::Iterator tag = method_descriptions.begin(); tag != method_descriptions.end(); tag++) {
-                            switch((*tag) -> tagID()) {
-                                case Html::Tag::tg_p: {
-                                    writeLine(target_prefix, QString((*tag) -> texts()), &out);
-                                break;}
-
-                                case Html::Tag::tg_pre: {
-                                    out
-                                        << Logger::nl << target_prefix << description_example_prefix;
-
-                                    Html::Set code_parts = (*tag) -> children();
-
-                                    for(Html::Set::Iterator code_tag = code_parts.begin(); code_tag != code_parts.end(); code_tag++) {
-                                        if ((*code_tag) -> isNewline())
-                                            out << Logger::nl << target_prefix << description_example_prefix;
-                                        else
-                                            out << QString((*code_tag) -> text());
-                                    }
-                                break;}
-
-                                default: {
-                                    Logger::obj().write(
-                                        QLatin1Literal("RubydocParser"),
-                                        QLatin1Literal("Unknown tag type in method description: ") % (*tag) -> name() %
-                                            QLatin1Literal(" in file: ") % inpath
-                                    );
-                                }
-                            }
-                        }
+                        procDescription(method_descriptions, target_prefix + description_prefix, target_prefix + description_example_prefix, border, &out, inpath);
                     }
                 }
             }
@@ -333,6 +334,10 @@ RubydocParser::RubydocParser(QObject * parent) : QObject(parent) {
 //        this, &FilesProcManager::cleanerProc,
 //        new Func()
 //    );
+}
+
+RubydocParser::~RubydocParser() {
+
 }
 
 bool RubydocParser::parse(const QString & inpath, const QString & outpath) {
