@@ -122,22 +122,15 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
             break;}
 
             case Html::Tag::tg_ul: {
-//                (*out)
-//                    << Logger::nl << example_prefix;
+                Html::Set lis = (*tag) -> children();
 
-//                Html::Set code_parts = (*tag) -> children();
+                (*out) << Logger::nl;
 
-//                for(Html::Set::Iterator code_tag = code_parts.begin(); code_tag != code_parts.end(); code_tag++) {
-//                    if ((*code_tag) -> isNewline()) {
-//                        (*out) << Logger::nl;
+                for(Html::Set::Iterator li = lis.begin(); li != lis.end(); li++) {
+                    (*out) << list_prefix << QString(clearLine((*li) -> texts())) << Logger::nl;
+                }
 
-//                        if (code_tag + 1 != code_parts.end())
-//                           (*out) << example_prefix;
-//                    } else
-//                        (*out) << QString((*code_tag) -> text());
-//                }
-
-//                (*out) << Logger::nl;
+                (*out) << Logger::nl;
             break;}
 
             default: {
@@ -186,8 +179,8 @@ void RubydocParser::procMethod(Html::Tag * method_block, const QByteArray & targ
 
 bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
     QByteArray description_prefix("# ");
-    QByteArray description_list_prefix("#   - ");
-    QByteArray description_example_prefix("#      ");
+    QByteArray description_list_prefix("#    - ");
+    QByteArray description_example_prefix("#       ");
     QByteArray target_prefix("    ");
 
     QByteArray border(80, '-');
