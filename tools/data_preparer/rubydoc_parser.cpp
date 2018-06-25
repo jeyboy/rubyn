@@ -270,7 +270,8 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                         Html::Tag * mseq = divs[0] -> findFirst(".method-callseq");
 
                         if (mseq) {
-                            out << mseq -> text();
+                            QString blia = QString(mseq -> text());
+                            out << QString(mseq -> text()).replace(QChar(8594), QLatin1Literal("#=>"));
                         } else {
                             Html::Tag * mname = divs[0] -> findFirst(".method-name");
                             Html::Tag * margs = divs[0] -> findFirst(".method-args");
