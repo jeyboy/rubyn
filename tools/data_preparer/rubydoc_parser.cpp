@@ -17,7 +17,10 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
         switch(*ptr) {
             case 32: {
                 switch(*(ptr + 1)) {
-                    case 46: // .
+                    case 46: { // .
+                        if (*(ptr + 2) == '.') // ignore blanks before ... and .. sequences
+                            break;
+                    }
                     case 44: // ,
                     case 32: {
                         ++ptr;
@@ -68,7 +71,9 @@ void RubydocParser::writeLine(const QByteArray & prefix, const QString & datum, 
     }
 }
 
-void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & prefix, const QByteArray & example_prefix, const QByteArray & border, QTextStream * out, const QString & inpath) {
+void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & prefix, const QByteArray & example_prefix, const QByteArray & list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath) {
+    //TODO: Array::pack - pre with directives not printed
+
     for(Html::Set::ConstIterator tag = parts.cbegin(); tag != parts.cend(); tag++) {
         switch((*tag) -> tagID()) {
             case Html::Tag::tg_p: {
@@ -116,6 +121,25 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
                 (*out) << Logger::nl;
             break;}
 
+            case Html::Tag::tg_ul: {
+//                (*out)
+//                    << Logger::nl << example_prefix;
+
+//                Html::Set code_parts = (*tag) -> children();
+
+//                for(Html::Set::Iterator code_tag = code_parts.begin(); code_tag != code_parts.end(); code_tag++) {
+//                    if ((*code_tag) -> isNewline()) {
+//                        (*out) << Logger::nl;
+
+//                        if (code_tag + 1 != code_parts.end())
+//                           (*out) << example_prefix;
+//                    } else
+//                        (*out) << QString((*code_tag) -> text());
+//                }
+
+//                (*out) << Logger::nl;
+            break;}
+
             default: {
                 Logger::obj().write(
                     QLatin1Literal("RubydocParser"),
@@ -127,8 +151,42 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
     }
 }
 
+void RubydocParser::procMethod(Html::Tag * method_block, const QByteArray & target_prefix, const QByteArray & method_prefix, const QByteArray & description_prefix, const QByteArray & description_example_prefix, const QByteArray & description_list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath) {
+    Html::Set divs = method_block -> find("div");
+
+    //TODO: some methods shoild do not have 'methods_prefix' // sign operations and etc
+    //TODO: item can have two or more .method-heading
+    //TODO: item can have section .aliases
+
+    (*out) << Logger::nl << method_prefix;
+    Html::Tag * mseq = divs[0] -> findFirst(".method-callseq");
+
+    if (mseq) {
+        (*out) << QString(clearLine(mseq -> text())).replace(QChar(8594), QLatin1Literal("#=>"));
+    } else {
+        Html::Tag * mname = divs[0] -> findFirst(".method-name");
+        Html::Tag * margs = divs[0] -> findFirst(".method-args");
+
+        if (mname) {
+            (*out) << mname -> text();
+
+            if (margs)
+                (*out) << margs -> text();
+        } else {
+            Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method name in file: ") % inpath, QStringList() << divs[0] -> texts());
+        }
+    }
+
+    (*out) << Logger::nl << Logger::nl << target_prefix << "end" << Logger::nl;
+
+    Html::Set method_descriptions = divs[1] -> children();
+
+    procDescription(method_descriptions, description_prefix, description_example_prefix, description_list_prefix, border, out, inpath);
+}
+
 bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
     QByteArray description_prefix("# ");
+    QByteArray description_list_prefix("#   - ");
     QByteArray description_example_prefix("#      ");
     QByteArray target_prefix("    ");
 
@@ -186,7 +244,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
             Html::Set descrition_parts = doc_description -> children();
 
-            procDescription(descrition_parts, description_prefix, description_example_prefix, border, &out, inpath);
+            procDescription(descrition_parts, description_prefix, description_example_prefix, description_list_prefix, border, &out, inpath);
 
             out << Logger::nl; // one extra line before begin of the class description
 
@@ -260,38 +318,15 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                     Html::Set methods = (*section_tag) -> find(".method-detail");
 
                     for(Html::Set::Iterator method_tag = methods.begin(); method_tag != methods.end(); method_tag++) {
-                        Html::Set divs = (*method_tag) -> find("div");
-
-                        //TODO: some methods shoild do not have 'methods_prefix' // sign operations and etc
-                        //TODO: item can have two or more .method-heading
-                        //TODO: item can have section .aliases
-
-                        out << Logger::nl << target_prefix << methods_prefix;
-                        Html::Tag * mseq = divs[0] -> findFirst(".method-callseq");
-
-                        if (mseq) {
-                            QString blia = QString(mseq -> text());
-                            out << QString(mseq -> text()).replace(QChar(8594), QLatin1Literal("#=>"));
-                        } else {
-                            Html::Tag * mname = divs[0] -> findFirst(".method-name");
-                            Html::Tag * margs = divs[0] -> findFirst(".method-args");
-
-                            if (mname) {
-                                out << mname -> text();
-
-                                if (margs)
-                                    out << margs -> text();
-                            } else {
-                                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method name in file: ") % inpath, QStringList() << divs[0] -> texts());
-                                datafile.close(); out.flush(); outfile.close();
-                            }
-                        }
-
-                        out << Logger::nl << Logger::nl << target_prefix << "end" << Logger::nl;
-
-                        Html::Set method_descriptions = divs[1] -> children();
-
-                        procDescription(method_descriptions, target_prefix + description_prefix, target_prefix + description_example_prefix, border, &out, inpath);
+                        procMethod(
+                            *method_tag,
+                            target_prefix,
+                            target_prefix + methods_prefix,
+                            target_prefix + description_prefix,
+                            target_prefix + description_example_prefix,
+                            target_prefix + description_list_prefix,
+                            border, &out, inpath
+                        );
                     }
                 }
             }
