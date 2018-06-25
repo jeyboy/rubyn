@@ -7,6 +7,99 @@
 
 #include <qdiriterator.h>
 
+void RubydocParser::writeLine(const QByteArray & prefix, const QString & datum, QTextStream * out, const int & max_line_len) {
+    uint pos = 0;
+
+    if (datum.length() < max_line_len) {
+        (*out) << prefix << datum << Logger::nl;
+        return;
+    }
+
+    while(true) {
+        QStringRef line = datum.midRef(pos, max_line_len + 1);
+
+        if (line.isEmpty())
+            break;
+
+        if (line.length() == max_line_len + 1) {
+            int line_size = line.length();
+
+            for(; line_size >= 0; --line_size) {
+                if (line[line_size - 1].isSpace())
+                    break;
+            }
+
+            line = line.mid(0, line_size - 1);
+        }
+
+        (*out) << prefix << line << Logger::nl;
+
+        pos += line.length();
+    }
+}
+
+void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & prefix, const QByteArray & example_prefix, const QByteArray & border, QTextStream * out, const QString & inpath) {
+    for(Html::Set::ConstIterator tag = parts.cbegin(); tag != parts.cend(); tag++) {
+        switch((*tag) -> tagID()) {
+            case Html::Tag::tg_p: {
+                writeLine(prefix, QString((*tag) -> texts()), out);
+            break;}
+
+            case Html::Tag::tg_h2: {
+                (*out)
+                    << Logger::nl
+                    << border
+                    << Logger::nl
+                    << prefix;
+
+                Html::Set hchilds = (*tag) -> children();
+
+                for(Html::Set::Iterator htag = hchilds.begin(); htag != hchilds.end(); htag++) {
+                    if ((*htag) -> tagID() == Html::Tag::tg_span)
+                        break;
+                    else
+                        (*out) << (*htag) -> text();
+                }
+
+                (*out)
+                    << Logger::nl
+                    << border
+                    << Logger::nl;
+            break;}
+
+            case Html::Tag::tg_pre: {
+                (*out)
+                    << Logger::nl
+                    << prefix
+                    << "-- EXAMPLE --"
+                    << Logger::nl << example_prefix;
+
+                Html::Set code_parts = (*tag) -> children();
+
+                for(Html::Set::Iterator code_tag = code_parts.begin(); code_tag != code_parts.end(); code_tag++) {
+                    if ((*code_tag) -> isNewline()) {
+                        (*out) << Logger::nl;
+
+                        if (code_tag + 1 != code_parts.end())
+                           (*out) << example_prefix;
+                    } else
+                        (*out) << QString((*code_tag) -> text());
+                }
+
+                (*out) << Logger::nl;
+            break;}
+
+            default: {
+                Logger::obj().write(
+                    QLatin1Literal("RubydocParser"),
+                    QLatin1Literal("Unknown tag type in description: ") % (*tag) -> name() %
+                        QLatin1Literal("  in file: ") % inpath
+                );
+            }
+        }
+    }
+}
+
 bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
     QByteArray description_prefix("# ");
     QByteArray description_example_prefix("#     ");
@@ -66,62 +159,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
             Html::Set descrition_parts = doc_description -> children();
 
-            for(Html::Set::Iterator tag = descrition_parts.begin(); tag != descrition_parts.end(); tag++) {
-                switch((*tag) -> tagID()) {
-                    case Html::Tag::tg_p: {
-                        writeLine(description_prefix, QString((*tag) -> texts()), &out);
-                    break;}
-
-                    case Html::Tag::tg_h2: {
-                        out
-                            << Logger::nl
-                            << border
-                            << Logger::nl
-                            << description_prefix;
-
-                        Html::Set hchilds = (*tag) -> children();
-
-                        for(Html::Set::Iterator htag = hchilds.begin(); htag != hchilds.end(); htag++) {
-                            if ((*htag) -> tagID() == Html::Tag::tg_span)
-                                break;
-                            else
-                                out << (*htag) -> text();
-                        }
-
-                        out
-                            << Logger::nl
-                            << border
-                            << Logger::nl;
-                    break;}
-
-                    case Html::Tag::tg_pre: {
-                        out
-                            << Logger::nl
-                            << description_prefix
-                            << "-- EXAMPLE --"
-                            << Logger::nl << description_example_prefix;
-
-                        Html::Set code_parts = (*tag) -> children();
-
-                        for(Html::Set::Iterator code_tag = code_parts.begin(); code_tag != code_parts.end(); code_tag++) {
-                            if ((*code_tag) -> isNewline())
-                                out << Logger::nl << description_example_prefix;
-                            else
-                                out << QString((*code_tag) -> text());
-                        }
-
-                        out << Logger::nl;
-                    break;}
-
-                    default: {
-                        Logger::obj().write(
-                            QLatin1Literal("RubydocParser"),
-                            QLatin1Literal("Unknown tag type in description: ") % (*tag) -> name() %
-                                QLatin1Literal("  in file: ") % inpath
-                        );
-                    }
-                }
-            }
+            procDescription(descrition_parts, description_prefix, description_example_prefix, border, &out, inpath);
 
             out << Logger::nl; // one extra line before begin of the class description
 
@@ -133,7 +171,6 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
             if (parent_tag)
                 parent_name = parent_tag -> text();
-
 
             /////////////////// REMOVE ME LATER
             if (target_class != "class" && target_class != "module") {
@@ -196,16 +233,16 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                     for(Html::Set::Iterator method_tag = methods.begin(); method_tag != methods.end(); method_tag++) {
                         Html::Set divs = (*method_tag) -> find("div");
 
+                        //TODO: some methods shoild do not have 'methods_prefix' // sign operations and etc
                         //TODO: item can have two or more .method-heading
+                        //TODO: item can have section .aliases
 
-                        out << Logger::nl << target_prefix;
+                        out << Logger::nl << target_prefix << methods_prefix;
                         Html::Tag * mseq = divs[0] -> findFirst(".method-callseq");
 
                         if (mseq) {
                             out << mseq -> text();
                         } else {
-                            out << methods_prefix;
-
                             Html::Tag * mname = divs[0] -> findFirst(".method-name");
                             Html::Tag * margs = divs[0] -> findFirst(".method-args");
 
@@ -289,37 +326,6 @@ bool RubydocParser::parseFolder(const QString & path, const QString & outpath) {
     }
 
     return true;
-}
-
-void RubydocParser::writeLine(const QByteArray & prefix, const QString & datum, QTextStream * out, const int & max_line_len) {
-    uint pos = 0;
-
-    if (datum.length() < max_line_len) {
-        (*out) << prefix << datum << Logger::nl;
-        return;
-    }
-
-    while(true) {
-        QStringRef line = datum.midRef(pos, max_line_len + 1);
-
-        if (line.isEmpty())
-            break;
-
-        if (line.length() == max_line_len + 1) {
-            int line_size = line.length();
-
-            for(; line_size >= 0; --line_size) {
-                if (line[line_size - 1].isSpace())
-                    break;
-            }
-
-            line = line.mid(0, line_size - 1);
-        }
-
-        (*out) << prefix << line << Logger::nl;
-
-        pos += line.length();
-    }
 }
 
 RubydocParser::RubydocParser(QObject * parent) : QObject(parent) {
