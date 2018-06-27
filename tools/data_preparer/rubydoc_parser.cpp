@@ -182,61 +182,31 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
         } else description_block = (*div);
     }
 
-
-    //TODO: some methods shoild do not have 'methods_prefix' // sign operations and etc
-
-//    (*out) << Logger::nl << method_prefix;
-//    Html::Tag * mseq = divs[0] -> findFirst(".method-callseq");
-
-//    if (mseq) {
-//        (*out) << QString(clearLine(mseq -> text())).replace(QChar(8594), QLatin1Literal("#=>"));
-//    } else {
-//        Html::Tag * mname = divs[0] -> findFirst(".method-name");
-//        Html::Tag * margs = divs[0] -> findFirst(".method-args");
-
-//        if (mname) {
-//            (*out) << mname -> text();
-
-//            if (margs)
-//                (*out) << margs -> text();
-//        } else {
-//            Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method name in file: ") % inpath, QStringList() << divs[0] -> texts());
-//        }
-//    }
-
-//    (*out) << Logger::nl << Logger::nl << target_prefix << "end" << Logger::nl;
-
     procDescription(description_block -> children(), description_prefix, description_example_prefix, description_list_prefix, border, out, inpath);
-}
 
-QList<RubydocParser::MethodMask> * RubydocParser::methodsSamling(const QString & signature, const QStringList & list) {
-    if (list.length() == 1)
-        return 0;
+    if (signatures.length() > 1) {
+        for(QStringList::Iterator sig = signatures.begin(); sig != signatures.end(); sig++) {
+            (*out) << description_prefix << (*sig) << Logger::nl;
+        }
+    }
 
-//    "%  +@  -@  =~ =! | * & + - < << <=> [] []= == === <= > >="
+    (*out) << Logger::nl << method_prefix << signature << '(';
 
-    RubydocParser::MethodMask mask;
-    mask.name_end = mask.name = list.first();
+    if (signatures.length() == 1) {
+        int pos = signatures[0].indexOf('(');
 
-    int pos = 1;
+        if (pos > -1) {
 
-    QList<RubydocParser::MethodMask> * res = new QList<RubydocParser::MethodMask>();
+        } else {
 
-//    for(; i < list.length(); i++) {
-//        QString str = list[i];
+        }
 
-//        for(QString::Iterator str_char = str.cbegin(), target_char = mask.name.cbegin(); str_char != str.cend() && target_char != mask.name.cend(); str_char++, target_char++) {
-//            if (*str_char != *target_char) {
-//                int len = target_char - target.cbegin();
+//        (*out) << "*several_variants";
+    } else {
+        (*out) << "*several_variants";
+    }
 
-//                mask.name = mask.name.mid(0, len);
-
-//                break;
-//            }
-//        }
-//    }
-
-    return res;
+    (*out) << ')' << Logger::nl << target_prefix << "end" << Logger::nl << Logger::nl << Logger::nl;
 }
 
 bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
@@ -345,7 +315,12 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
             QHash<QString, QString> methods_formats;
 
             for(Html::Set::Iterator chld_tag = methods_list_children.begin(); chld_tag != methods_list_children.end(); chld_tag++) {
-                methods_formats.insert((*chld_tag) -> link(), (*chld_tag) -> text());
+                QString sig = (*chld_tag) -> text();
+
+                methods_formats.insert(
+                    (*chld_tag) -> link(),
+                    sig[0] == ':' ? sig.mid(2) : sig.mid(1)
+                );
             }
 
 //            /////////////////////////////////////////////////
@@ -398,8 +373,6 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                             signature.clear();
                         }
 
-                        int y = 0;
-
                         procMethod(
                             signature,
                             *method_tag,
@@ -408,7 +381,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                             target_prefix + description_prefix,
                             target_prefix + description_example_prefix,
                             target_prefix + description_list_prefix,
-                            border, &out, inpath
+                            target_prefix % border, &out, inpath
                         );
                     }
                 }
