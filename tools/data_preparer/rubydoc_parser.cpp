@@ -5,7 +5,9 @@
 
 #include "controls/logger.h"
 
+#include <qlist.h>
 #include <qdiriterator.h>
+#include <qhash.h>
 
 QByteArray RubydocParser::clearLine(const QByteArray & line) {
     QByteArray res;
@@ -72,8 +74,6 @@ void RubydocParser::writeLine(const QByteArray & prefix, const QString & datum, 
 }
 
 void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & prefix, const QByteArray & example_prefix, const QByteArray & list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath) {
-    //TODO: Array::pack - pre with directives not printed
-
     for(Html::Set::ConstIterator tag = parts.cbegin(); tag != parts.cend(); tag++) {
         switch((*tag) -> tagID()) {
             case Html::Tag::tg_p: {
@@ -144,37 +144,99 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
     }
 }
 
-void RubydocParser::procMethod(Html::Tag * method_block, const QByteArray & target_prefix, const QByteArray & method_prefix, const QByteArray & description_prefix, const QByteArray & description_example_prefix, const QByteArray & description_list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath) {
+void RubydocParser::procMethod(const QString & signature, Html::Tag * method_block, const QByteArray & target_prefix, const QByteArray & method_prefix, const QByteArray & description_prefix, const QByteArray & description_example_prefix, const QByteArray & description_list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath) {
     Html::Set divs = method_block -> find("div");
 
-    //TODO: some methods shoild do not have 'methods_prefix' // sign operations and etc
-    //TODO: item can have two or more .method-heading
-    //TODO: item can have section .aliases
+    QStringList signatures;
+    Html::Tag * aliases_block = 0;
+    Html::Tag * description_block = 0;
 
-    (*out) << Logger::nl << method_prefix;
-    Html::Tag * mseq = divs[0] -> findFirst(".method-callseq");
 
-    if (mseq) {
-        (*out) << QString(clearLine(mseq -> text())).replace(QChar(8594), QLatin1Literal("#=>"));
-    } else {
-        Html::Tag * mname = divs[0] -> findFirst(".method-name");
-        Html::Tag * margs = divs[0] -> findFirst(".method-args");
+    for(Html::Set::ConstIterator div = divs.cbegin(); div != divs.cend(); div++) {
+        QByteArray div_class = (*div) -> rawClasses();
 
-        if (mname) {
-            (*out) << mname -> text();
+        if (div_class == QByteArrayLiteral("method-heading")) {
+            Html::Tag * mseq = divs[0] -> findFirst(".method-callseq");
 
-            if (margs)
-                (*out) << margs -> text();
-        } else {
-            Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method name in file: ") % inpath, QStringList() << divs[0] -> texts());
-        }
+            if (mseq) {
+                signatures << QString(clearLine(mseq -> text())).replace(QChar(8594), QLatin1Literal("#=>"));
+            } else {
+                Html::Tag * mname = divs[0] -> findFirst(".method-name");
+                Html::Tag * margs = divs[0] -> findFirst(".method-args");
+
+                QString msig;
+
+                if (mname) {
+                    msig.append(mname -> text());
+
+                    if (margs)
+                        msig.append(margs -> text());
+
+                    signatures << msig;
+                } else {
+                    Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method name in file: ") % inpath, QStringList() << divs[0] -> texts());
+                }
+            }
+        } else if (div_class == QByteArrayLiteral("aliases")) {
+            aliases_block = (*div);
+        } else description_block = (*div);
     }
 
-    (*out) << Logger::nl << Logger::nl << target_prefix << "end" << Logger::nl;
 
-    Html::Set method_descriptions = divs[1] -> children();
+    //TODO: some methods shoild do not have 'methods_prefix' // sign operations and etc
 
-    procDescription(method_descriptions, description_prefix, description_example_prefix, description_list_prefix, border, out, inpath);
+//    (*out) << Logger::nl << method_prefix;
+//    Html::Tag * mseq = divs[0] -> findFirst(".method-callseq");
+
+//    if (mseq) {
+//        (*out) << QString(clearLine(mseq -> text())).replace(QChar(8594), QLatin1Literal("#=>"));
+//    } else {
+//        Html::Tag * mname = divs[0] -> findFirst(".method-name");
+//        Html::Tag * margs = divs[0] -> findFirst(".method-args");
+
+//        if (mname) {
+//            (*out) << mname -> text();
+
+//            if (margs)
+//                (*out) << margs -> text();
+//        } else {
+//            Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method name in file: ") % inpath, QStringList() << divs[0] -> texts());
+//        }
+//    }
+
+//    (*out) << Logger::nl << Logger::nl << target_prefix << "end" << Logger::nl;
+
+    procDescription(description_block -> children(), description_prefix, description_example_prefix, description_list_prefix, border, out, inpath);
+}
+
+QList<RubydocParser::MethodMask> * RubydocParser::methodsSamling(const QString & signature, const QStringList & list) {
+    if (list.length() == 1)
+        return 0;
+
+//    "%  +@  -@  =~ =! | * & + - < << <=> [] []= == === <= > >="
+
+    RubydocParser::MethodMask mask;
+    mask.name_end = mask.name = list.first();
+
+    int pos = 1;
+
+    QList<RubydocParser::MethodMask> * res = new QList<RubydocParser::MethodMask>();
+
+//    for(; i < list.length(); i++) {
+//        QString str = list[i];
+
+//        for(QString::Iterator str_char = str.cbegin(), target_char = mask.name.cbegin(); str_char != str.cend() && target_char != mask.name.cend(); str_char++, target_char++) {
+//            if (*str_char != *target_char) {
+//                int len = target_char - target.cbegin();
+
+//                mask.name = mask.name.mid(0, len);
+
+//                break;
+//            }
+//        }
+//    }
+
+    return res;
 }
 
 bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
@@ -274,6 +336,20 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                 out << Logger::nl;
             }
 
+
+//            /////////////////////////////////////////////////
+
+            Html::Tag * methods_list = metadata_block -> findFirst("#method-list-section");
+            Html::Set methods_list_children = methods_list -> find("li a");
+
+            QHash<QString, QString> methods_formats;
+
+            for(Html::Set::Iterator chld_tag = methods_list_children.begin(); chld_tag != methods_list_children.end(); chld_tag++) {
+                methods_formats.insert((*chld_tag) -> link(), (*chld_tag) -> text());
+            }
+
+//            /////////////////////////////////////////////////
+
             Html::Set sections = doc_block -> find(".section");
 
             QByteArray constants_section("constants-list");
@@ -312,6 +388,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 
                     for(Html::Set::Iterator method_tag = methods.begin(); method_tag != methods.end(); method_tag++) {
                         procMethod(
+                            methods_formats[(*method_tag) -> id()],
                             *method_tag,
                             target_prefix,
                             target_prefix + methods_prefix,
