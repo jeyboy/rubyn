@@ -387,8 +387,21 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                     Html::Set methods = (*section_tag) -> find(".method-detail");
 
                     for(Html::Set::Iterator method_tag = methods.begin(); method_tag != methods.end(); method_tag++) {
+                        Html::Tag * linker = (*method_tag) -> findFirst(">a");
+
+                        QString signature('#' % linker -> attr(QByteArrayLiteral("name")));
+
+                        if (methods_formats.contains(signature))
+                            signature = methods_formats[signature];
+                        else {
+                            Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant find signature for method: ") % signature % QLatin1Literal("  in file: ") % inpath);
+                            signature.clear();
+                        }
+
+                        int y = 0;
+
                         procMethod(
-                            methods_formats[(*method_tag) -> id()],
+                            signature,
                             *method_tag,
                             target_prefix,
                             target_prefix + methods_prefix,

@@ -171,9 +171,9 @@ Selector::Selector(const char * predicate) : _token_id(Tag::tg_any), turn(any),
                     case sel_rel_next_sibling:
                     case sel_rel_parent: {
                         if (!in_attr) {
-                            if (!rel)
+                            if (!rel && selector -> prev) // if (!rel)
                                 selector = new Selector((STurn)*pdata, selector);
-                            else if (*rel == sel_rel_any)
+                            else if (!rel || *rel == sel_rel_any)
                                 selector -> turn = (STurn)*pdata;
                             else
                                 SELECTOR_PARSE_ERROR(LSTR("couple of relations inputed: ") % *pdata);
