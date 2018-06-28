@@ -1,0 +1,11 @@
+pngcrush -ow -rem allb -reduce file.png
+
+    -ow will overwrite the input file
+    -rem allb will remove all ancillary chunks except tRNS and gAMA
+    -reduce does lossless color-type or bit-depth reduction
+
+
+pngcrush -n -q *.png 
+
+     -n means don't rewrite the files
+     -q means suppress most of the output except for warnings.
