@@ -9,6 +9,21 @@
 #include <qdiriterator.h>
 #include <qhash.h>
 
+bool RubydocParser::findSimbolsSub(const QString & str, const char & s, const char & e, int & spos, int & len) {
+    spos = str.indexOf(s);
+
+    if (spos > -1) {
+        int epos = str.lastIndexOf(e);
+
+        len = epos - spos - 1;
+        ++spos;
+
+        return true;
+    }
+
+    return false;
+}
+
 QByteArray RubydocParser::clearLine(const QByteArray & line) {
     QByteArray res;
     res.reserve(line.size());
@@ -101,6 +116,27 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
                     << Logger::nl;
             break;}
 
+            case Html::Tag::tg_h3: {
+                (*out)
+                    << border.mid(0, 40)
+                    << Logger::nl
+                    << prefix;
+
+                Html::Set hchilds = (*tag) -> children();
+
+                for(Html::Set::Iterator htag = hchilds.begin(); htag != hchilds.end(); htag++) {
+                    if ((*htag) -> tagID() == Html::Tag::tg_span)
+                        break;
+                    else
+                        (*out) << (*htag) -> text();
+                }
+
+                (*out)
+                    << Logger::nl
+                    << border.mid(0, 40)
+                    << Logger::nl;
+            break;}
+
             case Html::Tag::tg_pre: {
                 (*out)
                     << example_prefix << Logger::nl << example_prefix;
@@ -130,6 +166,19 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
                 }
 
                 (*out) << example_prefix << Logger::nl;
+            break;}
+
+            case Html::Tag::tg_newline: { break;}
+
+            case Html::Tag::tg_text: { break;}
+
+            case Html::Tag::tg_div: {
+                if ((*tag) -> rawClasses() != QByteArrayLiteral("method-source-code"))
+                    Logger::obj().write(
+                        QLatin1Literal("RubydocParser"),
+                        QLatin1Literal("Unknown tag type in description: ") % (*tag) -> name() %
+                            QLatin1Literal(" in file: ") % inpath
+                    );
             break;}
 
             default: {
@@ -195,52 +244,43 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
 
     procDescription(description_block -> children(), description_prefix, description_example_prefix, description_list_prefix, border, out, inpath);
 
-    if (sigs_count > 1) {
-        (*out) << description_prefix << signatures;
-    }
+    // print all signatures
+    (*out) << description_prefix << signatures << description_prefix << Logger::nl;
 
     (*out) << method_prefix << signature << '(';
 
     if (sigs_count == 1) {
-        int pos = signatures.indexOf('(');
+        int pos, len;
 
-        if (pos > -1) {
-            int epos = signatures.lastIndexOf(')');
-
-            int len = epos - pos - 1;
-
-            (*out) << signatures.mid(pos + 1, len);
+        if (findSimbolsSub(signatures, '(', ')', pos, len)) {
+            (*out) << signatures.mid(pos, len);
         } else {
-            if (signature[0].isLetter()) {
-                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method args:") % signature % QLatin1Literal("in file: ") % inpath);
-            } else {
-                if (signature[0] == '[') {
-                    for(QString::Iterator ch = signatures.begin() + 1; ch != signatures.end(); ch++)
-                        if (*ch == ']')
-                            break;
-                        else {
-                            (*out) << *ch;
-                        }
-                } else {
-                    int pos = signatures.indexOf(signature[0]);
-
-                    if (pos == -1) {
-                        pos = 0;
-                        Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method inner args:") % signature % QLatin1Literal("in file: ") % inpath);
-                    }
+            if (signature[0] == '[') {
+                for(QString::Iterator ch = signatures.begin() + 1; ch != signatures.end(); ch++)
+                    if (*ch == ']')
+                        break;
                     else {
-                        pos += signature.length();
-                        if (signatures[pos] == 32)
-                            ++pos;
+                        (*out) << *ch;
                     }
+            } else {
+                int pos = signatures.indexOf(signature[0]);
 
-                    for(QString::Iterator ch = signatures.begin() + pos; ch != signatures.end(); ch++)
-                        if (*ch != '_' && !(*ch).isLetterOrNumber())
-                            break;
-                        else {
-                            (*out) << *ch;
-                        }
+                if (pos == -1) {
+                    pos = 0;
+                    Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method inner args:") % signature % QLatin1Literal("in file: ") % inpath);
                 }
+                else {
+                    pos += signature.length();
+                    if (signatures[pos] == 32)
+                        ++pos;
+                }
+
+                for(QString::Iterator ch = signatures.begin() + pos; ch != signatures.end(); ch++)
+                    if (*ch != '_' && !(*ch).isLetterOrNumber())
+                        break;
+                    else {
+                        (*out) << *ch;
+                    }
             }
         }
     } else {
@@ -248,6 +288,12 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
     }
 
     (*out) << ')' << Logger::nl << target_prefix << "end" << Logger::nl;
+
+    if (aliases_block) {
+        QString alias_name = aliases_block -> findFirst("a") -> text();
+
+        (*out) << target_prefix << "alias " << alias_name << ' ' << signature << Logger::nl;
+    }
 }
 
 bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {

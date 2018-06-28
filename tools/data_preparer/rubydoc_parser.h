@@ -13,6 +13,7 @@ namespace Html {
 class RubydocParser : public QObject {
     Q_OBJECT
 
+    bool findSimbolsSub(const QString & str, const char & s, const char & e, int & spos, int & epos);
     QByteArray clearLine(const QByteArray & line);
 
     void writeLine(const QByteArray & prefix, const QString & datum, QTextStream * out, const int & max_line_len = 80);
