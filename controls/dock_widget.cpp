@@ -1,6 +1,12 @@
 #include "dock_widget.h"
 
+#include <qdebug.h>
+#include <qevent.h>
+
 //#include <qdatetime.h>
+
+//LayoutRequest
+//UpdateRequest
 
 DockWidget::DockWidget(const QString & title, QWidget * parent, const Qt::DockWidgetAreas & areas) : QDockWidget(title, parent, Qt::WindowCloseButtonHint) {
     setAllowedAreas(areas);
@@ -35,8 +41,8 @@ void DockWidget::closeEvent(QCloseEvent * e) {
 //    useVerticalTitles(false);
 //}
 
-////bool DockBar::event(QEvent * event) {
-////    qDebug() << event -> type();
+//bool DockWidget::event(QEvent * event) {
+//    qDebug() << event -> type();
 
 ////    switch(event -> type()) {
 ////        case QEvent::WindowActivate:
@@ -44,8 +50,8 @@ void DockWidget::closeEvent(QCloseEvent * e) {
 ////            ;
 ////    }
 
-////    return QDockWidget::event(event);
-////}
+//    return QDockWidget::event(event);
+//}
 
 //void DockBar::resizeEvent(QResizeEvent * event) {
 //    Settings::currentStyle -> calcBorderRect(rect(), borderRect);

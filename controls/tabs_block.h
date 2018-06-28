@@ -20,6 +20,8 @@ class QListWidgetItem;
 class TabsBlock : public QWidget {
     Q_OBJECT
 
+    bool is_fullscreen;
+
     TabBar * _bar;
 
     QToolButton * _list_btn;

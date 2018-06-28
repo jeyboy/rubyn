@@ -11,8 +11,9 @@ DockWidget * DockWidgets::createWidget(const QString & name, QWidget * content, 
 //    connect(dock, SIGNAL(topLevelChanged(bool)), this, SLOT(updateActiveTabIcon(bool)));
   //    dock -> showFullScreen();
 
-    if (content)
+    if (content) {
         dock -> setWidget(content);
+    }
 
     return dock;
 }

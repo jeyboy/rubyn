@@ -3,6 +3,19 @@
 
 #include <qdockwidget.h>
 
+#include <qdebug.h>
+
+//widget()->setMaximumHeight(value);
+//widget()->setMinimumHeight(value);
+
+//// Recursively update all the layouts, starting from the main window
+//forceUpdate(mainW);
+
+//// Remove the size constraint
+//widget()->setMinimumHeight(QWIDGETSIZE_MAX);
+//widget()->setMaximumHeight(QWIDGETSIZE_MAX);
+
+
 class DockWidget : public QDockWidget {
     Q_OBJECT
 public:
@@ -44,7 +57,7 @@ public slots:
 //    inline void onDockLocationChanged(Qt::DockWidgetArea area) { if (area != Qt::NoDockWidgetArea) setTabBarSettings(); }
 
 protected:
-//        bool event(QEvent *event);
+//    bool event(QEvent * event);
 //    void resizeEvent(QResizeEvent *);
     void closeEvent(QCloseEvent * e);
 //    void paintEvent(QPaintEvent *);
