@@ -93,6 +93,25 @@ QString Info::paddedNumber(qint64 time) {
     return res;
 }
 
+QString & Info::camelcaseToUnderscore(QString & str) {
+    int prev = 0;
+
+    int limit = str.length();
+
+    for(int pos = 0; pos < limit; pos++) {
+        if (str[pos].isUpper()) {
+            if (pos == 0 || pos + 1 == limit || str[pos + 1].isUpper())
+                str.replace(pos, 1, str[pos].toLower());
+            else {
+                str.replace(pos, 1, '_' % str[pos].toLower());
+                ++limit;
+            }
+        }
+    }
+
+    return str;
+}
+
 //QString Duration::fromHMS(int h, int m, int s, bool forciblyIncludeHours) {
 //    if (h > 0 || forciblyIncludeHours)
 //        return QString().sprintf("%02d:%02d:%02d", h, m, s);

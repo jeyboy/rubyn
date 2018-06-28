@@ -77,10 +77,12 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 //        f.close();
 //    }
 
-    Logger::obj().startMark();
-    RubydocParser().parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_core"), QLatin1Literal("F://rubyn test//ruby_2_5_1_core_parsed"));
-    RubydocParser().parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_stdlib"), QLatin1Literal("F://rubyn test//ruby_2_5_1_stdlib_parsed"));
-    Logger::obj().endMark(QLatin1Literal("Rubydoc"), QLatin1Literal("parsing"));
+    RubydocParser().parseFile(QLatin1Literal("F://rubyn test//SpecificationProvider.html"), QLatin1Literal("F://rubyn test//specification_provider.rb"));
+
+//    Logger::obj().startMark();
+//    RubydocParser().parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_core"), QLatin1Literal("F://rubyn test//ruby_2_5_1_core_parsed"));
+//    RubydocParser().parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_stdlib"), QLatin1Literal("F://rubyn test//ruby_2_5_1_stdlib_parsed"));
+//    Logger::obj().endMark(QLatin1Literal("Rubydoc"), QLatin1Literal("parsing"));
 }
 
 IDEWindow::~IDEWindow() { delete ui; }

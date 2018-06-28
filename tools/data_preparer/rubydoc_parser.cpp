@@ -5,6 +5,7 @@
 
 #include "controls/logger.h"
 #include "misc/dir.h"
+#include "misc/format.h"
 
 #include <qlist.h>
 #include <qdiriterator.h>
@@ -39,6 +40,7 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
                         if (*(ptr + 2) == '.') // ignore blanks before ... and .. sequences
                             break;
                     }
+                    case ')':
                     case 44: // ,
                     case 32: {
                         ++ptr;
@@ -62,37 +64,46 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
     return res;
 }
 
-void RubydocParser::writeLine(const QByteArray & prefix, const QString & datum, QTextStream * out, const int & max_line_len) {
-    uint pos = 0;
-
-    if (datum.length() < max_line_len) {
+void RubydocParser::writeLine(const QByteArray & prefix, const QByteArray & datum, QTextStream * out, const int & max_line_len) {
+    if (datum.length() <= max_line_len) {
         (*out) << prefix << datum << Logger::nl;
         return;
     }
 
-    while(true) {
-        QStringRef line = datum.midRef(pos, max_line_len + 1);
+    char buff[datum.length()];
+    int pos = -1, len = 0, qty = 0;
 
-        if (line.isEmpty())
-            break;
+    const char * datum_buff = datum.constData();
 
-        if (line.length() == max_line_len + 1) {
-            int line_size = line.length();
-
-            for(; line_size >= 0; --line_size) {
-                if (line[line_size - 1].isSpace())
+    while(*datum_buff) {
+        for(len = 0, pos = -1; ; datum_buff++, len++) {
+            if (len > max_line_len) {
+                if (pos > 0) {
+                    datum_buff -= (len - pos);
+                    buff[pos] = 0;
+                    ++qty;
                     break;
+                }
             }
 
-            line = line.mid(0, line_size - 1);
+            if ((*datum_buff) == ' ') {
+               pos = len;
+            }
+
+            buff[len] = *datum_buff;
+
+            if (!*datum_buff) {
+                ++qty;
+                break;
+            }
         }
 
         (*out) << prefix;
-        if (pos > 0)
-            (*out) << ' ';
-        (*out) << line << Logger::nl;
 
-        pos += line.length();
+        if (qty > 1)
+            (*out) << ' ';
+
+        (*out) << buff << Logger::nl;
     }
 }
 
@@ -100,7 +111,7 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
     for(Html::Set::ConstIterator tag = parts.cbegin(); tag != parts.cend(); tag++) {
         switch((*tag) -> tagID()) {
             case Html::Tag::tg_p: {
-                writeLine(prefix, QString(clearLine((*tag) -> texts())), out);
+                writeLine(prefix, clearLine((*tag) -> texts()), out);
             break;}
 
             case Html::Tag::tg_h2: {
@@ -250,18 +261,28 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
 
     procDescription(description_block -> children(), description_prefix, description_example_prefix, description_list_prefix, border, out, inpath);
 
-    // print all signatures
-    (*out) << description_prefix << signatures << description_prefix << Logger::nl;
+    bool is_mask = false;
+    QString sig_mask;
+
+    if (sigs_count == 1) {
+        int sig_pos, sig_len;
+
+        if (findSimbolsSub(signatures, '(', ')', sig_pos, sig_len)) {
+            sig_mask = signatures.mid(sig_pos, sig_len).trimmed();
+            is_mask = sig_mask.endsWith('.');
+        }
+    }
+
+    if (sigs_count > 1 || is_mask) {
+        // print all signatures
+        (*out) << description_prefix << signatures << description_prefix << Logger::nl;
+    }
 
     (*out) << method_prefix << signature << '(';
 
-    if (sigs_count == 1) {
-        int pos, len;
-
-        if (findSimbolsSub(signatures, '(', ')', pos, len)) {
-            QString res = signatures.mid(pos, len).trimmed();
-
-            (*out) << (res.endsWith('.') ? "*several_variants" : res);
+    if (!is_mask && sigs_count == 1) {
+        if (!sig_mask.isEmpty()) {
+            (*out) << sig_mask;
         } else {
             if (signature[0] == '[') {
                 for(QString::Iterator ch = signatures.begin() + 1; ch != signatures.end(); ch++)
@@ -516,8 +537,10 @@ bool RubydocParser::parseFolder(const QString & path, const QString & outpath) {
 
         if (dir_name[0].isUpper()) {
             QString name = dir_name.section('.', 0, 0);
+            Info::camelcaseToUnderscore(name);
 
-            parseFile(path, outpath % '/' % name);
+            qDebug() << "!!!!!" << path;
+            parseFile(path, outpath % '/' % name % QLatin1Literal(".rb"));
         }
     }
 

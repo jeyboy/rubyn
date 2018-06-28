@@ -21,6 +21,8 @@ public:
     static long long fromUnits(const QString & val);
 
     static QString paddedNumber(qint64 time);
+
+    static QString & camelcaseToUnderscore(QString & str);
 };
 
 //class Duration {
