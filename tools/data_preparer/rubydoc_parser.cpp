@@ -4,6 +4,7 @@
 #include "tools/html/html_page.h"
 
 #include "controls/logger.h"
+#include "misc/dir.h"
 
 #include <qlist.h>
 #include <qdiriterator.h>
@@ -297,7 +298,13 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
     (*out) << ')' << Logger::nl << target_prefix << "end" << Logger::nl;
 
     if (aliases_block) {
-        QString alias_name = aliases_block -> findFirst("a") -> text();
+        Html::Tag * a = aliases_block -> findFirst("a");
+        QString alias_name;
+
+        if (a)
+            alias_name = QString(a -> text());
+        else
+            alias_name = QString(aliases_block -> texts()).section(':', 1).trimmed();
 
         (*out) << target_prefix << "alias " << alias_name << ' ' << signature << Logger::nl;
     }
@@ -403,19 +410,20 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
 //            /////////////////////////////////////////////////
 
             Html::Tag * methods_list = metadata_block -> findFirst("#method-list-section");
-            Html::Set methods_list_children = methods_list -> find("li a");
-
             QHash<QString, QString> methods_formats;
 
-            for(Html::Set::Iterator chld_tag = methods_list_children.begin(); chld_tag != methods_list_children.end(); chld_tag++) {
-                QString sig = (*chld_tag) -> text();
+            if (methods_list) {
+                Html::Set methods_list_children = methods_list -> find("li a");
 
-                methods_formats.insert(
-                    (*chld_tag) -> link(),
-                    sig[0] == ':' ? sig.mid(2) : sig.mid(1)
-                );
+                for(Html::Set::Iterator chld_tag = methods_list_children.begin(); chld_tag != methods_list_children.end(); chld_tag++) {
+                    QString sig = (*chld_tag) -> text();
+
+                    methods_formats.insert(
+                        (*chld_tag) -> link(),
+                        sig[0] == ':' ? sig.mid(2) : sig.mid(1)
+                    );
+                }
             }
-
 //            /////////////////////////////////////////////////
 
             Html::Set sections = doc_block -> find(".section");
@@ -507,7 +515,9 @@ bool RubydocParser::parseFolder(const QString & path, const QString & outpath) {
         QString dir_name = files_it.fileName();
 
         if (dir_name[0].isUpper()) {
-            parseFile(path, outpath);
+            QString name = dir_name.section('.', 0, 0);
+
+            parseFile(path, outpath % '/' % name);
         }
     }
 
@@ -526,7 +536,8 @@ RubydocParser::~RubydocParser() {
 }
 
 bool RubydocParser::parse(const QString & inpath, const QString & outpath) {
+    if (!Dir::createPath(outpath))
+        return false;
 
-
-    return true;
+    return parseFolder(inpath, outpath);
 }
