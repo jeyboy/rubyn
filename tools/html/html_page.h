@@ -18,12 +18,12 @@
 #define VAL_BUFF_VALID (sval && VBUFF_VALID)
 
 
-#define DECODE_NAME(val, trim, simplify)({ \
+#define DECODE_NAME(val, trim, simplify, simplify_mnemonics)({ \
     QByteArray v = val;\
     if (tag_flags & Decoding::decode_content)\
         Decoding::decodeContent(charset, v);\
     if (tag_flags & Decoding::decode_mnemo)\
-        Decoding::decodeMnemonics(v);\
+        Decoding::decodeMnemonics(v, simplify_mnemonics);\
     if (simplify && tag_flags & Decoding::simplify_needed)\
         v = v.simplified();\
     else if (trim)\
@@ -72,6 +72,7 @@ namespace Html {
             pf_skip_newlines = 32,
             pf_trim_text = 64,
             pf_simplify_text = 128,
+            pf_simplify_mnemonics = 256,
 
             pf_default = pf_skip_comment | pf_skip_newlines | pf_trim_text // | pf_skip_mnemonics_decoding | pf_skip_content_decoding
         };

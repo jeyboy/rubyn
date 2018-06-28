@@ -309,8 +309,6 @@ void IDEWindow::locationCorrection() {
 }
 
 void IDEWindow::loadSettings() {
-    qDebug() << "!!!!!" << Dir::appPath(settings_filename);
-
     QSettings settings(Dir::appPath(settings_filename), QSettings::IniFormat, this);
 
     QVariant geometryState = settings.value(QLatin1Literal("geometry"));

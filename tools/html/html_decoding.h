@@ -25,10 +25,13 @@ namespace Html {
         };
 
         static QHash<QByteArray, uint> html_entities;
+        static QHash<uint, QByteArray> simplifications;
 
         static CharsetType charsetType(const QByteArray & val);
 
-        static QByteArray & decodeMnemonics(QByteArray & val);
+//        static QString & simplify(QString & str);
+
+        static QByteArray & decodeMnemonics(QByteArray & val, const bool & simplify = false);
         static QByteArray & decodeContent(const CharsetType & charset, QByteArray & val);
         static QByteArray & decodeUrl(QByteArray & url, QByteArray * base_url = 0);
     };

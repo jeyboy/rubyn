@@ -3,6 +3,96 @@
 
 using namespace Html;
 
+QHash<uint, QByteArray> Decoding::simplifications = {
+    { 160, QByteArrayLiteral(" ") },
+    { 171, QByteArrayLiteral("<<") },
+    { 187, QByteArrayLiteral(">>") },
+    { 215, QByteArrayLiteral("x") }, // multiplicator sign
+
+    { 697, QByteArrayLiteral("'") },
+    { 698, QByteArrayLiteral("\"") },
+    { 700, QByteArrayLiteral("`") },
+    { 727, QByteArrayLiteral("-") },
+    { 750, QByteArrayLiteral("``") },
+
+    { 757, QByteArrayLiteral("\"") },
+    { 758, QByteArrayLiteral("\"") },
+
+    { 767, QByteArrayLiteral("<-") },
+
+    { 8208, QByteArrayLiteral("-") },
+    { 8209, QByteArrayLiteral("-") },
+    { 8210, QByteArrayLiteral("-") },
+    { 8211, QByteArrayLiteral("-") },
+    { 8212, QByteArrayLiteral("-") },
+    { 8213, QByteArrayLiteral("-") },
+
+    { 8214, QByteArrayLiteral("||") },
+
+    { 8216, QByteArrayLiteral("`") },
+    { 8217, QByteArrayLiteral("`") },
+
+    { 8220, QByteArrayLiteral("\"") },
+    { 8221, QByteArrayLiteral("\"") },
+
+    { 8228, QByteArrayLiteral(".") },
+    { 8229, QByteArrayLiteral("..") },
+    { 8230, QByteArrayLiteral("...") },
+
+    { 8249, QByteArrayLiteral("<") },
+    { 8250, QByteArrayLiteral(">") },
+
+    { 8252, QByteArrayLiteral("!!") },
+
+    { 8259, QByteArrayLiteral("-") },
+
+    { 8260, QByteArrayLiteral("/") },
+
+    { 8263, QByteArrayLiteral("??") },
+    { 8264, QByteArrayLiteral("?!") },
+    { 8265, QByteArrayLiteral("!?") },
+
+    { 8270, QByteArrayLiteral("*") },
+
+    { 8275, QByteArrayLiteral("~") },
+
+    { 8277, QByteArrayLiteral("*") },
+
+    { 8592, QByteArrayLiteral("<-") },
+    { 8594, QByteArrayLiteral("->") },
+    { 8596, QByteArrayLiteral("<->") },
+
+    { 8656, QByteArrayLiteral("<=") },
+    { 8658, QByteArrayLiteral("=>") },
+    { 8660, QByteArrayLiteral("<=>") },
+
+    { 8678, QByteArrayLiteral("<=") },
+    { 8680, QByteArrayLiteral("=>") },
+
+    { 8701, QByteArrayLiteral("<-") },
+    { 8702, QByteArrayLiteral("->") },
+    { 8703, QByteArrayLiteral("<->") },
+
+    { 8725, QByteArrayLiteral("/") },
+    { 8726, QByteArrayLiteral("\\") },
+    { 8727, QByteArrayLiteral("*") },
+
+    { 8739, QByteArrayLiteral("|") },
+    { 8741, QByteArrayLiteral("||") },
+
+    { 8743, QByteArrayLiteral("/\\") },
+    { 8741, QByteArrayLiteral("\/") },
+
+    { 8764, QByteArrayLiteral("~") },
+
+    { 8826, QByteArrayLiteral("<") },
+    { 8827, QByteArrayLiteral(">") },
+
+
+    { 8920, QByteArrayLiteral("<<<") },
+    { 8921, QByteArrayLiteral(">>>") },
+};
+
 QHash<QByteArray, uint> Decoding::html_entities = {
     { QByteArrayLiteral("quot"), 34 },
     { QByteArrayLiteral("amp"), 38 },
@@ -10,7 +100,7 @@ QHash<QByteArray, uint> Decoding::html_entities = {
     { QByteArrayLiteral("lt"), 60 },
     { QByteArrayLiteral("gt"), 62 },
 
-    { QByteArrayLiteral("nbsp"), 32 }, // 160
+    { QByteArrayLiteral("nbsp"), 160 },
     { QByteArrayLiteral("iexcl"), 161 },
     { QByteArrayLiteral("cent"), 162 },
     { QByteArrayLiteral("pound"), 163 },
@@ -295,7 +385,20 @@ Decoding::CharsetType Decoding::charsetType(const QByteArray & val) {
     return charset_utf8;
 }
 
-QByteArray & Decoding::decodeMnemonics(QByteArray & val) {
+//QString & Decoding::simplify(QString & str) {
+//    for(int pos = str.length() - 1; pos >= 0; --pos) {
+//        int code = str[pos].digitValue();
+
+//        if (code > 255) {
+//            if (simplifications -> contains(code))
+//                (*ch) =
+//        }
+//    }
+
+//    return str;
+//}
+
+QByteArray & Decoding::decodeMnemonics(QByteArray & val, const bool & simplify) {
     int pos = 0, start = -1, length; // &#65; // A
     bool is_unicode = false;
 
@@ -318,10 +421,15 @@ QByteArray & Decoding::decodeMnemonics(QByteArray & val) {
                     QByteArray arg = is_unicode ?
                         val.mid(start + 2, length - 2) : val.mid(start + 1, length - 1);
 
-                    QByteArray after =
-                        Unicode::Utf8::bytes(
-                            is_unicode ? arg.toUInt() : html_entities[arg]
-                        );
+                    uint code = is_unicode ? arg.toUInt() : html_entities[arg];
+
+                    QByteArray after;
+
+                    if (simplify && simplifications.contains(code)) {
+                        after = simplifications[code];
+                    } else {
+                        after = Unicode::Utf8::bytes(code);
+                    }
 
                     val.replace(start, pos - start + 1, after);
                     start = -1;
