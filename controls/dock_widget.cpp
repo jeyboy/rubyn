@@ -9,6 +9,7 @@
 //UpdateRequest
 
 DockWidget::DockWidget(const QString & title, QWidget * parent, const Qt::DockWidgetAreas & areas) : QDockWidget(title, parent, Qt::WindowCloseButtonHint) {
+    setObjectName(title);
     setAllowedAreas(areas);
     setFeatures(QDockWidget::NoDockWidgetFeatures);
 }

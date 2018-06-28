@@ -145,7 +145,8 @@ HEADERS  += ide_window.h \
     tools/fuzzy_comparison.h \
     lexer/yaml/yml_lexer.h \
     tools/data_preparer/rubydoc_parser.h \
-    misc/format.h
+    misc/format.h \
+    misc/screen.h
 
 FORMS    += ide_window.ui
 

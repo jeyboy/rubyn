@@ -20,6 +20,8 @@ DockWidget * DockWidgets::createWidget(const QString & name, QWidget * content, 
 
 void DockWidgets::append(DockWidget * bar, const Qt::DockWidgetArea & area) {
     container -> addDockWidget(area, bar);
+    bar -> resize(100, 0);
+    bar -> updateGeometry();
 }
 
 void DockWidgets::insert(DockWidget * bar, DockWidget * dock) {

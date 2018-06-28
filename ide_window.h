@@ -26,6 +26,8 @@ class IDEWindow : public QMainWindow {
 
     Ui::IDEWindow * ui;
 
+    QString settings_filename;
+
     TabsBlock * active_editor;
     QSplitter * widgets_list;
 
@@ -38,12 +40,18 @@ class IDEWindow : public QMainWindow {
     void setupFileMenu();
     void setupHelpMenu();
     void setupSplitter();
+
+    void loadSettings();
+    void saveSettings();
 protected:
+    void locationCorrection();
     void setupToolWindows();
 
     void dragEnterEvent(QDragEnterEvent *);
     void dragMoveEvent(QDragMoveEvent *);
     void dropEvent(QDropEvent *);
+
+    void closeEvent(QCloseEvent *);
 public:
     explicit IDEWindow(QWidget * parent = 0);
     ~IDEWindow();

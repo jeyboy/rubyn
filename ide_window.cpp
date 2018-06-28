@@ -12,6 +12,9 @@
 #include "controls/tabs_block.h"
 #include "controls/logger.h"
 
+#include "misc/dir.h"
+#include "misc/screen.h"
+
 #include <qmessagebox.h>
 #include <qfiledialog.h>
 #include <qsplitter>
@@ -20,13 +23,14 @@
 
 #include <qevent.h>
 #include <qmimedata.h>
+#include <qsettings.h>
 
 /////////////// TEST
 #include "tools/html/html_page.h"
 #include "tools/data_preparer/rubydoc_preparer.h"
 #include "tools/data_preparer/rubydoc_parser.h"
 
-IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), widgets_list(0), tree(0), pos_status(0) {
+IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), settings_filename("fsettings"), active_editor(0), widgets_list(0), tree(0), pos_status(0) {
     ui -> setupUi(this);
 
     setAcceptDrops(true);
@@ -45,7 +49,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 //    openFile(QUrl::fromLocalFile("F://rubyn test//ruby//test1.rb"));
 
     setWindowTitle(tr("Bla bla blashka"));
-
+    loadSettings();
 
     // TESTS // REMOVE LATER
 
@@ -290,6 +294,51 @@ void IDEWindow::setupToolWindows() {
     DockWidgets::obj().append(log_widget, Qt::BottomDockWidgetArea);
 }
 
+void IDEWindow::locationCorrection() {
+    int width, height;
+    Screen::screenSize(width, height);
+    int left = x(), top = y();
+
+    if (left >= width)
+        left = width - 50;
+
+    if (top >= height)
+        top = height - 50;
+
+    move(left, top);
+}
+
+void IDEWindow::loadSettings() {
+    qDebug() << "!!!!!" << Dir::appPath(settings_filename);
+
+    QSettings settings(Dir::appPath(settings_filename), QSettings::IniFormat, this);
+
+    QVariant geometryState = settings.value(QLatin1Literal("geometry"));
+    if (geometryState.isValid())
+        restoreGeometry(geometryState.toByteArray());
+
+//    ///////////////////////////////////////////////////////////
+//    ///location correction (test needed)
+//    ///////////////////////////////////////////////////////////
+    locationCorrection();
+
+    QVariant objState = settings.value(QLatin1Literal("state"));
+    if (objState.isValid())
+        restoreState(objState.toByteArray());
+    ///////////////////////////////////////////////////////////
+
+//    if (settings.value(SETTINGS_WINDOW_MAXIMIZED_KEY).toBool()) {
+//        QApplication::processEvents();
+//        showMaximized();
+//    }
+}
+void IDEWindow::saveSettings() {
+    QSettings settings(Dir::appPath(settings_filename), QSettings::IniFormat, this);
+    settings.setValue(QLatin1Literal("geometry"), saveGeometry());
+    settings.setValue(QLatin1Literal("state"), saveState());
+    settings.sync();
+}
+
 void IDEWindow::dragEnterEvent(QDragEnterEvent * event) {
     if (event -> mimeData() -> hasUrls())
         event -> accept();
@@ -309,4 +358,10 @@ void IDEWindow::dropEvent(QDropEvent * event) {
 
         event -> accept();
     } else event -> ignore();
+}
+
+void IDEWindow::closeEvent(QCloseEvent * event) {
+    saveSettings();
+
+    QMainWindow::closeEvent(event);
 }
