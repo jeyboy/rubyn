@@ -107,6 +107,27 @@ void RubydocParser::writeLine(const QByteArray & prefix, const QByteArray & datu
     }
 }
 
+void RubydocParser::procHeader(Html::Tag * h, const QByteArray & prefix, const QByteArray & border, QTextStream * out) {
+    (*out)
+        << border
+        << Logger::nl
+        << prefix;
+
+    Html::Set hchilds = h -> children();
+
+    for(Html::Set::Iterator htag = hchilds.begin(); htag != hchilds.end(); htag++) {
+        if ((*htag) -> tagID() == Html::Tag::tg_span)
+            break;
+        else
+            (*out) << (*htag) -> text();
+    }
+
+    (*out)
+        << Logger::nl
+        << border
+        << Logger::nl;
+}
+
 void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & prefix, const QByteArray & example_prefix, const QByteArray & list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath) {
     int curr_uid = Html::Tag::tg_none;
     int last_uid = curr_uid;
@@ -157,45 +178,15 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
             break;}
 
             case Html::Tag::tg_h2: {
-                (*out)
-                    << border
-                    << Logger::nl
-                    << prefix;
-
-                Html::Set hchilds = (*tag) -> children();
-
-                for(Html::Set::Iterator htag = hchilds.begin(); htag != hchilds.end(); htag++) {
-                    if ((*htag) -> tagID() == Html::Tag::tg_span)
-                        break;
-                    else
-                        (*out) << (*htag) -> text();
-                }
-
-                (*out)
-                    << Logger::nl
-                    << border
-                    << Logger::nl;
+                procHeader((*tag), prefix, border, out);
             break;}
 
             case Html::Tag::tg_h3: {
-                (*out)
-                    << border.mid(0, 40)
-                    << Logger::nl
-                    << prefix;
+                procHeader((*tag), prefix, border.mid(0, 60), out);
+            break;}
 
-                Html::Set hchilds = (*tag) -> children();
-
-                for(Html::Set::Iterator htag = hchilds.begin(); htag != hchilds.end(); htag++) {
-                    if ((*htag) -> tagID() == Html::Tag::tg_span)
-                        break;
-                    else
-                        (*out) << (*htag) -> text();
-                }
-
-                (*out)
-                    << Logger::nl
-                    << border.mid(0, 40)
-                    << Logger::nl;
+            case Html::Tag::tg_h4: {
+                procHeader((*tag), prefix, border.mid(0, 40), out);
             break;}
 
             case Html::Tag::tg_pre: {
