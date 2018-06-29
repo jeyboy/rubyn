@@ -50,7 +50,7 @@ void TabBarItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & 
 //STATE: QFlags<QStyle::StateFlag>(State_Enabled|State_HasFocus|State_AutoRaise|State_Selected|State_Active)
 //STATE: QFlags<QStyle::StateFlag>(State_Enabled|State_AutoRaise|State_Selected)
 
-    if (option.state & QStyle::State_Selected) {
+    if ((option.state & QStyle::State_Selected) == 0) {
         painter -> fillRect(QRect(option.rect.bottomLeft() - QPoint(0, 2), option.rect.bottomRight() + QPoint(0, 2)), QBrush(QColor::fromRgb(0,0,0, 192)));
     }
 

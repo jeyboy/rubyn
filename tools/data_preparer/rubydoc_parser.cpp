@@ -390,14 +390,6 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
 }
 
 bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
-    QByteArray description_prefix("# ");
-    QByteArray description_list_prefix("#    - ");
-    QByteArray description_example_prefix("#       ");
-    QByteArray target_prefix("    ");
-
-    QByteArray border(80, '-');
-    border[0] = '#';
-
     QFile datafile(inpath);
 
     if (datafile.open(QFile::ReadOnly | QFile::Text)) {
