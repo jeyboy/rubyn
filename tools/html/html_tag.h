@@ -41,7 +41,7 @@ namespace Html {
             fsf_ignore_empty
         };
 
-        enum Tags {
+        enum Tags : int {
             tg_none = 0,
 
             /// special

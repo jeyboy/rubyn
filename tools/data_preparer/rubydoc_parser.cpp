@@ -108,10 +108,52 @@ void RubydocParser::writeLine(const QByteArray & prefix, const QByteArray & datu
 }
 
 void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & prefix, const QByteArray & example_prefix, const QByteArray & list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath) {
+    int curr_uid = Html::Tag::tg_none;
+    int last_uid = curr_uid;
+
     for(Html::Set::ConstIterator tag = parts.cbegin(); tag != parts.cend(); tag++) {
-        switch((*tag) -> tagID()) {
+        curr_uid = (*tag) -> tagID();
+
+        switch(curr_uid) {
             case Html::Tag::tg_p: {
-                writeLine(prefix, clearLine((*tag) -> texts()), out);
+                Html::Set pparts = (*tag) -> children();
+                QByteArray text;
+                QByteArray child_texts;
+
+                for(Html::Set::Iterator ptag = pparts.begin(); ptag != pparts.end(); ptag++) {
+                    if ((*ptag) -> isLink()) {
+                        child_texts = (*ptag) -> link();
+
+                        QByteArrayList parts = child_texts.split('#');
+
+                        if (parts.length() > 1 && parts[1].startsWith("method-")) {
+                            child_texts = (*ptag) -> text();
+
+                            if (child_texts[0] != '#' && child_texts[0] != ':')
+                                child_texts.prepend(
+                                    (parts[1][7] == 'i' ? QByteArrayLiteral("#") : QByteArrayLiteral("::"))
+                                );
+
+                            parts = parts[0].split('.');
+
+                            child_texts = parts[0] + child_texts;
+                        } else {
+                            child_texts = (*ptag) -> texts();
+                        }
+                    } else {
+                        child_texts = (*ptag) -> texts();
+                    }
+
+                    if (!child_texts.isEmpty()) {
+                        if (!text.isEmpty())
+                            child_texts.prepend(' ');
+
+                        text = text % child_texts;
+                    }
+                }
+
+                writeLine(prefix, clearLine(text), out);
+                last_uid = curr_uid;
             break;}
 
             case Html::Tag::tg_h2: {
@@ -157,6 +199,8 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
             break;}
 
             case Html::Tag::tg_pre: {
+                last_uid = curr_uid;
+
                 (*out)
                     << example_prefix << Logger::nl << example_prefix;
 
@@ -209,6 +253,9 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
             }
         }
     }
+
+    if (last_uid == Html::Tag::tg_p)
+        (*out) << example_prefix << Logger::nl;
 }
 
 void RubydocParser::procMethod(const QString & signature, Html::Tag * method_block, const QByteArray & target_prefix, const QByteArray & method_prefix, const QByteArray & description_prefix, const QByteArray & description_example_prefix, const QByteArray & description_list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath) {
@@ -400,10 +447,25 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
             QByteArray target_name = doc_header -> text();
             QByteArray parent_name;
 
-            Html::Tag * parent_tag = metadata_block -> findFirst("#parent-class-section p a");
+            Html::Tag * parent_tag = metadata_block -> findFirst("#parent-class-section p");
 
-            if (parent_tag)
+            if (parent_tag) {
+                Html::Tag * parent_a_tag = parent_tag -> findFirst("a");
+
+                if (parent_a_tag)
+                    parent_tag = parent_a_tag;
+
                 parent_name = parent_tag -> text();
+
+                if (parent_name[0] < 'A' || parent_name[0] > 'Z') { // if we have some trash text
+                    for(int i = 1; i < parent_name.length(); i++) {
+                        if (parent_name[i] >= 'A' && parent_name[i] <= 'Z') {
+                            parent_name = parent_name.mid(i);
+                            break;
+                        }
+                    }
+                }
+            }
 
             /////////////////// REMOVE ME LATER
             if (target_class != "class" && target_class != "module") {
@@ -466,10 +528,29 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                     Html::Tag * list_tag = (*section_tag) -> findFirst("dl");
 
                     if (list_tag -> hasChildren()) {
+                        out << Logger::nl;
                         Html::Set constants = list_tag -> children();
+                        Html::Tag * dt_tag = 0;
 
                         for(Html::Set::Iterator const_tag = constants.begin(); const_tag != constants.end(); const_tag++) {
-                            out << target_prefix << ((*const_tag) -> text()) << " # " << ((*++const_tag) -> text()) << Logger::nl;
+                            switch((*const_tag) -> tagID()) {
+                                case Html::Tag::tg_dt: {
+                                    if (dt_tag) {
+                                        out << target_prefix << (dt_tag -> texts()) << " = nil # Using for indexing. Value is unknown" << Logger::nl << Logger::nl;
+                                    }
+
+                                    dt_tag = (*const_tag);
+                                break;}
+
+                                case Html::Tag::tg_dd: {
+                                    out << target_prefix << description_prefix << ((*const_tag) -> texts()) << Logger::nl;
+
+                                    if (dt_tag) {
+                                        out << target_prefix << (dt_tag -> texts()) << " = nil # Using for indexing. Value is unknown" << Logger::nl << Logger::nl;
+                                        dt_tag = 0;
+                                    }
+                                break;}
+                            }
                         }
                     }
                 } else {

@@ -77,13 +77,64 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 //        f.close();
 //    }
 
-    RubydocParser().parseFile(QLatin1Literal("F://rubyn test//SpecificationProvider.html"), QLatin1Literal("F://rubyn test//specification_provider.rb"));
+//    RubydocParser().parseFile(QLatin1Literal("F://rubyn test//SpecificationProvider.html"), QLatin1Literal("F://rubyn test//specification_provider.rb"));
+//    RubydocParser().parseFile(QLatin1Literal("F://rubyn test//Array.html"), QLatin1Literal("F://rubyn test//array.rb"));
+    RubydocParser().parseFile(QLatin1Literal("F://rubyn test//IO.html"), QLatin1Literal("F://rubyn test//io.rb"));
 
 //    Logger::obj().startMark();
 //    RubydocParser().parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_core"), QLatin1Literal("F://rubyn test//ruby_2_5_1_core_parsed"));
-//    RubydocParser().parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_stdlib"), QLatin1Literal("F://rubyn test//ruby_2_5_1_stdlib_parsed"));
+////    RubydocParser().parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_stdlib"), QLatin1Literal("F://rubyn test//ruby_2_5_1_stdlib_parsed"));
 //    Logger::obj().endMark(QLatin1Literal("Rubydoc"), QLatin1Literal("parsing"));
 }
+
+
+//29.06.2018 04:08:42 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Complex.html :::
+//29.06.2018 04:08:42 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Dir.html :::
+//29.06.2018 04:08:42 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Encoding/Converter.html :::
+//29.06.2018 04:08:42 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Encoding.html :::
+//29.06.2018 04:08:43 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Enumerator.html :::
+//29.06.2018 04:08:44 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/File.html :::
+//29.06.2018 04:08:44 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/File.html :::
+//29.06.2018 04:08:45 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/GC/Profiler.html :::
+//29.06.2018 04:08:45 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/GC/Profiler.html :::
+//29.06.2018 04:08:47 ::: Unknown tag type in description: h4 in file: F://rubyn test//ruby_2_5_1_core/IO.html :::
+//29.06.2018 04:08:47 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/IO.html :::
+//29.06.2018 04:08:47 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/IO.html :::
+//29.06.2018 04:08:47 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/IO.html :::
+//29.06.2018 04:08:47 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/IO.html :::
+//29.06.2018 04:08:47 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/IO.html :::
+//29.06.2018 04:08:47 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/IO.html :::
+//29.06.2018 04:08:47 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/IO.html :::
+//29.06.2018 04:08:47 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Kernel.html :::
+//29.06.2018 04:08:47 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Kernel.html :::
+//29.06.2018 04:08:47 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Kernel.html :::
+//29.06.2018 04:08:47 ::: Cant find signature for method: #path in file: F://rubyn test//ruby_2_5_1_core/LoadError.html :::
+//29.06.2018 04:08:49 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Process.html :::
+//29.06.2018 04:08:49 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Process.html :::
+//29.06.2018 04:08:49 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Process.html :::
+//29.06.2018 04:08:49 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Process.html :::
+//29.06.2018 04:08:49 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Process.html :::
+//29.06.2018 04:08:49 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Process.html :::
+//29.06.2018 04:08:49 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Process.html :::
+//29.06.2018 04:08:49 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Process.html :::
+//29.06.2018 04:08:49 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Process.html :::
+//29.06.2018 04:08:49 ::: Unknown tag type in description: ol in file: F://rubyn test//ruby_2_5_1_core/Regexp.html :::
+//29.06.2018 04:08:49 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/RubyVM/InstructionSequence.html :::
+//29.06.2018 04:08:49 ::: Cant parse doc description in file: F://rubyn test//ruby_2_5_1_core/sample/drb/README_ja_rdoc.html :::
+//29.06.2018 04:08:49 ::: Cant parse doc description in file: F://rubyn test//ruby_2_5_1_core/sample/drb/README_rdoc.html :::
+//29.06.2018 04:08:50 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/String.html :::
+//29.06.2018 04:08:50 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/String.html :::
+//29.06.2018 04:08:50 ::: Cant parse method inner args:nextin file: F://rubyn test//ruby_2_5_1_core/Symbol.html :::
+//29.06.2018 04:08:50 ::: Unknown tag type in description: h4 in file: F://rubyn test//ruby_2_5_1_core/Thread.html :::
+//29.06.2018 04:08:50 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Thread.html :::
+//29.06.2018 04:08:50 ::: Unknown tag type in description: h4 in file: F://rubyn test//ruby_2_5_1_core/Thread.html :::
+//29.06.2018 04:08:50 ::: Unknown tag type in description: h4 in file: F://rubyn test//ruby_2_5_1_core/Thread.html :::
+//29.06.2018 04:08:50 ::: Unknown tag type in description: h4 in file: F://rubyn test//ruby_2_5_1_core/Thread.html :::
+//29.06.2018 04:08:50 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/Thread.html :::
+//29.06.2018 04:08:50 ::: Unknown tag type in description: h1 in file: F://rubyn test//ruby_2_5_1_core/Time.html :::
+//29.06.2018 04:08:50 ::: Unknown tag type in description: dl in file: F://rubyn test//ruby_2_5_1_core/TracePoint.html :::
+
+
 
 IDEWindow::~IDEWindow() { delete ui; }
 
