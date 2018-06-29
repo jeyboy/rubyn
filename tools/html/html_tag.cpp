@@ -449,11 +449,12 @@ Tag * Tag::appendTag(const QByteArray & tname) {
     int tag_id = tagID(nname);
 
     // if name of tag eql to child tag - append child to parent
-    Tag * newTag = new Tag(
-        tag_id, nname.length(),
-        isRequireUpParent(tag_id) ? parent() : this
-    );
-    _tags.append(newTag);
+    Tag * rel = isRequireUpParent(tag_id) ? parent() : this;
+
+    Tag * newTag = new Tag(tag_id, nname.length(), rel);
+
+    rel -> _tags.append(newTag);
+
     return newTag;
 }
 

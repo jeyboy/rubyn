@@ -222,6 +222,26 @@ void RubydocParser::procDescription(const Html::Set & parts, const QByteArray & 
                 (*out) << example_prefix << Logger::nl;
             break;}
 
+            case Html::Tag::tg_dl: {
+                (*out) << Logger::nl;
+                Html::Set list_items = (*tag) -> children();
+
+                for(Html::Set::Iterator list_item_tag = list_items.begin(); list_item_tag != list_items.end(); list_item_tag++) {
+                    Html::Tag * curr_tag = (*list_item_tag);
+                    switch((*list_item_tag) -> tagID()) {
+                        case Html::Tag::tg_dt: {
+                            (*out) << prefix << "  * " << ((*list_item_tag) -> texts()) << Logger::nl;
+                        break;}
+
+                        case Html::Tag::tg_dd: {
+                            (*out) << prefix << "      " << ((*list_item_tag) -> texts()) << Logger::nl;
+                        break;}
+                    }
+                }
+
+                (*out) << Logger::nl;
+            break;}
+
             case Html::Tag::tg_newline: { break;}
 
             case Html::Tag::tg_text: { break;}
@@ -581,7 +601,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                 }
             }
 
-            Html::Tag * namespaces = metadata_block -> findFirst("#namespace-list-section");
+//            Html::Tag * namespaces = metadata_block -> findFirst("#namespace-list-section");
 
 
 

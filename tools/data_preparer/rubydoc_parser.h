@@ -13,6 +13,12 @@ namespace Html {
 class RubydocParser : public QObject {
     Q_OBJECT
 
+    const QByteArray description_prefix         = QByteArray("# ");
+    const QByteArray description_list_prefix    = QByteArray("#    - ");
+    const QByteArray description_example_prefix = QByteArray("#       ");
+    const QByteArray target_prefix              = QByteArray("    ");
+    const QByteArray border                     = QByteArray(80, '-').prepend('#');
+
     bool findSimbolsSub(const QString & str, const char & s, const char & e, int & spos, int & epos);
     QByteArray clearLine(const QByteArray & line);
 
@@ -21,6 +27,8 @@ class RubydocParser : public QObject {
     void procHeader(Html::Tag * h, const QByteArray & prefix, const QByteArray & border, QTextStream * out);
     void procDescription(const Html::Set & parts, const QByteArray & prefix, const QByteArray & example_prefix, const QByteArray & list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath);
     void procMethod(const QString & signature, Html::Tag * method_block, const QByteArray & target_prefix, const QByteArray & method_prefix, const QByteArray & description_prefix, const QByteArray & description_example_prefix, const QByteArray & description_list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath);
+
+
 
 //    bool parseFile(const QString & inpath, const QString & outpath);
     bool parseFolder(const QString & path, const QString & outpath);
