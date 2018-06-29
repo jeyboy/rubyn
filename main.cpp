@@ -1,6 +1,16 @@
 #include "ide_window.h"
 #include <QApplication>
 
+// take list of extends
+// String.singleton_class.included_modules
+
+// IO.new.methods(false) // take only this class methods
+// "asdasda".method(:to_s).parameters // return list of requred parameters
+// "asdasda".method(:to_s).arity // return count of required parameters
+// http://codeloveandboards.com/blog/2014/02/05/ruby-and-method-arguments/
+// https://holgerjust.de/2016/detecting-default-arguments-in-ruby/
+// https://www.oreilly.com/learning/ruby-cookbook-modules-and-namespaces
+
 
 //https://github.com/hanami/hanami
 

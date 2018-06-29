@@ -481,7 +481,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
             }
 
 
-//            /////////////////////////////////////////////////
+            /////////////////////////////////////////////////
 
             Html::Tag * methods_list = metadata_block -> findFirst("#method-list-section");
             QHash<QString, QString> methods_formats;
@@ -498,7 +498,7 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                     );
                 }
             }
-//            /////////////////////////////////////////////////
+            /////////////////////////////////////////////////
 
             Html::Set sections = doc_block -> find(".section");
 
@@ -580,6 +580,11 @@ bool RubydocParser::parseFile(const QString & inpath, const QString & outpath) {
                     }
                 }
             }
+
+            Html::Tag * namespaces = metadata_block -> findFirst("#namespace-list-section");
+
+
+
 
             out << "end";
 
