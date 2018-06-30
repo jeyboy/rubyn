@@ -21,8 +21,6 @@ class Completer;
 class TabsBlock : public QWidget {
     Q_OBJECT
 
-    bool is_fullscreen;
-
     TabBar * _bar;
     Completer * _completer;
 

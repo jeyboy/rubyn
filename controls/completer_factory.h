@@ -3,6 +3,7 @@
 
 #include <qhash.h>
 
+#include "project/code_formats.h"
 #include "lexer/lexem_mean_type.h"
 
 #include "misc/singleton.h"
@@ -11,6 +12,8 @@
 
 class CompleterFactory : public Singleton<CompleterFactory> {
     QHash<LexerMeanType, QIcon> icons;
+
+//    QHash<FormatType, Completer *> completers;
 
     CompleterFactory();
 public:

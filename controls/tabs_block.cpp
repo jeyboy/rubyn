@@ -92,7 +92,7 @@ void TabsBlock::setupCompleter() {
     _completer -> update();
 }
 
-TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), is_fullscreen(isFullScreen()), _bar(0), _completer(0), _list_btn(0), _scroll_left_btn(0), _scroll_right_btn(0), _files_list(0) {
+TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(0), _completer(0), _list_btn(0), _scroll_left_btn(0), _scroll_right_btn(0), _files_list(0) {
 //    setStyleSheet("QWidget:focus {background-color: #FFFFCC;}");
 
     setupLayout();
@@ -208,13 +208,10 @@ void TabsBlock::scrollsVisiabilityChange(const bool & show) {
 
     // Monkeypatch - toolbuttons not drawn after maximize and return to normal view
     if (show) {
-        if (is_fullscreen && is_fullscreen != isFullScreen())
-            resize(size() + QSize(1, 0));
+        resize(size() + QSize(1, 0));
 
         _bar -> scrollToItem(_bar -> currentItem());
     }
-
-    is_fullscreen = isFullScreen();
     ///////////////////////
 }
 

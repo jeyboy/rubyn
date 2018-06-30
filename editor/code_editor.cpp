@@ -70,7 +70,6 @@ void CodeEditor::setCompleter(QCompleter * new_completer) {
     completer -> setWidget(this);
     completer -> setCompletionMode(QCompleter::PopupCompletion);
     completer -> setCaseSensitivity(Qt::CaseInsensitive);
-    completer -> setFilterMode(Qt::MatchStartsWith); // Qt::MatchStartsWith // Qt::MatchContains // Qt::MatchEndsWith
 
     connect(completer, SIGNAL(activated(QString)), this, SLOT(applyCompletion(QString)));
 }
@@ -918,9 +917,7 @@ void CodeEditor::applyCompletion(const QString & completion) {
     wordUnderCursor(tc, wuco_remove_full);
     tc.insertText(completion);
 
-    completer -> popup() -> setCurrentIndex(
-        completer -> completionModel() -> index(0, 0)
-    );
+    completer -> popup() -> clearSelection();
 }
 
 void CodeEditor::procSelectionIndent(const bool & right) {

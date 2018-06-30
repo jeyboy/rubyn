@@ -4,6 +4,8 @@
 
 Completer::Completer(QObject * parent) : QCompleter(parent), mdl(new QStandardItemModel(this)) {
     popup() -> setIconSize(QSize(22, 22));
+    setFilterMode(Qt::MatchContains);
+    setMaxVisibleItems(12);
 
 //    setModelSorting(QCompleter::UnsortedModel);
 
