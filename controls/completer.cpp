@@ -1,10 +1,9 @@
 #include "completer.h"
 
-#include <qstandarditemmodel.h>
-//#include <qabstractitemview.h>
+#include <qabstractitemview.h>
 
-Completer::Completer(QObject * parent) : QCompleter(parent) {
-    mdl = new QStandardItemModel(this);
+Completer::Completer(QObject * parent) : QCompleter(parent), mdl(new QStandardItemModel(this)) {
+    popup() -> setIconSize(QSize(22, 22));
 
 //    setModelSorting(QCompleter::UnsortedModel);
 
@@ -24,16 +23,23 @@ Completer::Completer(QObject * parent) : QCompleter(parent) {
 //    }
 }
 
-void Completer::setModel(QAbstractItemModel * new_mdl) {
-    QCompleter::setModel(new_mdl ? new_mdl : mdl);
-}
+void Completer::setModel(QStandardItemModel * new_mdl) {
+    if (new_mdl) {
+        if (new_mdl != mdl) {
+            delete mdl;
+            mdl = new_mdl;
+        }
+    }
+    else {
+        delete mdl;
+        mdl = new QStandardItemModel(this);
+    }
 
-void Completer::addItem(const QString & text, const QString & tooltip, const QIcon & ico) {
-
+    QCompleter::setModel(mdl);
 }
 
 void Completer::clear() {
-
+    mdl -> clear();
 }
 
 void Completer::update() {

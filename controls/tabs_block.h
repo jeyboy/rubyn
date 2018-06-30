@@ -16,6 +16,7 @@ class QLabel;
 class QFocusEvent;
 class QMenu;
 class QListWidgetItem;
+class Completer;
 
 class TabsBlock : public QWidget {
     Q_OBJECT
@@ -23,6 +24,7 @@ class TabsBlock : public QWidget {
     bool is_fullscreen;
 
     TabBar * _bar;
+    Completer * _completer;
 
     QToolButton * _list_btn;
     QToolButton * _scroll_left_btn;
@@ -35,6 +37,7 @@ class TabsBlock : public QWidget {
     QHash<QString, File *> _external_files;
 
     void setupLayout();
+    void setupCompleter();
     bool openFileInEditor(File * file);
 public:
     TabsBlock(QWidget * parent = 0);

@@ -1,5 +1,6 @@
 #include "tabs_block.h"
 
+#include "completer_factory.h"
 #include "tab_bar.h"
 #include "logger.h"
 #include "editor/code_editor.h"
@@ -9,7 +10,6 @@
 #include <qlabel.h>
 #include <qboxlayout.h>
 #include <qtoolbutton.h>
-#include <qcompleter.h>
 #include <qmenu.h>
 
 void TabsBlock::setupLayout() {
@@ -72,11 +72,31 @@ void TabsBlock::setupLayout() {
     col_layout -> addWidget(_editor, 1);
 }
 
-TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), is_fullscreen(isFullScreen()), _bar(0), _list_btn(0), _scroll_left_btn(0), _scroll_right_btn(0), _files_list(0) {
+void TabsBlock::setupCompleter() {
+    _completer = new Completer(this);
+
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_const), QLatin1Literal("alpha")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_global_method), QLatin1Literal("omega")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_global_var), QLatin1Literal("omicron")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_instance_method), QLatin1Literal("zeta")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_instance_var), QLatin1Literal("instance_var")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_local_var), QLatin1Literal("local_var")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_obj_method), QLatin1Literal("obj_method")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_obj_var), QLatin1Literal("obj_var")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_const), QLatin1Literal("private_const")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_instance_method), QLatin1Literal("private_instance_method")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_obj_method), QLatin1Literal("private_obj_method")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_template), QLatin1Literal("template")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_unknow), QLatin1Literal("unknow")));
+
+    _completer -> update();
+}
+
+TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), is_fullscreen(isFullScreen()), _bar(0), _completer(0), _list_btn(0), _scroll_left_btn(0), _scroll_right_btn(0), _files_list(0) {
 //    setStyleSheet("QWidget:focus {background-color: #FFFFCC;}");
 
     setupLayout();
-    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    setupCompleter();
 
     connect(_bar, SIGNAL(currentRowChanged(int)), this, SLOT(currentTabIndexChanged(int)));
     connect(_bar, SIGNAL(tabCloseRequested(QListWidgetItem*)), this, SLOT(tabRemoved(QListWidgetItem*)));
@@ -143,11 +163,7 @@ bool TabsBlock::openFileInEditor(File * file) {
     switch(file -> baseFormatType()) {
         case ft_text: {
             _editor -> openDocument(file);
-
-            QStringList wordList;
-            wordList << "alpha" << "omega" << "omicron" << "zeta";
-            QCompleter * completer = new QCompleter(wordList, this);
-            _editor -> setCompleter(completer);
+            _editor -> setCompleter(_completer);
         break;}
         case ft_image: //{ emit parent() -> imageAdded(url); break;}
         case ft_binary: //{ emit parent() -> binaryAdded(url); break;}

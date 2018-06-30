@@ -2,20 +2,18 @@
 #define COMPLETER_H
 
 #include <qcompleter.h>
-
-class QAbstractItemModel;
-class QIcon;
+#include <qstandarditemmodel.h>
 
 class Completer : public QCompleter {
     Q_OBJECT
 
-    QAbstractItemModel * mdl;
+    QStandardItemModel * mdl;
 public:
     Completer(QObject * parent = 0);
 
-    void setModel(QAbstractItemModel * new_mdl = 0);
+    void setModel(QStandardItemModel * new_mdl = 0);
 
-    void addItem(const QString & text, const QString & tooltip, const QIcon & ico);
+    inline void addItem(QStandardItem * item) { mdl -> appendRow(item); }
     void clear();
     void update();
 };

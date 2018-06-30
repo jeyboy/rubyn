@@ -66,5 +66,6 @@
         <file alias="obj_method">icons/completer/comp_obj_method.png</file>
         <file alias="obj_var">icons/completer/comp_obj_var.png</file>
         <file alias="template">icons/completer/comp_template.png</file>
+        <file alias="unknow">icons/completer/comp_unknown.png</file>
     </qresource>
 </RCC>

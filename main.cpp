@@ -4,6 +4,8 @@
 // get ruby version
 // ruby --version
 
+//http://www.chrisrolle.com/en/blog/private-classes-in-ruby
+
 
 //class Person
 //  RETIREMENT_AGE = 68
