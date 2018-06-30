@@ -79,7 +79,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 //    RubydocParser().parseFile(QLatin1Literal("F://rubyn test//SpecificationProvider.html"), QLatin1Literal("F://rubyn test//specification_provider.rb"));
 //    RubydocParser().parseFile(QLatin1Literal("F://rubyn test//Array.html"), QLatin1Literal("F://rubyn test//array.rb"));
-    RubydocParser().parseFile(QLatin1Literal("F://rubyn test//IO.html"), QLatin1Literal("F://rubyn test//io.rb"));
+    RubydocParser().initParseFile(QLatin1Literal("F://rubyn test//"), QLatin1Literal("IO.html"), QLatin1Literal("F://rubyn test//io.rb"));
 
 //    Logger::obj().startMark();
 //    RubydocParser().parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_core"), QLatin1Literal("F://rubyn test//ruby_2_5_1_core_parsed"));
