@@ -1,32 +1,21 @@
 #include "ide_window.h"
 #include <QApplication>
 
-// take list of extends
-// String.singleton_class.included_modules
-
-// IO.new.methods(false) // take only this class methods
-// "asdasda".method(:to_s).parameters // return list of requred parameters
-// "asdasda".method(:to_s).arity // return count of required parameters
-// http://codeloveandboards.com/blog/2014/02/05/ruby-and-method-arguments/
-// https://holgerjust.de/2016/detecting-default-arguments-in-ruby/
-// https://www.oreilly.com/learning/ruby-cookbook-modules-and-namespaces
-
-
-//https://github.com/hanami/hanami
-
-
-//http://www.iconarchive.com/show/windows-8-icons-by-icons8.3.html
-
-//https://stackoverflow.com/questions/16286064/customizing-scrollbar-over-qlistwidget
-//http://www.qtcentre.org/threads/7134-QTreeWidget-Weights-Sorting
-
-
-// QTextEdit: Как заполучить «универсальное» событие вставки символа?
-//https://www.linux.org.ru/forum/development/12255845
-
-
 // get ruby version
 // ruby --version
+
+
+//class Person
+//  RETIREMENT_AGE = 68
+//  ADULT_AGE      = 18
+//  private_constant :ADULT_AGE
+//end
+
+// List of public constants
+// Person.constants
+
+// List of public and private constants
+// Person.constants false
 
 // Liat of all classes
 // ObjectSpace.each_object(Class) { |c| p c.name }
@@ -37,6 +26,32 @@
 
 // List of global variables
 // Kernel.global_variables
+
+// IO.new.methods(false) // take only this class methods
+// "asdasda".method(:to_s).parameters // return list of requred parameters
+// "asdasda".method(:to_s).arity // return count of required parameters
+// http://codeloveandboards.com/blog/2014/02/05/ruby-and-method-arguments/
+// https://holgerjust.de/2016/detecting-default-arguments-in-ruby/
+// https://www.oreilly.com/learning/ruby-cookbook-modules-and-namespaces
+
+// take list of extends
+// String.singleton_class.included_modules
+
+
+//https://apidock.com/ruby/notes
+//https://apidock.com/ruby/notes/good
+//https://apidock.com/rails/notes
+//https://apidock.com/rails/notes/good
+
+
+//http://www.iconarchive.com/show/windows-8-icons-by-icons8.3.html
+
+//https://stackoverflow.com/questions/16286064/customizing-scrollbar-over-qlistwidget
+//http://www.qtcentre.org/threads/7134-QTreeWidget-Weights-Sorting
+
+
+// QTextEdit: Как заполучить «универсальное» событие вставки символа?
+//https://www.linux.org.ru/forum/development/12255845
 
 
 //http://doc.qt.io/qt-5/qprocess.html
@@ -70,6 +85,7 @@
 // - class constant // <C>
 // - class instance method // <instance>
 // - class self method // <self>
+
 
 
 int main(int argc, char * argv[]) {
