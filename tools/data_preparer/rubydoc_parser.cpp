@@ -388,7 +388,7 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
     }
 }
 
-bool RubydocParser::parseFile(const QString & path, const QString & name, QTextStream & out, const QByteArray & offset) {
+bool RubydocParser::parseFile(const QString & path, const QString & name, QTextStream & out, const QByteArray & offset, const bool & attach) {
     QString inpath(path % '/' % name);
 
     QFile datafile(inpath);
@@ -416,77 +416,79 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, QTextS
             return false;
         }
 
-        Html::Tag * doc_header = doc_block -> findFirst("h1");
+        if (!attach) {
+            Html::Tag * doc_header = doc_block -> findFirst("h1");
 
-        if (!doc_header) {
-            Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse doc header in file: ") % inpath);
-            datafile.close();
-            return false;
-        }
+            if (!doc_header) {
+                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse doc header in file: ") % inpath);
+                datafile.close();
+                return false;
+            }
 
-        Html::Tag * doc_description = doc_block -> findFirst("#description");
+            Html::Tag * doc_description = doc_block -> findFirst("#description");
 
-        if (!doc_description) {
-            Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse doc description in file: ") % inpath);
-            datafile.close();
-            return false;
-        }
+            if (!doc_description) {
+                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse doc description in file: ") % inpath);
+                datafile.close();
+                return false;
+            }
 
-        Html::Set descrition_parts = doc_description -> children();
+            Html::Set descrition_parts = doc_description -> children();
 
-        procDescription(
-            descrition_parts,
-            offset % description_prefix,
-            offset % description_example_prefix,
-            offset % description_list_prefix,
-            offset % border, &out, inpath
-        );
+            procDescription(
+                descrition_parts,
+                offset % description_prefix,
+                offset % description_example_prefix,
+                offset % description_list_prefix,
+                offset % border, &out, inpath
+            );
 
-        out << Logger::nl; // one extra line before begin of the class description
+            out << Logger::nl; // one extra line before begin of the class description
 
-        QByteArray target_class = doc_header -> rawClasses();
-        QByteArray target_name = doc_header -> text();
-        QByteArray parent_name;
+            QByteArray target_class = doc_header -> rawClasses();
+            QByteArray target_name = doc_header -> text();
+            QByteArray parent_name;
 
-        Html::Tag * parent_tag = metadata_block -> findFirst("#parent-class-section p");
+            Html::Tag * parent_tag = metadata_block -> findFirst("#parent-class-section p");
 
-        if (parent_tag) {
-            Html::Tag * parent_a_tag = parent_tag -> findFirst("a");
+            if (parent_tag) {
+                Html::Tag * parent_a_tag = parent_tag -> findFirst("a");
 
-            if (parent_a_tag)
-                parent_tag = parent_a_tag;
+                if (parent_a_tag)
+                    parent_tag = parent_a_tag;
 
-            parent_name = parent_tag -> text();
+                parent_name = parent_tag -> text();
 
-            if (parent_name[0] < 'A' || parent_name[0] > 'Z') { // if we have some trash text
-                for(int i = 1; i < parent_name.length(); i++) {
-                    if (parent_name[i] >= 'A' && parent_name[i] <= 'Z') {
-                        parent_name = parent_name.mid(i);
-                        break;
+                if (parent_name[0] < 'A' || parent_name[0] > 'Z') { // if we have some trash text
+                    for(int i = 1; i < parent_name.length(); i++) {
+                        if (parent_name[i] >= 'A' && parent_name[i] <= 'Z') {
+                            parent_name = parent_name.mid(i);
+                            break;
+                        }
                     }
                 }
             }
-        }
 
-        /////////////////// REMOVE ME LATER
-        if (target_class != "class" && target_class != "module") {
-            Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("New target type: ") % target_class % QLatin1Literal("  in file: ") % inpath);
-        }
-        //////////////////////////////////////
+            /////////////////// REMOVE ME LATER
+            if (target_class != "class" && target_class != "module") {
+                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("New target type: ") % target_class % QLatin1Literal("  in file: ") % inpath);
+            }
+            //////////////////////////////////////
 
-        out << offset << target_class << ' ' << target_name;
+            out << offset << target_class << ' ' << target_name;
 
-        if (!parent_name.isEmpty())
-            out << " < " << parent_name;
+            if (!parent_name.isEmpty())
+                out << " < " << parent_name;
 
-        out << Logger::nl;
+            out << Logger::nl;
 
 
-        Html::Set includes_texts = metadata_block -> find("#includes-section li a text");
+            Html::Set includes_texts = metadata_block -> find("#includes-section li a text");
 
-        if (!includes_texts.isEmpty()) {
-            for(Html::Set::Iterator include_tag = includes_texts.begin(); include_tag != includes_texts.end(); include_tag++) {
-                out << offset << target_prefix << "include " << QString((*include_tag) -> text()) << Logger::nl;
+            if (!includes_texts.isEmpty()) {
+                for(Html::Set::Iterator include_tag = includes_texts.begin(); include_tag != includes_texts.end(); include_tag++) {
+                    out << offset << target_prefix << "include " << QString((*include_tag) -> text()) << Logger::nl;
+                }
             }
         }
 
@@ -599,8 +601,11 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, QTextS
                 Html::Tag * tag = *entry;
 
                 QByteArray file_path = tag -> link();
+                QByteArrayList namespace_name_parts = tag -> text().split(':');
 
-                bool res = parseFile(path, file_path, out, offset % target_prefix);
+                bool is_attach = QChar(namespace_name_parts.last()[0]).isLower();
+
+                bool res = parseFile(path, file_path, out, offset % target_prefix, is_attach);
                 if (res)
                     out << offset % target_prefix << "end" << Logger::nl;
             }

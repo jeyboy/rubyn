@@ -28,7 +28,7 @@ class RubydocParser : public QObject {
     void procDescription(const Html::Set & parts, const QByteArray & prefix, const QByteArray & example_prefix, const QByteArray & list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath);
     void procMethod(const QString & signature, Html::Tag * method_block, const QByteArray & target_prefix, const QByteArray & method_prefix, const QByteArray & description_prefix, const QByteArray & description_example_prefix, const QByteArray & description_list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath);
 
-    bool parseFile(const QString & path, const QString & name, QTextStream & out, const QByteArray & offset = QByteArray());
+    bool parseFile(const QString & path, const QString & name, QTextStream & out, const QByteArray & offset = QByteArray(), const bool & attach = false);
     bool parseFolder(const QString & path, const QString & outpath);
 public:
     RubydocParser(QObject * parent = 0);
