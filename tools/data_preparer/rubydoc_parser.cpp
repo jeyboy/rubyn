@@ -590,8 +590,21 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, QTextS
             }
         }
 
-//            Html::Tag * namespaces = metadata_block -> findFirst("#namespace-list-section");
+        Html::Tag * namespaces = metadata_block -> findFirst("#namespace-list-section");
 
+        if (namespaces) {
+            Html::Set entries = namespaces -> find("li a");
+
+            for(Html::Set::Iterator entry = entries.begin(); entry != entries.end(); entry++) {
+                Html::Tag * tag = *entry;
+
+                QByteArray file_path = tag -> link();
+
+                bool res = parseFile(path, file_path, out, offset % target_prefix);
+                if (res)
+                    out << offset % target_prefix << "end" << Logger::nl;
+            }
+        }
 
         datafile.close();
     } else {
