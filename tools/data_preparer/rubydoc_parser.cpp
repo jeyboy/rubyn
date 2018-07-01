@@ -597,16 +597,29 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, QTextS
         if (namespaces) {
             Html::Set entries = namespaces -> find("li a");
 
+            QStringList snames;
+
             for(Html::Set::Iterator entry = entries.begin(); entry != entries.end(); entry++) {
                 Html::Tag * tag = *entry;
 
                 QByteArray file_path = tag -> link();
                 QByteArrayList namespace_name_parts = tag -> text().split(':');
 
-                bool is_attach = QChar(namespace_name_parts.last()[0]).isLower();
+                if (QChar(namespace_name_parts.last()[0]).isLower()) {
+                    file_path.prepend('1');
+                    snames.prepend(file_path);
+                } else {
+                    file_path.prepend('2');
+                    snames.append(file_path);
+                }
+            }
 
-                bool res = parseFile(path, file_path, out, offset % target_prefix, is_attach);
-                if (res)
+            for(QStringList::Iterator sname = snames.begin(); sname != snames.end(); sname++) {
+                out << Logger::nl << Logger::nl;
+
+                bool is_attach = (*sname)[0] == '1';
+                bool res = parseFile(path, (*sname).mid(1), out, offset % target_prefix, is_attach);
+                if (res && !is_attach)
                     out << offset % target_prefix << "end" << Logger::nl;
             }
         }
