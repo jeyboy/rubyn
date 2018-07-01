@@ -151,7 +151,8 @@ HEADERS  += ide_window.h \
     misc/screen.h \
     lexer/lexem_mean_type.h \
     controls/completer_factory.h \
-    controls/dumper.h
+    controls/dumper.h \
+    tools/data_preparer/data_obj.h
 
 FORMS    += ide_window.ui
 
