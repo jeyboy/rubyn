@@ -36,6 +36,7 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
 
     if (!results.isEmpty()) {
         Json cache;
+        JsonObj cache_obj = cache.obj();
 
         for(Html::Set::Iterator result = results.begin(); result != results.end(); result++) {
             QString href = (*result) -> link(&host);
@@ -50,6 +51,7 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
                 qDebug() << version;
 
                 if (!list.contains(version)) {
+                    cache_obj.insert(version, QJsonObject());
                     list.insert(version, VersionUrls());
                 }
 
@@ -59,11 +61,13 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
 
                 QStringRef url_type = match.capturedRef(4);
 
-                if (url_type == VersionUrls::core_type)
+                if (url_type == VersionUrls::core_type) {
                     ver_urls.core_url = href;
-                else if (url_type == VersionUrls::stdlib_type)
+                    cache_obj.obj(version).insert(VersionUrls::core_type, href);
+                } else if (url_type == VersionUrls::stdlib_type) {
                     ver_urls.stdlib_url = href;
-                else
+                    cache_obj.obj(version).insert(VersionUrls::stdlib_type, href);
+                } else
                     Logger::obj().write(
                         QLatin1Literal("RubyDocPreparer"), QLatin1Literal("Unknown link type: ") %
                             url_type % QLatin1Literal("for href: ") % href,
@@ -71,6 +75,8 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
                     );
             }
         }
+
+        qDebug() << "JSON" << cache.toJsonStr();
 
         Archive::save(
             versionsDataName(),

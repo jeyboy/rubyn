@@ -1,8 +1,11 @@
 #include "dumper.h"
 
 #include "ide_window.h"
+
 #include "misc/dir.h"
 #include "misc/screen.h"
+
+#include "tools/json/json.h"
 
 #include <qsettings.h>
 
