@@ -18,6 +18,7 @@ class QDragEnterEvent;
 class QDragMoveEvent;
 class QDropEvent;
 class File;
+class Dumper;
 
 namespace Ui { class IDEWindow; }
 
@@ -25,8 +26,6 @@ class IDEWindow : public QMainWindow {
     Q_OBJECT
 
     Ui::IDEWindow * ui;
-
-    QString settings_filename;
 
     TabsBlock * active_editor;
     QSplitter * widgets_list;
@@ -43,8 +42,9 @@ class IDEWindow : public QMainWindow {
 
     void loadSettings();
     void saveSettings();
+
+    friend class Dumper;
 protected:
-    void locationCorrection();
     void setupToolWindows();
 
     void dragEnterEvent(QDragEnterEvent *);

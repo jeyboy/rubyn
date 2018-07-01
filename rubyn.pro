@@ -59,7 +59,8 @@ SOURCES += main.cpp\
     tools/files_proc_manager.cpp \
     tools/data_preparer/rubydoc_parser.cpp \
     misc/format.cpp \
-    controls/completer_factory.cpp
+    controls/completer_factory.cpp \
+    controls/dumper.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -149,7 +150,8 @@ HEADERS  += ide_window.h \
     misc/format.h \
     misc/screen.h \
     lexer/lexem_mean_type.h \
-    controls/completer_factory.h
+    controls/completer_factory.h \
+    controls/dumper.h
 
 FORMS    += ide_window.ui
 
