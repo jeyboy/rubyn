@@ -12,10 +12,12 @@
 
 #include "controls/logger.h"
 #include "controls/project_tree.h"
+#include "controls/tabs_block.h"
 
 #include "project/ifolder.h"
 
 #include <qsettings.h>
+#include <qsplitter.h>
 
 void Dumper::loadTree(IDEWindow * w, JsonObj & json) {
     JsonArr arr = json.arr(QLatin1Literal("tree"));
@@ -49,7 +51,19 @@ void Dumper::saveTree(IDEWindow * w, JsonObj & json) {
 }
 
 void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
+    int index = w -> widgets_list -> indexOf(w -> active_editor);
 
+    JsonArr arr;
+
+    for(int i = 0; i < w -> widgets_list -> count(); i++) {
+        JsonObj widget_obj;
+        JsonArr tabs_arr;
+
+        QWidget * widget = widgets_list -> widget(index);
+        TabsBlock * editor = dynamic_cast<TabsBlock *>(widget);
+
+
+    }
 }
 
 void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {

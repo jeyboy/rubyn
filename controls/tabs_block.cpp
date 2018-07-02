@@ -159,6 +159,16 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
     return true;
 }
 
+uint TabsBlock::tabsCount() { return _bar -> count(); }
+
+QString TabsBlock::tabFilePath(const uint & index) {
+    QListWidgetItem * item = _bar -> item(index);
+
+    File * file = _bar -> tabFile(item);
+
+    return file -> path();
+}
+
 bool TabsBlock::openFileInEditor(File * file) {
     switch(file -> baseFormatType()) {
         case ft_text: {

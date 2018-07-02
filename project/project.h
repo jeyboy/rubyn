@@ -6,6 +6,7 @@
 #include <qurl.h>
 
 class IFolder;
+class File;
 
 class Project {
     QUrl _project_uri;
@@ -19,6 +20,8 @@ public:
     inline PROJECT_FORMAT_TYPE projectFormat() { return _project_format; }
 
     void rename(const QString & new_name);
+
+    File * findFile(const QString & inner_path);
 
 //    bool addFile(const QUrl & uri = QUrl(), const bool & open = true);
 };

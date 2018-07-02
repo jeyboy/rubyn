@@ -15,6 +15,11 @@ void Project::rename(const QString & /*new_name*/) {
     // TODO: write me
 }
 
+File * Project::findFile(const QString & inner_path) {
+    QStringList parts = inner_path.split('/', QString::SkipEmptyParts);
+    return root -> findFile(parts);
+}
+
 //bool Project::addFile(const QUrl & uri, const bool & open) {
 //    bool new_file = false;
 //    File * file;

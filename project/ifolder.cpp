@@ -69,3 +69,11 @@ QString IFolder::fullPath() {
     }
     else return _name;
 }
+
+File * IFolder::findFile(QStringList & path_parts) {
+    if (path_parts.length() == 1) {
+
+    } else {
+        path_parts.takeFirst()
+    }
+}

@@ -36,6 +36,8 @@ public:
     QString name();
     QString fullPath();
 
+    File * findFile(QStringList & path_parts);
+
     File * getFile(const QString & name) {
         if (_files.contains(name))
             return _files[name];

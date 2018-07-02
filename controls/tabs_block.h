@@ -45,6 +45,9 @@ public:
 
     bool openFile(File * file, const bool & is_external = false);
 
+    uint tabsCount();
+    QString tabFilePath(const uint & index);
+
 signals:
     void resourceDropped(TabsBlock *, const QUrl &);
     void activated(TabsBlock *);

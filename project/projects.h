@@ -25,6 +25,7 @@ public:
     ~Projects();
 
     bool open(const QUrl & uri);
+    File * findFile(const QUrl & uri);
 
     inline Project * project(const QUrl & uri) { return _projects.value(uri, 0); }
 

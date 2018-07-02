@@ -43,7 +43,7 @@ Projects::~Projects() {
     _projects.clear();
 }
 
-bool Projects::open(const QUrl & uri) {
+bool Projects::open(const QUrl & uri) {   
     PROJECT_FORMAT_TYPE format_type = ProjectIdentificator::proc(uri.toLocalFile());
 
     Project * project = new Project(uri);
@@ -53,4 +53,17 @@ bool Projects::open(const QUrl & uri) {
     emit projectAdded(project);
 
     return true;
+}
+
+File * Projects::findFile(const QUrl & uri) {
+    QString file_path = uri.toLocalFile();
+
+    for(QHash<QUrl, Project *>::Iterator pro = _projects.cbegin(); pro != _projects.cend(); pro++) {
+        QString pro_path = pro.key().toLocalFile();
+
+        if (file_path.startsWith(pro_path, Qt::CaseInsensitive)) {
+            Project * project = pro.value();
+            return project -> findFile(file_path.mid(pro_path.length()));
+        }
+    }
 }
