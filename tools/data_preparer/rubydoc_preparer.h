@@ -3,6 +3,12 @@
 
 #include "iruby_stubs_preparer.h"
 
+//http://doc.qt.io/qt-5/qprocess.html#start
+
+//https://sevenzip.osdn.jp/chm/cmdline/commands/extract.htm
+//https://sevenzip.osdn.jp/chm/cmdline/commands/
+//https://sevenzip.osdn.jp/chm/cmdline/commands/extract_full.htm
+
 namespace Web {
     class Response;
 }

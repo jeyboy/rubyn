@@ -1,6 +1,10 @@
 #include "ide_window.h"
 #include <QApplication>
 
+// all ROR files
+// http://api.rubyonrails.org/panel/links.html
+//https://github.com/rails/rails/tree/375a4143cf5caeb6159b338be824903edfd62836/activesupport/lib/active_support/core_ext
+
 // get ruby version
 // ruby --version
 
@@ -59,7 +63,7 @@
 //http://doc.qt.io/qt-5/qprocess.html
 //http://doc.qt.io/qt-5/qprocessenvironment.html#systemEnvironment
 
-
+//http://doc.qt.io/qt-5/qtwidgets-widgets-tooltips-example.html
 
 // TODO:
 // LOGING!
