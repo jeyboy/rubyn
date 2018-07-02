@@ -58,7 +58,7 @@ bool Projects::open(const QUrl & uri) {
 File * Projects::findFile(const QUrl & uri) {
     QString file_path = uri.toLocalFile();
 
-    for(QHash<QUrl, Project *>::Iterator pro = _projects.cbegin(); pro != _projects.cend(); pro++) {
+    for(QHash<QUrl, Project *>::ConstIterator pro = _projects.cbegin(); pro != _projects.cend(); pro++) {
         QString pro_path = pro.key().toLocalFile();
 
         if (file_path.startsWith(pro_path, Qt::CaseInsensitive)) {
@@ -66,4 +66,6 @@ File * Projects::findFile(const QUrl & uri) {
             return project -> findFile(file_path.mid(pro_path.length()));
         }
     }
+
+    return 0;
 }

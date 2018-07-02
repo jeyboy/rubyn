@@ -42,8 +42,8 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
     connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
 
-    openFolder(QUrl::fromLocalFile("F://rubyn test//projects//rails 4 - RebelsMarketplace"));
-//    openFile(QUrl::fromLocalFile("F://rubyn test//ruby//test1.rb"));
+    openFolder(QUrl::fromLocalFile("F:/rubyn test/projects/rails 4 - RebelsMarketplace"));
+//    openFile(QUrl::fromLocalFile("F:/rubyn test/ruby/test1.rb"));
 
     setWindowTitle(tr("Bla bla blashka"));
     loadSettings();
@@ -100,11 +100,14 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
 
         _file = _folder -> getFile(name);
     } else {
-        QFileInfo finfo(name);
-        _file = new File(0, finfo.baseName(), name);
+        _file = Projects::obj().findFile(QUrl::fromLocalFile(name));
 
-        is_external = true;
-//        Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Open of dropped resources not finished yet"),  Logger::log_error);
+        if (!_file) {
+            QFileInfo finfo(name);
+            _file = new File(0, finfo.baseName(), name);
+
+            is_external = true;
+        }
     }
 
     if (_file == 0) {

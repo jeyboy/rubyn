@@ -29,7 +29,7 @@ enum LexerMeanType : quint16 {
     lmt_private_instance_method = lmt_private | lmt_instance | lmt_method,
     lmt_instance_method = lmt_instance | lmt_method,
     lmt_private_obj_method = lmt_private | lmt_object | lmt_method,
-    lmt_obj_method = lmt_object | lmt_method,
+    lmt_object_method = lmt_object | lmt_method,
 
     lmt_global_var = lmt_global | lmt_var,
     lmt_instance_var = lmt_instance | lmt_var,

@@ -71,9 +71,17 @@ QString IFolder::fullPath() {
 }
 
 File * IFolder::findFile(QStringList & path_parts) {
-    if (path_parts.length() == 1) {
+    QString part = path_parts.takeFirst();
 
+    if (path_parts.isEmpty()) {
+        if (_files.contains(part)) {
+            return _files[part];
+        }
     } else {
-        path_parts.takeFirst()
+        if (_folders.contains(part)) {
+            return _folders[part] -> findFile(path_parts);
+        }
     }
+
+    return 0;
 }

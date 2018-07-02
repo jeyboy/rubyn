@@ -81,8 +81,8 @@ void TabsBlock::setupCompleter() {
     _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_instance_method), QLatin1Literal("zeta")));
     _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_instance_var), QLatin1Literal("instance_var")));
     _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_local_var), QLatin1Literal("local_var")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_obj_method), QLatin1Literal("obj_method")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_obj_var), QLatin1Literal("obj_var")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_object_method), QLatin1Literal("obj_method")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_object_var), QLatin1Literal("obj_var")));
     _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_const), QLatin1Literal("private_const")));
     _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_instance_method), QLatin1Literal("private_instance_method")));
     _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_obj_method), QLatin1Literal("private_obj_method")));

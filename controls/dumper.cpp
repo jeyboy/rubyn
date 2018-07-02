@@ -24,7 +24,7 @@ void Dumper::loadTree(IDEWindow * w, JsonObj & json) {
 
     if (!arr.isEmpty()) {
         for(JsonArr::Iterator it = arr.begin(); it != arr.end(); it++)
-            w -> openFolder(QUrl::fromLocalFile(*it));
+            w -> openFolder(QUrl::fromLocalFile((*it).toString()));
     }
 }
 
@@ -59,7 +59,7 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
         JsonObj widget_obj;
         JsonArr tabs_arr;
 
-        QWidget * widget = widgets_list -> widget(index);
+        QWidget * widget =w ->  widgets_list -> widget(index);
         TabsBlock * editor = dynamic_cast<TabsBlock *>(widget);
 
 
@@ -73,13 +73,13 @@ void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
 void Dumper::load(IDEWindow * w, const QString & settings_filename) {
     QSettings settings(Dir::appPath(settings_filename), QSettings::IniFormat, w);
 
-    QVariant data = settings.value(QLatin1Literal("data"));
+//    QVariant data = settings.value(QLatin1Literal("data"));
 
-    if (data.isValid()) {
-        JsonObj obj(data.toJsonObject());
+//    if (data.isValid()) {
+//        JsonObj obj(data.toJsonObject());
 
-        loadTree(w, obj);
-    }
+//        loadTree(w, obj);
+//    }
 
     QVariant geometry_state = settings.value(QLatin1Literal("geometry"));
     if (geometry_state.isValid())
