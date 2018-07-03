@@ -87,15 +87,15 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
 }
 
 void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
-    int index = w -> widgets_list -> indexOf(w -> active_editor);
+//    int index = w -> widgets_list -> indexOf(w -> active_editor);
 
     QJsonArray arr;
 
     for(int i = 0; i < w -> widgets_list -> count(); i++) {
-        QWidget * widget = w ->  widgets_list -> widget(index);
+        QWidget * widget = w ->  widgets_list -> widget(i);
         TabsBlock * editor = dynamic_cast<TabsBlock *>(widget);
 
-        int limit = editor -> tabsCount();
+        uint limit = editor -> tabsCount();
 
         if (limit == 0)
             continue;
@@ -162,6 +162,8 @@ void Dumper::save(IDEWindow * w, const QString & settings_filename) {
 
     saveTree(w, obj);
     saveTabs(w, obj);
+
+    qDebug() << obj.toJsonStr();
 
     settings.setValue(QLatin1Literal("data"), obj.toJsonStr());
     settings.setValue(QLatin1Literal("geometry"), w -> saveGeometry());
