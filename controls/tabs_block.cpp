@@ -166,7 +166,15 @@ QString TabsBlock::tabFilePath(const uint & index) {
 
     File * file = _bar -> tabFile(item);
 
-    return file -> path();
+    return file ? file -> path() : QString();
+}
+
+QString TabsBlock::currentTabFilePath() {
+    QListWidgetItem * item = _bar -> currentItem();
+
+    File * file = item ? _bar -> tabFile(item) : 0;
+
+    return file ? file -> path() : QString();
 }
 
 bool TabsBlock::openFileInEditor(File * file) {

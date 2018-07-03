@@ -42,7 +42,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
     connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
 
-    openFolder(QUrl::fromLocalFile("F:/rubyn test/projects/rails 4 - RebelsMarketplace"));
+//    openFolder(QUrl::fromLocalFile("F:/rubyn test/projects/rails 4 - RebelsMarketplace"));
 //    openFile(QUrl::fromLocalFile("F:/rubyn test/ruby/test1.rb"));
 
     setWindowTitle(tr("Bla bla blashka"));
@@ -86,7 +86,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 IDEWindow::~IDEWindow() { delete ui; }
 
-void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
+void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool & in_new) {
     File * _file = 0;
     bool is_external = false;
 
@@ -130,7 +130,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder) {
         }
     }
 
-    if (!active_editor)
+    if (!active_editor || in_new)
         newEditorRequired(_file, is_external);
     else
         active_editor -> openFile(_file, is_external);

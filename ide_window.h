@@ -57,7 +57,7 @@ public:
     ~IDEWindow();
 
 protected slots:
-    void fileOpenRequired(const QString & name, void * folder);
+    void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false);
     void newEditorRequired(File * file, const bool & is_external = false);
     void editorActivated(TabsBlock *);
     void editorIsEmpty(TabsBlock *);

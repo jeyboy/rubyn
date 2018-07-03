@@ -47,6 +47,7 @@ public:
 
     uint tabsCount();
     QString tabFilePath(const uint & index);
+    QString currentTabFilePath();
 
 signals:
     void resourceDropped(TabsBlock *, const QUrl &);
@@ -54,17 +55,18 @@ signals:
     void newTabsBlockRequested(File *);
     void moveToBlankState(TabsBlock *);
 
+public slots:
+    void currentTabChanged(QListWidgetItem * tab);
+    void currentTabIndexChanged(const int & index);
+
 protected slots:
     inline void resourceDrop(const QUrl & url) { emit resourceDropped(this, url); }
     inline void inFocus() { emit activated(this); }
 
     void buildFilesList();
     void fileListClicked();
-
-    void scrollsVisiabilityChange(const bool & show);
     void tabsCountChanged(const int & correction);
-    void currentTabIndexChanged(const int & index);
-    void currentTabChanged(QListWidgetItem * tab);
+    void scrollsVisiabilityChange(const bool & show);
     void tabRemoved(QListWidgetItem * tab);
     void showTabsContextMenu(const QPoint &);
 

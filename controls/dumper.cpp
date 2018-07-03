@@ -31,6 +31,8 @@ void Dumper::loadTree(IDEWindow * w, JsonObj & json) {
 void Dumper::saveTree(IDEWindow * w, JsonObj & json) {
     QTreeWidgetItem * top = w -> tree -> topLevelItem(0);
 
+    if (!top) return; // we do not have items in tree
+
     JsonArr arr;
 
     for(int i = 0; i < top -> childCount(); i++) {
@@ -51,6 +53,34 @@ void Dumper::saveTree(IDEWindow * w, JsonObj & json) {
 }
 
 void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
+    JsonArr tabs = json.arr(QLatin1Literal("editors"));
+    bool new_editor = false;
+
+    for(JsonArr::Iterator tab = tabs.begin(); tab != tabs.end(); tab++) {
+        JsonObj widget_obj = (*tab).toObject();
+        new_editor = tab != tabs.begin();
+
+        QString curr_path = widget_obj.string(QLatin1Literal("current"));
+
+        JsonArr items = widget_obj.arr(QLatin1Literal("tabs"));
+        int index = 0, counter = 0;
+
+        for(JsonArr::Iterator item = items.begin(); item != items.end(); item++, counter++) {
+            QString path = (*item).toString();
+
+            if (path == curr_path) {
+                index = counter;
+            }
+
+            w -> fileOpenRequired(path, 0, new_editor);
+            new_editor = false;
+        }
+
+        w -> active_editor -> currentTabIndexChanged(index);
+    }
+}
+
+void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
     int index = w -> widgets_list -> indexOf(w -> active_editor);
 
     JsonArr arr;
@@ -62,24 +92,37 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
         QWidget * widget =w ->  widgets_list -> widget(index);
         TabsBlock * editor = dynamic_cast<TabsBlock *>(widget);
 
+        for(uint j = 0; j < editor -> tabsCount(); j++) {
+            QString tab_path = editor -> tabFilePath(j);
 
+            if (!tab_path.isNull())
+                tabs_arr.append(tab_path);
+        }
+
+        QString curr_path = editor -> currentTabFilePath();
+
+        if (!curr_path.isNull())
+            widget_obj.insert(QLatin1Literal("current"), curr_path);
+
+        widget_obj.insert(QLatin1Literal("tabs"), tabs_arr);
+
+        arr << widget_obj;
     }
-}
 
-void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
-
+    json.insert(QLatin1Literal("editors"), arr);
 }
 
 void Dumper::load(IDEWindow * w, const QString & settings_filename) {
     QSettings settings(Dir::appPath(settings_filename), QSettings::IniFormat, w);
 
-//    QVariant data = settings.value(QLatin1Literal("data"));
+    QVariant data = settings.value(QLatin1Literal("data"));
 
-//    if (data.isValid()) {
-//        JsonObj obj(data.toJsonObject());
+    if (data.isValid()) {
+        JsonObj obj(data.toJsonObject());
 
-//        loadTree(w, obj);
-//    }
+        loadTree(w, obj);
+        loadTabs(w, obj);
+    }
 
     QVariant geometry_state = settings.value(QLatin1Literal("geometry"));
     if (geometry_state.isValid())
