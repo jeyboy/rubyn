@@ -22,26 +22,28 @@
 void Dumper::loadTree(IDEWindow * w, JsonObj & json) {
     JsonArr arr = json.arr(QLatin1Literal("tree"));
 
-    if (!arr.isEmpty()) {
-        for(JsonArr::Iterator it = arr.begin(); it != arr.end(); it++)
-            w -> openFolder(QUrl::fromLocalFile((*it).toString()));
+    if (arr.isEmpty()) {
+        return;
     }
+
+    for(JsonArr::Iterator it = arr.begin(); it != arr.end(); it++)
+        w -> openFolder(QUrl::fromLocalFile((*it).toString()));
 }
 
 void Dumper::saveTree(IDEWindow * w, JsonObj & json) {
-    QTreeWidgetItem * top = w -> tree -> topLevelItem(0);
+    int limit = w -> tree -> topLevelItemCount();
 
-    if (!top) return; // we do not have items in tree
+    if (limit == 0) return; // we do not have items in tree
 
-    JsonArr arr;
+    QJsonArray arr;
 
-    for(int i = 0; i < top -> childCount(); i++) {
-        QTreeWidgetItem * child = top -> child(i);
+    for(int i = 0; i < limit; i++) {
+        QTreeWidgetItem * top = w -> tree -> topLevelItem(i);
 
-        QVariant data = child -> data(0, Qt::UserRole);
+        QVariant data = top -> data(0, Qt::UserRole);
 
         if (data.isNull()) {
-            Logger::obj().write(QLatin1Literal("Dumper"), QLatin1Literal("Cant save project: ") % child -> text(0));
+            Logger::obj().write(QLatin1Literal("Dumper"), QLatin1Literal("Cant save project: ") % top -> text(0));
         }
         else {
             IFolder * folder = VariantPtr<IFolder>::asPtr(data);
@@ -54,6 +56,10 @@ void Dumper::saveTree(IDEWindow * w, JsonObj & json) {
 
 void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
     JsonArr tabs = json.arr(QLatin1Literal("editors"));
+
+    if (tabs.isEmpty())
+        return;
+
     bool new_editor = false;
 
     for(JsonArr::Iterator tab = tabs.begin(); tab != tabs.end(); tab++) {
@@ -83,16 +89,21 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
 void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
     int index = w -> widgets_list -> indexOf(w -> active_editor);
 
-    JsonArr arr;
+    QJsonArray arr;
 
     for(int i = 0; i < w -> widgets_list -> count(); i++) {
-        JsonObj widget_obj;
-        JsonArr tabs_arr;
-
-        QWidget * widget =w ->  widgets_list -> widget(index);
+        QWidget * widget = w ->  widgets_list -> widget(index);
         TabsBlock * editor = dynamic_cast<TabsBlock *>(widget);
 
-        for(uint j = 0; j < editor -> tabsCount(); j++) {
+        int limit = editor -> tabsCount();
+
+        if (limit == 0)
+            continue;
+
+        QJsonObject widget_obj;
+        QJsonArray tabs_arr;
+
+        for(uint j = 0; j < limit; j++) {
             QString tab_path = editor -> tabFilePath(j);
 
             if (!tab_path.isNull())
@@ -118,7 +129,7 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
     QVariant data = settings.value(QLatin1Literal("data"));
 
     if (data.isValid()) {
-        JsonObj obj(data.toJsonObject());
+        JsonObj obj = JsonObj::fromJsonStr(data.toString());
 
         loadTree(w, obj);
         loadTabs(w, obj);
