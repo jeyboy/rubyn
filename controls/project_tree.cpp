@@ -1,5 +1,9 @@
 #include "project_tree.h"
 
+#include <qjsonobject.h>
+#include "tools/json/json.h"
+#include "tools/json/json_obj.h"
+
 ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setHeaderHidden(true);
 
@@ -14,6 +18,62 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
 
 //    setSortingEnabled(true);
 //    sortByColumn(0, Qt::AscendingOrder);
+}
+
+void ProjectTree::saveStateHelper(QTreeWidgetItem * item, QJsonObject & obj) {
+    QJsonObject sub;
+
+    for(int i = 0; i < item -> childCount(); i++) {
+        QTreeWidgetItem * sub_item = item -> child(i);
+
+        if (sub_item -> isExpanded()) {
+            QJsonObject subsub;
+
+            saveStateHelper(sub_item, subsub);
+
+            sub.insert(sub_item -> text(0), subsub);
+        }
+    }
+
+    if (!sub.isEmpty()) {
+        obj.insert(item -> text(0), sub);
+    }
+}
+
+void ProjectTree::loadStateHelper(QTreeWidgetItem * item, JsonObj & obj) {
+    JsonObj sub = obj.obj(item -> text(0));
+
+    if (sub.isEmpty()) return;
+
+    for(int i = 0; i < item -> childCount(); i++) {
+        QTreeWidgetItem * sub_item = item -> child(i);
+
+        if (sub.contains(sub_item -> text(0))) {
+            JsonObj subsub = sub.obj(sub_item -> text(0));
+
+            sub_item -> setExpanded(true);
+
+            loadStateHelper(sub_item, subsub);
+        }
+    }
+}
+
+QByteArray ProjectTree::saveState() {
+    QJsonObject obj;
+
+    saveStateHelper(invisibleRootItem(), obj);
+
+    return Json(obj).toJsonStr();
+}
+
+void ProjectTree::restoreState(const QByteArray & state) {
+    setUpdatesEnabled(false);
+
+    JsonObj obj(JsonObj::fromJsonStr(state));
+
+    loadStateHelper(invisibleRootItem(), obj);
+
+    setUpdatesEnabled(true);
 }
 
 void ProjectTree::branchAdded(QTreeWidgetItem * item) {

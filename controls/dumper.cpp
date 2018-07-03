@@ -153,6 +153,12 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
 //        QApplication::processEvents();
 //        showMaximized();
 //    }
+
+    QVariant tree_state = settings.value(QLatin1Literal("tree_state"));
+    if (tree_state.isValid()) {
+        qDebug() << "";
+        w -> tree -> restoreState(tree_state.toByteArray());
+    }
 }
 
 void Dumper::save(IDEWindow * w, const QString & settings_filename) {
@@ -163,11 +169,10 @@ void Dumper::save(IDEWindow * w, const QString & settings_filename) {
     saveTree(w, obj);
     saveTabs(w, obj);
 
-    qDebug() << obj.toJsonStr();
-
     settings.setValue(QLatin1Literal("data"), obj.toJsonStr());
     settings.setValue(QLatin1Literal("geometry"), w -> saveGeometry());
     settings.setValue(QLatin1Literal("state"), w -> saveState());
+    settings.setValue(QLatin1Literal("tree_state"), w -> tree -> saveState());
     settings.sync();
 }
 

@@ -11,11 +11,18 @@
 
 // http://doc.qt.io/qt-5/qtwidgets-widgets-tooltips-example.html
 
+class JsonObj;
+
 class ProjectTree : public QTreeWidget {
     Q_OBJECT
+
+    void saveStateHelper(QTreeWidgetItem * item, QJsonObject & obj);
+    void loadStateHelper(QTreeWidgetItem * item, JsonObj & obj);
 public:
     explicit ProjectTree(QWidget * parent = nullptr);
 
+    QByteArray saveState();
+    void restoreState(const QByteArray & state);
 signals:
     void fileActivated(const QString & name, void * folder);
 //    void fileDeleted(void * folder, const QString & name);
