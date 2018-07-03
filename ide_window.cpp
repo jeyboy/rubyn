@@ -6,12 +6,14 @@
 #include "project/file.h"
 #include "project/ifolder.h"
 
+#include "controls/toolbars.h"
 #include "controls/dock_widgets.h"
 #include "controls/dock_widget.h"
 #include "controls/project_tree.h"
 #include "controls/tabs_block.h"
 #include "controls/logger.h"
 #include "controls/dumper.h"
+#include "controls/run_configuration.h"
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
@@ -27,7 +29,7 @@
 #include "tools/data_preparer/rubydoc_preparer.h"
 #include "tools/data_preparer/rubydoc_parser.h"
 
-IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), widgets_list(0), tree(0), pos_status(0) {
+IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), widgets_list(0), tree(0), run_config(0), pos_status(0) {
     ui -> setupUi(this);
 
     setAcceptDrops(true);
@@ -299,6 +301,18 @@ void IDEWindow::setupToolWindows() {
         );
 
     DockWidgets::obj().append(log_widget, Qt::BottomDockWidgetArea);
+
+    // TOOLBARS
+
+    Toolbars::obj().registerContainer(this);
+
+    run_config = new RunConfiguration(this);
+
+    QToolBar * control_bar = Toolbars::obj().createWidget(QLatin1Literal("Control"));
+
+    run_config -> buildPanel(control_bar);
+
+    Toolbars::obj().append(control_bar, Qt::TopToolBarArea);
 }
 
 void IDEWindow::loadSettings() {

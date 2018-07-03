@@ -19,6 +19,7 @@ class QDragMoveEvent;
 class QDropEvent;
 class File;
 class Dumper;
+class RunConfiguration;
 
 namespace Ui { class IDEWindow; }
 
@@ -31,6 +32,8 @@ class IDEWindow : public QMainWindow {
     QSplitter * widgets_list;
 
     ProjectTree * tree;
+
+    RunConfiguration * run_config;
 
     QLabel * pos_status;
 

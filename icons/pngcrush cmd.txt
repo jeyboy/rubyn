@@ -9,3 +9,6 @@ pngcrush -n -q *.png
 
      -n means don't rewrite the files
      -q means suppress most of the output except for warnings.
+
+
+./icons//pngcrush_1_8_11_w64.exe -ow -rem alib -reduce ./icons/run_config.png

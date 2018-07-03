@@ -52,6 +52,7 @@
         <file alias="stop_off">icons/stop_off.png</file>
         <file alias="stop">icons/stop_on.png</file>
         <file alias="console">icons/console.png</file>
+        <file alias="run_config">icons/run_config.png</file>
     </qresource>
     <qresource prefix="/completer">
         <file alias="const">icons/completer/comp_const.png</file>
