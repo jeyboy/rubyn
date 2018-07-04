@@ -23,6 +23,20 @@ Completer::Completer(QObject * parent) : QCompleter(parent), mdl(new QStandardIt
 //        model->setItem(row, 0, item);
 //        row++;
 //    }
+
+
+
+//    QTreeView::item:selected{background-color: #bedcf0;} //light blue
+//    QTreeView::item:hover:selected{background-color: #94c8ea;} //darker blue
+//    QTreeView::item:hover:!selected{background-color: #e6e6e6;} //gray
+
+
+    popup() -> setStyleSheet(
+        QLatin1Literal(
+            "   selection-background-color: rgba(135, 206, 250, 0.2);"
+            "   selection-color: black;"
+        )
+    );
 }
 
 void Completer::setModel(QStandardItemModel * new_mdl) {

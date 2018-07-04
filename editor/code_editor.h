@@ -20,6 +20,25 @@ class ExtraArea;
 class File;
 class OverlayInfo;
 
+
+// draw on additional things // need to use timer for redrawing of additional carets and other things
+
+// http://doc.qt.io/qt-5/qobject.html#startTimer
+
+
+// print doc
+
+//QTextDocument *document = editor->document();
+//QPrinter printer;
+
+//QPrintDialog *dlg = new QPrintDialog(&printer, this);
+//if (dlg->exec() != QDialog::Accepted)
+//    return;
+
+//document->print(&printer);
+
+
+
 // vertical selection
 
 //#include <QApplication>

@@ -661,6 +661,8 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     );
 }
 
+//layout->draw(&painter, offset, selections, er);
+
 void CodeEditor::drawTextOverlays(QPainter & painter) {
     // test overlays
     painter.save();
@@ -674,15 +676,26 @@ void CodeEditor::drawTextOverlays(QPainter & painter) {
 }
 
 void CodeEditor::drawAdditionalCarets(QPainter & painter) {
-//    QTextBlock block = firstVisibleBlock();
-//    QTextLayout *layout = block.layout();
+//    bool editable = hasFocus() && (!isReadOnly() || (textInteractionFlags() & Qt::TextSelectableByKeyboard));
 
-//    int cpos = context.cursorPosition;
-//    if (cpos < -1)
-//        cpos = layout->preeditAreaPosition() - (cpos + 2);
-//    else
-//        cpos -= blpos;
-//    layout->drawCursor(&painter, offset, cpos, cursorWidth());
+//    blink = !blink;
+
+//    if (!editable || blink)
+//        return;
+
+////    bool drawCursorAsBlock = drawCursor && overwriteMode() ;
+
+//    QTextBlock block = firstVisibleBlock();
+
+//    QTextLayout * layout = block.layout();
+
+//    int cpos = layout -> leftCursorPosition(5);
+
+//    textRect(block, cpos, 1).adjust(-3, -1, 1, 2); // check adjust result! // use this for sending of update events
+
+//    qDebug() << "PO" << cpos << textRect(block, cpos, 1); // QRect(44,4 10x18) // QRect(39,3 11x20)
+
+//    layout -> drawCursor(&painter, contentOffset(), cpos, cursorWidth());
 }
 
 void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
