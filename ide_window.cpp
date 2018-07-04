@@ -290,7 +290,7 @@ void IDEWindow::setupSplitter() {
             "   background-image: url(:/grape);"
             "   background-repeat: no-repeat;"
             "   background-position: center center;"
-            "   height: 8px;"
+            "   height: 4px;"
             "}"
         )
     );

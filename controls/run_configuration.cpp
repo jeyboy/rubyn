@@ -3,9 +3,7 @@
 #include <qtoolbar.h>
 #include <qcombobox.h>
 
-RunConfiguration::RunConfiguration(QObject * parent)
-    : QObject(parent), _config_list(0), _run(0), _debbug(0)
-{
+RunConfiguration::RunConfiguration(QObject * parent) : QObject(parent), _config_list(0), _run(0), _debbug(0) {
 
 }
 

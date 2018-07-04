@@ -4,7 +4,7 @@
 #include <qobject.h>
 
 class QTextStream;
-
+class DataObj;
 namespace Html {
     class Set;
     class Tag;

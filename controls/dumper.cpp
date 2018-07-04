@@ -159,6 +159,14 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
         qDebug() << "";
         w -> tree -> restoreState(tree_state.toByteArray());
     }
+
+    QVariant widgets_list_geom = settings.value(QLatin1Literal("widgets_list_geom"));
+    if (widgets_list_geom.isValid())
+        w -> widgets_list -> restoreGeometry(widgets_list_geom.toByteArray());
+
+    QVariant widgets_list_state = settings.value(QLatin1Literal("widgets_list_state"));
+    if (widgets_list_state.isValid())
+        w -> widgets_list -> restoreState(widgets_list_state.toByteArray());
 }
 
 void Dumper::save(IDEWindow * w, const QString & settings_filename) {
@@ -173,6 +181,10 @@ void Dumper::save(IDEWindow * w, const QString & settings_filename) {
     settings.setValue(QLatin1Literal("geometry"), w -> saveGeometry());
     settings.setValue(QLatin1Literal("state"), w -> saveState());
     settings.setValue(QLatin1Literal("tree_state"), w -> tree -> saveState());
+
+    settings.setValue(QLatin1Literal("widgets_list_state"), w -> widgets_list -> saveState());
+    settings.setValue(QLatin1Literal("widgets_list_geom"), w -> widgets_list -> saveGeometry());
+
     settings.sync();
 }
 

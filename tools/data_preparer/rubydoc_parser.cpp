@@ -1,5 +1,7 @@
 #include "rubydoc_parser.h"
 
+#include "data_obj.h"
+
 #include "tools/thread_utils.h"
 #include "tools/html/html_page.h"
 

@@ -1,6 +1,8 @@
 #include "ide_window.h"
 #include <QApplication>
 
+//https://www.youtube.com/watch?v=K3gLlZm-m_8 // snippets logic
+
 // all ROR files
 // http://api.rubyonrails.org/panel/links.html
 //https://github.com/rails/rails/tree/375a4143cf5caeb6159b338be824903edfd62836/activesupport/lib/active_support/core_ext
@@ -110,6 +112,8 @@
 //return typeof Math[p] === 'function';
 //}));
 
+
+// https://books.goalkicker.com/
 
 int main(int argc, char * argv[]) {
     QApplication a(argc, argv);
