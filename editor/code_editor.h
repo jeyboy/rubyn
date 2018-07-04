@@ -20,6 +20,92 @@ class ExtraArea;
 class File;
 class OverlayInfo;
 
+// vertical selection
+
+//#include <QApplication>
+//#include <QMouseEvent>
+//#include <QWheelEvent>
+//#include <QTextEdit>
+
+//class TextEdit : public QTextEdit
+//{
+//public:
+//    TextEdit(QWidget* parent = nullptr) : QTextEdit(parent),
+//        startPos(0), endPos(0), absCursorStart(0), absCursorEnd(0) {}
+
+//    void mouseMoveEvent(QMouseEvent* evt) {
+//        if(!(evt->buttons() & Qt::LeftButton))
+//            return;
+
+//        auto cfp = cursorForPosition(evt->pos());
+//        absCursorEnd = cfp.position() + startPos * 11;
+
+//        if(evt->pos().y() < 0 && startPos > 0)
+//            --startPos;
+//        if(evt->pos().y() >= height() && endPos < textData.size())
+//            ++startPos;
+
+//        adjust();
+//    }
+
+//    void wheelEvent(QWheelEvent* evt) {
+//        auto lines = evt->delta() / 100;
+//        startPos = qBound(0, startPos - lines, textData.size());
+//        adjust();
+//    }
+
+//    void mousePressEvent(QMouseEvent* evt) {
+//        auto cfp = cursorForPosition(evt->pos());
+//        setTextCursor(cfp);
+//        absCursorStart = absCursorEnd = cfp.position() + startPos * 11;
+//    }
+//    void adjust() {
+//        auto numLines = height() / fontMetrics().height() - 1;
+//        auto size = qMin(textData.size(), numLines);
+//        auto subText = QStringList(textData.mid(startPos, size)).join("\n");
+//        setText(subText);
+//        endPos = startPos + numLines;
+
+//        auto numVisibleChars = (endPos - startPos) * 11 - 1;
+
+//        auto localCursorStart = qBound(0, absCursorStart - startPos * 11, numVisibleChars);
+//        auto localCursorEnd   = qBound(0, absCursorEnd - startPos * 11, numVisibleChars);
+
+//        auto tc = textCursor();
+//        tc.setPosition(localCursorEnd);
+//        tc.setPosition(localCursorStart, QTextCursor::KeepAnchor);
+//        setTextCursor(tc);
+//    }
+
+//    void resizeEvent(QResizeEvent* evt) {
+//        QTextEdit::resizeEvent(evt);
+//        adjust();
+//    }
+
+//    QStringList textData;
+//    int startPos;
+//    int endPos;
+//    int absCursorStart;
+//    int absCursorEnd;
+//};
+
+//int main(int argc, char *argv[])
+//{
+//    QApplication a(argc, argv);
+
+//    QStringList stuff;
+//    for(int i = 0; i < 100; ++i)
+//        stuff << QString(10, QChar('a' + (i % 30)));
+
+//    TextEdit te;
+//    te.textData = stuff;
+//    te.show();
+
+//    return a.exec();
+//}
+
+
+
 #define CHARS_AMOUNT_LINE 80
 #define HPADDING 3
 #define FOLDING_WIDTH 16
@@ -152,8 +238,11 @@ protected:
 
     void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, EDITOR_POS_TYPE & folding_lines_coverage);
     void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num, EDITOR_POS_TYPE & folding_lines_coverage);
-    void showFoldingContentPopup(const QTextBlock & block);
 
+    void drawTextOverlays(QPainter & painter);
+    void drawAdditionalCarets(QPainter & painter);
+
+    void showFoldingContentPopup(const QTextBlock & block);
     void showOverlay(const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid = -1);
     void showOverlay(const QTextBlock & block);
     void hideOverlay();

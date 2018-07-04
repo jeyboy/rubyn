@@ -73,7 +73,6 @@ HEADERS  += ide_window.h \
     editor/document_types/text_document.h \
     editor/parts/body_overlay_info.h \
     editor/parts/extra_area.h \
-    editor/parts/overlay_info.h \
     editor/code_editor.h \
     highlighter/block_user_data.h \
     highlighter/msg_info.h \
@@ -156,7 +155,8 @@ HEADERS  += ide_window.h \
     controls/dumper.h \
     tools/data_preparer/data_obj.h \
     controls/toolbars.h \
-    controls/run_configuration.h
+    controls/run_configuration.h \
+    editor/parts/overlay_info.h
 
 FORMS    += ide_window.ui
 

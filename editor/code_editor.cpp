@@ -178,25 +178,17 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
     QPainter painter(viewport());
 
     painter.save();
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
-    painter.setBrush(QColor::fromRgb(255, 239, 11, 192));
-    painter.drawRoundedRect(textRect(document() -> findBlockByNumber(16), 76, 5), 3, 3);
-    painter.restore();
-
-    painter.save();
 
     QPlainTextEdit::paintEvent(e);
 
     painter.restore();
 
-    if (lineWrapMode() == NoWrap) {
-        painter.setPen(QColor::fromRgb(192, 192, 192, 72));
-        int x = round(symbol_width * CHARS_AMOUNT_LINE) + contentOffset().rx() + document() -> documentMargin();
+//    if (lineWrapMode() == NoWrap) {
+//        painter.setPen(QColor::fromRgb(192, 192, 192, 72));
+//        int x = round(symbol_width * CHARS_AMOUNT_LINE) + contentOffset().rx() + document() -> documentMargin();
 
-        painter.drawLine(x, 0, x, height());
-    }
+//        painter.drawLine(x, 0, x, height());
+//    }
 
 /////////// HIGHLIGHT BLOCKS ////////////////
 
@@ -271,6 +263,9 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     // TODO: need to use correct text block
 //    showFoldingContentPopup(document() -> findBlockByNumber(60));
+
+    drawTextOverlays(painter);
+    drawAdditionalCarets(painter);
 }
 
 void CodeEditor::resizeEvent(QResizeEvent * e) {
@@ -664,6 +659,30 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     painter.drawText(
         0, paint_top, line_number_width, line_number_height, Qt::AlignRight, QString::number(block_num + 1)
     );
+}
+
+void CodeEditor::drawTextOverlays(QPainter & painter) {
+    // test overlays
+    painter.save();
+    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
+    painter.setBrush(QColor::fromRgb(255, 239, 11, 192));
+    painter.drawRoundedRect(textRect(document() -> findBlockByNumber(8), 3, 5), 3, 3);
+    painter.restore();
+}
+
+void CodeEditor::drawAdditionalCarets(QPainter & painter) {
+//    QTextBlock block = firstVisibleBlock();
+//    QTextLayout *layout = block.layout();
+
+//    int cpos = context.cursorPosition;
+//    if (cpos < -1)
+//        cpos = layout->preeditAreaPosition() - (cpos + 2);
+//    else
+//        cpos -= blpos;
+//    layout->drawCursor(&painter, offset, cpos, cursorWidth());
 }
 
 void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
