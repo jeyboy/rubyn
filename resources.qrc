@@ -7,6 +7,7 @@
         <file alias="list">icons/list.png</file>
         <file alias="row_left">icons/row_left.png</file>
         <file alias="row_right">icons/row_right.png</file>
+        <file alias="grape">icons/grape.png</file>
     </qresource>
     <qresource prefix="/doc_types">
         <file alias="folder">icons/folder.png</file>

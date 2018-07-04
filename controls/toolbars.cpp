@@ -4,6 +4,8 @@
 
 QToolBar * Toolbars::createWidget(const QString & name, const Qt::ToolBarArea & areas) {
     QToolBar * bar = new QToolBar(name, container);
+
+    bar -> setObjectName(name);
     bar -> setAllowedAreas(areas);
 
     return bar;

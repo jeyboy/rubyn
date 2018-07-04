@@ -272,6 +272,29 @@ void IDEWindow::setupHelpMenu() {
 void IDEWindow::setupSplitter() {
     widgets_list = new QSplitter(this);
     widgets_list -> setOrientation(Qt::Vertical);
+
+//    "QSplitter::handle:horizontal {"
+//    "   border: 2px solid #ddd;"
+//    "   background-color: #708090;"
+//    "   border-radius: 6px;"
+//    "   background-image: url(:/grape);"
+//    "   height: 20px;"
+//    "}"
+
+    widgets_list -> setStyleSheet(
+        QLatin1Literal(
+            "QSplitter::handle:vertical {"
+            "   border: 2px solid #ddd;"
+            "   background-color: #555;"
+            "   border-radius: 6px;"
+            "   background-image: url(:/grape);"
+            "   background-repeat: no-repeat;"
+            "   background-position: center center;"
+            "   height: 8px;"
+            "}"
+        )
+    );
+
     setCentralWidget(widgets_list);
 }
 
@@ -308,7 +331,7 @@ void IDEWindow::setupToolWindows() {
 
     run_config = new RunConfiguration(this);
 
-    QToolBar * control_bar = Toolbars::obj().createWidget(QLatin1Literal("Control"));
+    QToolBar * control_bar = Toolbars::obj().createWidget(QLatin1Literal("Controls"));
 
     run_config -> buildPanel(control_bar);
 

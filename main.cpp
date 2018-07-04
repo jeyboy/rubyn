@@ -93,6 +93,23 @@
 // - class self method // <self>
 
 
+// JAVASCRIPT
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Language_Resources
+// http://www.ecma-international.org/ecma-262/5.1/
+
+// https://www.w3schools.com/jsref/jsref_obj_global.asp
+// https://www.tutorialspoint.com/javascript/javascript_builtin_functions.htm
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
+
+// get all properties for object
+// Object.getOwnPropertyNames(Math)
+
+// only functions
+// console.log(Object.getOwnPropertyNames(Math).filter(function (p) {
+//return typeof Math[p] === 'function';
+//}));
+
 
 int main(int argc, char * argv[]) {
     QApplication a(argc, argv);
