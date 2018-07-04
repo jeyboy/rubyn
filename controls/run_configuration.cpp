@@ -4,7 +4,7 @@
 #include <qcombobox.h>
 
 RunConfiguration::RunConfiguration(QObject * parent)
-    : QObject(parent), _config_list(0), _run(0), _disabled_run(0), _debbug(0), _disabled_debbug(0)
+    : QObject(parent), _config_list(0), _run(0), _debbug(0)
 {
 
 }
@@ -18,15 +18,11 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
 
     bar -> addWidget(_config_list);
 
-    _run = bar -> addAction(QIcon(QLatin1Literal(":/tools/play")), QLatin1Literal());
-    _run -> setVisible(false);
+    _run = bar -> addAction(QIcon(QLatin1Literal(":/tools/run")), QLatin1Literal());
+    _run -> setDisabled(true);
 
-    _disabled_run = bar -> addAction(QIcon(QLatin1Literal(":/tools/play_off")), QLatin1Literal());
-
-    _debbug = bar -> addAction(QIcon(QLatin1Literal(":/tools/start_bug")), QLatin1Literal());
-    _debbug -> setVisible(false);
-
-    _disabled_debbug = bar -> addAction(QIcon(QLatin1Literal(":/tools/start_bug_off")), QLatin1Literal());
+    _debbug = bar -> addAction(QIcon(QLatin1Literal(":/tools/debug")), QLatin1Literal());
+    _debbug -> setDisabled(true);
 }
 
 void RunConfiguration::configSelectionChanged(int index) {

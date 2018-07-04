@@ -44,16 +44,13 @@
         <file alias="file_broken">icons/file_broken.png</file>
     </qresource>
     <qresource prefix="/tools">
-        <file alias="pause_off">icons/pause_off.png</file>
-        <file alias="pause">icons/pause_on.png</file>
-        <file alias="play_off">icons/play_off.png</file>
-        <file alias="play">icons/play_on.png</file>
-        <file alias="start_bug">icons/start_bug.png</file>
-        <file alias="start_bug_off">icons/start_bug_off.png</file>
-        <file alias="stop_off">icons/stop_off.png</file>
-        <file alias="stop">icons/stop_on.png</file>
         <file alias="console">icons/console.png</file>
         <file alias="run_config">icons/run_config.png</file>
+        <file alias="debug">icons/debug_on.png</file>
+        <file alias="run">icons/run_on.png</file>
+        <file alias="tool_pause">icons/tool_pause_on.png</file>
+        <file alias="tool_run">icons/tool_run_on.png</file>
+        <file alias="tool_stop">icons/tool_stop_on.png</file>
     </qresource>
     <qresource prefix="/completer">
         <file alias="const">icons/completer/comp_const.png</file>
