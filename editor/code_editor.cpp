@@ -665,14 +665,14 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 
 void CodeEditor::drawTextOverlays(QPainter & painter) {
     // test overlays
-    painter.save();
-    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
-    painter.setRenderHint(QPainter::Antialiasing);
+//    painter.save();
+//    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
+//    painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
-    painter.setBrush(QColor::fromRgb(255, 239, 11, 192));
-    painter.drawRoundedRect(textRect(document() -> findBlockByNumber(8), 3, 5), 3, 3);
-    painter.restore();
+//    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
+//    painter.setBrush(QColor::fromRgb(255, 239, 11, 192));
+//    painter.drawRoundedRect(textRect(document() -> findBlockByNumber(8), 3, 5), 3, 3);
+//    painter.restore();
 }
 
 void CodeEditor::drawAdditionalCarets(QPainter & painter) {

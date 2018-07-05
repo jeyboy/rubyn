@@ -2,8 +2,8 @@
 #define RUBYDOC_PARSER_H
 
 #include <qobject.h>
+#include <qhash.h>
 
-class QTextStream;
 class DataObj;
 namespace Html {
     class Set;
@@ -13,28 +13,31 @@ namespace Html {
 class RubydocParser : public QObject {
     Q_OBJECT
 
-    const QByteArray description_prefix         = QByteArray("# ");
-    const QByteArray description_list_prefix    = QByteArray("#    - ");
-    const QByteArray description_example_prefix = QByteArray("#       ");
-    const QByteArray target_prefix              = QByteArray("    ");
-    const QByteArray border                     = QByteArray(80, '-').prepend('#');
+//    const QByteArray description_prefix         = QByteArray("# ");
+//    const QByteArray description_list_prefix    = QByteArray("#    - ");
+//    const QByteArray description_example_prefix = QByteArray("#       ");
+//    const QByteArray target_prefix              = QByteArray("    ");
+//    const QByteArray border                     = QByteArray(80, '-').prepend('#');
+
+    QHash<QByteArray, DataObj> parsed_objs;
 
     bool findSimbolsSub(const QString & str, const char & s, const char & e, int & spos, int & epos);
     QByteArray clearLine(const QByteArray & line);
 
-    void writeLine(const QByteArray & prefix, const QByteArray & datum, QTextStream * out, const int & max_line_len = 80);
+    void writeLine(const QByteArray & datum, DataObj & out, const int & max_line_len = 80);
 
-    void procHeader(Html::Tag * h, const QByteArray & prefix, const QByteArray & border, QTextStream * out);
-    void procDescription(const Html::Set & parts, const QByteArray & prefix, const QByteArray & example_prefix, const QByteArray & list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath);
-    void procMethod(const QString & signature, Html::Tag * method_block, const QByteArray & target_prefix, const QByteArray & method_prefix, const QByteArray & description_prefix, const QByteArray & description_example_prefix, const QByteArray & description_list_prefix, const QByteArray & border, QTextStream * out, const QString & inpath);
+    void procHeader(Html::Tag * h, DataObj & out);
+    void procDescription(const Html::Set & parts, DataObj & out, const QString & inpath);
+    void procMethod(const QString & signature, Html::Tag * method_block, DataObj & out, const QString & inpath);
 
-    bool parseFile(const QString & path, const QString & name, QTextStream & out, const QByteArray & offset = QByteArray(), const bool & attach = false);
+    bool parseFile(const QString & path, const QString & name, DataObj & out, const uint & level = 0, const bool & attach = false);
     bool parseFolder(const QString & path, const QString & outpath);
 public:
     RubydocParser(QObject * parent = 0);
     ~RubydocParser();
 
-    bool parse(const QString & inpath, const QString & outpath);
+    bool parse(const QString & inpath);
+    bool saveParsedDatum(const QString & outpath);
 
     bool initParseFile(const QString & path, const QString & name, const QString & outpath, const QByteArray & offset = QByteArray());
 

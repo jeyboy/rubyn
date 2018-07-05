@@ -46,6 +46,14 @@
 // String.singleton_class.included_modules
 
 
+//String.methods //(All methods)
+//String.public_methods //(All Public methods)
+//String.private_methods //(All private methods)
+//String.methods.sort //(All methods sorted)
+//String.ancestors //(Hierarchy chain, useful for inspecting where methods are inherited from)
+//String.methods.sort - Object.methods //(Methods particular to an object, not the ancestors)
+
+
 //https://apidock.com/ruby/notes
 //https://apidock.com/ruby/notes/good
 //https://apidock.com/rails/notes
@@ -75,24 +83,6 @@
 //      JS <-> coffee
 //      ERB <-> SLIM
 //      ERB <-> HAML
-
-
-
-//completer icons:
-// - add template: green round - inside right arrow // t
-//      example: "def method_name; end" and etc...
-
-// - local variable: var // #
-// - instance variable: @var // @
-// - class variable: @@var // @@
-// - global variable: #var // $
-
-// - module constant // (C)
-// - module 'member' method // (member)
-// - module 'self' method // (self)
-// - class constant // <C>
-// - class instance method // <instance>
-// - class self method // <self>
 
 
 // JAVASCRIPT

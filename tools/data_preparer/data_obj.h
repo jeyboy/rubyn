@@ -7,16 +7,18 @@
 
 struct DataObj {
     uchar level;
+    QByteArray parent;
 
-    QString obj_description;
+    QStringList obj_description;
+    QStringList includes;
 
     QByteArray obj_type;
-    QByteArray obj_parent;
+    QByteArray obj_inheritance;
 
     struct DataMethod {
         LexerMeanType lex_type;
 
-        QString description;
+        QStringList description;
 
         QStringList signatures;
 
