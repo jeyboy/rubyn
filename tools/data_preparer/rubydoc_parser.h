@@ -23,13 +23,7 @@ class RubydocParser : public QObject {
     const char pre_prefix = 18;
     const char dt_prefix = 19;
     const char dd_prefix = 20;
-
-
-//    const QByteArray description_prefix         = QByteArray("# ");
-//    const QByteArray description_list_prefix    = QByteArray("#    - ");
-//    const QByteArray description_example_prefix = QByteArray("#       ");
-//    const QByteArray target_prefix              = QByteArray("    ");
-//    const QByteArray border                     = QByteArray(80, '-').prepend('#');
+    const char newline_prefix = 21;
 
     QHash<QString, DataObj> parsed_objs;
 
