@@ -15,15 +15,17 @@ namespace Html {
 class RubydocParser : public QObject {
     Q_OBJECT
 
-    const char h2_prefix = 13;
-    const char h3_prefix = 14;
-    const char h4_prefix = 15;
-    const char p_prefix = 16;
-    const char li_prefix = 17;
-    const char pre_prefix = 18;
-    const char dt_prefix = 19;
-    const char dd_prefix = 20;
-    const char newline_prefix = 21;
+    enum Prefix : char {
+        h2_prefix = 13,
+        h3_prefix = 14,
+        h4_prefix = 15,
+        p_prefix = 16,
+        li_prefix = 17,
+        pre_prefix = 18,
+        dt_prefix = 19,
+        dd_prefix = 20,
+        newline_prefix = 21,
+    };
 
     QHash<QString, DataObj> parsed_objs;
 
