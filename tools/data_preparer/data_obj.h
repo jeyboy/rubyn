@@ -5,32 +5,38 @@
 
 #include "lexer/lexem_mean_type.h"
 
+struct DataMethod {
+    LexerMeanType lex_type;
+
+    QStringList description;
+
+    QStringList signatures;
+
+    QString args_mask;
+
+    QByteArray prefix;
+
+    QString alias_name;
+
+    DataMethod(const LexerMeanType & mtype = lmt_unknow) : lex_type(mtype) {
+
+    }
+};
+
 struct DataObj {
     uchar level;
+
     QByteArray parent;
-
-    QStringList obj_description;
-    QStringList includes;
-
+    QByteArray name;
     QByteArray obj_type;
     QByteArray obj_inheritance;
 
-    struct DataMethod {
-        LexerMeanType lex_type;
-
-        QStringList description;
-
-        QStringList signatures;
-
-        QString args_mask;
-
-        DataMethod(const LexerMeanType & mtype = lmt_unknow) : lex_type(mtype) {
-
-        }
-    };
+    QStringList description;
+    QStringList includes;
 
     QMap<QByteArray, QString> constants;
     QMap<QByteArray, DataMethod> methods;
+    QMap<QByteArray, DataObj> namespaces;
 
     DataObj(const uchar & obj_level = 1) : level(obj_level) {
 

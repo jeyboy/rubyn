@@ -8,20 +8,22 @@
 enum LexerMeanType : quint16 {
     lmt_unknow = 0,
 
-    lmt_public = 1,
-    lmt_protected = 2,
-    lmt_private = 4,
+    lmt_core = 1,
 
-    lmt_local = 8,
-    lmt_global = 16,
-    lmt_instance = 32,
-    lmt_object = 64,
+    lmt_public = 2,
+    lmt_protected = 4,
+    lmt_private = 8,
 
-    lmt_var = 128,
-    lmt_method = 256,
-    lmt_class = 512,
-    lmt_const = 1024,
-    lmt_template = 2048,
+    lmt_local = 16,
+    lmt_global = 32,
+    lmt_instance = 64,
+    lmt_object = 128,
+
+    lmt_var = 256,
+    lmt_method = 512,
+    lmt_class = 1024,
+    lmt_const = 2048,
+    lmt_template = 4096,
 
     lmt_private_const = lmt_const | lmt_private,
 

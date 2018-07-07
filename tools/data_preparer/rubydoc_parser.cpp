@@ -66,9 +66,10 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
     return res;
 }
 
-void RubydocParser::writeLine(const QByteArray & datum, DataObj & out, const int & max_line_len) {
+//TODO: refactor required
+void RubydocParser::writeLine(const QByteArray & datum, QStringList & out, const char & prefix, const int & max_line_len) {
     if (datum.length() <= max_line_len) {
-        (*out) << prefix << datum << Logger::nl;
+        out << datum;
         return;
     }
 
@@ -100,20 +101,17 @@ void RubydocParser::writeLine(const QByteArray & datum, DataObj & out, const int
             }
         }
 
-        (*out) << prefix;
+        QByteArray str(buff);
 
         if (qty > 1)
-            (*out) << ' ';
+            str.prepend(' ');
 
-        (*out) << buff << Logger::nl;
+        out << str.prepend(prefix);
     }
 }
 
-void RubydocParser::procHeader(Html::Tag * h, DataObj & out) {
-    (*out)
-        << border
-        << Logger::nl
-        << prefix;
+void RubydocParser::procHeader(Html::Tag * h, QStringList & out, const char & prefix) {
+    QByteArray str;
 
     Html::Set hchilds = h -> children();
 
@@ -121,18 +119,14 @@ void RubydocParser::procHeader(Html::Tag * h, DataObj & out) {
         if ((*htag) -> tagID() == Html::Tag::tg_span)
             break;
         else
-            (*out) << (*htag) -> text();
+            str.append((*htag) -> text());
     }
 
-    (*out)
-        << Logger::nl
-        << border
-        << Logger::nl;
+    out << str.prepend(prefix);
 }
 
-void RubydocParser::procDescription(const Html::Set & parts, DataObj & out, const QString & inpath) {
+void RubydocParser::procDescription(const Html::Set & parts, QStringList & out, const QString & inpath) {
     int curr_uid = Html::Tag::tg_none;
-    int last_uid = curr_uid;
 
     for(Html::Set::ConstIterator tag = parts.cbegin(); tag != parts.cend(); tag++) {
         curr_uid = (*tag) -> tagID();
@@ -175,73 +169,58 @@ void RubydocParser::procDescription(const Html::Set & parts, DataObj & out, cons
                     }
                 }
 
-                writeLine(prefix, clearLine(text), out);
-                last_uid = curr_uid;
+                writeLine(clearLine(text), out, p_prefix);
             break;}
 
             case Html::Tag::tg_h2: {
-                procHeader((*tag), prefix, border, out);
+                procHeader((*tag), out, h2_prefix);
             break;}
 
             case Html::Tag::tg_h3: {
-                procHeader((*tag), prefix, border.mid(0, 60), out);
+                procHeader((*tag), out, h3_prefix);
             break;}
 
             case Html::Tag::tg_h4: {
-                procHeader((*tag), prefix, border.mid(0, 40), out);
+                procHeader((*tag), out, h4_prefix);
             break;}
 
             case Html::Tag::tg_pre: {
-                last_uid = curr_uid;
-
-                (*out)
-                    << example_prefix << Logger::nl << example_prefix;
-
                 Html::Set code_parts = (*tag) -> children();
+
+                out << QLatin1String();
+                QString & str = out.last();
 
                 for(Html::Set::Iterator code_tag = code_parts.begin(); code_tag != code_parts.end(); code_tag++) {
                     if ((*code_tag) -> isNewline()) {
-                        (*out) << Logger::nl;
-
-                        if (code_tag + 1 != code_parts.end())
-                           (*out) << example_prefix;
-                    } else
-                        (*out) << QString((*code_tag) -> text());
+                        out << QLatin1String();
+                        str = out.last();
+                    }
+                    else str.append((*code_tag) -> text());
                 }
-
-                (*out) << example_prefix << Logger::nl;
             break;}
 
             case Html::Tag::tg_ul: {
                 Html::Set lis = (*tag) -> children();
 
-                (*out) << example_prefix << Logger::nl;
-
                 for(Html::Set::Iterator li = lis.begin(); li != lis.end(); li++) {
-                    (*out) << list_prefix << QString(clearLine((*li) -> texts())) << Logger::nl;
+                    out << clearLine((*li) -> texts()).prepend(li_prefix);
                 }
-
-                (*out) << example_prefix << Logger::nl;
             break;}
 
             case Html::Tag::tg_dl: {
-                (*out) << Logger::nl;
                 Html::Set list_items = (*tag) -> children();
 
                 for(Html::Set::Iterator list_item_tag = list_items.begin(); list_item_tag != list_items.end(); list_item_tag++) {
-                    Html::Tag * curr_tag = (*list_item_tag);
                     switch((*list_item_tag) -> tagID()) {
                         case Html::Tag::tg_dt: {
-                            (*out) << prefix << "  * " << ((*list_item_tag) -> texts()) << Logger::nl;
+                            out << ((*list_item_tag) -> texts()).prepend(dt_prefix);
                         break;}
 
                         case Html::Tag::tg_dd: {
-                            (*out) << prefix << "      " << ((*list_item_tag) -> texts()) << Logger::nl;
+                            out << ((*list_item_tag) -> texts()).prepend(dd_prefix);
                         break;}
                     }
                 }
-
-                (*out) << Logger::nl;
             break;}
 
             case Html::Tag::tg_newline: { break;}
@@ -266,15 +245,11 @@ void RubydocParser::procDescription(const Html::Set & parts, DataObj & out, cons
             }
         }
     }
-
-    if (last_uid == Html::Tag::tg_p)
-        (*out) << example_prefix << Logger::nl;
 }
 
-void RubydocParser::procMethod(const QString & signature, Html::Tag * method_block, DataObj & out, const QString & inpath) {
+void RubydocParser::procMethod(const QString & signature, Html::Tag * method_block, DataMethod & out, const QString & inpath) {
     Html::Set divs = method_block -> find("div");
 
-    QString signatures;
     uint sigs_count = 0;
 
     Html::Tag * aliases_block = 0;
@@ -288,12 +263,9 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
 
             Html::Tag * mseq = (*div) -> findFirst(".method-callseq");
 
-            if (sigs_count > 1)
-                signatures.append(description_prefix);
-
             if (mseq) {
-                signatures.append(
-                    QString(clearLine(mseq -> text())) % Logger::nl
+                out.signatures.append(
+                    QString(clearLine(mseq -> text()))
                 );
             } else {
                 Html::Tag * mname = (*div) -> findFirst(".method-name");
@@ -307,7 +279,7 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
                     if (margs)
                         msig.append(margs -> text());
 
-                    signatures.append(msig % Logger::nl);
+                    out.signatures.append(msig);
                 } else {
                     Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method name in file: ") % inpath, QStringList() << divs[0] -> texts());
                 }
@@ -317,41 +289,40 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
         } else description_block = (*div);
     }
 
-    (*out) << Logger::nl << Logger::nl;
-
-    procDescription(description_block -> children(), description_prefix, description_example_prefix, description_list_prefix, border, out, inpath);
+    procDescription(description_block -> children(), out.description, inpath);
 
     bool is_mask = false;
-    QString sig_mask;
+
+    out.args_mask = out.signatures.first();
 
     if (sigs_count == 1) {
         int sig_pos, sig_len;
 
-        if (findSimbolsSub(signatures, '(', ')', sig_pos, sig_len)) {
-            sig_mask = signatures.mid(sig_pos, sig_len).trimmed();
-            is_mask = sig_mask.endsWith('.');
+        if (findSimbolsSub(out.args_mask, '(', ')', sig_pos, sig_len)) {
+            out.args_mask = out.args_mask.mid(sig_pos, sig_len).trimmed();
+            is_mask = out.args_mask.endsWith('.');
         }
     }
 
-    if (sigs_count > 1 || is_mask) { // print all signatures
-        (*out) << description_prefix << signatures << description_prefix << Logger::nl;
-    }
+//    if (sigs_count > 1 || is_mask) { // print all signatures
+//        (*out) << description_prefix << signatures << description_prefix << Logger::nl;
+//    }
 
-    (*out) << method_prefix << signature << '(';
+//    (*out) << method_prefix << signature << '(';
 
     if (!is_mask && sigs_count == 1) {
-        if (!sig_mask.isEmpty()) {
-            (*out) << sig_mask;
-        } else {
+        if (out.args_mask.isEmpty()) {
+            QString first_signature = out.signatures.first();
+
             if (signature[0] == '[') {
-                for(QString::Iterator ch = signatures.begin() + 1; ch != signatures.end(); ch++)
+                for(QString::Iterator ch = first_signature.begin() + 1; ch != first_signature.end(); ch++)
                     if (*ch == ']')
                         break;
                     else {
-                        (*out) << *ch;
+                        out.args_mask.append(*ch);
                     }
             } else {
-                int pos = signatures.indexOf(signature[0]);
+                int pos = first_signature.indexOf(signature[0]);
 
                 if (pos == -1) {
                     pos = 0;
@@ -359,34 +330,34 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
                 }
                 else {
                     pos += signature.length();
-                    if (signatures[pos] == 32)
+                    if (first_signature[pos] == 32)
                         ++pos;
                 }
 
-                for(QString::Iterator ch = signatures.begin() + pos; ch != signatures.end(); ch++)
+                for(QString::Iterator ch = first_signature.begin() + pos; ch != first_signature.end(); ch++) {
                     if (*ch != '_' && !(*ch).isLetterOrNumber())
                         break;
                     else {
-                        (*out) << *ch;
+                        out.args_mask.append(*ch);
                     }
+                }
             }
         }
     } else {
-        (*out) << "*several_variants";
+        out.args_mask = QLatin1Literal("*several_variants");
     }
 
-    (*out) << ')' << Logger::nl << target_prefix << "end" << Logger::nl;
+//    (*out) << ')' << Logger::nl << target_prefix << "end" << Logger::nl;
 
     if (aliases_block) {
         Html::Tag * a = aliases_block -> findFirst("a");
-        QString alias_name;
 
         if (a)
-            alias_name = QString(a -> text());
+            out.alias_name = QString(a -> text());
         else
-            alias_name = QString(aliases_block -> texts()).section(':', 1).trimmed();
+            out.alias_name = QString(aliases_block -> texts()).section(':', 1).trimmed();
 
-        (*out) << target_prefix << "alias " << alias_name << ' ' << signature << Logger::nl;
+//        (*out) << target_prefix << "alias " << alias_name << ' ' << signature << Logger::nl;
     }
 }
 
@@ -419,6 +390,8 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
         }
 
         if (!attach) {
+            out.level = level;
+
             Html::Tag * doc_header = doc_block -> findFirst("h1");
 
             if (!doc_header) {
@@ -437,19 +410,10 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
 
             Html::Set descrition_parts = doc_description -> children();
 
-            procDescription(
-                descrition_parts,
-                offset % description_prefix,
-                offset % description_example_prefix,
-                offset % description_list_prefix,
-                offset % border, &out, inpath
-            );
+            procDescription(descrition_parts, out.description, inpath);
 
-            out << Logger::nl; // one extra line before begin of the class description
-
-            QByteArray target_class = doc_header -> rawClasses();
-            QByteArray target_name = doc_header -> text();
-            QByteArray parent_name;
+            out.obj_type = doc_header -> rawClasses();
+            out.name = doc_header -> text();
 
             Html::Tag * parent_tag = metadata_block -> findFirst("#parent-class-section p");
 
@@ -459,12 +423,12 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                 if (parent_a_tag)
                     parent_tag = parent_a_tag;
 
-                parent_name = parent_tag -> text();
+                out.parent = parent_tag -> text();
 
-                if (parent_name[0] < 'A' || parent_name[0] > 'Z') { // if we have some trash text
-                    for(int i = 1; i < parent_name.length(); i++) {
-                        if (parent_name[i] >= 'A' && parent_name[i] <= 'Z') {
-                            parent_name = parent_name.mid(i);
+                if (out.parent[0] < 'A' || out.parent[0] > 'Z') { // if we have some trash text
+                    for(int i = 1; i < out.parent.length(); i++) {
+                        if (out.parent[i] >= 'A' && out.parent[i] <= 'Z') {
+                            out.parent = out.parent.mid(i);
                             break;
                         }
                     }
@@ -472,24 +436,16 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
             }
 
             /////////////////// REMOVE ME LATER
-            if (target_class != "class" && target_class != "module") {
-                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("New target type: ") % target_class % QLatin1Literal("  in file: ") % inpath);
+            if (out.obj_type != "class" && out.obj_type != "module") {
+                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("New target type: ") % out.obj_type % QLatin1Literal(" in file: ") % inpath);
             }
             //////////////////////////////////////
-
-            out << offset << target_class << ' ' << target_name;
-
-            if (!parent_name.isEmpty())
-                out << " < " << parent_name;
-
-            out << Logger::nl;
-
 
             Html::Set includes_texts = metadata_block -> find("#includes-section li a text");
 
             if (!includes_texts.isEmpty()) {
                 for(Html::Set::Iterator include_tag = includes_texts.begin(); include_tag != includes_texts.end(); include_tag++) {
-                    out << offset << target_prefix << "include " << QString((*include_tag) -> text()) << Logger::nl;
+                    out.includes << QString((*include_tag) -> text());
                 }
             }
         }
@@ -523,7 +479,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
 //            QByteArray private_class_methods_section("private-class-method-details"); // ???
         QByteArray private_instance_methods_section("private-instance-method-details");
 
-        QByteArray methods_prefix;
+        LexerMeanType methods_prefix;
 
         for(Html::Set::Iterator section_tag = sections.begin(); section_tag != sections.end(); section_tag++) {
             const QByteArray & id = (*section_tag) -> id();
@@ -532,7 +488,6 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                 Html::Tag * list_tag = (*section_tag) -> findFirst("dl");
 
                 if (list_tag -> hasChildren()) {
-                    out << Logger::nl;
                     Html::Set constants = list_tag -> children();
                     Html::Tag * dt_tag = 0;
 
@@ -540,17 +495,18 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                         switch((*const_tag) -> tagID()) {
                             case Html::Tag::tg_dt: {
                                 if (dt_tag) {
-                                    out << offset << target_prefix << (dt_tag -> texts()) << " = nil # Using for indexing. Value is unknown" << Logger::nl << Logger::nl;
+                                    out.constants.insert(dt_tag -> texts(), QLatin1Literal("No description"));
+//                                    out << offset << target_prefix << (dt_tag -> texts()) << " = nil # Using for indexing. Value is unknown" << Logger::nl << Logger::nl;
                                 }
 
                                 dt_tag = (*const_tag);
                             break;}
 
                             case Html::Tag::tg_dd: {
-                                out << offset << target_prefix << description_prefix << ((*const_tag) -> texts()) << Logger::nl;
-
-                                if (dt_tag) {
-                                    out << offset << target_prefix << (dt_tag -> texts()) << " = nil # Using for indexing. Value is unknown" << Logger::nl << Logger::nl;
+                                if (!dt_tag) {
+                                    Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Wrong order in constants list: ") % out.name % QLatin1Literal(" in file: ") % inpath);
+                                } else {
+                                    out.constants.insert(dt_tag -> texts(), (*const_tag) -> texts());
                                     dt_tag = 0;
                                 }
                             break;}
@@ -559,11 +515,11 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                 }
             } else {
                 if (id == public_class_methods_section) {
-                    methods_prefix = QByteArray("public def self.");
+                    methods_prefix = (LexerMeanType)(lmt_public | lmt_object_method);
                 } else if (id == public_instance_methods_section) {
-                    methods_prefix = QByteArray("public def ");
+                    methods_prefix = (LexerMeanType)(lmt_public | lmt_instance_method);
                 } else if (id == private_instance_methods_section) {
-                    methods_prefix = QByteArray("private def ");
+                    methods_prefix = (LexerMeanType)(lmt_private | lmt_instance_method);
                 }
 
                 Html::Set methods = (*section_tag) -> find(".method-detail");
@@ -580,16 +536,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                         signature.clear();
                     }
 
-                    procMethod(
-                        signature,
-                        *method_tag,
-                        offset % target_prefix,
-                        offset % target_prefix + methods_prefix,
-                        offset % target_prefix + description_prefix,
-                        offset % target_prefix + description_example_prefix,
-                        offset % target_prefix + description_list_prefix,
-                        offset % target_prefix % border, &out, inpath
-                    );
+                    procMethod(signature, *method_tag, out.methods[signature.toUtf8()], inpath);
                 }
             }
         }
@@ -599,30 +546,18 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
         if (namespaces) {
             Html::Set entries = namespaces -> find("li a");
 
-            QStringList snames;
-
             for(Html::Set::Iterator entry = entries.begin(); entry != entries.end(); entry++) {
                 Html::Tag * tag = *entry;
 
+                QByteArray sname = tag -> text();
                 QByteArray file_path = tag -> link();
-                QByteArrayList namespace_name_parts = tag -> text().split(':');
+                QByteArrayList namespace_name_parts = sname.split(':');
 
                 if (QChar(namespace_name_parts.last()[0]).isLower()) {
-                    file_path.prepend('1');
-                    snames.prepend(file_path);
+                    parseFile(path, file_path, out, level, true);
                 } else {
-                    file_path.prepend('2');
-                    snames.append(file_path);
+                    parseFile(path, file_path, out.namespaces[sname], level + 1);
                 }
-            }
-
-            for(QStringList::Iterator sname = snames.begin(); sname != snames.end(); sname++) {
-                out << Logger::nl << Logger::nl;
-
-                bool is_attach = (*sname)[0] == '1';
-                bool res = parseFile(path, (*sname).mid(1), out, offset % target_prefix, is_attach);
-                if (res && !is_attach)
-                    out << offset % target_prefix << "end" << Logger::nl;
             }
         }
 
@@ -651,7 +586,9 @@ bool RubydocParser::parseFolder(const QString & path) {
 
             QString name = filename.section('.', 0, 0);
 
-            parseFile(path, filename, parsed_objs[name]);
+            bool is_attach = parsed_objs.contains(name);
+
+            parseFile(path, filename, parsed_objs[name], 0, is_attach);
         }
     }
 
@@ -663,7 +600,7 @@ bool RubydocParser::parseFolder(const QString & path) {
     while(dir_it.hasNext()) {
         QString dir_path = dir_it.next();
 
-        parseFolder(dir_path, outpath);
+        parseFolder(dir_path);
     }
 
     return true;
