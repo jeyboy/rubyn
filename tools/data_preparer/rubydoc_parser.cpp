@@ -69,7 +69,7 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
 //TODO: refactor required
 void RubydocParser::writeLine(const QByteArray & datum, QStringList & out, const char & prefix, const int & max_line_len) {
     if (datum.length() <= max_line_len) {
-        out << datum;
+        out.append(QString(prefix % datum));
         return;
     }
 
@@ -187,16 +187,20 @@ void RubydocParser::procDescription(const Html::Set & parts, QStringList & out, 
             case Html::Tag::tg_pre: {
                 Html::Set code_parts = (*tag) -> children();
 
-                out << QLatin1String();
-                QString & str = out.last();
+                QString str = QLatin1String();
+                str.append((char)pre_prefix);
 
                 for(Html::Set::Iterator code_tag = code_parts.begin(); code_tag != code_parts.end(); code_tag++) {
                     if ((*code_tag) -> isNewline()) {
-                        out << QLatin1String();
-                        str = out.last();
+                        out << str;
+                        str = QLatin1String();
+                        str.append((char)pre_prefix);
                     }
                     else str.append((*code_tag) -> text());
                 }
+
+                if (!str.isEmpty())
+                    out << str;
             break;}
 
             case Html::Tag::tg_ul: {
@@ -291,61 +295,61 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
 
     procDescription(description_block -> children(), out.description, inpath);
 
-    bool is_mask = false;
+    if (!out.signatures.isEmpty()) {
+        bool is_mask = false;
 
-    out.args_mask = out.signatures.first();
+        out.args_mask = out.signatures.first();
 
-    if (sigs_count == 1) {
-        int sig_pos, sig_len;
+        if (sigs_count == 1) {
+            int sig_pos, sig_len;
 
-        if (findSimbolsSub(out.args_mask, '(', ')', sig_pos, sig_len)) {
-            out.args_mask = out.args_mask.mid(sig_pos, sig_len).trimmed();
-            is_mask = out.args_mask.endsWith('.');
+            if (findSimbolsSub(out.args_mask, '(', ')', sig_pos, sig_len)) {
+                out.args_mask = out.args_mask.mid(sig_pos, sig_len).trimmed();
+                is_mask = out.args_mask.endsWith('.');
+            }
         }
-    }
 
-//    (*out) << method_prefix << signature << '(';
+        if (!is_mask && sigs_count == 1) {
+            if (out.args_mask.isEmpty()) {
+                QString first_signature = out.signatures.first();
 
-    if (!is_mask && sigs_count == 1) {
-        if (out.args_mask.isEmpty()) {
-            QString first_signature = out.signatures.first();
+                if (signature[0] == '[') {
+                    for(QString::Iterator ch = first_signature.begin() + 1; ch != first_signature.end(); ch++)
+                        if (*ch == ']')
+                            break;
+                        else {
+                            out.args_mask.append(*ch);
+                        }
+                } else {
+                    int pos = first_signature.indexOf(signature[0]);
 
-            if (signature[0] == '[') {
-                for(QString::Iterator ch = first_signature.begin() + 1; ch != first_signature.end(); ch++)
-                    if (*ch == ']')
-                        break;
-                    else {
-                        out.args_mask.append(*ch);
+                    if (pos == -1) {
+                        pos = 0;
+                        Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method inner args:") % signature % QLatin1Literal("in file: ") % inpath);
                     }
-            } else {
-                int pos = first_signature.indexOf(signature[0]);
-
-                if (pos == -1) {
-                    pos = 0;
-                    Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method inner args:") % signature % QLatin1Literal("in file: ") % inpath);
-                }
-                else {
-                    pos += signature.length();
-                    if (first_signature[pos] == 32)
-                        ++pos;
-                }
-
-                for(QString::Iterator ch = first_signature.begin() + pos; ch != first_signature.end(); ch++) {
-                    if (*ch != '_' && !(*ch).isLetterOrNumber())
-                        break;
                     else {
-                        out.args_mask.append(*ch);
+                        pos += signature.length();
+                        if (first_signature[pos] == 32)
+                            ++pos;
+                    }
+
+                    for(QString::Iterator ch = first_signature.begin() + pos; ch != first_signature.end(); ch++) {
+                        if (*ch != '_' && !(*ch).isLetterOrNumber())
+                            break;
+                        else {
+                            out.args_mask.append(*ch);
+                        }
                     }
                 }
             }
+        } else {
+            out.args_mask = QLatin1Literal("*several_variants");
         }
-    } else {
-        out.args_mask = QLatin1Literal("*several_variants");
-    }
 
 
-    if (sigs_count == 1 && !is_mask) {
-        out.signatures.clear();
+        if (sigs_count == 1 && !is_mask) {
+            out.signatures.clear();
+        }
     }
 
     if (aliases_block) {
@@ -476,6 +480,8 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
 //            QByteArray private_class_methods_section("private-class-method-details"); // ???
         QByteArray private_instance_methods_section("private-instance-method-details");
 
+        QByteArray attributes_section("attribute-method-details");
+
         LexerMeanType methods_prefix;
 
         for(Html::Set::Iterator section_tag = sections.begin(); section_tag != sections.end(); section_tag++) {
@@ -512,7 +518,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
             } else {
                 if (id == public_class_methods_section) {
                     methods_prefix = lmt_object_method;
-                } else if (id == public_instance_methods_section) {
+                } else if (id == public_instance_methods_section || id == attributes_section) {
                     methods_prefix = lmt_instance_method;
                 } else if (id == private_instance_methods_section) {
                     methods_prefix = lmt_private_instance_method;
@@ -523,8 +529,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                 for(Html::Set::Iterator method_tag = methods.begin(); method_tag != methods.end(); method_tag++) {
                     Html::Tag * linker = (*method_tag) -> findFirst(">a");
 
-                    QByteArray meth_name = linker -> attr(QByteArrayLiteral("name"));
-                    QByteArray signature('#' % meth_name);
+                    QByteArray signature('#' % linker -> attr(QByteArrayLiteral("name")));
 
                     if (methods_formats.contains(signature))
                         signature = methods_formats[signature];
@@ -532,7 +537,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                         Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant find signature for method: ") % signature % QLatin1Literal(" in file: ") % inpath);
                     }
 
-                    DataMethod & meth = out.methods[meth_name];
+                    DataMethod & meth = out.methods[signature];
                     meth.lex_type = methods_prefix;
 
                     procMethod(signature, *method_tag, meth, inpath);
@@ -575,15 +580,16 @@ bool RubydocParser::parseFolder(const QString & path) {
     QDirIterator files_it(path, QDir::Files | QDir::Hidden);
 
     while(files_it.hasNext()) {
-        QString filepath = files_it.next();
+        /*QString filepath = */files_it.next();
         QString filename = files_it.fileName();
 
         if (filename[0].isUpper()) {
-            ignore_folders = true;
-
-            qDebug() << "!!!!!" << filepath;
-
             QString name = filename.section('.', 0, 0);
+
+            if (name.endsWith(QLatin1Literal("_rdoc")))
+                continue;
+
+            ignore_folders = true;
 
             bool is_attach = parsed_objs.contains(name);
 
@@ -678,7 +684,7 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
 
     dumpDescription(data_obj.description, out, level_padding);
 
-    out << data_obj.obj_type << ' ' << data_obj.name;
+    out << level_padding << data_obj.obj_type << ' ' << data_obj.name;
 
     if (!data_obj.obj_inheritance.isEmpty()) {
         out << " < " << data_obj.obj_inheritance;
@@ -688,7 +694,7 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
 
     if (!data_obj.includes.isEmpty()) {
         for(QStringList::Iterator inc_line = data_obj.includes.begin(); inc_line != data_obj.includes.end(); inc_line++) {
-            out << target_prefix << "include " << (*inc_line);
+            out << level_padding << target_prefix << "include " << (*inc_line);
         }
 
         out << Logger::nl;
@@ -725,13 +731,13 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
             dumpDescription(meth_obj.description, out, level_padding % target_prefix);
 
             if (!meth_obj.signatures.isEmpty()) {
-                out << Logger::nl;
+                out << target_prefix << description_prefix << Logger::nl;
 
                 for(QStringList::Iterator sig_line = meth_obj.signatures.begin(); sig_line != meth_obj.signatures.end(); sig_line++) {
                     out << target_prefix << description_prefix << (*sig_line) << Logger::nl;
                 }
 
-                out << Logger::nl;
+                out << target_prefix << description_prefix << Logger::nl;
             }
 
             switch(meth_obj.lex_type) {
@@ -775,6 +781,8 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
             first = false;
         }
     }
+
+    out << Logger::nl << level_padding << "end";
 }
 
 
