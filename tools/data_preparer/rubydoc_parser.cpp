@@ -638,13 +638,21 @@ void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const
 
             switch(val) {
                 case h2_prefix:     {
-                    out << Logger::nl << level_padding << h2_border << Logger::nl << description_prefix << str << Logger::nl << h2_border << Logger::nl << Logger::nl;
+                    if (prev_val != pre_prefix)
+                        out << level_padding << description_prefix << Logger::nl;
+                    out << level_padding << h2_border << Logger::nl << description_prefix << str << Logger::nl << h2_border << Logger::nl << level_padding << description_prefix << Logger::nl;
                 break;}
                 case h3_prefix:     {
-                    out << Logger::nl << level_padding << h3_border << Logger::nl << description_prefix << str << Logger::nl << h3_border << Logger::nl << Logger::nl;
+                    if (prev_val != pre_prefix)
+                        out << level_padding << description_prefix << Logger::nl;
+
+                    out << level_padding << h3_border << Logger::nl << description_prefix << str << Logger::nl << h3_border << Logger::nl << level_padding << description_prefix << Logger::nl;
                 break;}
                 case h4_prefix:     {
-                    out << Logger::nl << level_padding << h4_border << Logger::nl << description_prefix << str << Logger::nl << h4_border << Logger::nl << Logger::nl;
+                    if (prev_val != pre_prefix)
+                        out << level_padding << description_prefix << Logger::nl;
+
+                    out << level_padding << h4_border << Logger::nl << description_prefix << str << Logger::nl << h4_border << Logger::nl << level_padding << description_prefix << Logger::nl;
                 break;}
                 case p_prefix:      {
                     out << level_padding << description_prefix << str << Logger::nl;
@@ -692,7 +700,7 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
 
     if (!data_obj.includes.isEmpty()) {
         for(QStringList::Iterator inc_line = data_obj.includes.begin(); inc_line != data_obj.includes.end(); inc_line++) {
-            out << level_padding << target_prefix << "include " << (*inc_line);
+            out << level_padding << target_prefix << "include " << (*inc_line) << Logger::nl;
         }
 
         out << Logger::nl;
@@ -752,7 +760,7 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
                 default: Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant identificate method type: ") % QByteArray::number(meth_obj.lex_type));
             }
 
-            out << meth.key() << '(' << meth_obj.args_mask << ')' << Logger::nl << Logger::nl << level_padding << target_prefix << "end" << Logger::nl;
+            out << meth.key() << '(' << meth_obj.args_mask << ')' << Logger::nl << level_padding << target_prefix << "end" << Logger::nl;
 
             if (!meth_obj.alias_name.isEmpty()) {
                 out << level_padding << target_prefix << "alias " << meth_obj.alias_name << ' ' << meth.key() << Logger::nl;
@@ -776,9 +784,11 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
 
             first = false;
         }
+
+        out << Logger::nl;
     }
 
-    out << Logger::nl << level_padding << "end";
+    out << level_padding << "end";
 }
 
 
