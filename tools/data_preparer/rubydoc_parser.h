@@ -50,7 +50,7 @@ class RubydocParser : public QObject {
     bool parseFile(const QString & path, const QString & name, DataObj & out, const uint & level = 0, const bool & attach = false);
     bool parseFolder(const QString & path);
 
-    void dumpDescription(QStringList & desc, QTextStream & out, QByteArray & level_padding);
+    void dumpDescription(QStringList & desc, QTextStream & out, const QByteArray & level_padding);
     void dumpObject(DataObj & data_obj, QTextStream & out);
 public:
     RubydocParser(QObject * parent = 0);

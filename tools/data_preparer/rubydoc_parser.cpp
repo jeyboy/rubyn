@@ -621,9 +621,9 @@ bool RubydocParser::parse(const QString & inpath) {
 }
 
 
-void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, QByteArray & level_padding) {
-    if (!data_obj.description.isEmpty()) {
-        const char prev_val = 0;
+void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const QByteArray & level_padding) {
+    if (!desc.isEmpty()) {
+        char prev_val = 0;
 
         for(QStringList::Iterator desc_line = desc.begin(); desc_line != desc.end(); desc_line++) {
             QStringRef str = (*desc_line).midRef(1);
@@ -727,7 +727,7 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
             if (!meth_obj.signatures.isEmpty()) {
                 out << Logger::nl;
 
-                for(QStringList::Iterator sig_line = data_obj.signatures.begin(); sig_line != data_obj.signatures.end(); sig_line++) {
+                for(QStringList::Iterator sig_line = meth_obj.signatures.begin(); sig_line != meth_obj.signatures.end(); sig_line++) {
                     out << target_prefix << description_prefix << (*sig_line) << Logger::nl;
                 }
 
@@ -760,16 +760,17 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
         }
     }
 
-
     if (!data_obj.namespaces.isEmpty()) {
         bool first = true;
 
-        for(QMap<QByteArray, DataMethod>::Iterator obj_space = data_obj.namespaces.begin(); obj_space != data_obj.namespaces.end(); obj_space++) {
+        for(QMap<QByteArray, DataObj>::Iterator obj_space = data_obj.namespaces.begin(); obj_space != data_obj.namespaces.end(); obj_space++) {
             if (!first) {
                 out << Logger::nl << Logger::nl;
+            } else {
+                out << Logger::nl;
             }
 
-
+            dumpObject(obj_space.value(), out);
 
             first = false;
         }
