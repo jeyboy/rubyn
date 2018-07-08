@@ -14,8 +14,6 @@ struct DataMethod {
 
     QString args_mask;
 
-    QByteArray prefix;
-
     QString alias_name;
 
     DataMethod(const LexerMeanType & mtype = lmt_unknow) : lex_type(mtype) {

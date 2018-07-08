@@ -6,6 +6,7 @@
 
 struct DataObj;
 struct DataMethod;
+class QTextStream;
 
 namespace Html {
     class Set;
@@ -23,11 +24,19 @@ class RubydocParser : public QObject {
         li_prefix = 17,
         pre_prefix = 18,
         dt_prefix = 19,
-        dd_prefix = 20,
-        newline_prefix = 21,
+        dd_prefix = 20
     };
 
     QHash<QString, DataObj> parsed_objs;
+
+    const QByteArray target_prefix              = QByteArray("    ");
+    const QByteArray description_prefix         = QByteArray("# ");
+    const QByteArray description_list_prefix    = QByteArray("#  - ");
+    const QByteArray data_head_prefix           = QByteArray("#  * ");
+    const QByteArray description_example_prefix = QByteArray("#      ");
+    const QByteArray h2_border                  = QByteArray(80, '-').prepend('#');
+    const QByteArray h3_border                  = h2_border.mid(0, 61);
+    const QByteArray h4_border                  = h2_border.mid(0, 41);
 
     bool findSimbolsSub(const QString & str, const char & s, const char & e, int & spos, int & epos);
     QByteArray clearLine(const QByteArray & line);
@@ -40,6 +49,9 @@ class RubydocParser : public QObject {
 
     bool parseFile(const QString & path, const QString & name, DataObj & out, const uint & level = 0, const bool & attach = false);
     bool parseFolder(const QString & path);
+
+    void dumpDescription(QStringList & desc, QTextStream & out, QByteArray & level_padding);
+    void dumpObject(DataObj & data_obj, QTextStream & out);
 public:
     RubydocParser(QObject * parent = 0);
     ~RubydocParser();

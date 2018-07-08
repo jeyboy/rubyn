@@ -304,10 +304,6 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
         }
     }
 
-//    if (sigs_count > 1 || is_mask) { // print all signatures
-//        (*out) << description_prefix << signatures << description_prefix << Logger::nl;
-//    }
-
 //    (*out) << method_prefix << signature << '(';
 
     if (!is_mask && sigs_count == 1) {
@@ -347,7 +343,10 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
         out.args_mask = QLatin1Literal("*several_variants");
     }
 
-//    (*out) << ')' << Logger::nl << target_prefix << "end" << Logger::nl;
+
+    if (sigs_count == 1 && !is_mask) {
+        out.signatures.clear();
+    }
 
     if (aliases_block) {
         Html::Tag * a = aliases_block -> findFirst("a");
@@ -356,8 +355,6 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
             out.alias_name = QString(a -> text());
         else
             out.alias_name = QString(aliases_block -> texts()).section(':', 1).trimmed();
-
-//        (*out) << target_prefix << "alias " << alias_name << ' ' << signature << Logger::nl;
     }
 }
 
@@ -496,7 +493,6 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                             case Html::Tag::tg_dt: {
                                 if (dt_tag) {
                                     out.constants.insert(dt_tag -> texts(), QLatin1Literal("No description"));
-//                                    out << offset << target_prefix << (dt_tag -> texts()) << " = nil # Using for indexing. Value is unknown" << Logger::nl << Logger::nl;
                                 }
 
                                 dt_tag = (*const_tag);
@@ -515,11 +511,11 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                 }
             } else {
                 if (id == public_class_methods_section) {
-                    methods_prefix = (LexerMeanType)(lmt_public | lmt_object_method);
+                    methods_prefix = lmt_object_method;
                 } else if (id == public_instance_methods_section) {
-                    methods_prefix = (LexerMeanType)(lmt_public | lmt_instance_method);
+                    methods_prefix = lmt_instance_method;
                 } else if (id == private_instance_methods_section) {
-                    methods_prefix = (LexerMeanType)(lmt_private | lmt_instance_method);
+                    methods_prefix = lmt_private_instance_method;
                 }
 
                 Html::Set methods = (*section_tag) -> find(".method-detail");
@@ -624,19 +620,166 @@ bool RubydocParser::parse(const QString & inpath) {
     return parseFolder(inpath);
 }
 
+
+void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, QByteArray & level_padding) {
+    if (!data_obj.description.isEmpty()) {
+        const char prev_val = 0;
+
+        for(QStringList::Iterator desc_line = desc.begin(); desc_line != desc.end(); desc_line++) {
+            QStringRef str = (*desc_line).midRef(1);
+
+            const char val = ((*desc_line)[0]).digitValue();
+
+            switch(val) {
+                case h2_prefix:     {
+                    out << Logger::nl << level_padding << h2_border << Logger::nl << description_prefix << str << Logger::nl << h2_border << Logger::nl << Logger::nl;
+                break;}
+                case h3_prefix:     {
+                    out << Logger::nl << level_padding << h3_border << Logger::nl << description_prefix << str << Logger::nl << h3_border << Logger::nl << Logger::nl;
+                break;}
+                case h4_prefix:     {
+                    out << Logger::nl << level_padding << h4_border << Logger::nl << description_prefix << str << Logger::nl << h4_border << Logger::nl << Logger::nl;
+                break;}
+                case p_prefix:      {
+                    if (prev_val == pre_prefix)
+                        out << Logger::nl;
+
+                    out << level_padding << description_prefix << str << Logger::nl;
+                break;}
+                case li_prefix:     {
+                    out << level_padding << description_list_prefix << str << Logger::nl;
+                break;}
+                case pre_prefix:    {
+                    if (val != prev_val)
+                        out << Logger::nl;
+
+                    out << level_padding << description_example_prefix << str << Logger::nl;
+                break;}
+                case dt_prefix:     {
+                    out << level_padding << data_head_prefix << str << Logger::nl;
+                break;}
+                case dd_prefix:     {
+                    out << level_padding << description_example_prefix << str << Logger::nl;
+                break;}
+                default:            {
+                    Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant identificate description line type: ") % (*desc_line));
+                }
+            }
+
+            prev_val = val;
+        }
+
+        out << Logger::nl << Logger::nl;
+    }
+}
+
+void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
+    QByteArray level_padding(data_obj.level * target_prefix.length(), ' ');
+
+    dumpDescription(data_obj.description, out, level_padding);
+
+    out << data_obj.obj_type << ' ' << data_obj.name;
+
+    if (!data_obj.obj_inheritance.isEmpty()) {
+        out << " < " << data_obj.obj_inheritance;
+    }
+
+    out << Logger::nl;
+
+    if (!data_obj.includes.isEmpty()) {
+        for(QStringList::Iterator inc_line = data_obj.includes.begin(); inc_line != data_obj.includes.end(); inc_line++) {
+            out << target_prefix << "include " << (*inc_line);
+        }
+
+        out << Logger::nl;
+    }
+
+
+    if (!data_obj.constants.isEmpty()) {
+        bool first = true;
+
+        for(QMap<QByteArray, QString>::Iterator constant_line = data_obj.constants.begin(); constant_line != data_obj.constants.end(); constant_line++) {
+            if (!first)
+                out << Logger::nl;
+
+            out << level_padding << target_prefix << constant_line.value() << Logger::nl;
+            out << level_padding << target_prefix << constant_line.key() << " = nil # Using for indexing. Value is unknown" << Logger::nl;
+
+            first = false;
+        }
+
+        out << Logger::nl;
+    }
+
+
+    if (!data_obj.methods.isEmpty()) {
+        bool first = true;
+
+        for(QMap<QByteArray, DataMethod>::Iterator meth = data_obj.methods.begin(); meth != data_obj.methods.end(); meth++) {
+            DataMethod & meth_obj = meth.value();
+
+            if (!first) {
+                out << Logger::nl << Logger::nl;
+            }
+
+            dumpDescription(meth_obj.description, out, level_padding % target_prefix);
+
+            if (!meth_obj.signatures.isEmpty()) {
+                out << Logger::nl;
+
+                for(QStringList::Iterator sig_line = data_obj.signatures.begin(); sig_line != data_obj.signatures.end(); sig_line++) {
+                    out << target_prefix << description_prefix << (*sig_line) << Logger::nl;
+                }
+
+                out << Logger::nl;
+            }
+
+            switch(meth_obj.lex_type) {
+                case lmt_object_method: {
+                    out << level_padding << target_prefix << "public def self.";
+                break;}
+
+                case lmt_instance_method: {
+                    out << level_padding << target_prefix << "public def ";
+                break;}
+
+                case lmt_private_instance_method: {
+                    out << level_padding << target_prefix << "private def ";
+                break;}
+
+                default: Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant identificate method type: ") % QByteArray::number(meth_obj.lex_type));
+            }
+
+            out << meth.key() << '(' << meth_obj.args_mask << ')' << Logger::nl << Logger::nl << level_padding << target_prefix << "end" << Logger::nl;
+
+            if (!meth_obj.alias_name.isEmpty()) {
+                out << level_padding << target_prefix << "alias " << meth_obj.alias_name << ' ' << meth.key() << Logger::nl;
+            }
+
+            first = false;
+        }
+    }
+
+
+    if (!data_obj.namespaces.isEmpty()) {
+        bool first = true;
+
+        for(QMap<QByteArray, DataMethod>::Iterator obj_space = data_obj.namespaces.begin(); obj_space != data_obj.namespaces.end(); obj_space++) {
+            if (!first) {
+                out << Logger::nl << Logger::nl;
+            }
+
+
+
+            first = false;
+        }
+    }
+}
+
+
 bool RubydocParser::saveParsedDatum(const QString & outpath) {
     if (!Dir::createPath(outpath))
         return false;
-
-    const QByteArray description_prefix         = QByteArray("# ");
-    const QByteArray description_list_prefix    = QByteArray("#  - ");
-    const QByteArray data_head_prefix           = QByteArray("#  * ");
-    const QByteArray description_example_prefix = QByteArray("#      ");
-    const QByteArray target_prefix              = QByteArray("    ");
-    const QByteArray h2_border                  = QByteArray(80, '-').prepend('#');
-    const QByteArray h3_border                  = h2_border.mid(0, 61);
-    const QByteArray h4_border                  = h2_border.mid(0, 41);
-
 
     for(QHash<QString, DataObj>::Iterator obj = parsed_objs.begin(); obj != parsed_objs.end(); obj++) {
         {
@@ -644,58 +787,16 @@ bool RubydocParser::saveParsedDatum(const QString & outpath) {
             Info::camelcaseToUnderscore(filename);
             filename = outpath % '/' % filename % QLatin1Literal(".rb");
 
-            DataObj & data_obj = obj.value();
             QFile outfile(filename);
 
             if (outfile.open(QFile::WriteOnly | QFile::Text)) {
                 QTextStream out(&outfile);
                 out.setCodec("UTF-8");
 
-                QByteArray level_padding(data_obj.level * target_prefix.length(), ' ');
-
                 out << "# encoding: UTF-8" << Logger::nl;
                 out << "# GENERATED BY @JB FU" << Logger::nl << Logger::nl;
 
-                if (!data_obj.description.isEmpty()) {
-                    for(QStringList::Iterator desc_line = data_obj.description.begin(); desc_line != data_obj.description.end(); desc_line++) {
-                        QStringRef str = (*desc_line).midRef(1);
-
-                        const char val = ((*desc_line)[0]).digitValue();
-
-                        switch(val) {
-                            case h2_prefix:     {
-                                out << level_padding << h2_border << Logger::nl << description_prefix << str << Logger::nl << h2_border << Logger::nl << Logger::nl;
-                            break;}
-                            case h3_prefix:     {
-                                out << level_padding << h3_border << Logger::nl << description_prefix << str << Logger::nl << h3_border << Logger::nl << Logger::nl;
-                            break;}
-                            case h4_prefix:     {
-                                out << level_padding << h4_border << Logger::nl << description_prefix << str << Logger::nl << h4_border << Logger::nl << Logger::nl;
-                            break;}
-                            case p_prefix:      {
-                                out << level_padding << description_prefix << str << Logger::nl;
-                            break;}
-                            case li_prefix:     {
-                                out << level_padding << description_list_prefix << str << Logger::nl;
-                            break;}
-                            case pre_prefix:    {
-                                out << level_padding << description_example_prefix << str << Logger::nl;
-                            break;}
-                            case dt_prefix:     {
-                                out << level_padding << data_head_prefix << str << Logger::nl;
-                            break;}
-                            case dd_prefix:     {
-                                out << level_padding << description_example_prefix << str << Logger::nl;
-                            break;}
-                            case newline_prefix:{
-                                out << Logger::nl;
-                            break;}
-                            default:            {
-                                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant identificate description line type: ") % (*desc_line));
-                            }
-                        }
-                    }
-                }
+                dumpObject(obj.value(), out);
 
                 out.flush();
                 outfile.close();
