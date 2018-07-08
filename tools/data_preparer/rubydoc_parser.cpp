@@ -634,7 +634,7 @@ void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const
         for(QStringList::Iterator desc_line = desc.begin(); desc_line != desc.end(); desc_line++) {
             QStringRef str = (*desc_line).midRef(1);
 
-            const char val = ((*desc_line)[0]).digitValue();
+            const char val = ((*desc_line)[0]).toLatin1();
 
             switch(val) {
                 case h2_prefix:     {
@@ -647,9 +647,6 @@ void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const
                     out << Logger::nl << level_padding << h4_border << Logger::nl << description_prefix << str << Logger::nl << h4_border << Logger::nl << Logger::nl;
                 break;}
                 case p_prefix:      {
-                    if (prev_val == pre_prefix)
-                        out << Logger::nl;
-
                     out << level_padding << description_prefix << str << Logger::nl;
                 break;}
                 case li_prefix:     {
@@ -657,7 +654,7 @@ void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const
                 break;}
                 case pre_prefix:    {
                     if (val != prev_val)
-                        out << Logger::nl;
+                        out << level_padding << description_prefix << Logger::nl;
 
                     out << level_padding << description_example_prefix << str << Logger::nl;
                 break;}
@@ -675,7 +672,8 @@ void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const
             prev_val = val;
         }
 
-        out << Logger::nl << Logger::nl;
+        if (prev_val != pre_prefix)
+            out << level_padding << description_prefix << Logger::nl;
     }
 }
 
@@ -731,8 +729,6 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
             dumpDescription(meth_obj.description, out, level_padding % target_prefix);
 
             if (!meth_obj.signatures.isEmpty()) {
-                out << target_prefix << description_prefix << Logger::nl;
-
                 for(QStringList::Iterator sig_line = meth_obj.signatures.begin(); sig_line != meth_obj.signatures.end(); sig_line++) {
                     out << target_prefix << description_prefix << (*sig_line) << Logger::nl;
                 }
