@@ -1,6 +1,9 @@
 #include "ide_window.h"
 #include <QApplication>
 
+// debug
+//https://github.com/ruby-debug/ruby-debug-ide
+
 //https://www.youtube.com/watch?v=K3gLlZm-m_8 // snippets logic
 
 // all ROR files

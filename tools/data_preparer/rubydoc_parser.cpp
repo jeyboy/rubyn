@@ -57,6 +57,31 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
                     continue;
                 }
             break;}
+
+            default:
+                if (*ptr < 0) {
+                    if (*ptr == -30 && *(ptr + 1) == -128) {
+                        if (*(ptr + 2) == -108) {
+                            res.append('-');
+                            ptr += 3;
+                            continue;
+                        }
+
+                        if (*(ptr + 2) == -100 || *(ptr + 2) == -99) {
+                            res.append('"');
+                            ptr += 3;
+                            continue;
+                        }
+
+                        if (*(ptr + 2) == -90) {
+                            res.append("...");
+                            ptr += 3;
+                            continue;
+                        }
+                    }
+
+                    Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("New UTF-8 symb"), QStringList() << QString::number(*ptr) << QString::number(*(ptr + 1)) << QString::number(*(ptr + 2)));
+                }
         }
 
         res.append(*ptr);
@@ -298,14 +323,14 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
     if (!out.signatures.isEmpty()) {
         bool is_mask = false;
 
-        out.args_mask = out.signatures.first();
+        QString & first_signature = out.signatures.first();
 
         if (sigs_count == 1) {
             int sig_pos, sig_len;
 
-            if (findSimbolsSub(out.args_mask, '(', ')', sig_pos, sig_len)) {
-                out.args_mask = out.args_mask.mid(sig_pos, sig_len).trimmed();
-                is_mask = out.args_mask.endsWith('.');
+            if (findSimbolsSub(first_signature, '(', ')', sig_pos, sig_len)) {
+                out.args_mask = first_signature.mid(sig_pos, sig_len).trimmed();
+                is_mask = first_signature.endsWith('.');
             }
         }
 
