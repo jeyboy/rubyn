@@ -61,7 +61,7 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
             default:
                 if (*ptr < 0) {
                     if (*ptr == -30 && *(ptr + 1) == -128) {
-                        if (*(ptr + 2) == -108) {
+                        if (*(ptr + 2) == -108 || *(ptr + 2) == -109) {
                             res.append('-');
                             ptr += 3;
                             continue;
@@ -78,6 +78,28 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
                             ptr += 3;
                             continue;
                         }
+
+                        if (*(ptr + 2) == -103) {
+                            res.append('\'');
+                            ptr += 3;
+                            continue;
+                        }
+                    } else if (*ptr == -62 && *(ptr + 1) == -87 && *(ptr + 2) == 32) {
+                        res.append("copyright");
+                        ptr += 3;
+                        continue;
+                    } else if (*ptr == -62 && *(ptr + 1) == -74 && *(ptr + 2) == 32) {
+                        res.append("copyright");
+                        ptr += 3;
+                        continue;
+                    } else if (*ptr == -30 && *(ptr + 1) == -122 && *(ptr + 2) == 111) {
+                        res.append("copyright");
+                        ptr += 3;
+                        continue;
+                    } else if (*ptr == -122 && *(ptr + 1) == -111 && *(ptr + 2) == 32) {
+                        res.append("copyright");
+                        ptr += 3;
+                        continue;
                     }
 
                     Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("New UTF-8 symb"), QStringList() << QString::number(*ptr) << QString::number(*(ptr + 1)) << QString::number(*(ptr + 2)));
@@ -372,9 +394,10 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
         }
 
 
-//        if (sigs_count == 1 && !is_mask) {
-//            out.signatures.clear();
-//        }
+        if (sigs_count == 1 && !is_mask) {
+            if (out.signatures.first().indexOf(QLatin1Literal("->")) == -1)
+                out.signatures.clear();
+        }
     }
 
     if (aliases_block) {

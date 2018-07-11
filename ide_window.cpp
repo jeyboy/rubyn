@@ -64,7 +64,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 
 
-//    QFile f("F://rubyn test//Array.html");
+//    QFile f("F://rubyn test//LDAP.html");
 
 //    if (f.open(QFile::Text | QFile::ReadOnly)) {
 //        Logger::obj().startMark();

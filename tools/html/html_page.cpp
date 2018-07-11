@@ -62,7 +62,7 @@ void Page::parse(const char * data, Tag * root_tag) {
     Tag * elem = root_tag, * temp = 0;
     PState state = content;
     const char *pdata = data, *sname = 0, *sval = 0, *ename = 0;
-    bool has_cdata = false, is_xml = false;  // cdata presents in text
+    bool has_cdata = false, is_xml = false, in_href = false;  // cdata presents in text
     bool simplify = pflags & pf_simplify_text, trim = pflags & pf_trim_text, simplify_mnemonics = pflags & pf_simplify_mnemonics;
     quint8 tag_flags = 0; // charset
 
@@ -174,13 +174,34 @@ void Page::parse(const char * data, Tag * root_tag) {
 
             case in_val: {
                 switch(*pdata) {
+                    case open_tag: { // monkeypatch for closing of the link tag without closing of href attribute value
+                        if (
+                                *(pdata + 1) == close_tag_predicate && elem -> tagID() == Tag::tg_a &&
+                                    sname[0] == 'h' && sname[1] == 'r' && sname[2] == 'e' &&
+                                        sname[3] == 'f' && !isalnum(sname[4])
+                        ) {
+                            if (*(pdata + 2) != 'a')
+                                break;
+                            else {
+                                in_href = true;
+                            }
+
+                        }
+                        else break;
+                    }
                     case content_del1:
                     case content_del2: {
-                        if (*sval == *pdata) {
+                        if (*sval == *pdata || in_href) {
                             sval++;
                             elem -> addAttr(NAME_BUFF, DECODE_NAME(VAL_BUFF, true, false, false));
                             sname = 0; sval = 0; ename = 0;
-                            state = attr;
+
+                            if (in_href) { // monkeypatch for closing of the link tag without closing of href attribute value
+                                in_href = false;
+                                state = content;
+                                --pdata;
+                            }
+                            else state = attr;
                         }
                     break;}
                 }
