@@ -320,7 +320,7 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
 
     procDescription(description_block -> children(), out.description, inpath);
 
-    if (!out.signatures.isEmpty()) {
+    if (!out.signatures.isEmpty()) { // any? // bsearch
         bool is_mask = false;
 
         QString & first_signature = out.signatures.first();
@@ -330,7 +330,7 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
 
             if (findSimbolsSub(first_signature, '(', ')', sig_pos, sig_len)) {
                 out.args_mask = first_signature.mid(sig_pos, sig_len).trimmed();
-                is_mask = first_signature.endsWith('.');
+                is_mask = out.args_mask.endsWith('.');
             }
         }
 
@@ -372,9 +372,9 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
         }
 
 
-        if (sigs_count == 1 && !is_mask) {
-            out.signatures.clear();
-        }
+//        if (sigs_count == 1 && !is_mask) {
+//            out.signatures.clear();
+//        }
     }
 
     if (aliases_block) {
