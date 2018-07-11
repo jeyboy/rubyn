@@ -665,19 +665,19 @@ void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const
                 case h2_prefix:     {
                     if (prev_val != pre_prefix)
                         out << level_padding << description_prefix << Logger::nl;
-                    out << level_padding << h2_border << Logger::nl << description_prefix << str << Logger::nl << h2_border << Logger::nl << level_padding << description_prefix << Logger::nl;
+                    out << level_padding << h2_border << Logger::nl << level_padding << description_prefix << str << Logger::nl << level_padding << h2_border << Logger::nl << level_padding << description_prefix << Logger::nl;
                 break;}
                 case h3_prefix:     {
                     if (prev_val != pre_prefix)
                         out << level_padding << description_prefix << Logger::nl;
 
-                    out << level_padding << h3_border << Logger::nl << description_prefix << str << Logger::nl << h3_border << Logger::nl << level_padding << description_prefix << Logger::nl;
+                    out << level_padding << h3_border << Logger::nl << level_padding << description_prefix << str << Logger::nl << level_padding << h3_border << Logger::nl << level_padding << description_prefix << Logger::nl;
                 break;}
                 case h4_prefix:     {
                     if (prev_val != pre_prefix)
                         out << level_padding << description_prefix << Logger::nl;
 
-                    out << level_padding << h4_border << Logger::nl << description_prefix << str << Logger::nl << h4_border << Logger::nl << level_padding << description_prefix << Logger::nl;
+                    out << level_padding << h4_border << Logger::nl << level_padding << description_prefix << str << Logger::nl << level_padding << h4_border << Logger::nl << level_padding << description_prefix << Logger::nl;
                 break;}
                 case p_prefix:      {
                     out << level_padding << description_prefix << str << Logger::nl;

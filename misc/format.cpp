@@ -100,7 +100,7 @@ QString & Info::camelcaseToUnderscore(QString & str) {
 
     for(int pos = 0; pos < limit; pos++) {
         if (str[pos].isUpper()) {
-            if (pos == 0 || pos + 1 == limit || str[pos + 1].isUpper())
+            if (pos == 0 || pos + 1 == limit || str[pos + 1].isUpper() || !str[pos + 1].isLetter())
                 str.replace(pos, 1, str[pos].toLower());
             else {
                 str.replace(pos, 1, '_' % str[pos].toLower());
