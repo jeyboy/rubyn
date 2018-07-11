@@ -88,18 +88,6 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
                         res.append("copyright");
                         ptr += 3;
                         continue;
-                    } else if (*ptr == -62 && *(ptr + 1) == -74 && *(ptr + 2) == 32) {
-                        res.append("copyright");
-                        ptr += 3;
-                        continue;
-                    } else if (*ptr == -30 && *(ptr + 1) == -122 && *(ptr + 2) == 111) {
-                        res.append("copyright");
-                        ptr += 3;
-                        continue;
-                    } else if (*ptr == -122 && *(ptr + 1) == -111 && *(ptr + 2) == 32) {
-                        res.append("copyright");
-                        ptr += 3;
-                        continue;
                     }
 
                     Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("New UTF-8 symb"), QStringList() << QString::number(*ptr) << QString::number(*(ptr + 1)) << QString::number(*(ptr + 2)));
@@ -546,7 +534,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                         switch((*const_tag) -> tagID()) {
                             case Html::Tag::tg_dt: {
                                 if (dt_tag) {
-                                    out.constants.insert(dt_tag -> texts(), QLatin1Literal("No description"));
+                                    out.constants.insert(dt_tag -> texts(), QByteArrayLiteral("No description"));
                                 }
 
                                 dt_tag = (*const_tag);
@@ -556,21 +544,47 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                                 if (!dt_tag) {
                                     Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Wrong order in constants list: ") % out.name % QLatin1Literal(" in file: ") % inpath);
                                 } else {
-                                    out.constants.insert(dt_tag -> texts(), (*const_tag) -> texts());
+                                    QByteArray desc = (*const_tag) -> texts();
+
+                                    out.constants.insert(dt_tag -> texts(), desc.isEmpty() ? QByteArrayLiteral("No description") : desc);
                                     dt_tag = 0;
                                 }
                             break;}
                         }
                     }
                 }
+            } else if (id == attributes_section) {
+                Html::Set attrs = (*section_tag) -> find(".method-detail");
+
+                for(Html::Set::Iterator attr_tag = attrs.begin(); attr_tag != attrs.end(); attr_tag++) {
+                    Html::Tag * head_section = (*attr_tag) -> findFirst(".method-heading");
+                    Html::Tag * desc_section = (*attr_tag) -> findFirst(".method-description");
+
+                    Html::Tag * name_tag = head_section -> findFirst(".method-name");
+                    Html::Tag * access_tag = head_section -> findFirst(".attribute-access-type");
+
+                    QByteArray name = name_tag -> text();
+                    QByteArray access_mark = access_tag -> text();
+
+                    if (access_mark == QByteArrayLiteral("[RW]"))
+                        name.prepend(QByteArrayLiteral("attr_accessor :"));
+                    else if (access_mark == QByteArrayLiteral("[W]"))
+                        name.prepend(QByteArrayLiteral("attr_writer :"));
+                    else name.prepend(QByteArrayLiteral("attr_reader :"));
+
+                    QByteArray desc = clearLine(desc_section -> texts());
+
+                    out.attributes.insert(name, desc);
+                }
             } else {
                 if (id == public_class_methods_section) {
                     methods_prefix = lmt_object_method;
-                } else if (id == public_instance_methods_section || id == attributes_section) {
+                } else if (id == public_instance_methods_section) {
                     methods_prefix = lmt_instance_method;
                 } else if (id == private_instance_methods_section) {
                     methods_prefix = lmt_private_instance_method;
                 }
+                else methods_prefix = lmt_instance_method;
 
                 Html::Set methods = (*section_tag) -> find(".method-detail");
 
@@ -758,12 +772,28 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
     if (!data_obj.constants.isEmpty()) {
         bool first = true;
 
-        for(QMap<QByteArray, QString>::Iterator constant_line = data_obj.constants.begin(); constant_line != data_obj.constants.end(); constant_line++) {
+        for(QMap<QByteArray, QByteArray>::Iterator constant_line = data_obj.constants.begin(); constant_line != data_obj.constants.end(); constant_line++) {
             if (!first)
                 out << Logger::nl;
 
-            out << level_padding << target_prefix << constant_line.value() << Logger::nl;
-            out << level_padding << target_prefix << constant_line.key() << " = nil # Using for indexing. Value is unknown" << Logger::nl;
+            out << level_padding << target_prefix << description_prefix << constant_line.value() << Logger::nl;
+            out << level_padding << target_prefix << constant_line.key() << def_const_val << Logger::nl;
+
+            first = false;
+        }
+
+        out << Logger::nl;
+    }
+
+    if (!data_obj.attributes.isEmpty()) {
+        bool first = true;
+
+        for(QMap<QByteArray, QByteArray>::Iterator attr_line = data_obj.attributes.begin(); attr_line != data_obj.attributes.end(); attr_line++) {
+            if (!first)
+                out << Logger::nl;
+
+            out << level_padding << target_prefix << description_prefix << attr_line.value() << Logger::nl;
+            out << level_padding << target_prefix << attr_line.key() << Logger::nl;
 
             first = false;
         }

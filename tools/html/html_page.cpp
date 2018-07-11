@@ -62,12 +62,12 @@ void Page::parse(const char * data, Tag * root_tag) {
     Tag * elem = root_tag, * temp = 0;
     PState state = content;
     const char *pdata = data, *sname = 0, *sval = 0, *ename = 0;
-    bool has_cdata = false, is_xml = false, in_href = false;  // cdata presents in text
+    bool has_cdata = false, is_xml = false, unicode_quotes = false;  // cdata presents in text
     bool simplify = pflags & pf_simplify_text, trim = pflags & pf_trim_text, simplify_mnemonics = pflags & pf_simplify_mnemonics;
     quint8 tag_flags = 0; // charset
 
     while(*pdata) {
-        if (*pdata < 0) {
+        if (*pdata < 0 && state != in_val) {
             tag_flags |= Decoding::decode_content;
             pdata++;
             continue;
@@ -174,34 +174,36 @@ void Page::parse(const char * data, Tag * root_tag) {
 
             case in_val: {
                 switch(*pdata) {
-                    case open_tag: { // monkeypatch for closing of the link tag without closing of href attribute value
-                        if (
-                                *(pdata + 1) == close_tag_predicate && elem -> tagID() == Tag::tg_a &&
-                                    sname[0] == 'h' && sname[1] == 'r' && sname[2] == 'e' &&
-                                        sname[3] == 'f' && !isalnum(sname[4])
-                        ) {
-                            if (*(pdata + 2) != 'a')
-                                break;
-                            else {
-                                in_href = true;
-                            }
+                    case -30: { // monkey patch: unicode representation of quotes
+                        if (*(pdata + 1) == -128) {
+                            switch(*(pdata + 2)) {
+                                case -100:
+                                case -99: {
+                                    unicode_quotes = *sval == '"';
+                                break;}
 
+                                case -103: {
+                                    unicode_quotes = *sval == '\'';
+                                break;}
+                            }
                         }
-                        else break;
+
+                        if (!unicode_quotes) {
+                            tag_flags |= Decoding::decode_content;
+                            break;
+                        }
                     }
                     case content_del1:
                     case content_del2: {
-                        if (*sval == *pdata || in_href) {
+                        if (*sval == *pdata || unicode_quotes) {
                             sval++;
                             elem -> addAttr(NAME_BUFF, DECODE_NAME(VAL_BUFF, true, false, false));
-                            sname = 0; sval = 0; ename = 0;
-
-                            if (in_href) { // monkeypatch for closing of the link tag without closing of href attribute value
-                                in_href = false;
-                                state = content;
-                                --pdata;
+                            if (unicode_quotes) {
+                                pdata += 2;
+                                unicode_quotes = false;
                             }
-                            else state = attr;
+                            sname = 0; sval = 0; ename = 0;
+                            state = attr;
                         }
                     break;}
                 }

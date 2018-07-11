@@ -32,7 +32,8 @@ struct DataObj {
     QStringList description;
     QStringList includes;
 
-    QMap<QByteArray, QString> constants;
+    QMap<QByteArray, QByteArray> attributes;
+    QMap<QByteArray, QByteArray> constants;
     QMap<QByteArray, DataMethod> methods;
     QMap<QByteArray, DataObj> namespaces;
 

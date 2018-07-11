@@ -37,6 +37,7 @@ class RubydocParser : public QObject {
     const QByteArray h2_border                  = QByteArray(80, '-').prepend('#');
     const QByteArray h3_border                  = h2_border.mid(0, 61);
     const QByteArray h4_border                  = h2_border.mid(0, 41);
+    const char def_const_val[47]                = " = nil # Using for indexing. Value is unknown\0";
 
     bool findSimbolsSub(const QString & str, const char & s, const char & e, int & spos, int & epos);
     QByteArray clearLine(const QByteArray & line);
