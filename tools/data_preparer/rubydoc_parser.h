@@ -26,7 +26,8 @@ class RubydocParser : public QObject {
 //        ol_prefix = 19,
         pre_prefix = 20,
         dt_prefix = 21,
-        dd_prefix = 22
+        dd_prefix = 22,
+        hr_prefix = 23
     };
 
     QHash<QString, DataObj> parsed_objs;
@@ -36,10 +37,11 @@ class RubydocParser : public QObject {
     const QByteArray description_list_prefix    = QByteArray("#  - ");
     const QByteArray data_head_prefix           = QByteArray("#  * ");
     const QByteArray description_example_prefix = QByteArray("#      ");
-    const QByteArray h1_border                  = QByteArray(100, '-').prepend('#');
-    const QByteArray h2_border                  = h1_border.mid(0, 81);
-    const QByteArray h3_border                  = h1_border.mid(0, 61);
-    const QByteArray h4_border                  = h1_border.mid(0, 41);
+    const QByteArray hr_border                  = QByteArray(90, '-').prepend('#');
+    const QByteArray h1_border                  = QByteArray(90, '*').prepend('#');
+    const QByteArray h2_border                  = h1_border.mid(0, 71);
+    const QByteArray h3_border                  = h1_border.mid(0, 51);
+    const QByteArray h4_border                  = h1_border.mid(0, 31);
     const char def_const_val[47]                = " = nil # Using for indexing. Value is unknown\0";
 
     bool findSimbolsSub(const QString & str, const char & s, const char & e, int & spos, int & epos);

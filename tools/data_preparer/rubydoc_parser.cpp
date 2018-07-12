@@ -281,6 +281,8 @@ void RubydocParser::procDescription(const Html::Set & parts, QStringList & out, 
                 }
             break;}
 
+            case Html::Tag::tg_hr: { out << QString(QChar::fromLatin1(hr_prefix)); break; }
+
             case Html::Tag::tg_newline: { break;}
 
             case Html::Tag::tg_text: { break;}
@@ -766,6 +768,10 @@ void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const
                 case dd_prefix:     {
                     out << level_padding << description_example_prefix << str << Logger::nl;
                 break;}
+                case hr_prefix:     {
+                    out << level_padding << hr_border << Logger::nl;
+                break;}
+
                 default:            {
                     Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant identificate description line type: ") % (*desc_line));
                 }
