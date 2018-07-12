@@ -840,10 +840,10 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
 
             if (!meth_obj.signatures.isEmpty()) {
                 for(QStringList::Iterator sig_line = meth_obj.signatures.begin(); sig_line != meth_obj.signatures.end(); sig_line++) {
-                    out << target_prefix << description_prefix << (*sig_line) << Logger::nl;
+                    out << level_padding << target_prefix << description_prefix << (*sig_line) << Logger::nl;
                 }
 
-                out << target_prefix << description_prefix << Logger::nl;
+                out << level_padding << target_prefix << description_prefix << Logger::nl;
             }
 
             switch(meth_obj.lex_type) {
