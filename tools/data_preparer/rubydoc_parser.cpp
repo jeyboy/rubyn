@@ -207,6 +207,10 @@ void RubydocParser::procDescription(const Html::Set & parts, QStringList & out, 
                 writeLine(clearLine(text), out, p_prefix);
             break;}
 
+            case Html::Tag::tg_h1: {
+                procHeader((*tag), out, h1_prefix);
+            break;}
+
             case Html::Tag::tg_h2: {
                 procHeader((*tag), out, h2_prefix);
             break;}
@@ -242,7 +246,22 @@ void RubydocParser::procDescription(const Html::Set & parts, QStringList & out, 
                 Html::Set lis = (*tag) -> children();
 
                 for(Html::Set::Iterator li = lis.begin(); li != lis.end(); li++) {
-                    out << clearLine((*li) -> texts()).prepend(li_prefix);
+                    out << clearLine((*li) -> texts()).prepend(ul_prefix);
+                }
+            break;}
+
+            case Html::Tag::tg_ol: {
+                Html::Set lis = (*tag) -> children();
+                int index = 1;
+                int pad = lis.count() > 9 ? 2 : 1;
+
+                for(Html::Set::Iterator li = lis.begin(); li != lis.end(); li++, index++) {
+                    QByteArray ind = QByteArray::number(index);
+
+                    if (pad > 1)
+                        ind = ind.rightJustified(pad, ' ');
+
+                    out << clearLine((*li) -> texts()).prepend(ind.append(QByteArrayLiteral(") "))).prepend(ul_prefix);
                 }
             break;}
 
@@ -699,6 +718,11 @@ void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const
             const char val = ((*desc_line)[0]).toLatin1();
 
             switch(val) {
+                case h1_prefix:     {
+                    if (prev_val != pre_prefix)
+                        out << level_padding << description_prefix << Logger::nl;
+                    out << level_padding << h1_border << Logger::nl << level_padding << description_prefix << str << Logger::nl << level_padding << h1_border << Logger::nl << level_padding << description_prefix << Logger::nl;
+                break;}
                 case h2_prefix:     {
                     if (prev_val != pre_prefix)
                         out << level_padding << description_prefix << Logger::nl;
@@ -719,7 +743,7 @@ void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const
                 case p_prefix:      {
                     out << level_padding << description_prefix << str << Logger::nl;
                 break;}
-                case li_prefix:     {
+                case ul_prefix:     {
                     out << level_padding << description_list_prefix << str << Logger::nl;
                 break;}
                 case pre_prefix:    {
