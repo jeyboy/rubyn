@@ -13,6 +13,10 @@
 #include <qdiriterator.h>
 #include <qhash.h>
 
+//13.07.2018 03:43:10 ::: Cant parse method inner args:nextin file: F://rubyn test//ruby_2_5_1_core/Symbol.html :::
+//13.07.2018 03:43:10 ::: Cant parse method inner args:+@in file: F://rubyn test//ruby_2_5_1_stdlib/libdoc/fiddle/rdoc/Fiddle//Pointer.html :::
+//13.07.2018 03:43:10 ::: Cant parse method inner args:-@in file: F://rubyn test//ruby_2_5_1_stdlib/libdoc/fiddle/rdoc/Fiddle//Pointer.html :::
+
 bool RubydocParser::findSimbolsSub(const QString & str, const char & s, const char & e, int & spos, int & len) {
     spos = str.indexOf(s);
 
@@ -79,7 +83,7 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
                             continue;
                         }
 
-                        if (*(ptr + 2) == -103) {
+                        if (*(ptr + 2) == -103 || *(ptr + 2) == -104) {
                             res.append('\'');
                             ptr += 3;
                             continue;
@@ -370,7 +374,9 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
                 QString first_signature = out.signatures.first();
 
                 if (signature[0] == '[') {
-                    for(QString::Iterator ch = first_signature.begin() + 1; ch != first_signature.end(); ch++)
+                    int offset = first_signature.indexOf('[') + 1;
+
+                    for(QString::Iterator ch = first_signature.begin() + offset; ch != first_signature.end(); ch++)
                         if (*ch == ']')
                             break;
                         else {
@@ -458,6 +464,9 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                 return false;
             }
 
+            out.obj_type = doc_header -> rawClasses();
+            out.name = doc_header -> text();
+
             Html::Tag * doc_description = doc_block -> findFirst("#description");
 
             if (!doc_description) {
@@ -469,9 +478,6 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
             Html::Set descrition_parts = doc_description -> children();
 
             procDescription(descrition_parts, out.description, inpath);
-
-            out.obj_type = doc_header -> rawClasses();
-            out.name = doc_header -> text();
 
             Html::Tag * parent_tag = metadata_block -> findFirst("#parent-class-section p");
 
@@ -593,9 +599,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                         name.prepend(QByteArrayLiteral("attr_writer :"));
                     else name.prepend(QByteArrayLiteral("attr_reader :"));
 
-                    QByteArray desc = clearLine(desc_section -> texts());
-
-                    out.attributes.insert(name, desc);
+                    procDescription(desc_section -> children(), out.attributes[name], inpath);
                 }
             } else {
                 if (id == public_class_methods_section) {
@@ -677,7 +681,7 @@ bool RubydocParser::parseFolder(const QString & path) {
         if (filename[0].isUpper()) {
             QString name = filename.section('.', 0, 0);
 
-            if (name.endsWith(QLatin1Literal("_rdoc")))
+            if (name.endsWith(QLatin1Literal("_rdoc")) || name.endsWith(QLatin1Literal("_rb")))
                 continue;
 
             ignore_folders = true;
@@ -786,6 +790,9 @@ void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const
 }
 
 void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
+    if (data_obj.obj_type.isEmpty() && data_obj.description.isEmpty())
+        return;
+
     QByteArray level_padding(data_obj.level * target_prefix.length(), ' ');
 
     dumpDescription(data_obj.description, out, level_padding);
@@ -806,7 +813,6 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
         out << Logger::nl;
     }
 
-
     if (!data_obj.constants.isEmpty()) {
         bool first = true;
 
@@ -826,11 +832,11 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
     if (!data_obj.attributes.isEmpty()) {
         bool first = true;
 
-        for(QMap<QByteArray, QByteArray>::Iterator attr_line = data_obj.attributes.begin(); attr_line != data_obj.attributes.end(); attr_line++) {
+        for(QMap<QByteArray, QStringList>::Iterator attr_line = data_obj.attributes.begin(); attr_line != data_obj.attributes.end(); attr_line++) {
             if (!first)
                 out << Logger::nl;
 
-            out << level_padding << target_prefix << description_prefix << attr_line.value() << Logger::nl;
+            dumpDescription(attr_line.value(), out, level_padding % target_prefix);
             out << level_padding << target_prefix << attr_line.key() << Logger::nl;
 
             first = false;
