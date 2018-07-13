@@ -62,7 +62,8 @@ SOURCES += main.cpp\
     controls/completer_factory.cpp \
     controls/dumper.cpp \
     controls/toolbars.cpp \
-    controls/run_configuration.cpp
+    controls/run_configuration.cpp \
+    lexer/yaml/lexer_dumper_yaml.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -156,7 +157,9 @@ HEADERS  += ide_window.h \
     tools/data_preparer/data_obj.h \
     controls/toolbars.h \
     controls/run_configuration.h \
-    editor/parts/overlay_info.h
+    editor/parts/overlay_info.h \
+    lexer/yaml/lexer_dumper_yaml.h \
+    lexer/yaml/lexems_yaml.h
 
 FORMS    += ide_window.ui
 

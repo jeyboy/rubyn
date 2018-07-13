@@ -10,16 +10,27 @@
 
 #include "controls/completer.h"
 
-class CompleterFactory : public Singleton<CompleterFactory> {
+class CompleterFactory : public QObject, public Singleton<CompleterFactory> {
+    Q_OBJECT
+
     QHash<LexerMeanType, QIcon> icons;
 
-//    QHash<FormatType, Completer *> completers;
+    QHash<FormatType, Completer *> completers;
 
     CompleterFactory();
+
+    void buildDataSet(const FormatType & format);
+//    void loadDataSet(const FormatType & format);
+//    void saveDataSet(const FormatType & format);
 public:
     inline QIcon & ico(const LexerMeanType & ico_type) { return icons[ico_type]; }
 
     friend class Singleton<CompleterFactory>;
+
+signals:
+    dataSetReady(const FormatType & format, Completer * datum);
+private slots:
+    dataSetBuildingReady(const FormatType & format, Completer * datum);
 };
 
 #endif // COMPLETER_FACTORY_H

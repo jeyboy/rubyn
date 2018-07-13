@@ -10,7 +10,8 @@ RunConfiguration::RunConfiguration(QObject * parent) : QObject(parent), _config_
 void RunConfiguration::buildPanel(QToolBar * bar) {
     _config_list = new QComboBox(bar);
 
-    _config_list -> addItem(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Add new"));
+    _config_list -> addItem(QLatin1Literal("None"));
+    _config_list -> addItem(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Add new"), QVariant::fromValue(QByteArrayLiteral("+")));
 
     connect(_config_list, SIGNAL(currentIndexChanged(int)), this, SLOT(configSelectionChanged(int)));
 
@@ -27,8 +28,14 @@ void RunConfiguration::configSelectionChanged(int index) {
     QVariant data = _config_list -> itemData(index);
 
     if (data.isNull()) {
-        // TODO: show modal for new config
+        // TODO: disable all buttons
     } else {
-        // TODO: update buttons state
+        QByteArray udata = data.toByteArray();
+
+        if (udata == QByteArrayLiteral("+")) {
+            // TODO: show modal for new config
+        } else {
+            // TODO: update buttons state
+        }
     }
 }

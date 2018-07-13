@@ -13,10 +13,6 @@
 #include <qdiriterator.h>
 #include <qhash.h>
 
-//13.07.2018 03:43:10 ::: Cant parse method inner args:nextin file: F://rubyn test//ruby_2_5_1_core/Symbol.html :::
-//13.07.2018 03:43:10 ::: Cant parse method inner args:+@in file: F://rubyn test//ruby_2_5_1_stdlib/libdoc/fiddle/rdoc/Fiddle//Pointer.html :::
-//13.07.2018 03:43:10 ::: Cant parse method inner args:-@in file: F://rubyn test//ruby_2_5_1_stdlib/libdoc/fiddle/rdoc/Fiddle//Pointer.html :::
-
 bool RubydocParser::findSimbolsSub(const QString & str, const char & s, const char & e, int & spos, int & len) {
     spos = str.indexOf(s);
 
@@ -721,7 +717,6 @@ bool RubydocParser::parse(const QString & inpath) {
     return parseFolder(inpath);
 }
 
-
 void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const QByteArray & level_padding) {
     if (!desc.isEmpty()) {
         char prev_val = 0;
@@ -912,7 +907,6 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
 
     out << level_padding << "end";
 }
-
 
 bool RubydocParser::saveParsedDatum(const QString & outpath) {
     if (!Dir::createPath(outpath))
