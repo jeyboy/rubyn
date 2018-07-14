@@ -86,6 +86,10 @@ void TabsBlock::setupCompleter() {
     _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_const), QLatin1Literal("private_const")));
     _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_instance_method), QLatin1Literal("private_instance_method")));
     _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_obj_method), QLatin1Literal("private_obj_method")));
+
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_class), QLatin1Literal("Class")));
+    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_module), QLatin1Literal("Module")));
+
     _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_template), QLatin1Literal("template")));
     _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_unknow), QLatin1Literal("unknow")));
 

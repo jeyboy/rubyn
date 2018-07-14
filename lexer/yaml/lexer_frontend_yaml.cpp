@@ -24,7 +24,7 @@
 
 //...
 
-LexerDumperYaml::LexerDumperYaml(QIODevice * device) {
+LexerFrontendYaml::LexerFrontendYaml(QIODevice * device) {
     while(device -> canReadLine()) {
         QByteArray line = device -> readLine();
 

@@ -63,7 +63,7 @@ SOURCES += main.cpp\
     controls/dumper.cpp \
     controls/toolbars.cpp \
     controls/run_configuration.cpp \
-    lexer/yaml/lexer_dumper_yaml.cpp
+    lexer/yaml/lexer_frontend_yaml.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -160,7 +160,8 @@ HEADERS  += ide_window.h \
     editor/parts/overlay_info.h \
     lexer/yaml/lexems_yaml.h \
     highlighter/identifiers.h \
-    lexer/yaml/lexer_frontend_yaml.h
+    lexer/yaml/lexer_frontend_yaml.h \
+    misc/dumper_obj.h
 
 FORMS    += ide_window.ui
 

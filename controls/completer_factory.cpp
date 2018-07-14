@@ -15,6 +15,8 @@ CompleterFactory::CompleterFactory() {
     icons.insert(lmt_private_obj_method,           QIcon(QLatin1Literal(":/completer/private_obj_method")));
     icons.insert(lmt_object_method,                QIcon(QLatin1Literal(":/completer/obj_method")));
     icons.insert(lmt_object_var,                   QIcon(QLatin1Literal(":/completer/obj_var")));
+    icons.insert(lmt_class,                        QIcon(QLatin1Literal(":/completer/class")));
+    icons.insert(lmt_module,                       QIcon(QLatin1Literal(":/completer/module")));
     icons.insert(lmt_template,                     QIcon(QLatin1Literal(":/completer/template")));
 }
 

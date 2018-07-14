@@ -5,9 +5,9 @@
 
 class QIODevice;
 
-class LexerDumperYaml {
+class LexerFrontendYaml {
 public:
-    LexerDumperYaml(QIODevice * device);
+    LexerFrontendYaml(QIODevice * device);
 };
 
 #endif // LEXER_DUMPER_YAML_H

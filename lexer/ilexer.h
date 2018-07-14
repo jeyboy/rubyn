@@ -13,6 +13,8 @@ public:
 
     virtual void handle(const QString & text, Highlighter * lighter) = 0;
 
+//    virtual bool dump(QIODevice * device, ) { return false; }
+
     virtual void calcFoldings() {}
 };
 

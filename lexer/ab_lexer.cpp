@@ -20,6 +20,41 @@ void ABLexer::handle(const QString & text, Highlighter * lighter) {
 
 }
 
+//void handle(const QString & text, Highlighter * lighter, Scope * scope, TokenList * tokens, ParaList * paras) {
+//    LexerState * state = 0;
+
+//    QTextBlock block = lighter -> currentBlock();
+//    QTextBlock prev_block = lighter -> prevBlock();
+
+//    BlockUserData * prev_udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
+//    BlockUserData * udata = reinterpret_cast<BlockUserData *>(block.userData());
+
+//    if (!udata) {
+//        udata = new BlockUserData(
+//            tokens, paras,
+//            prev_udata ? prev_udata -> token_end : 0,
+//            prev_udata ? prev_udata -> para_end : 0
+//        );
+//        block.setUserData(udata);
+//    }
+//    else lighter -> clearExtraFormatForCurrBlock();
+
+//    state = new LexerState(scope, udata, prev_udata ? prev_udata -> stackState() : 0, lighter);
+
+//    QByteArray text_val = text.toUtf8();
+//    const char * window = text_val.constData();
+//    state -> setBuffer(window);
+
+////        quint64 date = QDateTime::currentMSecsSinceEpoch();
+//    handle(state);
+////        qDebug() << "SSOOS: " << (QDateTime::currentMSecsSinceEpoch() - date);
+
+//    block.setUserState(state -> status);
+//    udata -> syncLine(state -> token, state -> para, state -> control_para, state -> stack);
+//    delete state;
+//}
+
+
 void ABLexer::calcFoldings() {
 //        ParaCell * iter = _paras -> iter();
 //        EDITOR_POS_TYPE curr_line = 0;

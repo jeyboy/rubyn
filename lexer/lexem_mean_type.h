@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include <qglobal.h>
+#include "misc/defines.h"
 
-enum LexerMeanType : quint16 {
+enum LexerMeanType : LEXEM_MEAN_TYPE {
     lmt_unknow = 0,
 
     lmt_core = 1,
@@ -22,8 +22,9 @@ enum LexerMeanType : quint16 {
     lmt_var = 256,
     lmt_method = 512,
     lmt_class = 1024,
-    lmt_const = 2048,
-    lmt_template = 4096,
+    lmt_module = 2048,
+    lmt_const = 4096,
+    lmt_template = 8192,
 
     lmt_private_const = lmt_const | lmt_private,
 
