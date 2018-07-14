@@ -58,7 +58,7 @@ void RegexpLexer::handle(const QString & text, Highlighter * lighter) {
     lighter -> setCurrentBlockState(0);
 
     for(RulesList::ConstIterator it = _rules.cbegin(); it != _rules.cend(); it++) {
-        const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor((*it).format_lexem);
+        const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor((*it).format_uid);
 
         if ((*it).end_pattern) {
             int start_index = 0;

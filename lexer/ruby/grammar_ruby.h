@@ -270,7 +270,7 @@ public:
             case lex_global_pre_hook:
             case lex_global_post_hook:
             case lex_end_of_code:
-                return lex_key;
+                return lex_keyword; // hid_keyword
 
             case lex_bin:
             case lex_oct:
@@ -278,12 +278,15 @@ public:
             case lex_hex:
             case lex_float:
             case lex_double:
-            case lex_predefined_expression:
-                return lex_predefined;
+            case lex_predefined_expression: // ?
+                return lex_predefined; // hid_numeric
 
 
-            case lex_symbol:
-            case lex_const:
+            case lex_symbol: return hid_symbol;
+
+            case lex_const: return hid_const;
+
+
             case lex_var_scoped:
             case lex_var_local:
             case lex_var_instance:
@@ -302,21 +305,30 @@ public:
             case lex_visibility_scope_arg:
             case lex_alias_base_name:
             case lex_alias_alt_name:
-                return lex_name;
+                return lex_var; // hid_var
+
+
+            case lex_heredoc_mark:
+            case lex_heredoc_intended_mark:
+            case lex_eheredoc_mark:
+            case lex_eheredoc_intended_mark:
+            case lex_cheredoc_mark:
+            case lex_cheredoc_intended_mark:
+                return lex_label; //hid_label
 
             case lex_method_def_name:
             case lex_class_def_name:
             case lex_module_def_name:
-                return lex_def_name;
+                return lex_def_name; // hid_name_def
 
             case lex_method_call_name:
             case lex_predefined_method_call_name:
-                return lex_method;
+                return lex_method; // hid_name_call
 
             case lex_inline_commentary:
             case lex_commentary_continue:
             case lex_commentary_end:
-                return lex_commentary;
+                return lex_commentary; // hid_commentary
 
 //            case lex_string:
             case lex_command_continue:
@@ -348,22 +360,16 @@ public:
             case lex_percent_presentation_end:
             case lex_epercent_presentation_continue:
             case lex_percent_presentation_continue:
-                return lex_string;
+                return lex_string; // hid_string
 
             case lex_regexp_continue:
             case lex_regexp_intercepted:
             case lex_regexp_interception:
             case lex_regexp_end:
-                return lex_regexp;
+                return lex_regexp; // hid_regexp
 
 
-            case lex_heredoc_mark:
-            case lex_heredoc_intended_mark:
-            case lex_eheredoc_mark:
-            case lex_eheredoc_intended_mark:
-            case lex_cheredoc_mark:
-            case lex_cheredoc_intended_mark:
-                return lex_mark;
+            //hid_scope_visibility
 
             default: return lex_none;
         }

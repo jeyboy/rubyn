@@ -28,9 +28,9 @@ public:
     friend class Singleton<CompleterFactory>;
 
 signals:
-    dataSetReady(const FormatType & format, Completer * datum);
+    void dataSetReady(const FormatType & format, Completer * datum);
 private slots:
-    dataSetBuildingReady(const FormatType & format, Completer * datum);
+    void dataSetBuildingReady(const FormatType & format, Completer * datum);
 };
 
 #endif // COMPLETER_FACTORY_H

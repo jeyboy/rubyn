@@ -21,3 +21,8 @@ CompleterFactory::CompleterFactory() {
 void CompleterFactory::buildDataSet(const FormatType & format) {
 
 }
+
+
+void CompleterFactory::dataSetBuildingReady(const FormatType & format, Completer * datum) {
+
+}

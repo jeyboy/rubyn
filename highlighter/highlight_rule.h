@@ -1,19 +1,19 @@
 #ifndef HIGHLIGHT_RULE_H
 #define HIGHLIGHT_RULE_H
 
-#include "parts/lexer/lexems.h"
+#include "identifiers.h"
 
 #include <QRegularExpression>
 
 struct HighlightingRule {
     QRegularExpression * start_pattern;
     QRegularExpression * end_pattern;
-    Lexem format_lexem;
+    Identifier format_uid;
 
-    HighlightingRule() : start_pattern(0), end_pattern(0), format_lexem(lex_none) {}
+    HighlightingRule() : start_pattern(0), end_pattern(0), format_uid(hid_none) {}
 
-    HighlightingRule(QRegularExpression * spattern, const Lexem & format_token, QRegularExpression * epattern = 0)
-        : start_pattern(spattern), end_pattern(epattern), format_lexem(format_token) { }
+    HighlightingRule(QRegularExpression * spattern, const Identifier & uid, QRegularExpression * epattern = 0)
+        : start_pattern(spattern), end_pattern(epattern), format_uid(uid) { }
 
     ~HighlightingRule() {
         delete start_pattern;

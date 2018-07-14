@@ -158,8 +158,9 @@ HEADERS  += ide_window.h \
     controls/toolbars.h \
     controls/run_configuration.h \
     editor/parts/overlay_info.h \
-    lexer/yaml/lexer_dumper_yaml.h \
-    lexer/yaml/lexems_yaml.h
+    lexer/yaml/lexems_yaml.h \
+    highlighter/identifiers.h \
+    lexer/yaml/lexer_frontend_yaml.h
 
 FORMS    += ide_window.ui
 

@@ -13,9 +13,6 @@
  // = (1ULL << 1),
 
 enum Lexem : LEXEM_TYPE {
-    // lex_to_stack,
-    // lex_from_stack
-
     lex_error = 0,
     lex_warning,
     lex_notice,
@@ -24,31 +21,18 @@ enum Lexem : LEXEM_TYPE {
 
 
 //    ////////// highlightable
-    lex_mark,
-    lex_key,
-    lex_predefined,
-    lex_name,
-    lex_def_name,
+    lex_label,
+    lex_keyword,
+    lex_numeric,
+    lex_var,
+    lex_name_def,
+    lex_name_call,
     lex_commentary,
     lex_string,
     lex_regexp,
-    lex_method,
 
+//////////////////////////////
 
-
-//    lex_key = 1 << 19,
-//    lex_block = 1 << 20,
-//    lex_def = 1 << 21,
-//    lex_commentary = 1 << 22,
-//    lex_string = 1 << 23,
-//    lex_def_name = 1 << 24,
-//    lex_symbol = 1 << 25,
-//    lex_regexp = 1 << 26,
-//    lex_method = 1 << 27,
-//    lex_class = 1 << 28,
-//    lex_predefined = 1 << 29,
-//    lex_name = 1 << 30,
-//    //////////
 
     lex_super,
     lex_self,
@@ -147,9 +131,6 @@ enum Lexem : LEXEM_TYPE {
     lex_method_def_var_name,
     lex_method_def_vars_splitter,
     lex_method_def_vars_end,
-
-
-    lex_predefined_method_call_name,
 
     lex_method_call_name,
     lex_method_call_vars_start,
@@ -460,15 +441,15 @@ struct Lexems {
             case lex_notice: return QByteArrayLiteral("notice_token");
             case lex_none: return QByteArrayLiteral("none_token");
 
-            case lex_mark: return QByteArrayLiteral("mark_token");
-            case lex_key: return QByteArrayLiteral("key_token");
-            case lex_predefined: return QByteArrayLiteral("predefined_token");
-            case lex_name: return QByteArrayLiteral("name_token");
-            case lex_def_name: return QByteArrayLiteral("def_name_token");
+            case lex_label: return QByteArrayLiteral("mark_token");
+            case lex_keyword: return QByteArrayLiteral("key_token");
+            case lex_numeric: return QByteArrayLiteral("numeric_token");
+            case lex_var: return QByteArrayLiteral("name_token");
+            case lex_name_def: return QByteArrayLiteral("def_name_token");
             case lex_commentary: return QByteArrayLiteral("commentary_token");
             case lex_string: return QByteArrayLiteral("string_token");
             case lex_regexp: return QByteArrayLiteral("regexp_token");
-            case lex_method: return QByteArrayLiteral("method_token");
+            case lex_name_call: return QByteArrayLiteral("name_call_token");
 
 
             case lex_super: return QByteArrayLiteral("super_token");
@@ -569,8 +550,6 @@ struct Lexems {
             case lex_method_def_vars_splitter: return QByteArrayLiteral("method_def_vars_splitter_token");
             case lex_method_def_vars_end: return QByteArrayLiteral("method_def_vars_end_token");
 
-
-            case lex_predefined_method_call_name: return QByteArrayLiteral("predefined_method_call_name_token");
 
             case lex_method_call_name: return QByteArrayLiteral("method_call_name_token");
             case lex_method_call_vars_start: return QByteArrayLiteral("method_call_vars_start_token");
