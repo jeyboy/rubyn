@@ -5,15 +5,16 @@
 
 #include "highlighter/highlight_rule.h"
 
-typedef QVector<HighlightingRule> RulesList;
+typedef QVector<HighlightingRule*> RulesList;
 
 class RegexpLexer : public ILexer {
-    QVector<HighlightingRule> _rules;
+    QVector<HighlightingRule *> _rules;
 protected:
-    inline void addRule(const HighlightingRule & rule) { _rules.append(rule); }
+    inline void addRule(HighlightingRule * rule) { _rules.append(rule); }
 
 public:
     RegexpLexer();
+    virtual ~RegexpLexer();
 
     void handle(const QString & text, Highlighter * lighter);
 };

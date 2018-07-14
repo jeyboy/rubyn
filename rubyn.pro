@@ -63,7 +63,9 @@ SOURCES += main.cpp\
     controls/dumper.cpp \
     controls/toolbars.cpp \
     controls/run_configuration.cpp \
-    lexer/yaml/lexer_frontend_yaml.cpp
+    lexer/yaml/lexer_frontend_yaml.cpp \
+    lexer/lexers_factory.cpp \
+    lexer/ruby/ruby_regexp_lexer.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -87,7 +89,6 @@ HEADERS  += ide_window.h \
     lexer/ruby/lexer_ruby.h \
     lexer/ruby/lexer_ruby_regexp.h \
     lexer/ruby/predefined_ruby.h \
-    lexer/ruby/preset_ruby.h \
     misc/chain.h \
     misc/defines.h \
     misc/singleton.h \
@@ -161,7 +162,9 @@ HEADERS  += ide_window.h \
     lexer/yaml/lexems_yaml.h \
     highlighter/identifiers.h \
     lexer/yaml/lexer_frontend_yaml.h \
-    misc/dumper_obj.h
+    misc/dumper_obj.h \
+    lexer/lexers_factory.h \
+    lexer/ruby/ruby_regexp_lexer.h
 
 FORMS    += ide_window.ui
 

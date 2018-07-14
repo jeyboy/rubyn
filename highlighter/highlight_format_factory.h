@@ -87,7 +87,7 @@ protected:
     void registerStringFormat() {
         QTextCharFormat format;
         format.setFontWeight(QFont::Bold);
-        format.setBackground(Qt::green);
+        format.setBackground(QColor::fromRgb(0, 255, 0, 92));
 //        format.setForeground(Qt::darkGreen);
         formats.insert(hid_string, format);
     }

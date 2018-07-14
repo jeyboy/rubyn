@@ -279,7 +279,7 @@ public:
             case lex_float:
             case lex_double:
             case lex_predefined_expression: // ?
-                return lex_predefined; // hid_numeric
+                return lex_numeric; // hid_numeric
 
 
             case lex_symbol: return hid_symbol;
@@ -319,7 +319,7 @@ public:
             case lex_method_def_name:
             case lex_class_def_name:
             case lex_module_def_name:
-                return lex_def_name; // hid_name_def
+                return lex_name_def; // hid_name_def
 
             case lex_method_call_name:
             case lex_predefined_method_call_name:

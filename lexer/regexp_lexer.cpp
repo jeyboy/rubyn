@@ -2,8 +2,6 @@
 
 #include "highlighter/highlight_format_factory.h"
 
-//HighlightFormatFactory
-
 RegexpLexer::RegexpLexer() : ILexer() {
 //    HighlightingRule rule;
 
@@ -54,19 +52,24 @@ RegexpLexer::RegexpLexer() : ILexer() {
 //    commentEndExpression = QRegularExpression("\\*/");
 }
 
+RegexpLexer::~RegexpLexer() {
+    qDeleteAll(_rules);
+    _rules.clear();
+}
+
 void RegexpLexer::handle(const QString & text, Highlighter * lighter) {
     lighter -> setCurrentBlockState(0);
 
     for(RulesList::ConstIterator it = _rules.cbegin(); it != _rules.cend(); it++) {
-        const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor((*it).format_uid);
+        const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor((*it) -> format_uid);
 
-        if ((*it).end_pattern) {
+        if ((*it) -> end_pattern) {
             int start_index = 0;
             if (lighter -> previousBlockState() != 1)
-                start_index = text.indexOf(*(*it).start_pattern);
+                start_index = text.indexOf(*(*it) -> start_pattern);
 
             while (start_index >= 0) {
-                QRegularExpressionMatch match = (*it).end_pattern -> match(text, start_index);
+                QRegularExpressionMatch match = (*it) -> end_pattern -> match(text, start_index);
 
                 int end_index = match.capturedStart();
                 int captured_length = 0;
@@ -80,10 +83,10 @@ void RegexpLexer::handle(const QString & text, Highlighter * lighter) {
                 }
 
                 lighter -> setFormat(start_index, captured_length, format);
-                start_index = text.indexOf(*(*it).start_pattern, start_index + captured_length);
+                start_index = text.indexOf(*(*it) -> start_pattern, start_index + captured_length);
             }
         } else {
-            QRegularExpressionMatchIterator match_iterator = (*it).start_pattern -> globalMatch(text);
+            QRegularExpressionMatchIterator match_iterator = (*it) -> start_pattern -> globalMatch(text);
 
             while (match_iterator.hasNext()) {
                 QRegularExpressionMatch match = match_iterator.next();
