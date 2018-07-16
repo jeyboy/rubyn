@@ -12,6 +12,7 @@ enum Identifier : LEXEM_TYPE {
     hid_warning,
     hid_notice,
 
+    hid_operator,
     hid_label,
     hid_name_def,
     hid_name_call,

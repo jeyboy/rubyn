@@ -2,7 +2,6 @@
 #define TEXT_DOCUMENT
 
 #include <qpointer.h>
-#include <qdebug.h>
 #include <qtextdocument.h>
 
 #include "project/code_formats.h"
@@ -19,6 +18,8 @@ class TextDocument : public QObject, public IDocument {
     Q_OBJECT
 
     static QLatin1String tab_space;
+
+    int pos, removed, added;
 protected:
     QPointer<QTextDocument> _doc;
 
@@ -30,7 +31,6 @@ protected:
 signals:
     void enterPressed();
     void wordHovered(const QPoint & point, const int & start, const int & end);
-//    QTextDocument::contentsChange(int position, int charsRemoved, int charsAdded)
 public:
     TextDocument(File * file);
 
@@ -43,6 +43,8 @@ public:
     void lexicate(const QString & text, Highlighter * highlighter);
 
     void calcFoldings();
+protected slots:
+    void changesInContent(int position, int removed_count, int added_count);
 };
 
 #endif // TEXT_DOCUMENT

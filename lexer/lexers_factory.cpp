@@ -1,12 +1,12 @@
 #include "lexers_factory.h"
 
-#include "lexer/ruby/ruby_regexp_lexer.h"
+#include "lexer/ruby/lexer_regexp_ruby.h"
 
 LexersFactory::LexersFactory() {
 //    QHash<FormatType, ILexer *> lexers;
 
-    _lexers.insert(ft_file_rb, new RubyRegexpLexer());
-    _lexers.insert(ft_file_gemfile, new RubyRegexpLexer());
+    _lexers.insert(ft_file_rb, new LexerRegexpRuby());
+    _lexers.insert(ft_file_gemfile, new LexerRegexpRuby());
 }
 
 LexersFactory::~LexersFactory() {

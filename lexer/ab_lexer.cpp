@@ -16,10 +16,6 @@ ABLexer::~ABLexer() {
     //        delete _paras;
 }
 
-void ABLexer::handle(const QString & text, Highlighter * lighter) {
-
-}
-
 //void handle(const QString & text, Highlighter * lighter, Scope * scope, TokenList * tokens, ParaList * paras) {
 //    LexerState * state = 0;
 

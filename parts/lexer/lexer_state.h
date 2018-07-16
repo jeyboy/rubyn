@@ -5,8 +5,8 @@
 
 #include "lexems.h"
 #include "scopes/scope.h"
-#include "parts/editor_parts/highlighter.h"
-#include "parts/highligters/highlight_format_factory.h"
+#include "highlighter/highlighter.h"
+#include "highlighter/highlight_format_factory.h"
 
 #define STREAM_N_CHAR(w, offset) (*(w + offset))
 
@@ -50,10 +50,10 @@ struct LexerState {
 
     QByteArray cached;
 
-    Lexem lex_prev_word;
-    Lexem lex_word;
-    Lexem lex_prev_delimiter;
-    Lexem lex_delimiter;
+    Lexem _prev_word;
+    Lexem _word;
+    Lexem _prev_delimiter;
+    Lexem _delimiter;
 
     Scope * scope;
     Stack<Lexem> * stack;
@@ -78,7 +78,7 @@ struct LexerState {
     BlockUserData * user_data;
 
     LexerState(Scope * scope, BlockUserData * user_data, Stack<Lexem> * stack_state = 0, Highlighter * lighter = 0) : lighter(lighter),
-        lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
+        _prev_word(lex_none), _word(lex_none), _prev_delimiter(lex_none), _delimiter(lex_none),
         scope(scope), stack(stack_state == 0 ? new Stack<Lexem>(lex_none) : new Stack<Lexem>(stack_state)),
         next_offset(1), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()), control_para(0),
         cached_length(0), start(0), buffer(0), prev(0), status(ls_handled), user_data(user_data)
@@ -105,7 +105,7 @@ struct LexerState {
     inline bool isBufferEof() { return *buffer == 0; }
 
     inline void cachingPredicate(const bool & ignore_para = false) {
-        lex_prev_word = lex_word;
+        _prev_word = _word;
         cached_str_pos = bufferPos();
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
@@ -114,7 +114,7 @@ struct LexerState {
             attachPara(cached);
     }
     inline void cachingDelimiter() {
-        lex_prev_delimiter = lex_delimiter;
+        _prev_delimiter = _delimiter;
         prev = buffer;
         buffer += next_offset;
 

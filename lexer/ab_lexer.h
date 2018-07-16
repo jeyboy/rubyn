@@ -17,7 +17,7 @@ public:
 
     ~ABLexer();
 
-    void handle(const QString & text, Highlighter * lighter);
+    virtual void handle(const QString & text, Highlighter * lighter) = 0;
 
     void calcFoldings();
 };

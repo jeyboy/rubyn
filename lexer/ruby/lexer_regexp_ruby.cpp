@@ -1,6 +1,6 @@
-#include "ruby_regexp_lexer.h"
+#include "lexer_regexp_ruby.h"
 
-RubyRegexpLexer::RubyRegexpLexer() : RegexpLexer() {
+LexerRegexpRuby::LexerRegexpRuby() : RegexpLexer() {
     QString keywords = "new nil def do self if unless yield each true else not elsif super then end ensure false for undef or when until module class return while throw rescue in alias and begin break next case retry define_method raise defined redo BEGIN END";
 
     addRule(

@@ -4,8 +4,8 @@
 
 #include "lexer/ilexer.h"
 #include "lexer/lexers_factory.h"
-//#include "parts/langs/ruby/lexer_ruby.h"
 
+#include <qdebug.h>
 #include <qtextdocument.h>
 #include <qtextcursor>
 #include <QPlainTextDocumentLayout>
@@ -24,7 +24,7 @@ bool TextDocument::identificateLexer() {
     return _lexer != 0;
 }
 
-TextDocument::TextDocument(File * file) : IDocument(), _doc(0), _lexer(0), _file(file) {
+TextDocument::TextDocument(File * file) : IDocument(), pos(-1), removed(0), added(0), _doc(0), _lexer(0), _file(file) {
     qint64 content_length = _file -> source() -> size();
 
     setFullyReaded(true);
@@ -61,6 +61,8 @@ TextDocument::TextDocument(File * file) : IDocument(), _doc(0), _lexer(0), _file
         delete cursor;
     }
 
+
+    connect(_doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
 
     _doc -> setDocumentLayout(new QPlainTextDocumentLayout(_doc));
 
@@ -121,4 +123,10 @@ void TextDocument::readNextBlock() {
     delete [] data;
 
     setFullyReaded(source -> atEnd());
+}
+
+void TextDocument::changesInContent(int position, int removed_count, int added_count) {
+    pos = position;
+    removed = removed_count;
+    added = added_count;
 }

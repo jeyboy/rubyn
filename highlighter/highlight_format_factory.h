@@ -47,6 +47,12 @@ protected:
         formats.insert(hid_label, format);
     }
 
+    void registerOperatorFormat() {
+        QTextCharFormat format;
+        format.setFontWeight(QFont::Black);
+        formats.insert(hid_operator, format);
+    }
+
     void registerKeywordFormat() {
         QTextCharFormat format;
         format.setFontItalic(true);
@@ -128,6 +134,7 @@ protected:
 public:
     HighlightFormatFactory() {
         registerLabelFormat();
+        registerOperatorFormat();
         registerKeywordFormat();
         registerAssigmentFormat();
         registerNameCallFormat();
