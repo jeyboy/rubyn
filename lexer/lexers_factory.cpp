@@ -3,8 +3,6 @@
 #include "lexer/ruby/lexer_regexp_ruby.h"
 
 LexersFactory::LexersFactory() {
-//    QHash<FormatType, ILexer *> lexers;
-
     _lexers.insert(ft_file_rb, new LexerRegexpRuby());
     _lexers.insert(ft_file_gemfile, new LexerRegexpRuby());
 }
