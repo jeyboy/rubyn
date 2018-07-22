@@ -3,6 +3,7 @@
 
 #include "state_lexems.h"
 //#include "scopes/scope.h"
+#include "lexer/igrammar.h"
 #include "highlighter/highlighter.h"
 #include "highlighter/highlight_format_factory.h"
 
@@ -46,6 +47,8 @@ struct LexerControl {
 
     Highlighter * lighter;
 
+    IGrammar * grammar;
+
     QByteArray cached;
 
     StateLexem lex_prev_word;
@@ -75,7 +78,8 @@ struct LexerControl {
     Status status;
     BlockUserData * user_data;
 
-    LexerControl(/*Scope * scope,*/ BlockUserData * user_data, Stack<StateLexem> * stack_state = nullptr, Highlighter * lighter = nullptr) : lighter(lighter),
+    LexerControl(IGrammar * cgrammar, /*Scope * scope,*/ BlockUserData * user_data, Stack<StateLexem> * stack_state = nullptr, Highlighter * lighter = nullptr) :
+        lighter(lighter), grammar(cgrammar),
         lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
         /*scope(scope),*/ stack(stack_state == nullptr ? new Stack<StateLexem>(lex_none) : new Stack<StateLexem>(stack_state)),
         next_offset(1), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()), control_para(nullptr),
@@ -161,24 +165,28 @@ struct LexerControl {
 //        );
 //    }
 
+    inline void light(const Identifier & uid) {
+        if (uid >= hid_error) {
+            lighter -> setExtraFormatToCurrBlock(
+                last_light_pos, (int)last_light_len,
+                HighlightFormatFactory::obj().getFormatFor(uid)
+            );
+        }
+        else {
+            lighter -> setFormat(
+                last_light_pos, (int)last_light_len,
+                HighlightFormatFactory::obj().getFormatFor(uid)
+            );
+        }
+    }
+
     inline void light(const StateLexem & lexem) {
         bool has_predicate = cached_length > 0;
 
         last_light_pos = cached_str_pos - (has_predicate ? 0 : 1);
         last_light_len = has_predicate ? cached_length : 1;
 
-        if (lexem < lex_none) {
-            lighter -> setExtraFormatToCurrBlock(
-                last_light_pos, last_light_len,
-                HighlightFormatFactory::obj().getFormatFor(lexem)
-            );
-        }
-        else {
-            lighter -> setFormat(
-                last_light_pos, last_light_len,
-                HighlightFormatFactory::obj().getFormatFor(lexem)
-            );
-        }
+        light(grammar -> toHighlightable(lexem));
     }
     inline void cacheAndLightWithMessage(const StateLexem & lexem, const QByteArray & msg) {
         cachingPredicate();

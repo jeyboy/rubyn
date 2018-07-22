@@ -8,10 +8,6 @@
 enum Identifier : LEXEM_TYPE {
     hid_none = 0,
 
-    hid_error,
-    hid_warning,
-    hid_notice,
-
     hid_operator,
     hid_label,
     hid_name_def,
@@ -24,7 +20,7 @@ enum Identifier : LEXEM_TYPE {
     hid_string,
     hid_regexp,
     hid_commentary,
-    hid_scope_visibility
+    hid_scope_visibility,
 
 //    lex_key = 1 << 19,
 //    lex_block = 1 << 20,
@@ -39,6 +35,10 @@ enum Identifier : LEXEM_TYPE {
 //    lex_predefined = 1 << 29,
 //    lex_name = 1 << 30,
 //    //////////
+
+    hid_error,
+    hid_warning,
+    hid_notice
 };
 
 #endif // IDENTIFIERS_H

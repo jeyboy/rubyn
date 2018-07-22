@@ -296,7 +296,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_proc_def_var_name:
         case lex_include_obj:
         case lex_extend_obj:
-        case lex_undef_name:
+        case lex_undef_arg:
         case lex_visibility_scope_arg:
         case lex_alias_base_name:
         case lex_alias_alt_name:

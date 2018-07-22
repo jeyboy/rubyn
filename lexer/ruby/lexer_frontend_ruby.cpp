@@ -2,6 +2,7 @@
 
 #include "lexer/lexer_control.h"
 #include "lexer/ruby/grammar_ruby.h"
+#include "lexer/ruby/predefined_ruby.h"
 
 using namespace Ruby;
 
@@ -58,16 +59,16 @@ void LexerFrontend::translateState(LexerControl * state) {
     state -> lex_word = new_state;
 }
 
-bool LexerFrontend::cutWord(LexerState * state, const Lexem & predefined_lexem = lex_none) {
+bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_lexem) {
     bool has_predefined = predefined_lexem != lex_none;
 
     state -> cachingPredicate(has_predefined);
 
     if (state -> cached_length || has_predefined) {
         state -> lex_word =
-            has_predefined ? predefined_lexem : PredefinedRuby::obj().lexem(state -> cached);
+            has_predefined ? predefined_lexem : Predefined::obj().lexem(state -> cached);
 
-        Lexem prev_highlightable = lex_none;
+        Identifier prev_highlightable = hid_none;
 
         if (state -> cached_length) {
 
@@ -75,7 +76,7 @@ bool LexerFrontend::cutWord(LexerState * state, const Lexem & predefined_lexem =
             if (state -> lex_word == lex_word)
                 identifyWordType(state);
 
-            prev_highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
+            prev_highlightable = Grammar::obj().toHighlightable(state -> lex_word);
         }
 
 //            // translate state
@@ -85,11 +86,11 @@ bool LexerFrontend::cutWord(LexerState * state, const Lexem & predefined_lexem =
             if (state -> lex_word == lex_word)
                 registerVariable(state);
 
-            Lexem highlightable = GrammarRuby::obj().toHighlightable(state -> lex_word);
-            if (highlightable == lex_none)
+            Identifier highlightable = Grammar::obj().toHighlightable(state -> lex_word);
+            if (highlightable == hid_none)
                 highlightable = prev_highlightable;
 
-            if (highlightable != lex_none)
+            if (highlightable != hid_none)
                 state -> light(highlightable);
         }
 
@@ -110,11 +111,11 @@ bool LexerFrontend::cutWord(LexerState * state, const Lexem & predefined_lexem =
 
     if (state -> next_offset) {
         state -> cachingDelimiter();
-        state -> lex_delimiter = PredefinedRuby::obj().lexem(state -> cached);
+        state -> lex_delimiter = Predefined::obj().lexem(state -> cached);
 
         if (state -> lex_word == lex_none) {
-            Lexem new_state =
-                GrammarRuby::obj().translate(state -> lex_prev_delimiter, state -> lex_delimiter);
+            StateLexem new_state =
+                Grammar::obj().translate(state -> lex_prev_delimiter, state -> lex_delimiter);
 
             if (new_state == lex_error) {
                 state -> lightWithMessage(
@@ -149,7 +150,7 @@ bool LexerFrontend::cutWord(LexerState * state, const Lexem & predefined_lexem =
     return true;
 }
 
-bool LexerFrontend::parsePercentagePresenation(LexerState * state) {
+bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
     const char blocker = state -> stack -> dataForTop()[0];
 
     if (isAlphaNum(blocker)) {
@@ -163,7 +164,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerState * state) {
             while(true) {
                 switch(ECHAR0) {
                     case 0: {
-                        state -> setStatus(LexerState::ls_percentage_presentation);
+                        state -> setStatus(LexerControl::ls_percentage_presentation);
                         return cutWord(state, lex_percent_presentation_continue);
                     break;}
 
@@ -186,7 +187,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerState * state) {
             while(true) {
                 switch(ECHAR0) {
                     case 0: {
-                        state -> setStatus(LexerState::ls_epercentage_presentation);
+                        state -> setStatus(LexerControl::ls_epercentage_presentation);
                         return cutWord(state, lex_epercent_presentation_continue);
                     break;}
 
@@ -194,7 +195,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerState * state) {
                         if (ECHAR1 == '{') {
                             ++state -> next_offset;
                             state -> stack -> replace(lex_epercent_presentation_continue, false);
-                            return cutWord(state, GrammarRuby::obj().toInterceptor(state -> stack -> touch()));
+                            return cutWord(state, Grammar::obj().toInterceptor(state -> stack -> touch()));
                         }
                     break;}
 
@@ -218,7 +219,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerState * state) {
     return true;
 }
 
-bool LexerFrontend::parseHeredoc(LexerState * state) {
+bool LexerFrontend::parseHeredoc(LexerControl * state) {
     QByteArray stop_token = state -> stack -> dataForTop();
 
     if (state -> isBufferStart()) {
@@ -265,7 +266,7 @@ bool LexerFrontend::parseHeredoc(LexerState * state) {
                     case '#': {
                         if (ECHAR1 == '{') {
                             ++state -> next_offset;
-                            return cutWord(state, GrammarRuby::obj().toInterceptor(state -> stack -> touch()));
+                            return cutWord(state, Grammar::obj().toInterceptor(state -> stack -> touch()));
                         }
                     }
 
@@ -278,18 +279,18 @@ bool LexerFrontend::parseHeredoc(LexerState * state) {
 
 
     switch(state -> stack -> touch()) {
-        case lex_heredoc_continue: { state -> setStatus(LexerState::ls_heredoc); break;}
-        case lex_heredoc_intended_continue: { state -> setStatus(LexerState::ls_heredoc_intended); break;}
-        case lex_eheredoc_intended_continue: { state -> setStatus(LexerState::ls_eheredoc_intended); break;}
-        case lex_cheredoc_intended_continue: { state -> setStatus(LexerState::ls_cheredoc_intended); break;}
-        case lex_eheredoc_continue: { state -> setStatus( LexerState::ls_eheredoc); break;}
-        case lex_cheredoc_continue: { state -> setStatus(LexerState::ls_cheredoc); break;}
+        case lex_heredoc_continue: { state -> setStatus(LexerControl::ls_heredoc); break;}
+        case lex_heredoc_intended_continue: { state -> setStatus(LexerControl::ls_heredoc_intended); break;}
+        case lex_eheredoc_intended_continue: { state -> setStatus(LexerControl::ls_eheredoc_intended); break;}
+        case lex_cheredoc_intended_continue: { state -> setStatus(LexerControl::ls_cheredoc_intended); break;}
+        case lex_eheredoc_continue: { state -> setStatus(LexerControl::ls_eheredoc); break;}
+        case lex_cheredoc_continue: { state -> setStatus(LexerControl::ls_cheredoc); break;}
         default:;
     }
     return cutWord(state, lex_heredoc_continue);
 }
 
-bool LexerFrontend::parseRegexp(LexerState * state) {
+bool LexerFrontend::parseRegexp(LexerControl * state) {
     bool ended = false;
     bool out_req = false;
     bool def_required = false;
@@ -305,7 +306,7 @@ bool LexerFrontend::parseRegexp(LexerState * state) {
             case '/': { ended = ECHAR_PREV1 != '\\';  break;}
             case 0: {
                 out_req = true;
-                state -> setStatus(LexerState::ls_regexp);
+                state -> setStatus(LexerControl::ls_regexp);
                 break;
             }
         }
@@ -340,7 +341,7 @@ bool LexerFrontend::parseRegexp(LexerState * state) {
     return true;
 }
 
-void LexerFrontend::lexicate(LexerControl * control) {
+void LexerFrontend::lexicate(LexerControl * state) {
     //        a + b is interpreted as a.+(b)
     //        a + b is interpreted as a+b ( Here a is a local variable)
     //        a  +b is interpreted as a(+b) ( Here a is a method call)
@@ -351,10 +352,10 @@ void LexerFrontend::lexicate(LexerControl * control) {
 
 
             continue_mark:
-                Lexem top = state -> stack -> touch();
+                StateLexem top = state -> stack -> touch();
 
-                if (GrammarRuby::obj().isContinious(top)) {
-                    if (GrammarRuby::obj().isStackDroppable(top)) {
+                if (Grammar::obj().isContinious(top)) {
+                    if (Grammar::obj().isStackDroppable(top)) {
                         state -> stack -> drop();
                         --state -> buffer;
                     }
@@ -449,7 +450,7 @@ void LexerFrontend::lexicate(LexerControl * control) {
 
                                     case 0: {
                                         out_req = true;
-                                        state -> setStatus(LexerState::ls_command);
+                                        state -> setStatus(LexerControl::ls_command);
                                         break;
                                     }
                                 }
@@ -485,7 +486,7 @@ void LexerFrontend::lexicate(LexerControl * control) {
 
                                     case 0: {
                                         out_req = true;
-                                        state -> setStatus(LexerState::ls_string);
+                                        state -> setStatus(LexerControl::ls_string);
                                         break;
                                     }
                                 }
@@ -524,7 +525,7 @@ void LexerFrontend::lexicate(LexerControl * control) {
 
                                     case 0: {
                                         out_req = true;
-                                        state -> setStatus(LexerState::ls_estring);
+                                        state -> setStatus(LexerControl::ls_estring);
                                         break;
                                     }
                                 }
@@ -584,7 +585,7 @@ void LexerFrontend::lexicate(LexerControl * control) {
                                                     out_req = true;
                                                     cutWord(state, lex_commentary_continue);
                                                     state -> stack -> push(lex_commentary_continue);
-                                                    state -> setStatus(LexerState::ls_comment);
+                                                    state -> setStatus(LexerControl::ls_comment);
 
                                                     goto exit;
                                                 break;}
@@ -661,7 +662,7 @@ void LexerFrontend::lexicate(LexerControl * control) {
 
 
                     case '<': {
-                        Lexem lex = lex_none;
+                        StateLexem lex = lex_none;
 
                         if (ECHAR1 == '<') {
                             ++state -> next_offset;
@@ -718,22 +719,22 @@ void LexerFrontend::lexicate(LexerControl * control) {
                                 state -> next_offset = 0;
 
                                 //INFO: stacked heredocs going in revert order so we must to insert new heredoc before previous if heredocs is stacked
-                                Lexem top = GrammarRuby::obj().toHeredocContinious(state -> stack -> touch());
+                                StateLexem top = Grammar::obj().toHeredocContinious(state -> stack -> touch());
                                 if (top != lex_none) {
-                                    int level = 0;
-                                    while(GrammarRuby::obj().toHeredocContinious(state -> stack -> touch(++level)) != lex_none);
+                                    STACK_INT_TYPE level = 0;
+                                    while(Grammar::obj().toHeredocContinious(state -> stack -> touch(++level)) != lex_none);
                                     state -> stack -> pushToLevel(level, lex, doc_name);
                                 }
                                 else {
                                     state -> stack -> push(lex, doc_name);
                                     state -> setStatus(
                                         is_simple ?
-                                            is_intended ? LexerState::ls_heredoc_intended : LexerState::ls_heredoc
+                                            is_intended ? LexerControl::ls_heredoc_intended : LexerControl::ls_heredoc
                                               :
                                             is_command ?
-                                                is_intended ? LexerState::ls_cheredoc_intended : LexerState::ls_cheredoc
+                                                is_intended ? LexerControl::ls_cheredoc_intended : LexerControl::ls_cheredoc
                                                     :
-                                                is_intended ? LexerState::ls_eheredoc_intended : LexerState::ls_eheredoc
+                                                is_intended ? LexerControl::ls_eheredoc_intended : LexerControl::ls_eheredoc
                                     );
                                 }
                             }
@@ -781,11 +782,11 @@ void LexerFrontend::lexicate(LexerControl * control) {
                         if (!cutWord(state))
                             goto exit;
 
-                        Lexem top = state -> stack -> touch();
-                        Lexem top_conv = GrammarRuby::obj().fromContinious(top);
+                        StateLexem top = state -> stack -> touch();
+                        StateLexem top_conv = Grammar::obj().fromContinious(top);
 
                         if (top_conv != lex_none) { // after interpolation
-                            if (GrammarRuby::obj().isStackDroppable(top))
+                            if (Grammar::obj().isStackDroppable(top))
                                 state -> stack -> pushToLevel(1, top_conv);
 
                             goto continue_mark;
@@ -795,10 +796,10 @@ void LexerFrontend::lexicate(LexerControl * control) {
 
 
                     case '#': { // inline comment
-                        Lexem predef = lex_none;
+                        StateLexem predef = lex_none;
                         bool ended = false;
 
-                        if (ECHAR1 == '{' && GrammarRuby::obj().isInterpolable(state -> stack -> touch())) {
+                        if (ECHAR1 == '{' && Grammar::obj().isInterpolable(state -> stack -> touch())) {
                             ++state -> next_offset;
                         } else {
                             predef = lex_inline_commentary;
@@ -860,7 +861,7 @@ void LexerFrontend::lexicate(LexerControl * control) {
                             goto iterate;
 
                         bool ended = false, has_exp_part = false;
-                        Lexem predef = lex_none;
+                        StateLexem predef = lex_none;
 
                         if (ECHAR0 == '0') {
                             switch(ECHAR1) {
@@ -1013,7 +1014,7 @@ void LexerFrontend::lexicate(LexerControl * control) {
 
 
                     case '%': {
-                        Lexem res = lex_none;
+                        StateLexem res = lex_none;
                         bool shorted = false;
 
                         switch(ECHAR1) {
@@ -1035,7 +1036,7 @@ void LexerFrontend::lexicate(LexerControl * control) {
 
                         if (res != lex_none) {
                             state -> next_offset = 0;
-                            state -> stack -> push(res, QByteArray(1, shorted ? '/' : GrammarRuby::obj().percentagePresentationBlocker(ECHAR2)));
+                            state -> stack -> push(res, QByteArray(1, shorted ? '/' : Grammar::obj().percentagePresentationBlocker(ECHAR2)));
 
                             if (state -> buffer != state -> prev)
                                 if (!cutWord(state, res))
@@ -1169,7 +1170,7 @@ void LexerFrontend::lexicate(LexerControl * control) {
             }
 
             exit:
-                Lexem replaceable = GrammarRuby::obj().toHeredocContinious(state -> stack -> touch());
+                StateLexem replaceable = Grammar::obj().toHeredocContinious(state -> stack -> touch());
                 if (replaceable != lex_none)
                     state -> stack -> replace(replaceable, false);
 }
@@ -1197,7 +1198,7 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
         }
         else lighter -> clearExtraFormatForCurrBlock();
 
-        state = new LexerControl(/*scope,*/ udata, prev_udata ? prev_udata -> stackState() : nullptr, lighter);
+        state = new LexerControl(&Ruby::Grammar::obj(), /*scope,*/ udata, prev_udata ? prev_udata -> stackState() : nullptr, lighter);
 
         QByteArray text_val = text.toUtf8();
         const char * window = text_val.constData();
