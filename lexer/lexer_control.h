@@ -1,10 +1,8 @@
-#ifndef LEXER_STATE_H
-#define LEXER_STATE_H
+#ifndef LEXER_CONTROL_H
+#define LEXER_CONTROL_H
 
-#include <qdebug.h>
-
-#include "lexems.h"
-#include "scopes/scope.h"
+#include "state_lexems.h"
+//#include "scopes/scope.h"
 #include "highlighter/highlighter.h"
 #include "highlighter/highlight_format_factory.h"
 
@@ -26,7 +24,7 @@
 #define SCHAR1 STREAM_NEXT_CHAR(state -> prev)
 #define SCHAR2 STREAM_N_CHAR(state -> prev, 2)
 
-struct LexerState {
+struct LexerControl {
     enum Status {
         ls_none = -1,
         ls_error = 1,
@@ -50,13 +48,13 @@ struct LexerState {
 
     QByteArray cached;
 
-    Lexem _prev_word;
-    Lexem _word;
-    Lexem _prev_delimiter;
-    Lexem _delimiter;
+    StateLexem lex_prev_word;
+    StateLexem lex_word;
+    StateLexem lex_prev_delimiter;
+    StateLexem lex_delimiter;
 
-    Scope * scope;
-    Stack<Lexem> * stack;
+//    Scope * scope;
+    Stack<StateLexem> * stack;
 //    Stack<Lexem> * chain;
     quint8 next_offset;
 
@@ -77,14 +75,14 @@ struct LexerState {
     Status status;
     BlockUserData * user_data;
 
-    LexerState(Scope * scope, BlockUserData * user_data, Stack<Lexem> * stack_state = 0, Highlighter * lighter = 0) : lighter(lighter),
-        _prev_word(lex_none), _word(lex_none), _prev_delimiter(lex_none), _delimiter(lex_none),
-        scope(scope), stack(stack_state == 0 ? new Stack<Lexem>(lex_none) : new Stack<Lexem>(stack_state)),
-        next_offset(1), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()), control_para(0),
-        cached_length(0), start(0), buffer(0), prev(0), status(ls_handled), user_data(user_data)
+    LexerControl(/*Scope * scope,*/ BlockUserData * user_data, Stack<StateLexem> * stack_state = nullptr, Highlighter * lighter = nullptr) : lighter(lighter),
+        lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
+        /*scope(scope),*/ stack(stack_state == nullptr ? new Stack<StateLexem>(lex_none) : new Stack<StateLexem>(stack_state)),
+        next_offset(1), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()), control_para(nullptr),
+        cached_length(0), start(nullptr), buffer(nullptr), prev(nullptr), status(ls_handled), user_data(user_data)
     {}
 
-    ~LexerState() {}
+    ~LexerControl() {}
 
     inline void setStatus(const Status & new_status) {
         if (status != ls_error)
@@ -105,7 +103,7 @@ struct LexerState {
     inline bool isBufferEof() { return *buffer == 0; }
 
     inline void cachingPredicate(const bool & ignore_para = false) {
-        _prev_word = _word;
+        lex_prev_word = lex_word;
         cached_str_pos = bufferPos();
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
@@ -114,7 +112,7 @@ struct LexerState {
             attachPara(cached);
     }
     inline void cachingDelimiter() {
-        _prev_delimiter = _delimiter;
+        lex_prev_delimiter = lex_delimiter;
         prev = buffer;
         buffer += next_offset;
 
@@ -132,11 +130,11 @@ struct LexerState {
     }
 
     inline EDITOR_POS_TYPE bufferPos() { return prev - start; }
-    inline EDITOR_LEN_TYPE strLength() { return buffer - prev; }
+    inline EDITOR_LEN_TYPE strLength() { return (EDITOR_LEN_TYPE)(buffer - prev); }
 
-    inline Lexem & sublastToken() { return token -> prev -> lexem; }
-    inline Lexem & lastToken() { return token -> lexem; }
-    inline void attachToken(const Lexem & lexem) {
+    inline StateLexem & sublastToken() { return token -> prev -> lexem; }
+    inline StateLexem & lastToken() { return token -> lexem; }
+    inline void attachToken(const StateLexem & lexem) {
         if (token -> next) {
             token = token -> next;
             token -> lexem = lexem;
@@ -145,7 +143,7 @@ struct LexerState {
         }
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
     }
-    inline void replaceToken(const Lexem & lexem) {
+    inline void replaceToken(const StateLexem & lexem) {
         token -> lexem = lexem;
         token -> length += cached_length;
     }
@@ -163,7 +161,7 @@ struct LexerState {
 //        );
 //    }
 
-    inline void light(const Lexem & lexem) {
+    inline void light(const StateLexem & lexem) {
         bool has_predicate = cached_length > 0;
 
         last_light_pos = cached_str_pos - (has_predicate ? 0 : 1);
@@ -182,11 +180,11 @@ struct LexerState {
             );
         }
     }
-    inline void cacheAndLightWithMessage(const Lexem & lexem, const QByteArray & msg) {
+    inline void cacheAndLightWithMessage(const StateLexem & lexem, const QByteArray & msg) {
         cachingPredicate();
         lightWithMessage(lexem, msg);
     }
-    inline void lightWithMessage(const Lexem & lexem, const QByteArray & msg) {
+    inline void lightWithMessage(const StateLexem & lexem, const QByteArray & msg) {
         light(lexem);
 
         if (lexem == lex_error) {
@@ -224,9 +222,9 @@ struct LexerState {
             if ((ParaInfo::oppositePara(ptype) & control_para -> para_type) != control_para -> para_type) {
                 qDebug() << "WRONG FOLDING CLOSE: " << control_para -> para_type << ptype;
             }
-            else control_para = 0;
+            else control_para = nullptr;
         }
     }
 };
 
-#endif // LEXER_STATE_H
+#endif // LEXER_CONTROL_H

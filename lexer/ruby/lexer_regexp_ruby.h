@@ -3,10 +3,12 @@
 
 #include "lexer/regexp_lexer.h"
 
-class LexerRegexpRuby : public RegexpLexer {
-public:
-    LexerRegexpRuby();
-    ~LexerRegexpRuby() {}
-};
+namespace Ruby {
+    class LexerRegexp : public RegexpLexer {
+    public:
+        LexerRegexp();
+        ~LexerRegexp() {}
+    };
+}
 
 #endif // LEXER_REGEXP_RUBY_H

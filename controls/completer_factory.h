@@ -4,7 +4,7 @@
 #include <qhash.h>
 
 #include "project/code_formats.h"
-#include "lexer/lexem_mean_type.h"
+#include "lexer/obj_lexems.h"
 
 #include "misc/singleton.h"
 
@@ -13,7 +13,7 @@
 class CompleterFactory : public QObject, public Singleton<CompleterFactory> {
     Q_OBJECT
 
-    QHash<LexerMeanType, QIcon> icons;
+    QHash<ObjLexem, QIcon> icons;
 
     QHash<FormatType, Completer *> completers;
 
@@ -23,7 +23,7 @@ class CompleterFactory : public QObject, public Singleton<CompleterFactory> {
 //    void loadDataSet(const FormatType & format);
 //    void saveDataSet(const FormatType & format);
 public:
-    inline QIcon & ico(const LexerMeanType & ico_type) { return icons[ico_type]; }
+    inline QIcon & ico(const ObjLexem & ico_type) { return icons[ico_type]; }
 
     friend class Singleton<CompleterFactory>;
 

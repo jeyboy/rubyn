@@ -2,19 +2,19 @@
 #define TOKEN_LIST_H
 
 #include "defines.h"
-#include "parts/lexer/lexems.h"
+#include "lexer/state_lexems.h"
 
 struct TokenCell {
     TokenCell * prev;
     TokenCell * next;
 
-    Lexem lexem;
+    StateLexem lexem;
     EDITOR_POS_TYPE start_pos;
     EDITOR_LEN_TYPE length;
 
-    TokenCell(const Lexem & lexem, const EDITOR_POS_TYPE & start_pos,
-              const EDITOR_LEN_TYPE & length, TokenCell * prev_token = 0)
-        : prev(0), next(0), lexem(lexem), start_pos(start_pos), length(length)
+    TokenCell(const StateLexem & lexem, const EDITOR_POS_TYPE & start_pos,
+              const EDITOR_LEN_TYPE & length, TokenCell * prev_token = nullptr)
+        : prev(nullptr), next(nullptr), lexem(lexem), start_pos(start_pos), length(length)
     {
         if ((prev = prev_token)) {
             if ((next = prev -> next))
@@ -36,7 +36,7 @@ struct TokenCell {
 class TokenList {
     TokenCell * root, * last;
 public:
-    inline TokenList() : root(0), last(0) {
+    inline TokenList() : root(nullptr), last(nullptr) {
         root = new TokenCell(lex_none, 0, 0);
         last = new TokenCell(lex_end_doc, 0, 0, root);
     }
@@ -58,7 +58,7 @@ public:
         }
     }
 
-    void registerLine(TokenCell *& left, TokenCell *& right, TokenCell * prev_end = 0) {
+    void registerLine(TokenCell *& left, TokenCell *& right, TokenCell * prev_end = nullptr) {
         if (!prev_end)
             prev_end = last -> prev;
 
@@ -77,11 +77,11 @@ public:
         delete right;
     }
 
-    TokenCell * append(const Lexem & lexem, const EDITOR_POS_TYPE & start_pos, const EDITOR_LEN_TYPE & length) {
+    TokenCell * append(const StateLexem & lexem, const EDITOR_POS_TYPE & start_pos, const EDITOR_LEN_TYPE & length) {
         return new TokenCell(lexem, start_pos, length, last -> prev);
     }
 
-    static TokenCell * insert(TokenCell * left, const Lexem & lexem, const EDITOR_POS_TYPE & start_pos, const EDITOR_LEN_TYPE & length) {
+    static TokenCell * insert(TokenCell * left, const StateLexem & lexem, const EDITOR_POS_TYPE & start_pos, const EDITOR_LEN_TYPE & length) {
         return new TokenCell(lexem, start_pos, length, left);
     }
 };

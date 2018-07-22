@@ -541,7 +541,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
 
         QByteArray attributes_section("attribute-method-details");
 
-        LexerMeanType methods_prefix;
+        ObjLexem methods_prefix;
 
         for(Html::Set::Iterator section_tag = sections.begin(); section_tag != sections.end(); section_tag++) {
             const QByteArray & id = (*section_tag) -> id();
@@ -551,7 +551,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
 
                 if (list_tag -> hasChildren()) {
                     Html::Set constants = list_tag -> children();
-                    Html::Tag * dt_tag = 0;
+                    Html::Tag * dt_tag = nullptr;
 
                     for(Html::Set::Iterator const_tag = constants.begin(); const_tag != constants.end(); const_tag++) {
                         switch((*const_tag) -> tagID()) {

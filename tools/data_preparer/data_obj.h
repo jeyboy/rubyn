@@ -3,10 +3,10 @@
 
 #include <qmap.h>
 
-#include "lexer/lexem_mean_type.h"
+#include "lexer/obj_lexems.h"
 
 struct DataMethod {
-    LexerMeanType lex_type;
+    ObjLexem lex_type;
 
     QStringList description;
 
@@ -16,7 +16,7 @@ struct DataMethod {
 
     QString alias_name;
 
-    DataMethod(const LexerMeanType & mtype = lmt_unknow) : lex_type(mtype) {
+    DataMethod(const ObjLexem & mtype = lmt_unknow) : lex_type(mtype) {
 
     }
 };

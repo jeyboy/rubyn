@@ -1,5 +1,5 @@
-#ifndef LEXEMS_H
-#define LEXEMS_H
+#ifndef STATE_LEXEMS_H
+#define STATE_LEXEMS_H
 
 #pragma once
 
@@ -7,12 +7,12 @@
 
 #include "misc/defines.h"
 
-#define LEX(val, flag) (Lexem)(val | flag)
-#define EXCLUDE_BIT(val, flag) (Lexem)(val & ~flag)
+//#define LEX(val, flag) (Lexem)(val | flag)
+//#define EXCLUDE_BIT(val, flag) (Lexem)(val & ~flag)
 
  // = (1ULL << 1),
 
-enum Lexem : LEXEM_TYPE {
+enum StateLexem : LEXEM_TYPE {
     lex_none = 0,
 
     lex_yield,
@@ -269,7 +269,8 @@ enum Lexem : LEXEM_TYPE {
     lex_extend_name, // full name
 
     lex_undef, // undef method
-    lex_undef_name,
+    lex_undef_arg,
+    lex_undef_arg_splitter,
 
     lex_visibility_scope, // public, private etc // use one space pad in format // https://fabiokung.com/2010/04/05/ruby-indentation-for-access-modifiers-and-their-sections/
     lex_visibility_scope_arg, // public :show, :index and etc
@@ -840,4 +841,4 @@ enum Lexem : LEXEM_TYPE {
 //    }
 //};
 
-#endif // LEXEMS_H
+#endif // STATE_LEXEMS_H

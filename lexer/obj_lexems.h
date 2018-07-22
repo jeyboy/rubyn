@@ -1,11 +1,11 @@
-#ifndef LEXEM_MEAN_TYPE_H
-#define LEXEM_MEAN_TYPE_H
+#ifndef OBJ_LEXEMS_H
+#define OBJ_LEXEMS_H
 
 #pragma once
 
 #include "misc/defines.h"
 
-enum LexerMeanType : LEXEM_MEAN_TYPE {
+enum ObjLexem : LEXEM_MEAN_TYPE {
     lmt_unknow = 0,
 
     lmt_core = 1,
@@ -40,4 +40,4 @@ enum LexerMeanType : LEXEM_MEAN_TYPE {
     lmt_object_var = lmt_object | lmt_var,
 };
 
-#endif // LEXEM_MEAN_TYPE_H
+#endif // OBJ_LEXEMS_H

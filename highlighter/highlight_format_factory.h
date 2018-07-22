@@ -8,95 +8,30 @@
 #include "misc/singleton.h"
 
 class HighlightFormatFactory : public Singleton<HighlightFormatFactory> {
-    QHash<Identifier, QTextCharFormat> formats;
+    QHash<Identifier, QTextCharFormat> _formats;
 protected:
-    void registerErrorFormat() {
-        QTextCharFormat format;
-        format.setFontUnderline(true);
-        format.setUnderlineColor(QColor(Qt::red));
-        format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
-        format.setFontItalic(true);
-        formats.insert(hid_error, format);
-    }
+    void registerErrorFormat();
 
-    void registerWarningFormat() {
-        QTextCharFormat format;
-        format.setFontUnderline(true);
-        format.setUnderlineColor(QColor(Qt::blue));
-        format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
-        format.setFontItalic(true);
-        formats.insert(hid_warning, format);
-    }
+    void registerWarningFormat();
 
-    void registerSpellcheckFormat() {
-        QTextCharFormat format;
-        format.setFontUnderline(true);
-        format.setUnderlineColor(QColor(Qt::black));
-        format.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
-        format.setFontItalic(true);
-        formats.insert(hid_notice, format);
-    }
+    void registerSpellcheckFormat();
 
-    void registerLabelFormat() {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Black);
-        format.setForeground(Qt::black);
-        format.setFontUnderline(true);
-        format.setUnderlineColor(QColor(Qt::black));
-        format.setUnderlineStyle(QTextCharFormat::SingleUnderline);
-        formats.insert(hid_label, format);
-    }
+    void registerLabelFormat();
 
-    void registerOperatorFormat() {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Black);
-        formats.insert(hid_operator, format);
-    }
+    void registerOperatorFormat();
 
-    void registerKeywordFormat() {
-        QTextCharFormat format;
-        format.setFontItalic(true);
-        format.setForeground(QColor::fromRgb(215, 58, 73));
-        formats.insert(hid_keyword, format);
-    }
+    void registerKeywordFormat();
 
-    void registerAssigmentFormat() {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Bold);
-        format.setForeground(QColor::fromRgb(0, 92, 197));
-//        formats.insert(lex_var, format);
+    void registerAssigmentFormat();
 
-        formats.insert(hid_symbol, format);
-    }
+    void registerNameCallFormat();
 
-    void registerNameCallFormat() {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Bold);
-        format.setForeground(Qt::darkCyan);
-        formats.insert(hid_name_call, format);
-    }
+    void registerNameDefFormat();
 
-    void registerNameDefFormat() {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Bold);
-        format.setForeground(Qt::darkMagenta);
-        formats.insert(hid_name_def, format);
-    }
+    void registerConstFormat();
 
-    void registerConstFormat() {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Bold);
-        format.setForeground(Qt::darkMagenta);
-        formats.insert(hid_const, format);
-    }
+    void registerStringFormat();
 
-    void registerStringFormat() {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Bold);
-        format.setBackground(QColor::fromRgb(0, 255, 0, 92));
-//        format.setForeground(Qt::darkGreen);
-        formats.insert(hid_string, format);
-    }
 //    void registerMethodFormat() {
 //        QTextCharFormat format;
 //        format.setForeground(Qt::darkBlue);
@@ -104,56 +39,29 @@ protected:
 //        format.setFontWeight(QFont::Black);
 //        formats.insert(hid_method, format);
 //    }
-    void registerCommentFormat() {
-        QTextCharFormat format;
-        format.setFontWeight(QFont::Bold);
-        format.setForeground(QColor::fromRgb(128, 128, 128, 192));
-        formats.insert(hid_commentary, format);
-    }
 
-    void registerNumericFormat() {
-        QTextCharFormat format;
-        format.setForeground(Qt::blue);
-        formats.insert(hid_numeric, format);
-    }
-    void registerRegularExpresionsFormat() {
-        QTextCharFormat format;
-        format.setBackground(QColor::fromRgb(0, 255, 0, 32));
-        formats.insert(hid_regexp, format);
-    }
+    void registerCommentFormat();
+
+    void registerNumericFormat();
+
+    void registerRegularExpresionsFormat();
+
 //    void registerPreprocessingFormat() {
 //        QTextCharFormat format;
 //        format.setForeground(QColor::fromRgb(0, 255, 0, 164));
 //        formats.insert(hid_preprocessing, format);
 //    }
+
 //    void registerDatatypeFormat() {
 //        QTextCharFormat format;
 //        format.setForeground(QColor::fromRgb(0, 0, 255, 164));
 //        formats.insert(hid_datatype, format);
 //    }
+
 public:
-    HighlightFormatFactory() {
-        registerLabelFormat();
-        registerOperatorFormat();
-        registerKeywordFormat();
-        registerAssigmentFormat();
-        registerNameCallFormat();
-        registerNameDefFormat();
-        registerConstFormat();
-        registerStringFormat();
-//        registerMethodFormat();
-        registerCommentFormat();
-        registerNumericFormat();
-        registerRegularExpresionsFormat();
-//        registerPreprocessingFormat();
-//        registerDatatypeFormat();
+    HighlightFormatFactory();
 
-        registerErrorFormat();
-        registerWarningFormat();
-        registerSpellcheckFormat();
-    }
-
-    const QTextCharFormat & getFormatFor(const Identifier & uid) { return formats[uid]; }
+    const QTextCharFormat & getFormatFor(const Identifier & uid);
 };
 
 #endif // HIGHLIGHT_FORMAT_FACTORY
