@@ -22,23 +22,23 @@ protected:
         codeEditor -> extraAreaPaintEvent(event);
     }
 
-    void mousePressEvent(QMouseEvent * event) {
+    void mousePressEvent(QMouseEvent * event) Q_DECL_OVERRIDE {
         codeEditor -> extraAreaMouseEvent(event);
     }
-    void mouseMoveEvent(QMouseEvent * event) {
+    void mouseMoveEvent(QMouseEvent * event) Q_DECL_OVERRIDE {
         codeEditor -> extraAreaMouseEvent(event);
     }
-    void mouseReleaseEvent(QMouseEvent * event) {
+    void mouseReleaseEvent(QMouseEvent * event) Q_DECL_OVERRIDE {
         codeEditor -> extraAreaMouseEvent(event);
     }
-    void leaveEvent(QEvent * event) {
+    void leaveEvent(QEvent * event) Q_DECL_OVERRIDE {
         codeEditor -> extraAreaLeaveEvent(event);
     }
 //    void contextMenuEvent(QContextMenuEvent * event) {
 //        codeEditor -> extraAreaContextMenuEvent(event);
 //    }
 
-    void wheelEvent(QWheelEvent * event) {
+    void wheelEvent(QWheelEvent * event) Q_DECL_OVERRIDE {
         QCoreApplication::sendEvent(codeEditor -> viewport(), event);
     }
 };

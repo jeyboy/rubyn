@@ -22,6 +22,7 @@ namespace Ruby {
         void lexicate(LexerControl * control);
     public:
         LexerFrontend();
+        ~LexerFrontend();
 
         void handle(const QString & text, Highlighter * lighter);
     };

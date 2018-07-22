@@ -7,7 +7,7 @@
 
 #include <qdebug.h>
 #include <qtextdocument.h>
-#include <qtextcursor>
+#include <qtextcursor.h>
 #include <QPlainTextDocumentLayout>
 
 #include <qelapsedtimer.h>
@@ -24,7 +24,7 @@ bool TextDocument::identificateLexer() {
     return _lexer != 0;
 }
 
-TextDocument::TextDocument(File * file) : IDocument(), pos(-1), removed(0), added(0), _doc(0), _lexer(0), _file(file) {
+TextDocument::TextDocument(File * file) : IDocument(), pos(-1), removed(0), added(0), _doc(nullptr), _lexer(nullptr), _file(file) {
     qint64 content_length = _file -> source() -> size();
 
     setFullyReaded(true);

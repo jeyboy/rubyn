@@ -21,7 +21,7 @@
 
 QString CodeEditor::word_boundary("~#%^&*()+{}|\"<>,./;'[]\\-= "); // end of word // "~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "
 
-CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(0), wrapper(0),
+CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
     overlay(new OverlayInfo()), tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1),
     folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING), curr_block_number(-1)
 {
@@ -640,12 +640,17 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         }
 
         painter.drawPixmap(
-            folding_offset_x,
-            paint_top + (line_number_height - FOLDING_WIDTH) / 2,
-            FOLDING_WIDTH,
-            FOLDING_WIDTH,
+            QPoint(folding_offset_x, paint_top + (line_number_height - FOLDING_WIDTH) / 2),
             icons[folding_flags]
         );
+
+//        painter.drawPixmap(
+//            folding_offset_x,
+//            paint_top + (line_number_height - FOLDING_WIDTH) / 2,
+//            FOLDING_WIDTH,
+//            FOLDING_WIDTH,
+//            icons[folding_flags]
+//        );
     } else if (on_block)
         hideOverlay();
 
@@ -784,7 +789,7 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     showOverlay(popup_rect, pixmap, uid);
 }
 
-void CodeEditor::prepareIcons(const uint & size) {
+void CodeEditor::prepareIcons(const int & size) {
     icons.insert(
         BlockUserData::udf_has_folding,
         PREPARE_PIXMAP(QStringLiteral(":/folding_close"), size)

@@ -1175,8 +1175,13 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     state -> stack -> replace(replaceable, false);
 }
 
-LexerFrontend::LexerFrontend() {
+LexerFrontend::LexerFrontend() : _tokens(new TokenList()), _paras(new ParaList()) {
 
+}
+
+LexerFrontend::~LexerFrontend() {
+    delete _tokens;
+    delete _paras;
 }
 
 void LexerFrontend::handle(const QString & text, Highlighter * lighter) {

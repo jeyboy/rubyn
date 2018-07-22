@@ -127,7 +127,7 @@ class OverlayInfo;
 
 #define CHARS_AMOUNT_LINE 80
 #define HPADDING 3
-#define FOLDING_WIDTH 16
+#define FOLDING_WIDTH 12
 #define NO_FOLDING -100
 
 #define PREPARE_PIXMAP(name, size) QPixmap(name).scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation)
@@ -227,8 +227,8 @@ class CodeEditor : public QPlainTextEdit {
 
     QHash<DATA_FLAGS_TYPE, QPixmap> icons;
 public:
-    CodeEditor(QWidget * parent = 0);
-    ~CodeEditor();
+    CodeEditor(QWidget * parent = nullptr);
+    ~CodeEditor() Q_DECL_OVERRIDE;
 
     void setCompleter(QCompleter * new_completer);
 
@@ -252,7 +252,7 @@ public:
         symbol_width = QFontMetricsF(font).averageCharWidth();
     }
 protected:   
-    void prepareIcons(const uint & size = FOLDING_WIDTH);
+    void prepareIcons(const int & size = FOLDING_WIDTH);
     int widthWithoutScroll();
 
     void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, EDITOR_POS_TYPE & folding_lines_coverage);
@@ -278,17 +278,17 @@ protected:
     inline QColor currentLineColor(const int & transparency = 16) { return QColor::fromRgb(128, 128, 128, transparency); } // QColor lineColor = QColor(Qt::yellow).lighter(160);
     inline QColor foldingColor() { return QColor::fromRgb(64, 64, 64, 64); }
 
-    bool event(QEvent * event);
-    void paintEvent(QPaintEvent * e);
+    bool event(QEvent * event) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent * e) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent * e) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
-    void focusInEvent(QFocusEvent * e);
+    void focusInEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
 
-    bool canInsertFromMimeData(const QMimeData * source) const {
+    bool canInsertFromMimeData(const QMimeData * source) const Q_DECL_OVERRIDE {
         return source -> hasUrls() || QPlainTextEdit::canInsertFromMimeData(source);
     }
-    void insertFromMimeData(const QMimeData * source) {
+    void insertFromMimeData(const QMimeData * source) Q_DECL_OVERRIDE {
         if (source -> hasUrls()) {
             QList<QUrl> urls = source -> urls();
 //            bool multiple(urls.count() > 1);
