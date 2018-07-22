@@ -78,10 +78,10 @@ struct LexerControl {
     Status status;
     BlockUserData * user_data;
 
-    LexerControl(IGrammar * cgrammar, /*Scope * scope,*/ BlockUserData * user_data, Stack<StateLexem> * stack_state = nullptr, Highlighter * lighter = nullptr) :
+    LexerControl(IGrammar * cgrammar, BlockUserData * user_data, Stack<StateLexem> * stack_state = nullptr, Highlighter * lighter = nullptr) :
         lighter(lighter), grammar(cgrammar),
         lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
-        /*scope(scope),*/ stack(stack_state == nullptr ? new Stack<StateLexem>(lex_none) : new Stack<StateLexem>(stack_state)),
+        stack(stack_state == nullptr ? new Stack<StateLexem>(lex_none) : new Stack<StateLexem>(stack_state)),
         next_offset(1), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()), control_para(nullptr),
         cached_length(0), start(nullptr), buffer(nullptr), prev(nullptr), status(ls_handled), user_data(user_data)
     {}

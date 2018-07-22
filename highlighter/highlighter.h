@@ -14,6 +14,10 @@ class Highlighter : public QObject {
     Q_OBJECT
 
     bool rehighlighting;
+
+    TokenList * _tokens;
+    ParaList * _paras;
+//    Scope * _scope;
 protected:
     void highlightBlock(const QString & text);
 
@@ -48,6 +52,18 @@ public:
 
 //    void setCurrentBlockUserData(QTextBlockUserData * data);
 //    QTextBlockUserData * currentBlockUserData() const;
+
+    void initBlockUserData(QTextBlock & block, BlockUserData * prev_udata, BlockUserData *& udata) {
+        if (!udata) {
+            udata = new BlockUserData(
+                _tokens, _paras,
+                prev_udata ? prev_udata -> token_end : nullptr,
+                prev_udata ? prev_udata -> para_end : nullptr
+            );
+            block.setUserData(udata);
+        }
+        else clearExtraFormatForCurrBlock();
+    }
 
     inline void clearExtraFormatForCurrBlock() {
         if (current_block.isValid())

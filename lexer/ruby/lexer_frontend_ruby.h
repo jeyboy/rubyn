@@ -7,10 +7,6 @@ class LexerControl;
 
 namespace Ruby {
     class LexerFrontend : public ILexer {
-        TokenList * _tokens;
-        ParaList * _paras;
-    //    Scope * _scope;
-
         void identifyWordType(LexerControl * state);
         void registerVariable(LexerControl * state);
         void translateState(LexerControl * state);
