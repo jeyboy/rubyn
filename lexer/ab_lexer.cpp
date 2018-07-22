@@ -5,15 +5,12 @@
 //#include "parts/editor_parts/highlighter.h"
 //#include "misc/para_list.h"
 
-ABLexer::ABLexer() : ILexer() {  // , _tokens(new TokenList()), _paras(new ParaList()), _scope(new Scope()), _lexer(lexer)
+ABLexer::ABLexer() : ILexer() {
 
 }
 
 ABLexer::~ABLexer() {
-    //        delete _lexer;
-    //        delete _scope;
-    //        delete _tokens;
-    //        delete _paras;
+
 }
 
 //void handle(const QString & text, Highlighter * lighter, Scope * scope, TokenList * tokens, ParaList * paras) {
