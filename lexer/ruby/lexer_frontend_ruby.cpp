@@ -71,12 +71,10 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
         Identifier prev_highlightable = hid_none;
 
         if (state -> cached_length) {
-
-
             if (state -> lex_word == lex_word)
                 identifyWordType(state);
 
-            prev_highlightable = Grammar::obj().toHighlightable(state -> lex_word);
+            prev_highlightable = state -> grammar -> toHighlightable(state -> lex_word);
         }
 
 //            // translate state
