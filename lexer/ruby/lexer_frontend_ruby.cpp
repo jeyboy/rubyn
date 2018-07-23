@@ -77,7 +77,6 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
             prev_highlightable = state -> grammar -> toHighlightable(state -> lex_word);
         }
 
-//            // translate state
         translateState(state);
 
         if (state -> cached_length) {
