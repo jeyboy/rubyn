@@ -11,6 +11,11 @@ namespace Ruby {
         void registerVariable(LexerControl * state);
         void translateState(LexerControl * state);
         bool cutWord(LexerControl * state, const StateLexem & predefined_lexem = lex_none);
+
+        bool parseNumber(LexerControl * state);
+        bool parseString(LexerControl * state);
+        bool parseEString(LexerControl * state);
+        bool parseCommand(LexerControl * state);
         bool parsePercentagePresenation(LexerControl * state);
         bool parseHeredoc(LexerControl * state);
         bool parseRegexp(LexerControl * state);
