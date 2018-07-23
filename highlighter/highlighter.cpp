@@ -37,12 +37,16 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     }
 }
 
-Highlighter::Highlighter(TextDocument * doc) : QObject(), rehighlighting(false), _doc_wrapper(0), doc(0) {
+Highlighter::Highlighter(TextDocument * doc) : QObject(), rehighlighting(false),
+    _tokens(new TokenList()), _paras(new ParaList()), _doc_wrapper(nullptr), doc(nullptr)
+{
     setDocument(doc);
 }
 
 Highlighter::~Highlighter() {
-    setDocument(0);
+    setDocument(nullptr);
+    delete _tokens;
+    delete _paras;
 }
 
 void Highlighter::highlightBlock(const QString & text) {

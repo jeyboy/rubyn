@@ -842,3 +842,119 @@ enum StateLexem : LEXEM_TYPE {
 //};
 
 #endif // STATE_LEXEMS_H
+
+
+
+//lex_open = 1 << 30,
+//lex_close = 1 << 29,
+//lex_continue = 1 << 28,
+//lex_interception = 1 << 27,
+////    lex_block = 1 << 26,
+
+//lex_none = 0,
+
+//lex_string = 1,
+//lex_string_start = lex_string | lex_open,
+//lex_string_continue = lex_string | lex_continue,
+//lex_string_end = lex_string | lex_close,
+
+
+//lex_inline_commentary = 2,
+
+//lex_commentary = 3,
+//lex_commentary_start = lex_commentary | lex_open,
+//lex_commentary_continue = lex_commentary | lex_continue,
+//lex_commentary_end = lex_commentary | lex_close,
+
+
+//lex_command = 4,
+//lex_command_start = lex_command | lex_open,
+//lex_command_interception = lex_command | lex_interception,
+////    lex_command_intercepted = 5,
+//lex_command_continue = lex_command | lex_continue,
+//lex_command_end = lex_command | lex_close,
+
+//lex_estring = 6, // "
+//lex_estring_start = lex_estring | lex_open,
+//lex_estring_interception = lex_estring | lex_interception,
+////    lex_estring_intercepted = 7,
+//lex_estring_continue = lex_estring | lex_continue,
+//lex_estring_end = lex_estring | lex_close,
+
+//lex_percent_presentation = 8, // %n/.../
+//lex_percent_presentation_start = lex_percent_presentation | lex_open,
+//lex_percent_presentation_continue = lex_percent_presentation | lex_continue,
+//lex_percent_presentation_end = lex_percent_presentation | lex_close,
+
+//lex_epercent_presentation = 9, // %N/.../
+//lex_epercent_presentation_start = lex_epercent_presentation | lex_open,
+//lex_epercent_presentation_interception = lex_epercent_presentation | lex_interception,
+////    lex_epercent_presentation_intercepted = 10,
+//lex_epercent_presentation_continue = lex_epercent_presentation | lex_continue,
+//lex_epercent_presentation_end = lex_epercent_presentation | lex_close,
+
+//// <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
+//lex_heredoc_mark = 11,
+//lex_heredoc = 12,
+//lex_heredoc_start = lex_heredoc | lex_open,
+//lex_heredoc_continue = lex_heredoc | lex_continue,
+//lex_heredoc_end = lex_heredoc | lex_close,
+
+//lex_heredoc_intended_mark = 13,
+//lex_heredoc_intended = 14,
+//lex_heredoc_intended_start = lex_heredoc_intended | lex_open,
+//lex_heredoc_intended_continue = lex_heredoc_intended | lex_continue,
+//lex_heredoc_intended_end = lex_heredoc_intended | lex_close,
+
+//lex_eheredoc_mark = 15,
+//lex_eheredoc = 16,
+//lex_eheredoc_start = lex_eheredoc | lex_open,
+//lex_eheredoc_interception = lex_eheredoc | lex_interception,
+////    lex_eheredoc_intercepted = 17,
+//lex_eheredoc_continue = lex_eheredoc | lex_continue,
+//lex_eheredoc_end = lex_eheredoc | lex_close,
+
+//lex_eheredoc_intended_mark = 18,
+//lex_eheredoc_intended = 19,
+//lex_eheredoc_intended_start = lex_eheredoc_intended | lex_open,
+//lex_eheredoc_intended_interception = lex_eheredoc_intended | lex_interception,
+////    lex_eheredoc_intended_intercepted = 20,
+//lex_eheredoc_intended_continue = lex_eheredoc_intended | lex_continue,
+//lex_eheredoc_intended_end = lex_eheredoc_intended | lex_close,
+
+//lex_cheredoc_mark = 21,
+//lex_cheredoc = 22,
+//lex_cheredoc_start = lex_cheredoc | lex_open,
+//lex_cheredoc_interception = lex_cheredoc | lex_interception,
+////    lex_cheredoc_intercepted = 23,
+//lex_cheredoc_continue = lex_cheredoc | lex_continue,
+//lex_cheredoc_end = lex_cheredoc | lex_close,
+
+//lex_cheredoc_intended_mark = 24,
+//lex_cheredoc_intended = 25,
+//lex_cheredoc_intended_start = lex_cheredoc_intended | lex_open,
+//lex_cheredoc_intended_interception = lex_cheredoc_intended | lex_interception,
+////    lex_cheredoc_intended_intercepted = 26,
+//lex_cheredoc_intended_continue = lex_cheredoc_intended | lex_continue,
+//lex_cheredoc_intended_end = lex_cheredoc_intended | lex_close,
+////////////////////////////////////////
+
+//lex_regexp = 27, // /\a+/
+//lex_regexp_start = lex_regexp | lex_open,
+//lex_regexp_interception = lex_regexp | lex_interception,
+////    lex_regexp_intercepted = 28,
+//lex_regexp_continue = lex_regexp | lex_continue,
+//lex_regexp_end = lex_regexp | lex_close,
+
+
+//lex_curly_bracket = 29,
+//lex_open_curly_bracket = lex_curly_bracket | lex_open, // {
+//lex_close_curly_bracket = lex_curly_bracket | lex_close, // }
+
+//lex_square_bracket = 30,
+//lex_open_square_bracket = lex_square_bracket | lex_open, // [
+//lex_close_square_bracket = lex_square_bracket | lex_close, // ]
+
+
+
+
