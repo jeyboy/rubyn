@@ -62,22 +62,21 @@ public:
             );
             block.setUserData(udata);
         }
-        else clearExtraFormatForCurrBlock();
+//        else clearExtraFormatForCurrBlock();
     }
 
-    inline void clearExtraFormatForCurrBlock() {
-        if (current_block.isValid())
-            current_block.layout() -> clearFormats();
-    }
-    inline void setExtraFormatToCurrBlock(const int & start, const int & count, const QTextCharFormat & format) {
-        if (current_block.isValid())
-            setExtraFormats(current_block, QVector<QTextLayout::FormatRange>() << QTextLayout::FormatRange{start, count, format});
-    }
-    inline void setExtraFormat(const int & start, const int & count, const QTextCharFormat & format) {
-        setExtraFormats(doc -> findBlock(start), QVector<QTextLayout::FormatRange>() << QTextLayout::FormatRange{start, count, format});
-    }
-
-    void setExtraFormats(const QTextBlock & block, QVector<QTextLayout::FormatRange> & formats);
+//    inline void clearExtraFormatForCurrBlock() {
+//        if (current_block.isValid())
+//            current_block.layout() -> clearFormats();
+//    }
+//    inline void setExtraFormatToCurrBlock(const int & start, const int & count, const QTextCharFormat & format) {
+//        if (current_block.isValid())
+//            setExtraFormats(current_block, QVector<QTextLayout::FormatRange>() << QTextLayout::FormatRange{start, count, format});
+//    }
+//    inline void setExtraFormat(const int & start, const int & count, const QTextCharFormat & format) {
+//        setExtraFormats(doc -> findBlock(start), QVector<QTextLayout::FormatRange>() << QTextLayout::FormatRange{start, count, format});
+//    }
+//    void setExtraFormats(const QTextBlock & block, QVector<QTextLayout::FormatRange> & formats);
 
 protected:
     static bool adjustRange(QTextLayout::FormatRange & range, int from, int charsRemoved, int charsAdded) {

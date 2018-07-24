@@ -142,56 +142,56 @@ void Highlighter::setCurrentBlockState(const int & new_state) {
 //    return current_block.userData();
 //}
 
-void Highlighter::setExtraFormats(const QTextBlock & block, QVector<QTextLayout::FormatRange> & formats) {
-    const int blockLength = block.length();
+//void Highlighter::setExtraFormats(const QTextBlock & block, QVector<QTextLayout::FormatRange> & formats) {
+//    const int blockLength = block.length();
 
-    if (block.layout() == nullptr || blockLength == 0)
-        return;
+//    if (block.layout() == nullptr || blockLength == 0)
+//        return;
 
-    Utils::sort(formats, byStartOfRange);
+//    Utils::sort(formats, byStartOfRange);
 
-    const QVector<QTextLayout::FormatRange> all = block.layout() -> formats();
-    QVector<QTextLayout::FormatRange> previous_semantic_formats;
-    QVector<QTextLayout::FormatRange> formats_to_apply;
-    previous_semantic_formats.reserve(all.size());
-    formats_to_apply.reserve(all.size() + formats.size());
+//    const QVector<QTextLayout::FormatRange> all = block.layout() -> formats();
+//    QVector<QTextLayout::FormatRange> previous_semantic_formats;
+//    QVector<QTextLayout::FormatRange> formats_to_apply;
+//    previous_semantic_formats.reserve(all.size());
+//    formats_to_apply.reserve(all.size() + formats.size());
 
-    for (int i = 0, ei = formats.size(); i < ei; ++i)
-        formats[i].format.setProperty(QTextFormat::UserProperty, true);
+//    for (int i = 0, ei = formats.size(); i < ei; ++i)
+//        formats[i].format.setProperty(QTextFormat::UserProperty, true);
 
-    foreach (const QTextLayout::FormatRange &r, all) {
-        if (r.format.hasProperty(QTextFormat::UserProperty))
-            previous_semantic_formats.append(r);
-        else
-            formats_to_apply.append(r);
-    }
+//    foreach (const QTextLayout::FormatRange &r, all) {
+//        if (r.format.hasProperty(QTextFormat::UserProperty))
+//            previous_semantic_formats.append(r);
+//        else
+//            formats_to_apply.append(r);
+//    }
 
-    if (formats.size() == previous_semantic_formats.size()) {
-        Utils::sort(previous_semantic_formats, byStartOfRange);
+//    if (formats.size() == previous_semantic_formats.size()) {
+//        Utils::sort(previous_semantic_formats, byStartOfRange);
 
-        int index = 0;
-        for (; index != formats.size(); ++index) {
-            const QTextLayout::FormatRange &range = formats.at(index);
-            const QTextLayout::FormatRange &previousRange = previous_semantic_formats.at(index);
+//        int index = 0;
+//        for (; index != formats.size(); ++index) {
+//            const QTextLayout::FormatRange &range = formats.at(index);
+//            const QTextLayout::FormatRange &previousRange = previous_semantic_formats.at(index);
 
-            if (range.start != previousRange.start ||
-                    range.length != previousRange.length ||
-                    range.format != previousRange.format)
-                break;
-        }
+//            if (range.start != previousRange.start ||
+//                    range.length != previousRange.length ||
+//                    range.format != previousRange.format)
+//                break;
+//        }
 
-        if (index == formats.size())
-            return;
-    }
+//        if (index == formats.size())
+//            return;
+//    }
 
-    formats_to_apply += formats;
+//    formats_to_apply += formats;
 
-//    bool wasInReformatBlocks = d->inReformatBlocks;
-//    d->inReformatBlocks = true;
-    block.layout() -> setFormats(formats_to_apply);
-    doc -> markContentsDirty(block.position(), blockLength - 1);
-//    inReformatBlocks = wasInReformatBlocks;
-}
+////    bool wasInReformatBlocks = d->inReformatBlocks;
+////    d->inReformatBlocks = true;
+//    block.layout() -> setFormats(formats_to_apply);
+//    doc -> markContentsDirty(block.position(), blockLength - 1);
+////    inReformatBlocks = wasInReformatBlocks;
+//}
 
 void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
 //    rehighlightPending = false;
