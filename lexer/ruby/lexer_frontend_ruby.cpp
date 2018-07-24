@@ -638,7 +638,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     if (!parseHeredoc(state))
                         goto exit;
                 break;}
-                case lex_commentary_continue: goto handle_multiline_comment;
+                case lex_commentary_continue:
+                    ++state -> buffer;
+                    goto handle_multiline_comment;
                 case lex_command_continue: {
                     if (!parseCommand(state))
                         goto exit;
@@ -719,7 +721,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 else if (ECHAR1 == 'b') { // =begin
                    if (ECHAR2 == 'e' && ECHAR3 == 'g' &&
                         ECHAR4 == 'i' && ECHAR5 == 'n') {
-                            state -> buffer += 5;
+                            state -> buffer += 6;
 
                             state -> stack -> push(lex_commentary_start);
 
@@ -733,7 +735,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                                     }
                                 }
 
-                               if (!is_ended) {
+                                if (!is_ended) {
                                     state -> stack -> push(lex_commentary_start);
                                     state -> moveBufferToEnd();
                                     state -> next_offset = 0;
@@ -742,7 +744,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                                     state -> stack -> push(lex_commentary_continue);
                                     state -> setStatus(LexerControl::ls_comment);
                                     goto exit;
-                               }
+                                }
                    }
                 }
 
