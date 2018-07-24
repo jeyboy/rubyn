@@ -110,13 +110,16 @@ struct LexerControl {
     inline bool isBufferEof() { return *buffer == 0; }
 
     inline void cachingPredicate(const bool & ignore_para = false) {
-        lex_prev_word = lex_word;
         cached_str_pos = bufferPos();
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
 
-        if (!ignore_para && cached_length)
+        if (lex_word != lex_none)
+            lex_prev_word = lex_word;
+
+        if (cached_length && !ignore_para) {
             attachPara(cached);
+        }
     }
     inline void cachingDelimiter() {
         lex_prev_delimiter = lex_delimiter;

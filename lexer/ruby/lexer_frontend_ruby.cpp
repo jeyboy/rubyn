@@ -79,9 +79,9 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
             if (state -> lex_word == lex_word)
                 registerVariable(state);
 
-            Identifier highlightable = Grammar::obj().toHighlightable(state -> lex_word);
+            Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
             if (highlightable == hid_none) {
-                highlightable = state -> grammar -> toHighlightable(state -> lex_word);
+                highlightable = state -> grammar -> toHighlightable(state -> lex_prev_word);
             }
 
             if (highlightable != hid_none)
