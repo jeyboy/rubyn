@@ -152,19 +152,6 @@ struct LexerControl {
         token -> lexem = lexem;
         token -> length += cached_length;
     }
-//    inline void updateSubToken(const Lexem & lexem) {
-//        TokenCell * prev = token -> prev;
-//        prev -> lexem = lexem;
-//        light(prev);
-//    }
-
-//    inline void light(TokenCell * tcell) {
-//        lighter -> setFormat(
-//            tcell -> start_pos,
-//            tcell -> length,
-//            HighlightFormatFactory::obj().getFormatFor(tcell -> lexem)
-//        );
-//    }
 
     inline void light(const Identifier & uid) {
         bool has_predicate = cached_length > 0;

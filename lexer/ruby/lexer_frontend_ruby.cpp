@@ -148,279 +148,255 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
 }
 
 bool LexerFrontend::parseNumber(LexerControl * state) {
-    //            //    +3
-    //            //    3.2e23
-    //            //    -4.70e+9
-    //            //    -.2E-4
-    //            //    -7.6603
+    //    +3
+    //    3.2e23
+    //    -4.70e+9
+    //    -.2E-4
+    //    -7.6603
 
-    //            case '0':
-    //            case '1':
-    //            case '2':
-    //            case '3':
-    //            case '4':
-    //            case '5':
-    //            case '6':
-    //            case '7':
-    //            case '8':
-    //            case '9': {
-    //                if (isWord(ECHAR_PREV1))
-    //                    goto iterate;
+    bool ended = false, has_exp_part = false;
+    StateLexem predef = lex_none;
 
-    //                bool ended = false, has_exp_part = false;
-    //                StateLexem predef = lex_none;
+    if (ECHAR0 == '0') {
+        switch(ECHAR1) {
+            case 'X':
+            case 'x': { predef = lex_hex; break; }
+            case 'B':
+            case 'b': { predef = lex_bin; break; }
+            case 'o':
+            case 'O': { predef = lex_oct; break; }
+            case 'd':
+            case 'D': { predef = lex_dec; break; }
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9': { predef = lex_dec; break;}
+            default: {
+                ended = true;
+                predef = lex_dec;
+            }
+        }
 
-    //                if (ECHAR0 == '0') {
-    //                    switch(ECHAR1) {
-    //                        case 'X':
-    //                        case 'x': { predef = lex_hex; break; }
-    //                        case 'B':
-    //                        case 'b': { predef = lex_bin; break; }
-    //                        case 'o':
-    //                        case 'O': { predef = lex_oct; break; }
-    //                        case 'd':
-    //                        case 'D': { predef = lex_dec; break; }
-    //                        case '0':
-    //                        case '1':
-    //                        case '2':
-    //                        case '3':
-    //                        case '4':
-    //                        case '5':
-    //                        case '6':
-    //                        case '7':
-    //                        case '8':
-    //                        case '9': { predef = lex_dec; break;}
-    //                        default: {
-    //                            ended = true;
-    //                            predef = lex_dec;
-    //                        }
-    //                    }
+        ++state -> buffer;
+    } else predef = lex_dec;
 
-    //                    ++state -> buffer;
-    //                } else predef = lex_dec;
+    bool is_valid = predef != lex_hex && predef != lex_bin;
 
-    //                bool is_valid = predef != lex_hex && predef != lex_bin;
+    while(!ended) {
+        ++state -> buffer;
 
-    //                while(!ended) {
-    //                    ++state -> buffer;
+        switch(ECHAR0) {
+            case '.': {
+                if ((predef & lex_float) == lex_float)
+                    ended = true;
+                else
+                    predef = lex_float;
+            break;}
 
-    //                    switch(ECHAR0) {
-    //                        case '.': {
-    //                            if ((predef & lex_float) == lex_float)
-    //                                ended = true;
-    //                            else
-    //                                predef = lex_float;
-    //                        break;}
+            case 'a':
+            case 'A':
+            case 'b':
+            case 'B':
+            case 'c':
+            case 'C':
+            case 'd':
+            case 'D':
+            case 'f':
+            case 'F': {
+                if (predef != lex_hex) {
+                    state -> cacheAndLightWithMessage(
+                        lex_error,
+                        QByteArrayLiteral("Error in number: wrong literal")
+                    );
 
-    //                        case 'a':
-    //                        case 'A':
-    //                        case 'b':
-    //                        case 'B':
-    //                        case 'c':
-    //                        case 'C':
-    //                        case 'd':
-    //                        case 'D':
-    //                        case 'f':
-    //                        case 'F': {
-    //                            if (predef != lex_hex) {
-    //                                state -> cacheAndLightWithMessage(
-    //                                    lex_error,
-    //                                    QByteArrayLiteral("Error in number: wrong literal")
-    //                                );
+                    return false;
+                } else is_valid = true;
+            break;}
 
-    //                                goto exit;
-    //                            } else is_valid = true;
-    //                        break;}
+            case 'e':
+            case 'E': {
+                if (predef < lex_dec) {
+                    state -> cacheAndLightWithMessage(
+                        lex_error,
+                        QByteArrayLiteral("Error in number: exponent part available only for decimals")
+                    );
 
-    //                        case 'e':
-    //                        case 'E': {
-    //                            if (predef < lex_dec) {
-    //                                state -> cacheAndLightWithMessage(
-    //                                    lex_error,
-    //                                    QByteArrayLiteral("Error in number: exponent part available only for decimals")
-    //                                );
+                    return false;
+                } else if (predef == lex_dec) {
+                    if (has_exp_part) {
+                        state -> cacheAndLightWithMessage(
+                            lex_error,
+                            QByteArrayLiteral("Error in number: double exponent part")
+                        );
+                    } else {
+                        has_exp_part = true;
 
-    //                                goto exit;
-    //                            } else if (predef == lex_dec) {
-    //                                if (has_exp_part) {
-    //                                    state -> cacheAndLightWithMessage(
-    //                                        lex_error,
-    //                                        QByteArrayLiteral("Error in number: double exponent part")
-    //                                    );
-    //                                } else {
-    //                                    has_exp_part = true;
+                        if (ECHAR1 == '-' || ECHAR1 == '+') {
+                            ++state -> buffer;
+                        }
+                    }
+                }
+                else is_valid = true;
+            break;}
 
-    //                                    if (ECHAR1 == '-' || ECHAR1 == '+') {
-    //                                        ++state -> buffer;
-    //                                    }
-    //                                }
-    //                            }
-    //                            else is_valid = true;
-    //                        break;}
+            case '8':
+            case '9': {
+                if (predef < lex_dec) {
+                    state -> cacheAndLightWithMessage(
+                        lex_error,
+                        QByteArrayLiteral("Error in number: 0-7 literals only")
+                    );
 
-    //                        case '8':
-    //                        case '9': {
-    //                            if (predef < lex_dec) {
-    //                                state -> cacheAndLightWithMessage(
-    //                                    lex_error,
-    //                                    QByteArrayLiteral("Error in number: 0-7 literals only")
-    //                                );
-
-    //                                goto exit;
-    //                            }
-    //                        break;}
+                    return false;
+                }
+            break;}
 
 
-    //                        case '2':
-    //                        case '3':
-    //                        case '4':
-    //                        case '5':
-    //                        case '6':
-    //                        case '7': {
-    //                            if (predef < lex_oct) {
-    //                                state -> cacheAndLightWithMessage(
-    //                                    lex_error,
-    //                                    QByteArrayLiteral("Error in number: 0,1 literals only")
-    //                                );
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7': {
+                if (predef < lex_oct) {
+                    state -> cacheAndLightWithMessage(
+                        lex_error,
+                        QByteArrayLiteral("Error in number: 0,1 literals only")
+                    );
 
-    //                                goto exit;
-    //                            }
-    //                        break;}
+                    return false;
+                }
+            break;}
 
-    //                        case '0':
-    //                        case '1': { is_valid = true; }
-    //                        case '_': { break;}
+            case '0':
+            case '1': { is_valid = true; }
+            case '_': { break;}
 
-    //                        default: ended = true;
-    //                    }
-    //                }
+            default: ended = true;
+        }
+    }
 
-    //                if (!is_valid) { // if is hex or is bin and does not have any value: 0x or 0b
-    //                    state -> cacheAndLightWithMessage(
-    //                        lex_error,
-    //                        QByteArrayLiteral("Error in number: must have value")
-    //                    );
+    if (!is_valid) { // if is hex or is bin and does not have any value: 0x or 0b
+        state -> cacheAndLightWithMessage(
+            lex_error,
+            QByteArrayLiteral("Error in number: must have value")
+        );
 
-    //                    goto exit;
-    //                }
+        return false;
+    }
 
-    //                if (!cutWord(state, predef))
-    //                    goto exit;
-
+    return cutWord(state, predef);
 }
 
 bool LexerFrontend::parseString(LexerControl * state) {
-    //                state -> stack -> push(lex_string_start);
+    bool ended = false;
+    bool out_req = false;
+    state -> next_offset = 0;
 
-    //                handle_string:
-    //                    bool ended = false;
-    //                    bool out_req = false;
-    //                    state -> next_offset = 0;
+    while(!ended && !out_req) {
+        ++state -> buffer;
 
-    //                    while(!ended && !out_req) {
-    //                        ++state -> buffer;
+        switch(ECHAR0) {
+            case '\'': {
+                if (ECHAR_PREV1 != '\\') {
+                    ++state -> buffer;
+                    ended = true;
+                }
+            break;}
 
-    //                        switch(ECHAR0) {
-    //                            case '\'': {
-    //                                if (ECHAR_PREV1 != '\\') {
-    //                                    ++state -> buffer;
-    //                                    ended = true;
-    //                                }
-    //                            break;}
-
-    //                            case 0: {
-    //                                out_req = true;
-    //                                state -> setStatus(LexerControl::ls_string);
-    //                                break;
-    //                            }
-    //                        }
-    //                    }
+            case 0: {
+                out_req = true;
+                state -> setStatus(LexerControl::ls_string);
+                break;
+            }
+        }
+    }
 
 
-    //                if (!cutWord(state, out_req ? lex_string_continue : lex_string_end))
-    //                    goto exit;
+    return cutWord(state, out_req ? lex_string_continue : lex_string_end);
 }
 
 bool LexerFrontend::parseEString(LexerControl * state) {
-    //                state -> stack -> push(lex_estring_start);
+    bool ended = false;
+    bool out_req = false;
+    bool def_required = false;
+    state -> next_offset = 0;
 
-    //                handle_estring:
-    //                    bool ended = false;
-    //                    bool out_req = false;
-    //                    bool def_required = false;
-    //                    state -> next_offset = 0;
+    while(!ended && !out_req) {
+        ++state -> buffer;
 
-    //                    while(!ended && !out_req) {
-    //                        ++state -> buffer;
+        switch(ECHAR0) {
+            case '#': {
+                if ((def_required = ended = ECHAR1 == '{'))
+                    ++state -> next_offset;
+            break; }
 
-    //                        switch(ECHAR0) {
-    //                            case '#': {
-    //                                if ((def_required = ended = ECHAR1 == '{'))
-    //                                    ++state -> next_offset;
-    //                            break; }
+            case '"': {
+                if (ECHAR_PREV1 != '\\') {
+                    ++state -> buffer;
+                    ended = true;
+                }
+            break;}
 
-    //                            case '"': {
-    //                                if (ECHAR_PREV1 != '\\') {
-    //                                    ++state -> buffer;
-    //                                    ended = true;
-    //                                }
-    //                            break;}
+            case 0: {
+                out_req = true;
+                state -> setStatus(LexerControl::ls_estring);
+                break;
+            }
+        }
+    }
 
-    //                            case 0: {
-    //                                out_req = true;
-    //                                state -> setStatus(LexerControl::ls_estring);
-    //                                break;
-    //                            }
-    //                        }
-    //                    }
+    bool res = cutWord(state, out_req ? lex_estring_continue : (def_required ? lex_estring_interception : lex_estring_end));
 
+    if (def_required)
+        state -> stack -> push(lex_estring_continue);
 
-    //                if (!cutWord(state, out_req ? lex_estring_continue : (def_required ? lex_estring_interception : lex_estring_end)))
-    //                    goto exit;
-
-    //                if (def_required)
-    //                    state -> stack -> push(lex_estring_continue);
+    return res;
 }
 
 bool LexerFrontend::parseCommand(LexerControl * state) {
-    //                state -> stack -> push(lex_command_start);
+    bool ended = false;
+    bool out_req = false;
+    bool def_required = false;
+    state -> next_offset = 0;
 
-    //                handle_command:
-    //                    bool ended = false;
-    //                    bool out_req = false;
-    //                    bool def_required = false;
-    //                    state -> next_offset = 0;
+    while(!ended && !out_req) {
+        ++state -> buffer;
 
-    //                    while(!ended && !out_req) {
-    //                        ++state -> buffer;
+        switch(ECHAR0) {
+            case '#': {
+                if ((def_required = ended = ECHAR1 == '{'))
+                    ++state -> next_offset;
+            break; }
 
-    //                        switch(ECHAR0) {
-    //                            case '#': {
-    //                                if ((def_required = ended = ECHAR1 == '{'))
-    //                                    ++state -> next_offset;
-    //                            break; }
+            case '`': {
+                if (ECHAR_PREV1 != '\\') {
+                    ++state -> buffer;
+                    ended = true;
+                }
+            break;}
 
-    //                            case '`': {
-    //                                if (ECHAR_PREV1 != '\\') {
-    //                                    ++state -> buffer;
-    //                                    ended = true;
-    //                                }
-    //                            break;}
-
-    //                            case 0: {
-    //                                out_req = true;
-    //                                state -> setStatus(LexerControl::ls_command);
-    //                                break;
-    //                            }
-    //                        }
-    //                    }
+            case 0: {
+                out_req = true;
+                state -> setStatus(LexerControl::ls_command);
+                break;
+            }
+        }
+    }
 
 
-    //                if (!cutWord(state, out_req ? lex_command_continue : (def_required ? lex_command_interception : lex_command_end)))
-    //                    goto exit;
+    bool res = cutWord(state, out_req ? lex_command_continue : (def_required ? lex_command_interception : lex_command_end));
 
-    //                if (def_required)
-    //                    state -> stack -> push(lex_command_continue);
+    if (def_required)
+        state -> stack -> push(lex_command_continue);
+
+    return res;
 }
 
 bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
@@ -624,6 +600,53 @@ void LexerFrontend::lexicate(LexerControl * state) {
 //        they indicate the continuation of a statement.
     bool exit_required = false;
 
+    continue_mark:
+        StateLexem top = state -> stack -> touch();
+
+        if (Grammar::obj().isContinious(top)) {
+            if (Grammar::obj().isStackDroppable(top)) {
+                state -> stack -> drop();
+                --state -> buffer;
+            }
+
+            switch(top) {
+                case lex_string_continue: {
+                    if (!parseString(state))
+                        goto exit;
+                break;}
+                case lex_estring_continue:  {
+                    if (!parseEString(state))
+                        goto exit;
+                break;}
+                case lex_regexp_continue: {
+                    if (!parseRegexp(state))
+                        goto exit;
+                break;}
+
+                case lex_percent_presentation_continue:
+                case lex_epercent_presentation_continue: {
+                    if (!parsePercentagePresenation(state))
+                        goto exit;
+                break;}
+
+                case lex_cheredoc_continue:
+                case lex_cheredoc_intended_continue:
+                case lex_eheredoc_continue:
+                case lex_eheredoc_intended_continue:
+                case lex_heredoc_continue:
+                case lex_heredoc_intended_continue: {
+                    if (!parseHeredoc(state))
+                        goto exit;
+                break;}
+                case lex_commentary_continue: goto handle_multiline_comment;
+                case lex_command_continue: {
+                    if (!parseCommand(state))
+                        goto exit;
+                break;}
+                default:;
+            };
+        }
+
     while(!exit_required) {
         switch(ECHAR0) {
             case ' ':
@@ -637,8 +660,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '\r':
             case '\n':
             case '\v': {
-//                if(!cutWord(state))
-//                    goto exit;
+                if(!cutWord(state)) goto exit;
             break;}
 
             case '.': {
@@ -649,23 +671,25 @@ void LexerFrontend::lexicate(LexerControl * state) {
                         ++state -> next_offset;
                 }
 
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
             case '`': {
-                parseCommand(state);
+                state -> stack -> push(lex_command_start);
+                if (!parseCommand(state)) goto exit;
             break;}
 
 
             case '\'': {
-                parseString(state);
+                state -> stack -> push(lex_string_start);
+                if (!parseString(state)) goto exit;
             break;}
 
 
             case '"': {
-                parseEString(state);
+                state -> stack -> push(lex_estring_start);
+                if (!parseEString(state)) goto exit;
             break;}
 
 
@@ -679,8 +703,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     }
                 }
 
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
@@ -698,41 +721,32 @@ void LexerFrontend::lexicate(LexerControl * state) {
                         ECHAR4 == 'i' && ECHAR5 == 'n') {
                             state -> buffer += 5;
 
-//                            handle_multiline_comment:
-//                                bool ended = false;
-//                                bool out_req = false;
-//                                state -> stack -> push(lex_commentary_start);
+                            state -> stack -> push(lex_commentary_start);
 
-//                                while(!ended && !out_req) {
-//                                    ++state -> buffer;
+                            handle_multiline_comment:
+                                bool is_ended = false;
 
-//                                    switch(ECHAR0) {
-//                                        case '=': {
-//                                            if (ECHAR1 == 'e' && ECHAR2 == 'n' && ECHAR3 == 'd')
-//                                                ended = true;
-//                                                state -> buffer += 4;
-//                                        break;}
+                                if (state -> isBufferStart()) {
+                                    if (ECHAR0 == '=' && ECHAR1 == 'e' && ECHAR2 == 'n' && ECHAR3 == 'd') {
+                                        is_ended = true;
+                                        state -> buffer += 4;
+                                    }
+                                }
 
-//                                        case 0: {
-//                                            out_req = true;
-//                                            cutWord(state, lex_commentary_continue);
-//                                            state -> stack -> push(lex_commentary_continue);
-//                                            state -> setStatus(LexerControl::ls_comment);
+                               if (!is_ended) {
+                                    state -> stack -> push(lex_commentary_start);
+                                    state -> moveBufferToEnd();
+                                    state -> next_offset = 0;
 
-//                                            goto exit;
-//                                        break;}
-
-//                                        default:;
-//                                    }
-//                                }
+                                    cutWord(state, lex_commentary_continue);
+                                    state -> stack -> push(lex_commentary_continue);
+                                    state -> setStatus(LexerControl::ls_comment);
+                                    goto exit;
+                               }
                    }
-                } else if (ECHAR1 == 'e' && ECHAR2 == 'n' && ECHAR3 == 'd') {
-                    state -> buffer += 4;
-                    state -> next_offset = 0;
                 }
 
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
@@ -744,8 +758,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == '=')
                     ++state -> next_offset;
 
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
@@ -754,122 +767,117 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == '&' || ECHAR1 == '.')
                     ++state -> next_offset;
 
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
 
             case '!': {
-//                if (!isBlank(ECHAR_PREV1))
-//                    goto iterate;
+                if (isAlphaNum(ECHAR_PREV1))
+                    goto iterate;
 
                 if (ECHAR1 == '~' || ECHAR1 == '=')
                     ++state -> next_offset;
 
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
 
             case '?': {
-//                if (!isBlank(ECHAR_PREV1))
-//                    goto iterate;
+                if (isAlphaNum(ECHAR_PREV1)) goto iterate;
 
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
             case '<': {
-//                StateLexem lex = lex_none;
+                StateLexem lex = lex_none;
 
-//                if (ECHAR1 == '<') {
-//                    ++state -> next_offset;
+                if (ECHAR1 == '<') {
+                    ++state -> next_offset;
 
-//                    if (!isBlank(ECHAR2) && (state -> isBufferStart() || !isWord(ECHAR_PREV1))) {
-//                        const char * curr = state -> buffer + 2;
-//                        bool is_intended = false;
+                    if (!isBlank(ECHAR2) && (state -> isBufferStart() || !isWord(ECHAR_PREV1))) {
+                        const char * curr = state -> buffer + 2;
+                        bool is_intended = false;
 
-//                        if (*curr == '-' || *curr == '~') {
-//                            ++state -> next_offset;
-//                            curr++;
-//                            is_intended = true;
-//                        }
+                        if (*curr == '-' || *curr == '~') {
+                            ++state -> next_offset;
+                            curr++;
+                            is_intended = true;
+                        }
 
-//                        const char * control = curr;
-//                        bool is_simple = *curr == '\'';
-//                        bool is_command = *curr == '`';
-//                        bool is_quoted = is_simple || is_command || *curr == '"';
+                        const char * control = curr;
+                        bool is_simple = *curr == '\'';
+                        bool is_command = *curr == '`';
+                        bool is_quoted = is_simple || is_command || *curr == '"';
 
-//                        lex =
-//                            is_simple ?
-//                                is_intended ? lex_heredoc_intended_mark : lex_heredoc_mark
-//                                  :
-//                                is_command ?
-//                                    is_intended ? lex_cheredoc_intended_mark : lex_cheredoc_mark
-//                                        :
-//                                    is_intended ? lex_eheredoc_intended_mark : lex_eheredoc_mark;
+                        lex =
+                            is_simple ?
+                                is_intended ? lex_heredoc_intended_mark : lex_heredoc_mark
+                                  :
+                                is_command ?
+                                    is_intended ? lex_cheredoc_intended_mark : lex_cheredoc_mark
+                                        :
+                                    is_intended ? lex_eheredoc_intended_mark : lex_eheredoc_mark;
 
-//                        if (is_quoted) {
-//                            bool ended = false;
+                        if (is_quoted) {
+                            bool ended = false;
 
-//                            while(!ended) {
-//                                switch(*++curr) {
-//                                    case '\'':
-//                                    case '"':
-//                                    case '`': {
-//                                        if (*control == *curr)
-//                                            ended = true;
-//                                    break;}
+                            while(!ended) {
+                                switch(*++curr) {
+                                    case '\'':
+                                    case '"':
+                                    case '`': {
+                                        if (*control == *curr)
+                                            ended = true;
+                                    break;}
 
-//                                    case 0: {
-//                                        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Heredoc mark is not closed"));
-//                                        ended = true;
-//                                    break;}
-//                                }
-//                            }
-//                            ++control;
-//                        }
-//                        else while(isWord(*(++curr)));
+                                    case 0: {
+                                        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Heredoc mark is not closed"));
+                                        ended = true;
+                                    break;}
+                                }
+                            }
+                            ++control;
+                        }
+                        else while(isWord(*(++curr)));
 
 
-//                        QByteArray doc_name(control, curr - control);
-//                        state -> buffer += curr - state -> buffer + (is_quoted ? 1 : 0);
-//                        state -> next_offset = 0;
+                        QByteArray doc_name(control, curr - control);
+                        state -> buffer += curr - state -> buffer + (is_quoted ? 1 : 0);
+                        state -> next_offset = 0;
 
-//                        //INFO: stacked heredocs going in revert order so we must to insert new heredoc before previous if heredocs is stacked
-//                        StateLexem top = Grammar::obj().toHeredocContinious(state -> stack -> touch());
-//                        if (top != lex_none) {
-//                            STACK_INT_TYPE level = 0;
-//                            while(Grammar::obj().toHeredocContinious(state -> stack -> touch(++level)) != lex_none);
-//                            state -> stack -> pushToLevel(level, lex, doc_name);
-//                        }
-//                        else {
-//                            state -> stack -> push(lex, doc_name);
-//                            state -> setStatus(
-//                                is_simple ?
-//                                    is_intended ? LexerControl::ls_heredoc_intended : LexerControl::ls_heredoc
-//                                      :
-//                                    is_command ?
-//                                        is_intended ? LexerControl::ls_cheredoc_intended : LexerControl::ls_cheredoc
-//                                            :
-//                                        is_intended ? LexerControl::ls_eheredoc_intended : LexerControl::ls_eheredoc
-//                            );
-//                        }
-//                    }
-//                } else {
-//                    if (ECHAR1 == '=') {
-//                        ++state -> next_offset;
+                        //INFO: stacked heredocs going in revert order so we must to insert new heredoc before previous if heredocs is stacked
+                        StateLexem top = Grammar::obj().toHeredocContinious(state -> stack -> touch());
+                        if (top != lex_none) {
+                            STACK_INT_TYPE level = 0;
+                            while(Grammar::obj().toHeredocContinious(state -> stack -> touch(++level)) != lex_none);
+                            state -> stack -> pushToLevel(level, lex, doc_name);
+                        }
+                        else {
+                            state -> stack -> push(lex, doc_name);
+                            state -> setStatus(
+                                is_simple ?
+                                    is_intended ? LexerControl::ls_heredoc_intended : LexerControl::ls_heredoc
+                                      :
+                                    is_command ?
+                                        is_intended ? LexerControl::ls_cheredoc_intended : LexerControl::ls_cheredoc
+                                            :
+                                        is_intended ? LexerControl::ls_eheredoc_intended : LexerControl::ls_eheredoc
+                            );
+                        }
+                    }
+                } else {
+                    if (ECHAR1 == '=') {
+                        ++state -> next_offset;
 
-//                        if (ECHAR2 == '>')
-//                            ++state -> next_offset;
-//                    }
-//                }
+                        if (ECHAR2 == '>')
+                            ++state -> next_offset;
+                    }
+                }
 
-//                if (!cutWord(state, lex))
-//                    goto exit;
+                if (!cutWord(state, lex)) goto exit;
             break;}
 
 
@@ -877,63 +885,49 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == '>' || ECHAR1 == '=')
                     ++state -> next_offset;
 
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
             case '[': {
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
             case ']': {
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
             case '{': {
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
             case '}': {
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
 
-//                StateLexem top = state -> stack -> touch();
-//                StateLexem top_conv = Grammar::obj().fromContinious(top);
+                StateLexem top = state -> stack -> touch();
+                StateLexem top_conv = Grammar::obj().fromContinious(top);
 
-//                if (top_conv != lex_none) { // after interpolation
-//                    if (Grammar::obj().isStackDroppable(top))
-//                        state -> stack -> pushToLevel(1, top_conv);
+                if (top_conv != lex_none) { // after interpolation
+                    if (Grammar::obj().isStackDroppable(top))
+                        state -> stack -> pushToLevel(1, top_conv);
 
-//                    goto continue_mark;
-//                }
+                    goto continue_mark;
+                }
             break;}
 
 
             case '#': { // inline comment
-//                StateLexem predef = lex_none;
-//                bool ended = false;
+                StateLexem predef = lex_none;
 
-//                if (ECHAR1 == '{' && Grammar::obj().isInterpolable(state -> stack -> touch())) {
-//                    ++state -> next_offset;
-//                } else {
-//                    predef = lex_inline_commentary;
+                if (ECHAR1 == '{' && Grammar::obj().isInterpolable(state -> stack -> touch())) {
+                    ++state -> next_offset;
+                } else {
+                    predef = lex_inline_commentary;
+                    state -> moveBufferToEnd();
+                    state -> next_offset = 0;
+                }
 
-//                    while(!ended) {
-//                        ++state -> buffer;
-
-//                        switch(ECHAR0) {
-//                            case 0: { ended = true; break;}
-//                        }
-//                    }
-
-//                    state -> next_offset = 0;
-//                }
-
-//                if (!cutWord(state, predef) || ended)
-//                    goto exit;
+                if (!cutWord(state, predef))
+                    goto exit;
             break;}
 
 
@@ -941,8 +935,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == '>' || ECHAR1 == '=')
                     ++state -> next_offset;
 
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
@@ -950,8 +943,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == '=')
                     ++state -> next_offset;
 
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
@@ -965,10 +957,10 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '7':
             case '8':
             case '9': {
-//                if (isWord(ECHAR_PREV1))
-//                    goto iterate;
+                if (isWord(ECHAR_PREV1))
+                    goto iterate;
 
-                parseNumber(state);
+                if (!parseNumber(state)) goto exit;
             break;}
 
 
@@ -976,71 +968,67 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == '*' || ECHAR1 == '=')
                     ++state -> next_offset;
 
-//                if (!cutWord(state))
-//                    goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
             case '%': {
-//                StateLexem res = lex_none;
-//                bool shorted = false;
+                StateLexem res = lex_none;
+                bool shorted = false;
 
-//                switch(ECHAR1) {
-//                    case '=': { ++state -> next_offset; break; }
-//                    case '/': shorted = true;
-//                    case 'l': // Interpolated Array of Symbols
-//                    case 'Q': // double quoted string
-//                    case 'r': // Regular Expression
-//                    case 'W': // Array of double quoted Strings
-//                    case 'x': // Backtick (capture subshell result)
-//                        { res = lex_epercent_presentation_start; break;}
+                switch(ECHAR1) {
+                    case '=': { ++state -> next_offset; break; }
+                    case '/': shorted = true;
+                    case 'l': // Interpolated Array of Symbols
+                    case 'Q': // double quoted string
+                    case 'r': // Regular Expression
+                    case 'W': // Array of double quoted Strings
+                    case 'x': // Backtick (capture subshell result)
+                        { res = lex_epercent_presentation_start; break;}
 
-//                    case 'i': // Array of Symbols
-//                    case 'q': // single quoted string
-//                    case 's': // Symbol
-//                    case 'w': // Array of Strings
-//                        { res = lex_percent_presentation_start; break;}
-//                };
+                    case 'i': // Array of Symbols
+                    case 'q': // single quoted string
+                    case 's': // Symbol
+                    case 'w': // Array of Strings
+                        { res = lex_percent_presentation_start; break;}
+                };
 
-//                if (res != lex_none) {
-//                    state -> next_offset = 0;
-//                    state -> stack -> push(res, QByteArray(1, shorted ? '/' : Grammar::obj().percentagePresentationBlocker(ECHAR2)));
+                if (res != lex_none) {
+                    state -> next_offset = 0;
+                    state -> stack -> push(res, QByteArray(1, shorted ? '/' : Grammar::obj().percentagePresentationBlocker(ECHAR2)));
 
-//                    if (state -> buffer != state -> prev)
-//                        if (!cutWord(state, res))
-//                            goto exit;
+                    if (state -> buffer != state -> prev)
+                        if (!cutWord(state, res))
+                            goto exit;
 
-//                    state -> buffer += shorted ? 2 : 3;
-//                    if (!parsePercentagePresenation(state))
-//                        goto exit;
-//                } else {
-//                    if (!cutWord(state))
-//                        goto exit;
-//                }
+                    state -> buffer += shorted ? 2 : 3;
+                    if (!parsePercentagePresenation(state))
+                        goto exit;
+                } else {
+                    if (!cutWord(state))
+                        goto exit;
+                }
             break;}
 
 
             case '/': {
-//                if (ECHAR1 == '=') {
-//                    ++state -> next_offset;
+                if (ECHAR1 == '=') {
+                    ++state -> next_offset;
 
-//                    if (!cutWord(state))
-//                        goto exit;
-//                } else {
-//                    bool is_regexp = true; //state -> new_line_state != lex_predefined;
+                    if (!cutWord(state)) goto exit;
+                } else {
+                    bool is_regexp = true; //state -> new_line_state != lex_predefined;
 
-//                    state -> next_offset = is_regexp ? 0 : 1;
+                    state -> next_offset = is_regexp ? 0 : 1;
 
-//                    if (!cutWord(state))
-//                        goto exit;
+                    if (!cutWord(state)) goto exit;
 
-//                    if (is_regexp) {
-//                        state -> stack -> push(lex_regexp_start);
+                    if (is_regexp) {
+                        state -> stack -> push(lex_regexp_start);
 
-//                        if (!parseRegexp(state))
-//                            goto exit;
-//                    }
-//                }
+                        if (!parseRegexp(state)) goto exit;
+                    }
+                }
             break;}
 
 
@@ -1048,7 +1036,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == '@')
                     ++state -> buffer;
 
-//                cutWord(state);
+                if (!cutWord(state)) goto exit;
             break;}
 
 
@@ -1120,30 +1108,40 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     }
                 }
 
-//                if (has_match) {
-//                    if (!cutWord(state))
-//                        goto exit;
-//                } else
-//                    goto iterate;
+                if (has_match) {
+                    if (!cutWord(state)) goto exit;
+                }
+                else goto iterate;
             break;}
 
 
             case 0: {
-//                state -> next_offset = 0;
-//                cutWord(state);
-//                goto exit;
+                state -> next_offset = 0;
+                cutWord(state);
+                goto exit;
             break;}
 
 
 
-            default: ;
-//                iterate:
-//                    // Ruby identifier names may consist of alphanumeric characters and the
-//                    //  underscore character ( _ ).
-//                    // check if word isWord(*window)
-//                    ++state -> buffer;
+            default:
+                iterate:
+                    // Ruby identifier names may consist of alphanumeric characters and the
+                    //  underscore character ( _ ).
+                    // check if word isWord(*window)
+                    ++state -> buffer;
         }
     }
+
+    exit:
+        StateLexem replaceable = Grammar::obj().toHeredocContinious(state -> stack -> touch());
+        if (replaceable != lex_none)
+            state -> stack -> replace(replaceable, false);
+
+
+
+
+
+
 
 
 
