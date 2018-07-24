@@ -8,10 +8,9 @@
 class IGrammar {
 protected:
     StateLexem rules[lex_max][lex_max] = {{lex_error}};
+    virtual ~IGrammar();
 public:
-    inline StateLexem translate(const StateLexem & state, const StateLexem & input) {
-        return rules[state][input];
-    }
+    StateLexem translate(const StateLexem & state, const StateLexem & input);
 
     virtual Identifier toHighlightable(const StateLexem & /*lexem*/) = 0;
 };

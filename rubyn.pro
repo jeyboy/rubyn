@@ -70,7 +70,8 @@ SOURCES += main.cpp\
     highlighter/highlight_format_factory.cpp \
     lexer/ruby/predefined_ruby.cpp \
     lexer/ruby/grammar_ruby.cpp \
-    highlighter/block_user_data.cpp
+    highlighter/block_user_data.cpp \
+    lexer/igrammar.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \

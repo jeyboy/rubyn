@@ -171,7 +171,6 @@ struct LexerControl {
             );
         }
     }
-
     inline void light(const StateLexem & lexem) {
         light(grammar -> toHighlightable(lexem));
     }

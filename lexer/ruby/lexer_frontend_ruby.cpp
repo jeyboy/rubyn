@@ -34,26 +34,26 @@ void LexerFrontend::registerVariable(LexerControl * state) {
 }
 
 void LexerFrontend::translateState(LexerControl * state) {
-    StateLexem new_state = Ruby::Grammar::obj().translate(state -> lex_prev_word, state -> lex_delimiter);
+    StateLexem new_state = state -> grammar -> translate(state -> lex_prev_word, state -> lex_delimiter);
 
     if (new_state == lex_error) {
         state -> lightWithMessage(
             lex_error,
             ERROR_STATE(QByteArrayLiteral("Wrong prev delimiter satisfy state!!!"), state -> lex_prev_word, state -> lex_delimiter)
         );
-//                return false;
+        //return false;
     }
 
     state -> lex_prev_word = new_state;
 
-    new_state = Ruby::Grammar::obj().translate(state -> lex_prev_word, state -> lex_word);
+    new_state = state -> grammar -> translate(state -> lex_prev_word, state -> lex_word);
 
     if (new_state == lex_error) {
         state -> lightWithMessage(
             lex_error,
             ERROR_STATE(QByteArrayLiteral("Wrong token state!!!"), state -> lex_prev_word, state -> lex_word)
         );
-//                return false;
+        //return false;
     }
 
     state -> lex_word = new_state;
@@ -68,13 +68,9 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
         state -> lex_word =
             has_predefined ? predefined_lexem : Predefined::obj().lexem(state -> cached);
 
-        Identifier prev_highlightable = hid_none;
-
         if (state -> cached_length) {
             if (state -> lex_word == lex_word)
                 identifyWordType(state);
-
-            prev_highlightable = state -> grammar -> toHighlightable(state -> lex_word);
         }
 
         translateState(state);
@@ -84,8 +80,9 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
                 registerVariable(state);
 
             Identifier highlightable = Grammar::obj().toHighlightable(state -> lex_word);
-            if (highlightable == hid_none)
-                highlightable = prev_highlightable;
+            if (highlightable == hid_none) {
+                highlightable = state -> grammar -> toHighlightable(state -> lex_word);
+            }
 
             if (highlightable != hid_none)
                 state -> light(highlightable);
@@ -93,16 +90,15 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
 
         state -> attachToken(state -> lex_word);
 
+//        Lexem cont_lexem = GrammarRuby::obj().fromContinious(state -> lex_word);
 
-//            Lexem cont_lexem = GrammarRuby::obj().fromContinious(state -> lex_word);
+//        if (cont_lexem != lex_none) {
+//            Lexem & top = state -> stack -> touch();
 
-//            if (cont_lexem != lex_none) {
-//                Lexem & top = state -> stack -> touch();
-
-//                if (top == cont_lexem)
-//                    state -> stack -> push(state -> lex_word);
-//                else state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
-//            }
+//            if (top == cont_lexem)
+//                state -> stack -> push(state -> lex_word);
+//            else state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
+//        }
     }
     else state -> lex_word = lex_none;
 
@@ -112,14 +108,14 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
 
         if (state -> lex_word == lex_none) {
             StateLexem new_state =
-                Grammar::obj().translate(state -> lex_prev_delimiter, state -> lex_delimiter);
+                state -> grammar -> translate(state -> lex_prev_delimiter, state -> lex_delimiter);
 
             if (new_state == lex_error) {
                 state -> lightWithMessage(
                     lex_error,
                     ERROR_STATE(QByteArrayLiteral("Wrong delimiter satisfy state!!!"), state -> lex_prev_delimiter, state -> lex_delimiter)
                 );
-        //                return false;
+                //return false;
             }
 
             state -> lex_delimiter = new_state;
@@ -131,16 +127,6 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
             state -> attachToken(state -> lex_delimiter);
         }
     }
-
-//        if (state -> lex_delimiter == lex_dot) {
-//            switch(state -> sublastToken()) {
-//                case lex_method_def_name: {
-//                    state -> updateSubToken(lex_method_def_scope);
-//                break;}
-
-//                default:;
-//            }
-//        }
 
     state -> dropCached();
 
