@@ -145,7 +145,7 @@ void Highlighter::setCurrentBlockState(const int & new_state) {
 void Highlighter::setExtraFormats(const QTextBlock & block, QVector<QTextLayout::FormatRange> & formats) {
     const int blockLength = block.length();
 
-    if (block.layout() == 0 || blockLength == 0)
+    if (block.layout() == nullptr || blockLength == 0)
         return;
 
     Utils::sort(formats, byStartOfRange);
