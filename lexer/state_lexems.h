@@ -13,7 +13,8 @@
  // = (1ULL << 1),
 
 enum StateLexem : LEXEM_TYPE {
-    lex_none = 0,
+    lex_error = 0,
+    lex_none,
 
     lex_yield,
     lex_raise,
@@ -411,7 +412,6 @@ enum StateLexem : LEXEM_TYPE {
     lex_end_of_code,
 
 
-    lex_error,
     lex_undefined,
     lex_end_line,
     lex_end_doc,

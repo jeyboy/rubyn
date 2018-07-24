@@ -598,8 +598,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
 //        Ruby interprets semicolons and newline characters as the ending of a statement.
 //        However, if Ruby encounters operators, such as +, −, or backslash at the end of a line,
 //        they indicate the continuation of a statement.
-    bool exit_required = false;
-
     continue_mark:
         StateLexem top = state -> stack -> touch();
 
@@ -649,7 +647,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
             };
         }
 
-    while(!exit_required) {
+    while(true) {
         switch(ECHAR0) {
             case ' ':
             case ',':
@@ -664,6 +662,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '\v': {
                 if(!cutWord(state)) goto exit;
             break;}
+
 
             case '.': {
                 if (ECHAR1 == '.') { // is range
@@ -752,7 +751,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
             break;}
 
 
-
             case '|': {
                 if (ECHAR1 == '|')
                     ++state -> next_offset;
@@ -764,14 +762,12 @@ void LexerFrontend::lexicate(LexerControl * state) {
             break;}
 
 
-
             case '&': {
                 if (ECHAR1 == '&' || ECHAR1 == '.')
                     ++state -> next_offset;
 
                 if (!cutWord(state)) goto exit;
             break;}
-
 
 
             case '!': {
@@ -783,7 +779,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
                 if (!cutWord(state)) goto exit;
             break;}
-
 
 
             case '?': {
@@ -928,8 +923,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     state -> next_offset = 0;
                 }
 
-                if (!cutWord(state, predef))
-                    goto exit;
+                if (!cutWord(state, predef)) goto exit;
             break;}
 
 
@@ -1122,7 +1116,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 cutWord(state);
                 goto exit;
             break;}
-
 
 
             default:
