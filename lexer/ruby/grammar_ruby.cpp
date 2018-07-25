@@ -59,6 +59,9 @@ Grammar::Grammar() : IGrammar() {
     rules[lex_class_def_extender][lex_end_line] = lex_block_start;
 
     rules[lex_class_def_inheritance][lex_word] = lex_class_def_ancestor;
+    rules[lex_class_def_inheritance][lex_resolution] = lex_class_def_resolution;
+    rules[lex_class_def_ancestor][lex_resolution] = lex_class_def_resolution;
+    rules[lex_class_def_resolution][lex_word] = lex_class_def_ancestor;
     rules[lex_class_def_ancestor][lex_semicolon] = lex_block_start;
     rules[lex_class_def_ancestor][lex_end_line] = lex_block_start;
 
@@ -291,6 +294,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_method_def_var_name:
         case lex_method_call_block_var_name:
         case lex_class_def_ancestor:
+        case lex_class_def_resolution:
         case lex_class_def_extender:
         case lex_lambda_def_var_name:
         case lex_proc_def_var_name:

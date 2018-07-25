@@ -54,8 +54,8 @@ void HighlightFormatFactory::registerAssigmentFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
     format.setForeground(QColor::fromRgb(0, 92, 197));
-//        _formats.insert(lex_var, format);
 
+    _formats.insert(hid_var, format);
     _formats.insert(hid_symbol, format);
 }
 

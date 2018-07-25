@@ -140,6 +140,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_class_def_extender,
     lex_class_def_inheritance,
     lex_class_def_ancestor,
+    lex_class_def_resolution,
     lex_class_def_block,
     lex_class_def_block_end,
 
