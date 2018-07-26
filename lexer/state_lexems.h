@@ -102,10 +102,12 @@ enum StateLexem : LEXEM_TYPE {
 
 
     lex_method_def,
-    lex_method_def_scope,
-    lex_method_def_scoped,
+    lex_method_def_scope_or_name, // def Goof.tort // Goof in exmp
+//    lex_method_def_scope, // <<
+//    lex_method_def_scoped,
+    lex_method_def_scoped_name, // def self.meth_name // self in exmp
+    lex_method_def_scoped_delimiter, // def self.meth_name // dot in exmp
     lex_method_def_name,
-    lex_method_def_scoped_name,
     lex_method_def_block,
     lex_method_def_block_end,
 //    lex_method_def_args_open,

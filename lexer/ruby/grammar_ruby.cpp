@@ -67,6 +67,19 @@ Grammar::Grammar() : IGrammar() {
 
 
 
+    rules[lex_method_def][lex_word] = lex_method_def_scope_or_name;
+    rules[lex_method_def_scope_or_name][lex_dot] = lex_method_def_scoped_delimiter;
+//    rules[lex_method_def_scope_or_name][lex_blank] = lex_method_def_scoped_delimiter;
+//    rules[lex_method_def_scope_or_name][lex_blanks] = lex_method_def_scoped_delimiter;
+
+    rules[lex_method_def][lex_self] = lex_method_def_scoped_name;
+    rules[lex_method_def_scoped_name][lex_dot] = lex_method_def_scoped_delimiter;
+    rules[lex_method_def_scoped_delimiter][lex_word] = lex_method_def_name;
+//    rules[lex_method_def_name][lex_blank] = lex_method_def_scoped_delimiter;
+//    rules[lex_method_def_name][lex_blanks] = lex_method_def_scoped_delimiter;
+
+
+
 //        rules[lex_module_def][lex_word] = lex_module_def_name;
 //        rules[lex_module_def_resolution][lex_word] = lex_module_def_name;
 //        rules[lex_module_def_name][lex_resolution] = lex_module_def_resolution;
