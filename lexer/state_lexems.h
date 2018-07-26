@@ -103,22 +103,34 @@ enum StateLexem : LEXEM_TYPE {
 
     lex_method_def,
     lex_method_def_scope_or_name, // def Goof.tort // Goof in exmp
-//    lex_method_def_scope, // <<
-//    lex_method_def_scoped,
     lex_method_def_scoped_name, // def self.meth_name // self in exmp
     lex_method_def_scoped_delimiter, // def self.meth_name // dot in exmp
     lex_method_def_name,
     lex_method_def_block,
     lex_method_def_block_end,
-//    lex_method_def_args_open,
-//    lex_method_def_args_close,
+
+
+    lex_method_def_args_start,
+    lex_method_def_arg_attr, // const
+    lex_method_def_arg_type, // int
+    lex_method_def_arg_access_type, // * & and etc
+    lex_method_def_arg_access_typed, // * & and etc
+    lex_method_def_arg_name,
+    lex_method_def_arg_assign,
+    lex_method_def_arg_assign_val,
+    lex_method_def_arg_splitter,
+    lex_method_def_args_end,
+
     lex_method_def_vars_start,
     lex_method_def_var_attr, // const
     lex_method_def_var_type, // int
     lex_method_def_var_access_type, // * & and etc
+    lex_method_def_var_access_typed, // * & and etc
     lex_method_def_var_name,
+    lex_method_def_var_assign,
+    lex_method_def_var_assign_val,
     lex_method_def_vars_splitter,
-    lex_method_def_vars_end,
+//    lex_method_def_vars_end,
 
     lex_method,
 //    lex_method_call_args_open,
@@ -423,6 +435,12 @@ enum StateLexem : LEXEM_TYPE {
     lex_blanks,
     lex_ignore,
 //    lex_chain_item, // service token
+
+//    lef_max_token,
+
+//    lex_def_val_scoped = 1000,
+
+//    lex_max = lef_max_token + lex_def_val_scoped,
 
     lex_max
 };

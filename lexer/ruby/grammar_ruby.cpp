@@ -69,14 +69,38 @@ Grammar::Grammar() : IGrammar() {
 
     rules[lex_method_def][lex_word] = lex_method_def_scope_or_name;
     rules[lex_method_def_scope_or_name][lex_dot] = lex_method_def_scoped_delimiter;
-//    rules[lex_method_def_scope_or_name][lex_blank] = lex_method_def_scoped_delimiter;
-//    rules[lex_method_def_scope_or_name][lex_blanks] = lex_method_def_scoped_delimiter;
+    rules[lex_method_def_scope_or_name][lex_blank] = lex_method_def_vars_start;
+    rules[lex_method_def_scope_or_name][lex_blanks] = lex_method_def_vars_start;
+
+    rules[lex_method_def_vars_start][lex_method_def_var_access_type] = lex_method_def_var_access_typed;
+    rules[lex_method_def_vars_start][lex_word] = lex_method_def_var_name;
+    rules[lex_method_def_var_access_typed][lex_word] = lex_method_def_var_name;
+    rules[lex_method_def_var_name][lex_operator_equality] = lex_method_def_var_assign;
+    rules[lex_method_def_var_assign][lex_expression] = lex_method_def_var_assign_val;
+    rules[lex_method_def_var_assign_val][lex_comma] = lex_method_def_vars_start;
+    rules[lex_method_def_var_assign_val][lex_end_line] = lex_method_call_block;
+    rules[lex_method_def_vars_start][lex_end_line] = lex_method_call_block;
+
+
 
     rules[lex_method_def][lex_self] = lex_method_def_scoped_name;
     rules[lex_method_def_scoped_name][lex_dot] = lex_method_def_scoped_delimiter;
     rules[lex_method_def_scoped_delimiter][lex_word] = lex_method_def_name;
-//    rules[lex_method_def_name][lex_blank] = lex_method_def_scoped_delimiter;
-//    rules[lex_method_def_name][lex_blanks] = lex_method_def_scoped_delimiter;
+    rules[lex_method_def_name][lex_blank] = lex_method_def_vars_start;
+    rules[lex_method_def_name][lex_blanks] = lex_method_def_vars_start;
+    rules[lex_method_def_name][lex_wrap_start] = lex_method_def_args_start;
+    rules[lex_method_def_scope_or_name][lex_wrap_start] = lex_method_def_args_start;
+
+
+    rules[lex_method_def_args_start][lex_method_def_arg_access_type] = lex_method_def_arg_access_typed;
+    rules[lex_method_def_args_start][lex_word] = lex_method_def_arg_name;
+    rules[lex_method_def_arg_access_typed][lex_word] = lex_method_def_arg_name;
+    rules[lex_method_def_arg_name][lex_operator_equality] = lex_method_def_arg_assign;
+    rules[lex_method_def_arg_assign][lex_expression] = lex_method_def_arg_assign_val;
+    rules[lex_method_def_arg_assign_val][lex_comma] = lex_method_def_args_start;
+    rules[lex_method_def_var_assign_val][lex_wrap_end] = lex_method_def_args_end;
+    rules[lex_method_def_args_start][lex_wrap_end] = lex_method_def_args_end;
+    rules[lex_method_def_args_end][lex_end_line] = lex_method_call_block;
 
 
 
