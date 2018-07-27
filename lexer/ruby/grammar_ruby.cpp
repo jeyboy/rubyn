@@ -141,21 +141,6 @@ Grammar::Grammar() : IGrammar() {
 //        rules[lex_method_def_vars_splitter][lex_word] = lex_method_def_var_name;
 }
 
-//    bool Grammar::isPushable(const Lexem & lexem) {
-//        switch(lexem) {
-//            case lex_inline_block_start:
-//                return true;
-
-//            default: return false;
-//        }
-//    }
-
-//    bool Grammar::isPopable(const Lexem & lexem) {
-//        switch(lexem) {
-//            case:;
-//        }
-//    }
-
 StateLexem Grammar::toInterceptor(const StateLexem & lex) {
     switch(lex) {
         case lex_estring_continue: return lex_estring_interception;

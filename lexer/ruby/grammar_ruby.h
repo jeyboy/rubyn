@@ -9,21 +9,6 @@ namespace Ruby {
 
         friend class Singleton<Grammar>;
     public:
-    //    bool isPushable(const Lexem & lexem) {
-    //        switch(lexem) {
-    //            case lex_inline_block_start:
-    //                return true;
-
-    //            default: return false;
-    //        }
-    //    }
-
-    //    bool isPopable(const Lexem & lexem) {
-    //        switch(lexem) {
-    //            case:;
-    //        }
-    //    }
-
         StateLexem toInterceptor(const StateLexem & lex);
 
         char percentagePresentationBlocker(const char & ch);

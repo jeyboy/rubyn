@@ -71,6 +71,10 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
         if (state -> cached_length) {
             if (state -> lex_word == lex_word)
                 identifyWordType(state);
+
+            Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
+            if (highlightable != hid_none)
+                state -> light(highlightable);
         }
 
         translateState(state);
@@ -687,6 +691,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     if (isWord(ECHAR_PREV1)) {
                         ++state -> buffer;
                         state -> next_offset = 0;
+                    } else {
+                        if (state -> strLength() == 0 && isWord(ECHAR1))
+                            goto iterate;
                     }
                 }
 
