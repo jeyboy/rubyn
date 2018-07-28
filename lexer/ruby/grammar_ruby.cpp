@@ -45,6 +45,17 @@ Grammar::Grammar() : IGrammar() {
 
     rules[lex_epercent_presentation_intercepted][lex_interpolation] = lex_inline_block_start;
 
+
+    // MODULE DEFINITION
+
+    rules[lex_module_def][lex_word] = lex_module_def_name;
+    rules[lex_module_def][lex_module_def_resolution] = lex_module_def_resolution;
+    rules[lex_module_def_name][lex_resolution] = lex_module_def_resolution;
+    rules[lex_module_def_resolution][lex_word] = lex_module_def_name;
+
+    rules[lex_module_def_name][lex_end_line] = lex_module_def_block;
+    rules[lex_none][lex_module_def_block_end] = lex_none;
+
     // CLASS DEFINITION
 
     rules[lex_class_def][lex_word] = lex_class_def_name;
@@ -72,12 +83,21 @@ Grammar::Grammar() : IGrammar() {
     rules[lex_method_def_scope_or_name][lex_blank] = lex_method_def_vars_start;
     rules[lex_method_def_scope_or_name][lex_blanks] = lex_method_def_vars_start;
 
-    rules[lex_method_def_vars_start][lex_method_def_var_access_type] = lex_method_def_var_access_typed;
+
+    rules[lex_method_def_vars_start][lex_operator_multiplication] = lex_method_def_var_access_type;
+    rules[lex_method_def_vars_start][lex_operator_exponentiation] = lex_method_def_var_access_type;
+    rules[lex_method_def_vars_start][lex_operator_bit_and] = lex_method_def_var_access_type;
     rules[lex_method_def_vars_start][lex_word] = lex_method_def_var_name;
-    rules[lex_method_def_var_access_typed][lex_word] = lex_method_def_var_name;
+    rules[lex_method_def_var_access_type][lex_word] = lex_method_def_var_name;
     rules[lex_method_def_var_name][lex_operator_equality] = lex_method_def_var_assign;
     rules[lex_method_def_var_assign][lex_expression] = lex_method_def_var_assign_val;
-    rules[lex_method_def_var_assign_val][lex_comma] = lex_method_def_vars_start;
+
+    rules[lex_method_def_var_assign_val][lex_comma] = lex_method_def_vars_splitter;
+    rules[lex_method_def_vars_splitter][lex_operator_multiplication] = lex_method_def_var_access_type;
+    rules[lex_method_def_vars_splitter][lex_operator_exponentiation] = lex_method_def_var_access_type;
+    rules[lex_method_def_vars_splitter][lex_operator_bit_and] = lex_method_def_var_access_type;
+    rules[lex_method_def_vars_splitter][lex_word] = lex_method_def_var_name;
+
     rules[lex_method_def_var_assign_val][lex_end_line] = lex_method_call_block;
     rules[lex_method_def_vars_start][lex_end_line] = lex_method_call_block;
 
@@ -92,12 +112,26 @@ Grammar::Grammar() : IGrammar() {
     rules[lex_method_def_scope_or_name][lex_wrap_start] = lex_method_def_args_start;
 
 
-    rules[lex_method_def_args_start][lex_method_def_arg_access_type] = lex_method_def_arg_access_typed;
+    rules[lex_method_def_args_start][lex_operator_multiplication] = lex_method_def_arg_access_type;
+    rules[lex_method_def_args_start][lex_operator_exponentiation] = lex_method_def_arg_access_type;
+    rules[lex_method_def_args_start][lex_operator_bit_and] = lex_method_def_arg_access_type;
+
     rules[lex_method_def_args_start][lex_word] = lex_method_def_arg_name;
-    rules[lex_method_def_arg_access_typed][lex_word] = lex_method_def_arg_name;
+    rules[lex_method_def_arg_access_type][lex_word] = lex_method_def_arg_name;
     rules[lex_method_def_arg_name][lex_operator_equality] = lex_method_def_arg_assign;
+    rules[lex_method_def_arg_name][lex_comma] = lex_method_def_arg_splitter;
     rules[lex_method_def_arg_assign][lex_expression] = lex_method_def_arg_assign_val;
-    rules[lex_method_def_arg_assign_val][lex_comma] = lex_method_def_args_start;
+    rules[lex_method_def_arg_assign_val][lex_comma] = lex_method_def_arg_splitter;
+
+    rules[lex_method_def_var_assign_val][lex_comma] = lex_method_def_arg_splitter;
+    rules[lex_method_def_arg_splitter][lex_operator_multiplication] = lex_method_def_arg_access_type;
+    rules[lex_method_def_arg_splitter][lex_operator_exponentiation] = lex_method_def_arg_access_type;
+    rules[lex_method_def_arg_splitter][lex_operator_bit_and] = lex_method_def_arg_access_type;
+    rules[lex_method_def_arg_splitter][lex_word] = lex_method_def_arg_name;
+
+
+
+
     rules[lex_method_def_var_assign_val][lex_wrap_end] = lex_method_def_args_end;
     rules[lex_method_def_args_start][lex_wrap_end] = lex_method_def_args_end;
     rules[lex_method_def_args_end][lex_end_line] = lex_method_call_block;
@@ -139,6 +173,30 @@ Grammar::Grammar() : IGrammar() {
 
 //        rules[lex_method_def_vars_splitter][lex_operator_multiplication] = lex_method_def_var_access_type;
 //        rules[lex_method_def_vars_splitter][lex_word] = lex_method_def_var_name;
+
+    rules[lex_word][lex_blank] = lex_method_call_vars_start;
+    rules[lex_word][lex_blanks] = lex_method_call_vars_start;
+
+    rules[lex_word][lex_wrap_start] = lex_method_call_args_start;
+    rules[lex_wrap_start][lex_wrap_end] = lex_method_call_args_close;
+    rules[lex_method_call_args_close][lex_end_line] = lex_none;
+    rules[lex_method_call_args_close][lex_semicolon] = lex_none;
+
+    rules[lex_method][lex_dot] = lex_method_access;
+    rules[lex_word][lex_dot] = lex_method_access;
+    rules[lex_method_access][lex_word] = lex_method;
+
+
+
+//    lex_method_call_args_start,
+//    lex_method_call_args_close,
+//    lex_method_call_arg_entry,
+//    lex_method_call_args_splitter,
+
+//    lex_method_call_vars_start,
+//    lex_method_call_var_entry,
+//    lex_method_call_vars_splitter,
+//    lex_method_call_vars_end,
 }
 
 StateLexem Grammar::toInterceptor(const StateLexem & lex) {
@@ -312,6 +370,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_var_instance:
         case lex_var_object:
         case lex_var_global:
+//        case lex_method:
         case lex_method_def_scoped_name:
         case lex_method_def_var_name:
         case lex_method_call_block_var_name:

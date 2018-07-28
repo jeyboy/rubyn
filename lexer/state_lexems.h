@@ -114,7 +114,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_method_def_arg_attr, // const
     lex_method_def_arg_type, // int
     lex_method_def_arg_access_type, // * & and etc
-    lex_method_def_arg_access_typed, // * & and etc
+//    lex_method_def_arg_access_typed, // * & and etc
     lex_method_def_arg_name,
     lex_method_def_arg_assign,
     lex_method_def_arg_assign_val,
@@ -125,7 +125,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_method_def_var_attr, // const
     lex_method_def_var_type, // int
     lex_method_def_var_access_type, // * & and etc
-    lex_method_def_var_access_typed, // * & and etc
+//    lex_method_def_var_access_typed, // * & and etc
     lex_method_def_var_name,
     lex_method_def_var_assign,
     lex_method_def_var_assign_val,
@@ -133,12 +133,19 @@ enum StateLexem : LEXEM_TYPE {
 //    lex_method_def_vars_end,
 
     lex_method,
-//    lex_method_call_args_open,
-//    lex_method_call_args_close,
+    lex_method_access,
+
+    lex_method_call_args_start,
+    lex_method_call_args_close,
+    lex_method_call_arg_entry,
+    lex_method_call_args_splitter,
+
     lex_method_call_vars_start,
     lex_method_call_var_entry,
     lex_method_call_vars_splitter,
     lex_method_call_vars_end,
+
+
     lex_method_call_block,
     lex_method_call_block_vars_start,
     lex_method_call_block_var_name,

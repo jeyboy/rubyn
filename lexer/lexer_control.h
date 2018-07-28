@@ -195,9 +195,11 @@ struct LexerControl {
     }
 
     inline void attachPara(const QByteArray & pos_para) {
-        const PARA_TYPE & ptype = ParaInfo::paraType(pos_para);
-        if (!ptype)
-            return;
+        attachPara(ParaInfo::paraType(pos_para));
+    }
+
+    inline void attachPara(const PARA_TYPE & ptype) {
+        if (!ptype) return;
 
 //        parasha.append(" ").append(ParaInfo::toString(ptype));
 
