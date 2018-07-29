@@ -1,6 +1,7 @@
 #ifndef LEXER_CONTROL_H
 #define LEXER_CONTROL_H
 
+#include "misc/stack.h"
 #include "state_lexems.h"
 //#include "scopes/scope.h"
 #include "lexer/igrammar.h"
@@ -57,9 +58,11 @@ struct LexerControl {
     StateLexem lex_delimiter;
 
 //    Scope * scope;
-    Stack<StateLexem> * stack;
+//    Stack<StateLexem> * stack;
 //    Stack<Lexem> * chain;
     quint8 next_offset;
+
+    TokenCell * stack_token;
 
     TokenCell * token;
     ParaCell * para;
@@ -77,16 +80,16 @@ struct LexerControl {
     const char * buffer;
     const char * prev;
 
+    Status prev_status;
     Status status;
     BlockUserData * user_data;
 
-    LexerControl(IGrammar * cgrammar, BlockUserData * user_data, Stack<StateLexem> * stack_state = nullptr, Highlighter * lighter = nullptr) :
+    LexerControl(IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, Highlighter * lighter = nullptr, const Status & prev_state = ls_handled) :
         lighter(lighter), grammar(cgrammar),
         lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
-        stack(stack_state == nullptr ? new Stack<StateLexem>(lex_none) : new Stack<StateLexem>(stack_state)),
-        next_offset(1), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()),
+        next_offset(1), stack_token(stack_token), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()),
         control_para(nullptr), last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2), last_light_len(0),
-        start(nullptr), buffer(nullptr), prev(nullptr), status(ls_handled), user_data(user_data)
+        start(nullptr), buffer(nullptr), prev(nullptr), prev_status(prev_state), status(ls_handled), user_data(user_data)
     {}
 
     ~LexerControl() {}
@@ -140,7 +143,7 @@ struct LexerControl {
     }
 
     inline EDITOR_POS_TYPE bufferPos() { return prev - start; }
-    inline EDITOR_LEN_TYPE strLength() { return (EDITOR_LEN_TYPE)(buffer - prev); }
+    inline EDITOR_LEN_TYPE strLength() { return static_cast<EDITOR_LEN_TYPE>(buffer - prev); }
 
     inline StateLexem & sublastToken() { return token -> prev -> lexem; }
     inline StateLexem & lastToken() { return token -> lexem; }

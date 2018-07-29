@@ -7,7 +7,7 @@
 #include "msg_info.h"
 
 #include "misc/token_list.h"
-#include "misc/stack.h"
+//#include "misc/stack.h"
 
 struct BlockUserData : public QTextBlockUserData {
     enum UserDataFlags : DATA_FLAGS_TYPE {
@@ -23,14 +23,14 @@ struct BlockUserData : public QTextBlockUserData {
 
     UserDataFlags flags;
 
+    TokenCell * stack_token;
+
     TokenCell * token_begin;
     TokenCell * token_end; // maybe no need to store end token ?
 
     ParaCell * para_begin;
     ParaCell * para_end; // maybe no need to store end token ?
     ParaCell * para_control;
-
-    Stack<StateLexem> * stack;
 
     QList<MsgInfo> msgs;
 
@@ -43,16 +43,14 @@ struct BlockUserData : public QTextBlockUserData {
 
     ParaCell * lineControlPara();
 
-    void syncLine(TokenCell * sync_token, ParaCell * sync_para, ParaCell * control_sync_para, Stack<StateLexem> * stack_state);
-
-    Stack<StateLexem> * stackState();
+    void syncLine(TokenCell * stack_sync_token, TokenCell * sync_token, ParaCell * sync_para, ParaCell * control_sync_para);
 
     DATA_FLAGS_TYPE foldingState();
-    bool hasBreakpoint();
-
     void setFoldingState(const UserDataFlags & new_state);
-
     void invertFoldingState();
+
+    bool hasBreakpoint();
+    void setBreakpoint(const bool & set);
 };
 
 #endif // BLOCK_USER_DATA_H

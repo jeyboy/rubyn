@@ -1,14 +1,13 @@
 #include "block_user_data.h"
 
 BlockUserData::BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev, ParaCell * para_prev, const UserDataFlags & data_flags)
-    : flags(data_flags), token_begin(nullptr), token_end(nullptr), para_begin(nullptr), para_end(nullptr), para_control(nullptr), stack(nullptr)
+    : flags(data_flags), stack_token(nullptr), token_begin(nullptr), token_end(nullptr), para_begin(nullptr), para_end(nullptr), para_control(nullptr)
 {
     tokens -> registerLine(token_begin, token_end, token_prev);
     paras -> registerLine(para_begin, para_end, para_prev);
 }
 
 BlockUserData::~BlockUserData() {
-    delete stack;
     TokenList::removeLine(token_begin, token_end);
 }
 
@@ -23,12 +22,8 @@ ParaCell * BlockUserData::lineControlPara() {
     return para_begin;
 }
 
-void BlockUserData::syncLine(TokenCell * sync_token, ParaCell * sync_para, ParaCell * control_sync_para, Stack<StateLexem> * stack_state) {
-    delete stack;
-    stack = stack_state;
-
-    //////// SYNC CONTROL PARA /////////
-
+void BlockUserData::syncLine(TokenCell * stack_sync_token, TokenCell * sync_token, ParaCell * sync_para, ParaCell * control_sync_para) {
+    stack_token = stack_sync_token;
     para_control = control_sync_para;
 
     if (control_sync_para) {
@@ -73,20 +68,29 @@ void BlockUserData::syncLine(TokenCell * sync_token, ParaCell * sync_para, ParaC
     para_end -> prev -> next = para_end;
 }
 
-Stack<StateLexem> * BlockUserData::stackState() { return stack; }
-
 DATA_FLAGS_TYPE BlockUserData::foldingState() { return flags & udf_folding_flags; }
-bool BlockUserData::hasBreakpoint() { return flags & udf_has_breakpoint; }
-
 void BlockUserData::setFoldingState(const UserDataFlags & new_state) {
-    flags = (UserDataFlags)((flags & (~(udf_folding_flags))) | (new_state & udf_folding_flags));
+    flags = static_cast<UserDataFlags>((flags & (~(udf_folding_flags))) | (new_state & udf_folding_flags));
 }
-
 void BlockUserData::invertFoldingState() {
     if (flags & udf_folding_flags) {
         setFoldingState(
             ((flags & udf_folding_opened) == udf_folding_opened) ?
                 udf_has_folding : udf_folding_opened
         );
+    }
+}
+
+bool BlockUserData::hasBreakpoint() { return flags & udf_has_breakpoint; }
+void BlockUserData::setBreakpoint(const bool & set) { // not tested
+    bool has_flag = flags & udf_has_breakpoint;
+
+    if ((has_flag && set) || (!has_flag && !set))
+        return;
+
+    if (set) {
+        flags = static_cast<UserDataFlags>(flags & udf_has_breakpoint);
+    } else {
+        flags = static_cast<UserDataFlags>(flags - udf_has_breakpoint);
     }
 }

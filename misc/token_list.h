@@ -8,13 +8,18 @@ struct TokenCell {
     TokenCell * prev;
     TokenCell * next;
 
+    TokenCell * stacked_prev;
+
     StateLexem lexem;
     EDITOR_POS_TYPE start_pos;
     EDITOR_LEN_TYPE length;
 
+    QByteArray * data;
+
     TokenCell(const StateLexem & lexem, const EDITOR_POS_TYPE & start_pos,
               const EDITOR_LEN_TYPE & length, TokenCell * prev_token = nullptr)
-        : prev(nullptr), next(nullptr), lexem(lexem), start_pos(start_pos), length(length)
+        : prev(nullptr), next(nullptr), stacked_prev(nullptr),
+          lexem(lexem), start_pos(start_pos), length(length), data(nullptr)
     {
         if ((prev = prev_token)) {
             if ((next = prev -> next))
@@ -25,11 +30,29 @@ struct TokenCell {
     }
 
     ~TokenCell() {
+        delete data;
+
         if (prev)
             prev -> next = next;
 
         if (next)
             next -> prev = prev;
+    }
+
+    inline bool isStackState() { return stacked_prev != nullptr; }
+
+    TokenCell * toPrevStackState() {
+        TokenCell * t = stacked_prev;
+
+        if (!t) {
+            t = prev;
+
+            while(!t -> stacked_prev) {
+                t = t -> prev;
+            }
+        }
+
+        return t;
     }
 };
 
