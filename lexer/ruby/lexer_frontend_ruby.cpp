@@ -1161,7 +1161,7 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
 
     lighter -> initBlockUserData(block, prev_udata, udata);
 
-    LexerControl state(&Ruby::Grammar::obj(), udata, lighter);
+    LexerControl state(&Ruby::Grammar::obj(), udata, nullptr, lighter);
 
     QByteArray text_val = text.toUtf8();
     const char * window = text_val.constData();
@@ -1170,5 +1170,5 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
     lexicate(&state);
 
     block.setUserState(state.status);
-    udata -> syncLine(state.token, state.para, state.control_para);
+    udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
 }
