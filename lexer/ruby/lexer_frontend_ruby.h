@@ -12,6 +12,7 @@ namespace Ruby {
         void translateState(LexerControl * state);
         bool cutWord(LexerControl * state, const StateLexem & predefined_lexem = lex_none);
 
+        bool parseContinious(LexerControl * state);
         bool parseNumber(LexerControl * state);
         bool parseString(LexerControl * state);
         bool parseEString(LexerControl * state);
@@ -19,6 +20,7 @@ namespace Ruby {
         bool parsePercentagePresenation(LexerControl * state);
         bool parseHeredoc(LexerControl * state);
         bool parseRegexp(LexerControl * state);
+        bool parseComment(LexerControl * state);
 
         void lexicate(LexerControl * control);
     public:

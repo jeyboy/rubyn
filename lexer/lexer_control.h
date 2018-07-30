@@ -84,7 +84,7 @@ struct LexerControl {
     Status status;
     BlockUserData * user_data;
 
-    LexerControl(IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, Highlighter * lighter = nullptr, const Status & prev_state = ls_handled) :
+    LexerControl(IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, const Status & prev_state = ls_handled, Highlighter * lighter = nullptr) :
         lighter(lighter), grammar(cgrammar),
         lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
         next_offset(1), stack_token(stack_token), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()),

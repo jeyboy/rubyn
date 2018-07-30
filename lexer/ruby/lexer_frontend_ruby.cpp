@@ -137,6 +137,46 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
     return true;
 }
 
+bool LexerFrontend::parseContinious(LexerControl * state) {
+    StateLexem top = state -> stack_token -> lexem;
+
+    if (Grammar::obj().isContinious(top)) {
+        if (Grammar::obj().isStackDroppable(top)) {
+//                state -> stack -> drop();
+            --state -> buffer;
+        }
+
+        switch(top) {
+            case lex_string_continue: { return parseString(state); }
+            case lex_estring_continue: { return parseEString(state); }
+            case lex_regexp_continue: { return parseRegexp(state); }
+
+            case lex_percent_presentation_continue:
+            case lex_epercent_presentation_continue: {
+                return parsePercentagePresenation(state);
+            }
+
+            case lex_commentary_continue: {
+                ++state -> buffer;
+                return parseComment(state);
+            }
+
+            case lex_cheredoc_continue:
+            case lex_cheredoc_intended_continue:
+            case lex_eheredoc_continue:
+            case lex_eheredoc_intended_continue:
+            case lex_heredoc_continue:
+            case lex_heredoc_intended_continue: { return parseHeredoc(state); }
+
+            case lex_command_continue: { return parseCommand(state); }
+
+            default:;
+        };
+    }
+
+    return true;
+}
+
 bool LexerFrontend::parseNumber(LexerControl * state) {
     //    +3
     //    3.2e23
@@ -592,6 +632,29 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
     return true;
 }
 
+bool LexerFrontend::parseComment(LexerControl * state) {
+    bool is_ended = false;
+
+    if (state -> isBufferStart()) {
+        if (ECHAR0 == '=' && ECHAR1 == 'e' && ECHAR2 == 'n' && ECHAR3 == 'd') {
+            is_ended = true;
+            state -> buffer += 4;
+        }
+    }
+
+    if (!is_ended) {
+//                                    state -> stack -> push(lex_commentary_start);
+        state -> moveBufferToEnd();
+        state -> next_offset = 0;
+
+        cutWord(state, lex_commentary_continue);
+//                                    state -> stack -> push(lex_commentary_continue);
+        state -> setStatus(LexerControl::ls_comment);
+    }
+
+    return true;
+}
+
 void LexerFrontend::lexicate(LexerControl * state) {
 //        a + b is interpreted as a.+(b)
 //        a + b is interpreted as a+b ( Here a is a local variable)
@@ -600,54 +663,10 @@ void LexerFrontend::lexicate(LexerControl * state) {
 //        Ruby interprets semicolons and newline characters as the ending of a statement.
 //        However, if Ruby encounters operators, such as +, −, or backslash at the end of a line,
 //        they indicate the continuation of a statement.
-    continue_mark:
-        StateLexem top = state -> stack_token -> lexem;
 
-        if (Grammar::obj().isContinious(top)) {
-            if (Grammar::obj().isStackDroppable(top)) {
-//                state -> stack -> drop();
-                --state -> buffer;
-            }
 
-            switch(top) {
-                case lex_string_continue: {
-                    if (!parseString(state))
-                        goto exit;
-                break;}
-                case lex_estring_continue:  {
-                    if (!parseEString(state))
-                        goto exit;
-                break;}
-                case lex_regexp_continue: {
-                    if (!parseRegexp(state))
-                        goto exit;
-                break;}
-
-                case lex_percent_presentation_continue:
-                case lex_epercent_presentation_continue: {
-                    if (!parsePercentagePresenation(state))
-                        goto exit;
-                break;}
-
-                case lex_cheredoc_continue:
-                case lex_cheredoc_intended_continue:
-                case lex_eheredoc_continue:
-                case lex_eheredoc_intended_continue:
-                case lex_heredoc_continue:
-                case lex_heredoc_intended_continue: {
-                    if (!parseHeredoc(state))
-                        goto exit;
-                break;}
-                case lex_commentary_continue:
-                    ++state -> buffer;
-                    goto handle_multiline_comment;
-                case lex_command_continue: {
-                    if (!parseCommand(state))
-                        goto exit;
-                break;}
-                default:;
-            };
-        }
+    if (!parseContinious(state))
+        goto exit;
 
     while(true) {
         switch(ECHAR0) {
@@ -734,26 +753,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                             state -> attachToken(lex_commentary_start);
 //                            state -> stack -> push(lex_commentary_start);
 
-                            handle_multiline_comment:
-                                bool is_ended = false;
-
-                                if (state -> isBufferStart()) {
-                                    if (ECHAR0 == '=' && ECHAR1 == 'e' && ECHAR2 == 'n' && ECHAR3 == 'd') {
-                                        is_ended = true;
-                                        state -> buffer += 4;
-                                    }
-                                }
-
-                                if (!is_ended) {
-//                                    state -> stack -> push(lex_commentary_start);
-                                    state -> moveBufferToEnd();
-                                    state -> next_offset = 0;
-
-                                    cutWord(state, lex_commentary_continue);
-//                                    state -> stack -> push(lex_commentary_continue);
-                                    state -> setStatus(LexerControl::ls_comment);
-                                    goto exit;
-                                }
+                            parseComment(state);
                    }
                 }
 
@@ -921,7 +921,8 @@ void LexerFrontend::lexicate(LexerControl * state) {
 //                    if (Grammar::obj().isStackDroppable(top))
 //                        state -> stack -> pushToLevel(1, top_conv);
 
-                    goto continue_mark;
+                    if (!parseContinious(state))
+                        goto exit;
                 }
             break;}
 
@@ -1165,6 +1166,7 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
         &Ruby::Grammar::obj(),
         udata,
         prev_udata && prev_udata -> stack_token ? prev_udata -> stack_token : udata -> token_begin,
+        static_cast<LexerControl::Status>(prev_block.userState()),
         lighter
     );
 
