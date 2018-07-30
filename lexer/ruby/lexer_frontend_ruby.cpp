@@ -639,6 +639,7 @@ bool LexerFrontend::parseComment(LexerControl * state) {
         if (ECHAR0 == '=' && ECHAR1 == 'e' && ECHAR2 == 'n' && ECHAR3 == 'd') {
             is_ended = true;
             state -> buffer += 4;
+            cutWord(state);
         }
     }
 
@@ -646,10 +647,11 @@ bool LexerFrontend::parseComment(LexerControl * state) {
 //                                    state -> stack -> push(lex_commentary_start);
         state -> moveBufferToEnd();
         state -> next_offset = 0;
+        state -> setStatus(LexerControl::ls_comment);
 
         cutWord(state, lex_commentary_continue);
+        return false;
 //                                    state -> stack -> push(lex_commentary_continue);
-        state -> setStatus(LexerControl::ls_comment);
     }
 
     return true;
@@ -747,13 +749,15 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 }
                 else if (ECHAR1 == 'b') { // =begin
                    if (ECHAR2 == 'e' && ECHAR3 == 'g' &&
-                        ECHAR4 == 'i' && ECHAR5 == 'n') {
-                            state -> buffer += 6;
+                        ECHAR4 == 'i' && ECHAR5 == 'n')
+                   {
+                        state -> buffer += 6;
 
-                            state -> attachToken(lex_commentary_start);
-//                            state -> stack -> push(lex_commentary_start);
+                        state -> attachToken(lex_commentary_start);
+                        // state -> stack -> push(lex_commentary_start);
 
-                            parseComment(state);
+                        parseComment(state);
+                        goto exit;
                    }
                 }
 
