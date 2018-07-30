@@ -47,7 +47,7 @@ struct TokenCell {
         if (!t) {
             t = prev;
 
-            while(!t -> stacked_prev) {
+            while(!t -> stacked_prev && t -> prev) {
                 t = t -> prev;
             }
         }
