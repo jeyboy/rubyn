@@ -138,41 +138,43 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
 }
 
 bool LexerFrontend::parseContinious(LexerControl * state) {
-    StateLexem top = state -> stack_token -> lexem;
+    if (state -> status > LexerControl::ls_handled) {
+        --state -> buffer;
 
-    if (Grammar::obj().isContinious(top)) {
-        if (Grammar::obj().isStackDroppable(top)) {
-//                state -> stack -> drop();
-            --state -> buffer;
-        }
+        switch(state -> status) {
+            case LexerControl::ls_string: { return parseString(state); }
+            case LexerControl::ls_estring: { return parseEString(state); }
+            case LexerControl::ls_regexp: { return parseRegexp(state); }
 
-        switch(top) {
-            case lex_string_continue: { return parseString(state); }
-            case lex_estring_continue: { return parseEString(state); }
-            case lex_regexp_continue: { return parseRegexp(state); }
-
-            case lex_percent_presentation_continue:
-            case lex_epercent_presentation_continue: {
+            case LexerControl::ls_percentage_presentation:
+            case LexerControl::ls_epercentage_presentation: {
                 return parsePercentagePresenation(state);
             }
 
-            case lex_commentary_continue: {
+            case LexerControl::ls_comment: {
                 ++state -> buffer;
                 return parseComment(state);
             }
 
-            case lex_cheredoc_continue:
-            case lex_cheredoc_intended_continue:
-            case lex_eheredoc_continue:
-            case lex_eheredoc_intended_continue:
-            case lex_heredoc_continue:
-            case lex_heredoc_intended_continue: { return parseHeredoc(state); }
+            case LexerControl::ls_cheredoc:
+            case LexerControl::ls_cheredoc_intended:
+            case LexerControl::ls_eheredoc:
+            case LexerControl::ls_eheredoc_intended:
+            case LexerControl::ls_heredoc:
+            case LexerControl::ls_heredoc_intended: { return parseHeredoc(state); }
 
-            case lex_command_continue: { return parseCommand(state); }
+            case LexerControl::ls_command: { return parseCommand(state); }
 
             default:;
         };
     }
+
+//            if (Grammar::obj().isContinious(top)) {
+//                if (Grammar::obj().isStackDroppable(top)) {
+//        //                state -> stack -> drop();
+//                    --state -> buffer;
+//                }
+//            }
 
     return true;
 }
@@ -337,6 +339,7 @@ bool LexerFrontend::parseString(LexerControl * state) {
                 if (ECHAR_PREV1 != '\\') {
                     ++state -> buffer;
                     ended = true;
+                    state -> setStatus(LexerControl::ls_handled);
                 }
             break;}
 
@@ -363,14 +366,17 @@ bool LexerFrontend::parseEString(LexerControl * state) {
 
         switch(ECHAR0) {
             case '#': {
-                if ((def_required = ended = ECHAR1 == '{'))
+                if ((def_required = ended = ECHAR1 == '{')) {
                     ++state -> next_offset;
+                    state -> setStatus(LexerControl::ls_estring);
+                }
             break; }
 
             case '"': {
                 if (ECHAR_PREV1 != '\\') {
                     ++state -> buffer;
                     ended = true;
+                    state -> setStatus(LexerControl::ls_handled);
                 }
             break;}
 
@@ -401,14 +407,17 @@ bool LexerFrontend::parseCommand(LexerControl * state) {
 
         switch(ECHAR0) {
             case '#': {
-                if ((def_required = ended = ECHAR1 == '{'))
+                if ((def_required = ended = ECHAR1 == '{')) {
                     ++state -> next_offset;
+                    state -> setStatus(LexerControl::ls_command);
+                }
             break; }
 
             case '`': {
                 if (ECHAR_PREV1 != '\\') {
                     ++state -> buffer;
                     ended = true;
+                    state -> setStatus(LexerControl::ls_handled);
                 }
             break;}
 
@@ -457,6 +466,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
                         if (ECHAR0 == blocker && ECHAR_PREV1 != '\\') {
                             ++state -> buffer;
                             state -> next_offset = 0;
+                            state -> setStatus(LexerControl::ls_handled);
                             return cutWord(state, lex_percent_presentation_end);
                         }
                     }
@@ -490,6 +500,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
                         if (ECHAR0 == blocker && ECHAR_PREV1 != '\\') {
                             ++state -> buffer;
                             state -> next_offset = 0;
+                            state -> setStatus(LexerControl::ls_handled);
                             return cutWord(state, lex_epercent_presentation_end);
                         }
                     }
@@ -530,6 +541,7 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
                 if (QByteArray(state -> buffer, token_length) == stop_token) {
 //                    state -> stack -> drop();
                     state -> buffer += token_length;
+                    state -> setStatus(LexerControl::ls_handled);
                     return cutWord(state, lex_heredoc_mark);
                 }
             break;}
@@ -594,12 +606,16 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
                 if ((def_required = ended = ECHAR1 == '{'))
                     ++state -> next_offset;
             break;}
-            case '/': { ended = ECHAR_PREV1 != '\\';  break;}
+
+            case '/': {
+                ended = ECHAR_PREV1 != '\\';
+                state -> setStatus(LexerControl::ls_handled);
+            break;}
+
             case 0: {
                 out_req = true;
                 state -> setStatus(LexerControl::ls_regexp);
-                break;
-            }
+            break;}
         }
     }
 

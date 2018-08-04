@@ -1,7 +1,7 @@
 #ifndef LEXER_CONTROL_H
 #define LEXER_CONTROL_H
 
-#include "misc/stack.h"
+//#include "misc/stack.h"
 #include "state_lexems.h"
 //#include "scopes/scope.h"
 #include "lexer/igrammar.h"
@@ -58,8 +58,6 @@ struct LexerControl {
     StateLexem lex_delimiter;
 
 //    Scope * scope;
-//    Stack<StateLexem> * stack;
-//    Stack<Lexem> * chain;
     quint8 next_offset;
 
     TokenCell * stack_token;
@@ -80,7 +78,6 @@ struct LexerControl {
     const char * buffer;
     const char * prev;
 
-    Status prev_status;
     Status status;
     BlockUserData * user_data;
 
@@ -89,7 +86,7 @@ struct LexerControl {
         lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
         next_offset(1), stack_token(stack_token), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()),
         control_para(nullptr), last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2), last_light_len(0),
-        start(nullptr), buffer(nullptr), prev(nullptr), prev_status(prev_state), status(ls_handled), user_data(user_data)
+        start(nullptr), buffer(nullptr), prev(nullptr), status(prev_state), user_data(user_data)
     {}
 
     ~LexerControl() {}
@@ -104,7 +101,6 @@ struct LexerControl {
         cached.clear();
         cached_str_pos = cached_length = 0;
         next_offset = 1;
-        status = ls_handled;
     }
     inline void moveBufferToEnd() {
         buffer = start + strlen(start);
@@ -200,7 +196,6 @@ struct LexerControl {
     inline void attachPara(const QByteArray & pos_para) {
         attachPara(ParaInfo::paraType(pos_para));
     }
-
     inline void attachPara(const PARA_TYPE & ptype) {
         if (!ptype) return;
 
