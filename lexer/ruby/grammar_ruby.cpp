@@ -84,6 +84,7 @@ Grammar::Grammar() : IGrammar() {
     rules[lex_method_def_scope_or_name][lex_blanks] = lex_method_def_vars_start;
 
 
+
     rules[lex_method_def_vars_start][lex_operator_multiplication] = lex_method_def_var_access_type;
     rules[lex_method_def_vars_start][lex_operator_exponentiation] = lex_method_def_var_access_type;
     rules[lex_method_def_vars_start][lex_operator_bit_and] = lex_method_def_var_access_type;
@@ -135,6 +136,10 @@ Grammar::Grammar() : IGrammar() {
     rules[lex_method_def_var_assign_val][lex_wrap_end] = lex_method_def_args_end;
     rules[lex_method_def_args_start][lex_wrap_end] = lex_method_def_args_end;
     rules[lex_method_def_args_end][lex_end_line] = lex_method_call_block;
+
+
+    rules[lex_method_def_scope_or_name][lex_end_line] = lex_method_call_block;
+    rules[lex_method_def_name][lex_end_line] = lex_method_call_block;
 
 
 
@@ -372,7 +377,6 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_var_global:
 //        case lex_method:
         case lex_method_def_scoped_name:
-        case lex_method_def_scope_or_name:
         case lex_method_def_var_name:
         case lex_method_call_block_var_name:
         case lex_class_def_ancestor:
@@ -398,6 +402,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
             return hid_label;
 
         case lex_method_def_name:
+        case lex_method_def_scope_or_name:
         case lex_class_def_name:
         case lex_module_def_name:
             return hid_name_def;

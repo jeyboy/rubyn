@@ -177,6 +177,7 @@ struct LexerControl {
         if (last_light_pos != new_pos || uid != last_uid) {
             last_light_pos = new_pos;
             last_light_len = has_predicate ? cached_length : 1;
+            last_uid = uid;
 
             lighter -> setFormat(
                 last_light_pos, (int)last_light_len,

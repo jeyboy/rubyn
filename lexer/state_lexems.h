@@ -438,6 +438,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_end_line,
     lex_end_doc,
     lex_tab,
+    lex_tabs,
     lex_blank,
     lex_blanks,
     lex_ignore,
