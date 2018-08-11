@@ -1149,7 +1149,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
             case 0: {
                 state -> next_offset = 0;
-                cutWord(state);
+                cutWord(state, lex_end_line);
                 goto exit;
             break;}
 

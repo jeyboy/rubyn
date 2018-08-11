@@ -157,7 +157,19 @@ struct LexerControl {
         token -> length += cached_length;
     }
 
+    void relightLast(const Identifier & uid) {
+        last_uid = uid;
+
+        lighter -> setFormat(
+            last_light_pos, (int)last_light_len,
+            HighlightFormatFactory::obj().getFormatFor(last_uid)
+        );
+    }
+
     inline void light(const Identifier & uid) {
+        if (uid == hid_error)
+            return;
+
         bool has_predicate = cached_length > 0;
 
         EDITOR_POS_TYPE new_pos = cached_str_pos - (has_predicate ? 0 : 1);
@@ -165,7 +177,6 @@ struct LexerControl {
         if (last_light_pos != new_pos || uid != last_uid) {
             last_light_pos = new_pos;
             last_light_len = has_predicate ? cached_length : 1;
-            last_uid = uid;
 
             lighter -> setFormat(
                 last_light_pos, (int)last_light_len,

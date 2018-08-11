@@ -372,6 +372,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_var_global:
 //        case lex_method:
         case lex_method_def_scoped_name:
+        case lex_method_def_scope_or_name:
         case lex_method_def_var_name:
         case lex_method_call_block_var_name:
         case lex_class_def_ancestor:
