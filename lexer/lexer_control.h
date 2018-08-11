@@ -34,16 +34,24 @@ struct LexerControl {
         ls_comment,
         ls_string,
         ls_estring,
+        ls_estring_interception,
         ls_command,
+        ls_command_interception,
         ls_regexp,
+        ls_regexp_interception,
         ls_heredoc,
         ls_eheredoc,
+        ls_eheredoc_interception,
         ls_cheredoc,
+        ls_cheredoc_interception,
         ls_heredoc_intended,
         ls_eheredoc_intended,
+        ls_eheredoc_intended_interception,
         ls_cheredoc_intended,
+        ls_cheredoc_intended_interception,
         ls_percentage_presentation,
-        ls_epercentage_presentation
+        ls_epercentage_presentation,
+        ls_epercentage_presentation_interception
     };
 
     Highlighter * lighter;

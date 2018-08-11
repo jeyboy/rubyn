@@ -367,8 +367,8 @@ bool LexerFrontend::parseEString(LexerControl * state) {
         switch(ECHAR0) {
             case '#': {
                 if ((def_required = ended = ECHAR1 == '{')) {
-                    ++state -> next_offset;
-                    state -> setStatus(LexerControl::ls_estring);
+                    state -> next_offset += 2;
+                    state -> setStatus(LexerControl::ls_estring_interception);
                 }
             break; }
 
@@ -388,7 +388,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
         }
     }
 
-    bool res = cutWord(state, out_req ? lex_estring_continue : (def_required ? lex_estring_interception : lex_estring_end));
+    bool res = cutWord(state, out_req ? lex_estring_continue : (def_required ? lex_estring_start : lex_estring_end));
 
 //    if (def_required)
 //        state -> stack -> push(lex_estring_continue);
