@@ -64,7 +64,7 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
 
     state -> cachingPredicate(has_predefined);
 
-    if (state -> cached_length || has_predefined) {
+     if (state -> cached_length || has_predefined) {
         state -> lex_word =
             has_predefined ? predefined_lexem : Predefined::obj().lexem(state -> cached);
 
@@ -185,7 +185,9 @@ bool LexerFrontend::parseNumber(LexerControl * state) {
     //    -4.70e+9
     //    -.2E-4
     //    -7.6603
+    //    -4.70e+9
 
+    state -> next_offset = 0;
     bool ended = false, has_exp_part = false;
     StateLexem predef = lex_none;
 
@@ -225,7 +227,7 @@ bool LexerFrontend::parseNumber(LexerControl * state) {
 
         switch(ECHAR0) {
             case '.': {
-                if ((predef & lex_float) == lex_float)
+                if (predef == lex_float)
                     ended = true;
                 else
                     predef = lex_float;
@@ -260,7 +262,7 @@ bool LexerFrontend::parseNumber(LexerControl * state) {
                     );
 
                     return false;
-                } else if (predef == lex_dec) {
+                } else if (predef >= lex_dec) {
                     if (has_exp_part) {
                         state -> cacheAndLightWithMessage(
                             lex_error,
@@ -388,12 +390,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
         }
     }
 
-    bool res = cutWord(state, out_req ? lex_estring_continue : (def_required ? lex_estring_start : lex_estring_end));
-
-//    if (def_required)
-//        state -> stack -> push(lex_estring_continue);
-
-    return res;
+    return cutWord(state, out_req ? lex_estring_continue : (def_required ? lex_estring_start : lex_estring_end));
 }
 
 bool LexerFrontend::parseCommand(LexerControl * state) {
@@ -729,23 +726,19 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case '`': {
-//                state -> stack_token -> lexem
-//                state -> stack -> push(lex_command_start);
-                state -> attachToken(lex_command_start);
+                state -> attachToken(lex_command_start, true);
                 if (!parseCommand(state)) goto exit;
             break;}
 
 
             case '\'': {
-                state -> attachToken(lex_string_start);
-//                state -> stack -> push(lex_string_start);
+                state -> attachToken(lex_string_start, true);
                 if (!parseString(state)) goto exit;
             break;}
 
 
             case '"': {
-                state -> attachToken(lex_estring_start);
-//                state -> stack -> push(lex_estring_start);
+                state -> attachToken(lex_estring_start, true);
                 if (!parseEString(state)) goto exit;
             break;}
 
@@ -827,7 +820,20 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '?': {
                 if (isAlphaNum(ECHAR_PREV1)) goto iterate;
 
-                if (!cutWord(state)) goto exit;
+                StateLexem st = lex_none;
+
+                bool is_spec_sym = ECHAR1 == '\\';
+
+                if ((!is_spec_sym && !isAlphaNum(ECHAR3)) || (is_spec_sym && !isAlphaNum(ECHAR4))) {
+                    st = lex_dec;
+
+                    if (is_spec_sym)
+                        state -> buffer += 3;
+                    else
+                        state -> buffer += 2;
+                }
+
+                if (!cutWord(state, st)) goto exit;
             break;}
 
 
@@ -978,6 +984,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '-': {
                 if (ECHAR1 == '>' || ECHAR1 == '=')
                     ++state -> next_offset;
+                else if(isDigit(ECHAR1) && (state -> isBufferStart() || isBlank(ECHAR_PREV1))) {
+                    goto parse_number;
+                }
 
                 if (!cutWord(state)) goto exit;
             break;}
@@ -986,6 +995,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '+': {
                 if (ECHAR1 == '=')
                     ++state -> next_offset;
+                else if(isDigit(ECHAR1) && (state -> isBufferStart() || isBlank(ECHAR_PREV1))) {
+                    goto parse_number;
+                }
 
                 if (!cutWord(state)) goto exit;
             break;}
@@ -1004,7 +1016,8 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (isWord(ECHAR_PREV1))
                     goto iterate;
 
-                if (!parseNumber(state)) goto exit;
+                parse_number:
+                    if (!parseNumber(state)) goto exit;
             break;}
 
 

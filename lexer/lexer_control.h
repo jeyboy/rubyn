@@ -151,7 +151,7 @@ struct LexerControl {
 
     inline StateLexem & sublastToken() { return token -> prev -> lexem; }
     inline StateLexem & lastToken() { return token -> lexem; }
-    inline void attachToken(const StateLexem & lexem) {
+    inline void attachToken(const StateLexem & lexem, const bool stacked = false) {
         if (token -> next) {
             token = token -> next;
             token -> lexem = lexem;
@@ -159,10 +159,21 @@ struct LexerControl {
             token -> length = cached_length;
         }
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
+
+        if (stacked) {
+            token -> stacked_prev = stack_token;
+            stack_token = token;
+        }
     }
     inline void replaceToken(const StateLexem & lexem) {
         token -> lexem = lexem;
         token -> length += cached_length;
+    }
+
+    void popStack() {
+        if (!stack_token) return;
+
+        stack_token = stack_token -> stacked_prev;
     }
 
     void relightLast(const Identifier & uid) {
