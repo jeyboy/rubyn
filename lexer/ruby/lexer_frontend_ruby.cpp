@@ -341,44 +341,37 @@ bool LexerFrontend::parseString(LexerControl * state) {
         ++state -> buffer;
     }
 
-
-    return cutWord(state, lex); //out_req ? lex_string_continue : lex_string_end);
+    return cutWord(state, lex);
 }
 
 bool LexerFrontend::parseEString(LexerControl * state) {
-    bool ended = false;
-    bool out_req = false;
-    bool def_required = false;
-    state -> next_offset = 0;
+    StateLexem lex = lex_none;
 
-    while(!ended && !out_req) {
-        ++state -> buffer;
-
+    while(lex == lex_none) {
         switch(ECHAR0) {
             case '#': {
-                if ((def_required = ended = ECHAR1 == '{')) {
+                if (ECHAR1 == '{') {
                     state -> next_offset += 2;
-                    state -> setStatus(LexerControl::ls_estring_interception);
+                    lex = lex_estring_interception;
                 }
             break; }
 
             case '"': {
                 if (ECHAR_PREV1 != '\\') {
                     ++state -> buffer;
-                    ended = true;
-                    state -> setStatus(LexerControl::ls_handled);
+                    lex = lex_estring_end;
                 }
             break;}
 
             case 0: {
-                out_req = true;
-                state -> setStatus(LexerControl::ls_estring);
-                break;
-            }
+                lex = lex_estring_continue;
+            break;}
         }
+
+        ++state -> buffer;
     }
 
-    return cutWord(state, out_req ? lex_estring_continue : (def_required ? lex_estring_interception : lex_estring_end));
+    return cutWord(state, lex);
 }
 
 bool LexerFrontend::parseCommand(LexerControl * state) {
