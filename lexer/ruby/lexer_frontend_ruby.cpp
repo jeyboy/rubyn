@@ -127,6 +127,7 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
     return true;
 }
 
+
 bool LexerFrontend::parseContinious(LexerControl * state) {
     if (state -> stack_token) {
         switch(state -> stack_token -> lexem) {
@@ -320,32 +321,28 @@ bool LexerFrontend::parseNumber(LexerControl * state) {
 }
 
 bool LexerFrontend::parseString(LexerControl * state) {
-    bool ended = false;
-    bool out_req = false;
-    state -> next_offset = 0;
+    StateLexem lex = lex_none;
 
-    while(!ended && !out_req) {
-        ++state -> buffer;
-
+    while(lex == lex_none) {
         switch(ECHAR0) {
             case '\'': {
                 if (ECHAR_PREV1 != '\\') {
                     ++state -> buffer;
-                    ended = true;
-                    state -> setStatus(LexerControl::ls_handled);
+                    lex = lex_string_end;
                 }
             break;}
 
             case 0: {
-                out_req = true;
-                state -> setStatus(LexerControl::ls_string);
+                lex = lex_string_continue;
                 break;
             }
         }
+
+        ++state -> buffer;
     }
 
 
-    return cutWord(state, out_req ? lex_string_continue : lex_string_end);
+    return cutWord(state, lex); //out_req ? lex_string_continue : lex_string_end);
 }
 
 bool LexerFrontend::parseEString(LexerControl * state) {
@@ -718,18 +715,27 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
             case '`': {
                 state -> attachToken(lex_command_start, true);
+                state -> next_offset = 0;
+                ++state -> buffer;
+
                 if (!parseCommand(state)) goto exit;
             break;}
 
 
             case '\'': {
                 state -> attachToken(lex_string_start, true);
+                state -> next_offset = 0;
+                ++state -> buffer;
+
                 if (!parseString(state)) goto exit;
             break;}
 
 
             case '"': {
                 state -> attachToken(lex_estring_start, true);
+                state -> next_offset = 0;
+                ++state -> buffer;
+
                 if (!parseEString(state)) goto exit;
             break;}
 
@@ -1212,6 +1218,7 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
 
     lexicate(&state);
 
-    block.setUserState(state.token -> lexem);
+    int new_user_state = state.stack_token ? state.stack_token -> lexem : lex_none;
+    block.setUserState(new_user_state);
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
 }
