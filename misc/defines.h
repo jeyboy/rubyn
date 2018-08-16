@@ -12,7 +12,7 @@
 #define OVERLAY_POS_TYPE quint8
 
 #define LEXEM_MEAN_TYPE quint16
-#define LEXEM_TYPE uint
+#define LEXEM_TYPE int
 #define STACK_INT_TYPE uint
 
 #define EDITOR_POS_TYPE int

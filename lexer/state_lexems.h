@@ -13,8 +13,9 @@
  // = (1ULL << 1),
 
 enum StateLexem : LEXEM_TYPE {
+    lex_none = -1,
+
     lex_error = 0,
-    lex_none,
 
     lex_yield,
     lex_raise,
@@ -44,6 +45,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_var_global,
 
     lex_interpolation, // #{
+    lex_interpolation_close, // }
 
     lex_dot,  // .
     lex_dot_dot,  // ..

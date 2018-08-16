@@ -93,16 +93,6 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
         }
 
         state -> attachToken(state -> lex_word);
-
-//        Lexem cont_lexem = GrammarRuby::obj().fromContinious(state -> lex_word);
-
-//        if (cont_lexem != lex_none) {
-//            Lexem & top = state -> stack -> touch();
-
-//            if (top == cont_lexem)
-//                state -> stack -> push(state -> lex_word);
-//            else state -> lightWithMessage(lex_error, QByteArrayLiteral("Wrong state!!!"));
-//        }
     }
     else state -> lex_word = lex_none;
 
@@ -138,43 +128,44 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
 }
 
 bool LexerFrontend::parseContinious(LexerControl * state) {
-    if (state -> status > LexerControl::ls_handled) {
-        --state -> buffer;
+    if (state -> stack_token) {
+        switch(state -> stack_token -> lexem) {
+            case lex_string_start:
+            case lex_string_continue: { return parseString(state); }
 
-        switch(state -> status) {
-            case LexerControl::ls_string: { return parseString(state); }
-            case LexerControl::ls_estring: { return parseEString(state); }
-            case LexerControl::ls_regexp: { return parseRegexp(state); }
+            case lex_estring_start:
+            case lex_estring_continue: { return parseEString(state); }
 
-            case LexerControl::ls_percentage_presentation:
-            case LexerControl::ls_epercentage_presentation: {
-                return parsePercentagePresenation(state);
-            }
 
-            case LexerControl::ls_comment: {
-                ++state -> buffer;
-                return parseComment(state);
-            }
+            case lex_regexp_start:
+            case lex_regexp_continue: { return parseRegexp(state); }
 
-            case LexerControl::ls_cheredoc:
-            case LexerControl::ls_cheredoc_intended:
-            case LexerControl::ls_eheredoc:
-            case LexerControl::ls_eheredoc_intended:
-            case LexerControl::ls_heredoc:
-            case LexerControl::ls_heredoc_intended: { return parseHeredoc(state); }
+            case lex_percent_presentation_start:
+            case lex_percent_presentation_continue:
+            case lex_epercent_presentation_start:
+            case lex_epercent_presentation_continue: { return parsePercentagePresenation(state); }
 
-            case LexerControl::ls_command: { return parseCommand(state); }
+            case lex_commentary_start:
+            case lex_commentary_continue: { return parseComment(state); }
+            case lex_cheredoc_start:
+            case lex_cheredoc_continue:
+            case lex_cheredoc_intended_start:
+            case lex_cheredoc_intended_continue:
+            case lex_eheredoc_start:
+            case lex_eheredoc_continue:
+            case lex_eheredoc_intended_start:
+            case lex_eheredoc_intended_continue:
+            case lex_heredoc_start:
+            case lex_heredoc_continue:
+            case lex_heredoc_intended_start:
+            case lex_heredoc_intended_continue: { return parseHeredoc(state); }
+
+            case lex_command_start:
+            case lex_command_continue: { return parseCommand(state); }
 
             default:;
         };
     }
-
-//            if (Grammar::obj().isContinious(top)) {
-//                if (Grammar::obj().isStackDroppable(top)) {
-//        //                state -> stack -> drop();
-//                    --state -> buffer;
-//                }
-//            }
 
     return true;
 }
@@ -390,7 +381,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
         }
     }
 
-    return cutWord(state, out_req ? lex_estring_continue : (def_required ? lex_estring_start : lex_estring_end));
+    return cutWord(state, out_req ? lex_estring_continue : (def_required ? lex_estring_interception : lex_estring_end));
 }
 
 bool LexerFrontend::parseCommand(LexerControl * state) {
@@ -822,16 +813,16 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
                 StateLexem st = lex_none;
 
-                bool is_spec_sym = ECHAR1 == '\\';
+//                bool is_spec_sym = ECHAR1 == '\\';
 
-                if ((!is_spec_sym && !isAlphaNum(ECHAR3)) || (is_spec_sym && !isAlphaNum(ECHAR4))) {
-                    st = lex_dec;
+//                if ((!is_spec_sym && !isAlphaNum(ECHAR3)) || (is_spec_sym && !isAlphaNum(ECHAR4))) {
+//                    st = lex_dec;
 
-                    if (is_spec_sym)
-                        state -> buffer += 3;
-                    else
-                        state -> buffer += 2;
-                }
+//                    if (is_spec_sym)
+//                        state -> buffer += 3;
+//                    else
+//                        state -> buffer += 2;
+//                }
 
                 if (!cutWord(state, st)) goto exit;
             break;}
@@ -1212,7 +1203,6 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
         &Ruby::Grammar::obj(),
         udata,
         prev_udata && prev_udata -> stack_token ? prev_udata -> stack_token : udata -> token_begin,
-        static_cast<LexerControl::Status>(prev_block.userState()),
         lighter
     );
 
@@ -1222,6 +1212,6 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
 
     lexicate(&state);
 
-    block.setUserState(state.status);
+    block.setUserState(state.token -> lexem);
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
 }

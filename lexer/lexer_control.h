@@ -27,33 +27,6 @@
 #define SCHAR2 STREAM_N_CHAR(state -> prev, 2)
 
 struct LexerControl {
-    enum Status {
-        ls_none = -1,
-        ls_error = 1,
-        ls_handled,
-        ls_comment,
-        ls_string,
-        ls_estring,
-        ls_estring_interception,
-        ls_command,
-        ls_command_interception,
-        ls_regexp,
-        ls_regexp_interception,
-        ls_heredoc,
-        ls_eheredoc,
-        ls_eheredoc_interception,
-        ls_cheredoc,
-        ls_cheredoc_interception,
-        ls_heredoc_intended,
-        ls_eheredoc_intended,
-        ls_eheredoc_intended_interception,
-        ls_cheredoc_intended,
-        ls_cheredoc_intended_interception,
-        ls_percentage_presentation,
-        ls_epercentage_presentation,
-        ls_epercentage_presentation_interception
-    };
-
     Highlighter * lighter;
 
     IGrammar * grammar;
@@ -86,23 +59,17 @@ struct LexerControl {
     const char * buffer;
     const char * prev;
 
-    Status status;
     BlockUserData * user_data;
 
-    LexerControl(IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, const Status & prev_state = ls_handled, Highlighter * lighter = nullptr) :
+    LexerControl(IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, Highlighter * lighter = nullptr) :
         lighter(lighter), grammar(cgrammar),
         lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
         next_offset(1), stack_token(stack_token), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()),
         control_para(nullptr), last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2), last_light_len(0),
-        start(nullptr), buffer(nullptr), prev(nullptr), status(prev_state), user_data(user_data)
+        start(nullptr), buffer(nullptr), prev(nullptr), user_data(user_data)
     {}
 
     ~LexerControl() {}
-
-    inline void setStatus(const Status & new_status) {
-        if (status != ls_error)
-            status = new_status;
-    }
 
     inline void setBuffer(const char * buff) {
         prev = start = buffer = buff;
@@ -215,8 +182,6 @@ struct LexerControl {
         light(lexem);
 
         if (lexem == lex_error) {
-            status = ls_error;
-
             if (!msg.contains("error_token"))
                 qWarning() << msg;
         }
@@ -230,8 +195,6 @@ struct LexerControl {
     inline void attachPara(const PARA_TYPE & ptype) {
         if (!ptype) return;
 
-//        parasha.append(" ").append(ParaInfo::toString(ptype));
-
         if (para -> next) {
             para = para -> next;
             para -> para_type = ptype;
@@ -240,17 +203,8 @@ struct LexerControl {
         else para = ParaList::insert(para, ptype, cached_str_pos);
 
         if (ptype & ParaInfo::pt_foldable) {
-            if (control_para) {
-                qDebug() << "DOUBLE FOLDING: " << control_para -> para_type << ptype;
-            }
-
-            control_para = para;
-        }
-        else if (control_para && ptype & ParaInfo::pt_close) {
-            if ((ParaInfo::oppositePara(ptype) & control_para -> para_type) != control_para -> para_type) {
-                qDebug() << "WRONG FOLDING CLOSE: " << control_para -> para_type << ptype;
-            }
-            else control_para = nullptr;
+            if (!control_para)
+                control_para = para;
         }
     }
 };
