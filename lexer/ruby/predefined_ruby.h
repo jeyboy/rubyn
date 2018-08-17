@@ -11,11 +11,11 @@
 //https://www.tutorialspoint.com/ruby/ruby_regular_expressions.htm
 
 namespace Ruby {
-    class Predefined : public SingletonPtr<Predefined> {
+    class Predefined : public Singleton<Predefined> {
         QHash<QByteArray, StateLexem> keys;
 
         Predefined();
-        friend class SingletonPtr<Predefined>;
+        friend class Singleton<Predefined>;
     public:
         bool hasKey(const QByteArray & key);
         StateLexem lexem(const QByteArray & key);

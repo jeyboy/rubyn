@@ -17,7 +17,7 @@
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
-#include <qsplitter>
+#include <qsplitter.h>
 #include <qlabel.h>
 #include <qplaintextedit.h>
 
@@ -29,7 +29,9 @@
 #include "tools/data_preparer/rubydoc_preparer.h"
 #include "tools/data_preparer/rubydoc_parser.h"
 
-IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(0), widgets_list(0), tree(0), run_config(0), pos_status(0) {
+#include "lexer/ruby/predefined_ruby.h"
+
+IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(nullptr), widgets_list(nullptr), tree(nullptr), run_config(nullptr), pos_status(nullptr) {
     ui -> setupUi(this);
 
     setAcceptDrops(true);
@@ -91,6 +93,8 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 //    parser.saveParsedDatum(QLatin1Literal("F://rubyn test//ruby_2_5_1_parsed"));
 
 //    Logger::obj().endMark(QLatin1Literal("Rubydoc"), QLatin1Literal("parsing"));
+
+    Ruby::Predefined::obj();
 }
 
 IDEWindow::~IDEWindow() { delete ui; }

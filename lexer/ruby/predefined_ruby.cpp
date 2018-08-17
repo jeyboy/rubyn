@@ -1,5 +1,7 @@
 #include "predefined_ruby.h"
 
+#include <qdebug.h>
+
 using namespace Ruby;
 
 Predefined::Predefined() {
@@ -222,4 +224,7 @@ Predefined::Predefined() {
 
 
 bool Predefined::hasKey(const QByteArray & key) { return keys.contains(key); }
-StateLexem Predefined::lexem(const QByteArray & key) { return keys.value(key, lex_word); }
+StateLexem Predefined::lexem(const QByteArray & key) {
+    qDebug() << keys;
+    return keys.value(key, lex_word);
+}

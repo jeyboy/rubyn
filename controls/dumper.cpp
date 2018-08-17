@@ -78,7 +78,7 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
                 index = counter;
             }
 
-            w -> fileOpenRequired(path, 0, new_editor);
+            w -> fileOpenRequired(path, nullptr, new_editor);
             new_editor = false;
         }
 
