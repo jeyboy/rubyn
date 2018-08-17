@@ -350,7 +350,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
     while(lex == lex_none) {
         switch(ECHAR0) {
             case '#': {
-                if (ECHAR1 == '{') {
+                if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
                     state -> next_offset += 2;
                     lex = lex_estring_interception;
                 }
@@ -375,44 +375,33 @@ bool LexerFrontend::parseEString(LexerControl * state) {
 }
 
 bool LexerFrontend::parseCommand(LexerControl * state) {
-    bool ended = false;
-    bool out_req = false;
-    bool def_required = false;
-    state -> next_offset = 0;
+    StateLexem lex = lex_none;
 
-    while(!ended && !out_req) {
-        ++state -> buffer;
-
+    while(lex == lex_none) {
         switch(ECHAR0) {
             case '#': {
-                if ((def_required = ended = ECHAR1 == '{')) {
-                    ++state -> next_offset;
-                    state -> setStatus(LexerControl::ls_command);
+                if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
+                    state -> next_offset += 2;
+                    lex = lex_command_interception;
                 }
             break; }
 
             case '`': {
                 if (ECHAR_PREV1 != '\\') {
                     ++state -> buffer;
-                    ended = true;
-                    state -> setStatus(LexerControl::ls_handled);
+                    lex = lex_command_end;
                 }
             break;}
 
             case 0: {
-                out_req = true;
-                state -> setStatus(LexerControl::ls_command);
-                break;
-            }
+                lex = lex_command_continue;
+            break;}
         }
+
+        ++state -> buffer;
     }
 
-    bool res = cutWord(state, out_req ? lex_command_continue : (def_required ? lex_command_interception : lex_command_end));
-
-//    if (def_required)
-//        state -> stack -> push(lex_command_continue);
-
-    return res;
+    return cutWord(state, lex);
 }
 
 bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
@@ -435,16 +424,13 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
         case lex_percent_presentation_continue: {
             while(true) {
                 switch(ECHAR0) {
-                    case 0: {
-                        state -> setStatus(LexerControl::ls_percentage_presentation);
-                        return cutWord(state, lex_percent_presentation_continue);
-                    break;}
+                    case 0: { return cutWord(state, lex_percent_presentation_continue); }
 
                     default: {
                         if (ECHAR0 == blocker && ECHAR_PREV1 != '\\') {
                             ++state -> buffer;
-                            state -> next_offset = 0;
-                            state -> setStatus(LexerControl::ls_handled);
+//                            state -> next_offset = 0;
+
                             return cutWord(state, lex_percent_presentation_end);
                         }
                     }
@@ -458,15 +444,12 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
         case lex_epercent_presentation_continue: {
             while(true) {
                 switch(ECHAR0) {
-                    case 0: {
-                        state -> setStatus(LexerControl::ls_epercentage_presentation);
-                        return cutWord(state, lex_epercent_presentation_continue);
-                    break;}
+                    case 0: { return cutWord(state, lex_epercent_presentation_continue); }
 
                     case '#': {
-                        if (ECHAR1 == '{') {
+                        if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
                             ++state -> next_offset;
-//                            state -> stack -> replace(lex_epercent_presentation_continue, false);
+
                             return cutWord(
                                 state,
                                 Grammar::obj().toInterceptor(state -> stack_token -> lexem)
@@ -477,8 +460,8 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
                     default: {
                         if (ECHAR0 == blocker && ECHAR_PREV1 != '\\') {
                             ++state -> buffer;
-                            state -> next_offset = 0;
-                            state -> setStatus(LexerControl::ls_handled);
+//                            state -> next_offset = 0;
+
                             return cutWord(state, lex_epercent_presentation_end);
                         }
                     }
@@ -517,9 +500,8 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
                 int token_length = stop_token.length();
 
                 if (QByteArray(state -> buffer, token_length) == stop_token) {
-//                    state -> stack -> drop();
                     state -> buffer += token_length;
-                    state -> setStatus(LexerControl::ls_handled);
+
                     return cutWord(state, lex_heredoc_mark);
                 }
             break;}
@@ -545,29 +527,19 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
                     break;}
 
                     case '#': {
-                        if (ECHAR1 == '{') {
-                            ++state -> next_offset;
+                        if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
+                            state -> next_offset += 2;
                             return cutWord(state, Grammar::obj().toInterceptor(state -> stack_token -> lexem));
                         }
                     }
 
-                    default: ++state -> buffer;
+                    ++state -> buffer;
                 }
             }
         break;}
         default:;
     }
 
-
-    switch(state -> stack_token -> lexem) {
-        case lex_heredoc_continue: { state -> setStatus(LexerControl::ls_heredoc); break;}
-        case lex_heredoc_intended_continue: { state -> setStatus(LexerControl::ls_heredoc_intended); break;}
-        case lex_eheredoc_intended_continue: { state -> setStatus(LexerControl::ls_eheredoc_intended); break;}
-        case lex_cheredoc_intended_continue: { state -> setStatus(LexerControl::ls_cheredoc_intended); break;}
-        case lex_eheredoc_continue: { state -> setStatus(LexerControl::ls_eheredoc); break;}
-        case lex_cheredoc_continue: { state -> setStatus(LexerControl::ls_cheredoc); break;}
-        default:;
-    }
     return cutWord(state, lex_heredoc_continue);
 }
 
