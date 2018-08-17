@@ -18,6 +18,7 @@ namespace Ruby {
         bool parseEString(LexerControl * state);
         bool parseCommand(LexerControl * state);
         bool parsePercentagePresenation(LexerControl * state);
+        bool parseHeredocMarks(LexerControl * state, StateLexem & lex);
         bool parseHeredoc(LexerControl * state);
         bool parseRegexp(LexerControl * state);
         bool parseComment(LexerControl * state);

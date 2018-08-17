@@ -322,6 +322,7 @@ bool LexerFrontend::parseNumber(LexerControl * state) {
 
 bool LexerFrontend::parseString(LexerControl * state) {
     StateLexem lex = lex_none;
+    state -> next_offset = 0;
 
     while(lex == lex_none) {
         switch(ECHAR0) {
@@ -346,6 +347,7 @@ bool LexerFrontend::parseString(LexerControl * state) {
 
 bool LexerFrontend::parseEString(LexerControl * state) {
     StateLexem lex = lex_none;
+    state -> next_offset = 0;
 
     while(lex == lex_none) {
         switch(ECHAR0) {
@@ -376,6 +378,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
 
 bool LexerFrontend::parseCommand(LexerControl * state) {
     StateLexem lex = lex_none;
+    state -> next_offset = 0;
 
     while(lex == lex_none) {
         switch(ECHAR0) {
@@ -477,6 +480,69 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
     return true;
 }
 
+bool LexerFrontend::parseHeredocMarks(LexerControl * state, StateLexem & lex) {
+    if (!isBlank(ECHAR2) && (state -> isBufferStart() || !isWord(ECHAR_PREV1))) {
+        const char * curr = state -> buffer + 2;
+        bool is_intended = false;
+
+        if (*curr == '-' || *curr == '~') {
+            ++state -> next_offset;
+            curr++;
+            is_intended = true;
+        }
+
+        const char * control = curr;
+        bool is_simple = *curr == '\'';
+        bool is_command = *curr == '`';
+        bool is_quoted = is_simple || is_command || *curr == '"';
+
+        lex =
+            is_simple ?
+                is_intended ? lex_heredoc_intended_mark : lex_heredoc_mark
+                  :
+                is_command ?
+                    is_intended ? lex_cheredoc_intended_mark : lex_cheredoc_mark
+                        :
+                    is_intended ? lex_eheredoc_intended_mark : lex_eheredoc_mark;
+
+        if (is_quoted) {
+            bool ended = false;
+
+            while(!ended) {
+                switch(*++curr) {
+                    case '\'':
+                    case '"':
+                    case '`': {
+                        if (*control == *curr)
+                            ended = true;
+                    break;}
+
+                    case 0: {
+                        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Heredoc mark is not closed"));
+                        ended = true;
+                    break;}
+                }
+            }
+            ++control;
+        }
+        else while(isWord(*(++curr)));
+
+
+        QByteArray doc_name(control, curr - control);
+        state -> buffer += curr - state -> buffer + (is_quoted ? 1 : 0);
+        state -> next_offset = 0;
+
+        //INFO: stacked heredocs going in revert order so we must to insert new heredoc before previous if heredocs is stacked
+        StateLexem top = Grammar::obj().toHeredocContinious(state -> stack_token -> lexem);
+
+        if (top != lex_none) {
+//                            STACK_INT_TYPE level = 0;
+//                            while(Grammar::obj().toHeredocContinious(state -> stack -> touch(++level)) != lex_none);
+//                            state -> stack -> pushToLevel(level, lex, doc_name);
+        }
+    }
+}
+
 bool LexerFrontend::parseHeredoc(LexerControl * state) {
     if (!state -> stack_token || !state -> stack_token -> data) {
         state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack status for heredoc content"));
@@ -543,84 +609,70 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
     return cutWord(state, lex_heredoc_continue);
 }
 
-bool LexerFrontend::parseRegexp(LexerControl * state) {
-    bool ended = false;
-    bool out_req = false;
-    bool def_required = false;
+bool LexerFrontend::parseRegexp(LexerControl * state) {   
+    StateLexem lex = lex_none;
 
-    while(!ended && !out_req) {
-        ++state -> buffer;
-
+    while(lex == lex_none) {
         switch(ECHAR0) {
             case '#': {
-                if ((def_required = ended = ECHAR1 == '{'))
-                    ++state -> next_offset;
+                if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
+                    state -> next_offset += 2;
+                    lex = lex_regexp_interception;
+                }
             break;}
 
             case '/': {
-                ended = ECHAR_PREV1 != '\\';
-                state -> setStatus(LexerControl::ls_handled);
+                if (ECHAR_PREV1 != '\\') {
+                    while(lex == lex_none) {
+                        ++state -> buffer;
+
+                        switch(ECHAR0) {
+                            case 'm': // Treat a newline as a character matched by .
+                            case 'i': // Ignore case
+                            case 'x': // Ignore whitespace and comments in the pattern
+                            case 'o': // Perform #{} interpolation only once
+                            case 'u': // encoding:  UTF-8
+                            case 'e': // encoding:  EUC-JP
+                            case 's': // encoding:  Windows-31J
+                            case 'n': // encoding:  ASCII-8BIT
+                                { break;}
+                            case 0: { lex = lex_regexp_end; break; }
+                            default: {
+                                lex = lex_regexp_end;
+
+                                if (isAlphaNum(ECHAR0)) {
+                                    state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong regexp flag"));
+                                }
+                            }
+                        }
+                    }
+                }
             break;}
 
             case 0: {
-                out_req = true;
-                state -> setStatus(LexerControl::ls_regexp);
+                lex = lex_regexp_continue;
             break;}
         }
-    }
 
-    ended = false;
-
-    while(!ended && !out_req) {
         ++state -> buffer;
-
-        switch(ECHAR0) {
-            case 'm': // Treat a newline as a character matched by .
-            case 'i': // Ignore case
-            case 'x': // Ignore whitespace and comments in the pattern
-            case 'o': // Perform #{} interpolation only once
-            case 'u': // encoding:  UTF-8
-            case 'e': // encoding:  EUC-JP
-            case 's': // encoding:  Windows-31J
-            case 'n': // encoding:  ASCII-8BIT
-                { break;}
-            case 0: { ended = true; break; }
-            default: { ended = true; } // need to check current char - if its eql to letter then need to show error
-        }
     }
 
-    if (!cutWord(state, out_req ? lex_regexp_continue : (def_required ? lex_regexp_interception : lex_regexp_end)))
-        return false;
-
-//    if (def_required)
-//        state -> stack -> push(lex_regexp_continue);
-
-    return true;
+    return cutWord(state, lex);
 }
 
 bool LexerFrontend::parseComment(LexerControl * state) {
-    bool is_ended = false;
+    state -> next_offset = 0;
 
     if (state -> isBufferStart()) {
         if (ECHAR0 == '=' && ECHAR1 == 'e' && ECHAR2 == 'n' && ECHAR3 == 'd') {
-            is_ended = true;
             state -> buffer += 4;
-            cutWord(state);
+            return cutWord(state);
         }
     }
 
-    if (!is_ended) {
-//                                    state -> stack -> push(lex_commentary_start);
-        state -> moveBufferToEnd();
-        state -> next_offset = 0;
-        state -> setStatus(LexerControl::ls_comment);
-
-        cutWord(state, lex_commentary_continue);
-        return false;
-//                                    state -> stack -> push(lex_commentary_continue);
-    }
-
-    return true;
+    state -> moveBufferToEnd();
+    cutWord(state, lex_commentary_continue);
+    return false;
 }
 
 void LexerFrontend::lexicate(LexerControl * state) {
@@ -680,7 +732,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
             case '`': {
                 state -> attachToken(lex_command_start, true);
-                state -> next_offset = 0;
                 ++state -> buffer;
 
                 if (!parseCommand(state)) goto exit;
@@ -805,81 +856,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == '<') {
                     ++state -> next_offset;
 
-                    if (!isBlank(ECHAR2) && (state -> isBufferStart() || !isWord(ECHAR_PREV1))) {
-                        const char * curr = state -> buffer + 2;
-                        bool is_intended = false;
-
-                        if (*curr == '-' || *curr == '~') {
-                            ++state -> next_offset;
-                            curr++;
-                            is_intended = true;
-                        }
-
-                        const char * control = curr;
-                        bool is_simple = *curr == '\'';
-                        bool is_command = *curr == '`';
-                        bool is_quoted = is_simple || is_command || *curr == '"';
-
-                        lex =
-                            is_simple ?
-                                is_intended ? lex_heredoc_intended_mark : lex_heredoc_mark
-                                  :
-                                is_command ?
-                                    is_intended ? lex_cheredoc_intended_mark : lex_cheredoc_mark
-                                        :
-                                    is_intended ? lex_eheredoc_intended_mark : lex_eheredoc_mark;
-
-                        if (is_quoted) {
-                            bool ended = false;
-
-                            while(!ended) {
-                                switch(*++curr) {
-                                    case '\'':
-                                    case '"':
-                                    case '`': {
-                                        if (*control == *curr)
-                                            ended = true;
-                                    break;}
-
-                                    case 0: {
-                                        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Heredoc mark is not closed"));
-                                        ended = true;
-                                    break;}
-                                }
-                            }
-                            ++control;
-                        }
-                        else while(isWord(*(++curr)));
-
-
-                        QByteArray doc_name(control, curr - control);
-                        state -> buffer += curr - state -> buffer + (is_quoted ? 1 : 0);
-                        state -> next_offset = 0;
-
-                        //INFO: stacked heredocs going in revert order so we must to insert new heredoc before previous if heredocs is stacked
-                        StateLexem top = Grammar::obj().toHeredocContinious(state -> stack_token -> lexem);
-
-                        if (top != lex_none) {
-//                            STACK_INT_TYPE level = 0;
-//                            while(Grammar::obj().toHeredocContinious(state -> stack -> touch(++level)) != lex_none);
-//                            state -> stack -> pushToLevel(level, lex, doc_name);
-                        }
-                        else {
-                            int y = 0;
-
-//                            state -> stack -> push(lex, doc_name);
-
-                            state -> setStatus(
-                                is_simple ?
-                                    is_intended ? LexerControl::ls_heredoc_intended : LexerControl::ls_heredoc
-                                      :
-                                    is_command ?
-                                        is_intended ? LexerControl::ls_cheredoc_intended : LexerControl::ls_cheredoc
-                                            :
-                                        is_intended ? LexerControl::ls_eheredoc_intended : LexerControl::ls_eheredoc
-                            );
-                        }
-                    }
+                    parseHeredocMarks(state, lex);
                 } else {
                     if (ECHAR1 == '=') {
                         ++state -> next_offset;
