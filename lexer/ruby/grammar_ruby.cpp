@@ -6,9 +6,6 @@ Grammar::Grammar() : IGrammar() {
     for(quint32 i = 0; i < lex_max; i++) {
         StateLexem curr = (StateLexem)i;
 
-        rules[i][lex_none] = curr;
-        rules[lex_none][i] = curr;
-
         rules[i][lex_end_line] = curr;
         rules[lex_end_line][i] = curr;
 

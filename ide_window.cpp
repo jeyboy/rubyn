@@ -29,8 +29,6 @@
 #include "tools/data_preparer/rubydoc_preparer.h"
 #include "tools/data_preparer/rubydoc_parser.h"
 
-#include "lexer/ruby/predefined_ruby.h"
-
 IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(nullptr), widgets_list(nullptr), tree(nullptr), run_config(nullptr), pos_status(nullptr) {
     ui -> setupUi(this);
 
@@ -93,8 +91,6 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 //    parser.saveParsedDatum(QLatin1Literal("F://rubyn test//ruby_2_5_1_parsed"));
 
 //    Logger::obj().endMark(QLatin1Literal("Rubydoc"), QLatin1Literal("parsing"));
-
-    Ruby::Predefined::obj();
 }
 
 IDEWindow::~IDEWindow() { delete ui; }

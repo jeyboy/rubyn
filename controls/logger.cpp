@@ -23,10 +23,10 @@ void Logger::dump(const QByteArray & content) {
     }
 }
 
-Logger::Logger() : QObject(), out(0), file(0), m_editor(0), m_showDate(true), fm(0), timer(new QElapsedTimer()) {}
+Logger::Logger() : QObject(), out(nullptr), file(nullptr), m_editor(nullptr), m_showDate(true), fm(nullptr), timer(new QElapsedTimer()) {}
 
 Logger::~Logger() {
-    if (file != 0) {
+    if (file) {
         out -> flush();
         file -> close();
     }
@@ -36,7 +36,7 @@ Logger::~Logger() {
     delete m_editor;
     delete timer;
 
-    fm = 0;
+    fm = nullptr;
 }
 
 void Logger::write(const QString & initiator, const QString & value, const LogLevel & level) {
@@ -111,7 +111,7 @@ void Logger::toFile(const QString & initiator, const QString & value) {
     }
 }
 void Logger::toEditor(const QString & initiator, const QString & value) {
-    if (m_editor != 0) {
+    if (m_editor) {
         QString text;
 
         if (initiator != lastInitiator) {
