@@ -10,7 +10,7 @@ namespace Ruby {
         void identifyWordType(LexerControl * state);
         void registerVariable(LexerControl * state);
         void translateState(LexerControl * state);
-        bool cutWord(LexerControl * state, const StateLexem & predefined_lexem = lex_none);
+        bool cutWord(LexerControl * state, const StateLexem & predefined_lexem = lex_none, const StateLexem & predefined_delimiter = lex_none, const StackLexemFlag & flags = slf_none);
 
         bool parseContinious(LexerControl * state);
         bool parseNumber(LexerControl * state);

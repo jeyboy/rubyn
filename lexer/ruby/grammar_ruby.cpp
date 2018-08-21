@@ -201,6 +201,11 @@ Grammar::Grammar() : IGrammar() {
 //    lex_method_call_vars_end,
 }
 
+bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) {
+
+    return false;
+}
+
 StateLexem Grammar::toInterceptor(const StateLexem & lex) {
     switch(lex) {
         case lex_estring_continue: return lex_estring_interception;

@@ -59,12 +59,12 @@ void LexerFrontend::translateState(LexerControl * state) {
     state -> lex_word = new_state;
 }
 
-bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_lexem) {
+bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_lexem, const StateLexem & predefined_delimiter, const StackLexemFlag & flags) {
     bool has_predefined = predefined_lexem != lex_none;
 
     state -> cachingPredicate(has_predefined);
 
-     if (state -> cached_length || has_predefined) {
+    if (state -> cached_length || has_predefined) {
         state -> lex_word =
             has_predefined ? predefined_lexem : Predefined::obj().lexem(state -> cached);
 
@@ -92,13 +92,14 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
                 state -> light(highlightable);
         }
 
-        state -> attachToken(state -> lex_word);
+        state -> attachToken(state -> lex_word, flags & slf_word_related);
     }
     else state -> lex_word = lex_none;
 
     if (state -> next_offset) {
         state -> cachingDelimiter();
-        state -> lex_delimiter = Predefined::obj().lexem(state -> cached);
+        state -> lex_delimiter =
+            predefined_delimiter == lex_none ? Predefined::obj().lexem(state -> cached) : predefined_delimiter;
 
         if (state -> lex_word == lex_none) {
             StateLexem new_state =
@@ -114,11 +115,10 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
 
             state -> lex_delimiter = new_state;
 
-
-            state -> replaceToken(state -> lex_delimiter);
+            state -> replaceToken(state -> lex_delimiter, flags & slf_delimiter_related);
         }
         else {
-            state -> attachToken(state -> lex_delimiter);
+            state -> attachToken(state -> lex_delimiter, flags & slf_delimiter_related);
         }
     }
 
@@ -322,6 +322,7 @@ bool LexerFrontend::parseNumber(LexerControl * state) {
 
 bool LexerFrontend::parseString(LexerControl * state) {
     StateLexem lex = lex_none;
+    StackLexemFlag flags = slf_none;
     state -> next_offset = 0;
 
     while(lex == lex_none) {
@@ -330,6 +331,7 @@ bool LexerFrontend::parseString(LexerControl * state) {
                 if (ECHAR_PREV1 != '\\') {
                     ++state -> buffer;
                     lex = lex_string_end;
+                    flags = slf_unstack_word;
                 }
             break;}
 
@@ -342,7 +344,7 @@ bool LexerFrontend::parseString(LexerControl * state) {
         ++state -> buffer;
     }
 
-    return cutWord(state, lex);
+    return cutWord(state, lex, flags);
 }
 
 bool LexerFrontend::parseEString(LexerControl * state) {
@@ -732,6 +734,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
             case '`': {
                 state -> attachToken(lex_command_start, true);
+                state -> next_offset = 0;
                 ++state -> buffer;
 
                 if (!parseCommand(state)) goto exit;
@@ -748,6 +751,8 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case '"': {
+                if (!cutWord(state)) goto exit;
+
                 state -> attachToken(lex_estring_start, true);
                 state -> next_offset = 0;
                 ++state -> buffer;

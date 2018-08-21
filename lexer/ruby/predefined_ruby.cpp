@@ -4,7 +4,7 @@
 
 using namespace Ruby;
 
-Predefined::Predefined() {
+Predefined::Predefined() {   
     keys.insert(QByteArrayLiteral("#{"), lex_interpolation);
     keys.insert(QByteArrayLiteral("{"), lex_open_curly_bracket);
     keys.insert(QByteArrayLiteral("}"), lex_close_curly_bracket);
@@ -225,6 +225,5 @@ Predefined::Predefined() {
 
 bool Predefined::hasKey(const QByteArray & key) { return keys.contains(key); }
 StateLexem Predefined::lexem(const QByteArray & key) {
-    qDebug() << keys;
     return keys.value(key, lex_word);
 }

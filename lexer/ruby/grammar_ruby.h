@@ -9,6 +9,8 @@ namespace Ruby {
 
         friend class Singleton<Grammar>;
     public:
+        bool stackDropable(const StateLexem & state, const StateLexem & input);
+
         StateLexem toInterceptor(const StateLexem & lex);
 
         char percentagePresentationBlocker(const char & ch);

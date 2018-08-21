@@ -11,6 +11,7 @@ protected:
     virtual ~IGrammar();
 public:
     StateLexem translate(const StateLexem & state, const StateLexem & input);
+    virtual bool stackDropable(const StateLexem & state, const StateLexem & input);
 
     virtual Identifier toHighlightable(const StateLexem & /*lexem*/) = 0;
 };

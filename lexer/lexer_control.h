@@ -88,8 +88,10 @@ struct LexerControl {
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
 
-        if (lex_word != lex_none)
+        if (lex_word != lex_none) {
             lex_prev_word = lex_word;
+            lex_prev_delimiter = lex_none;
+        }
 
         if (cached_length && !ignore_para) {
             attachPara(cached);
@@ -118,7 +120,7 @@ struct LexerControl {
 
     inline StateLexem & sublastToken() { return token -> prev -> lexem; }
     inline StateLexem & lastToken() { return token -> lexem; }
-    inline void attachToken(const StateLexem & lexem, const bool stacked = false) {
+    inline void attachToken(const StateLexem & lexem, const uint & flags = slf_none) {
         if (token -> next) {
             token = token -> next;
             token -> lexem = lexem;
@@ -127,14 +129,28 @@ struct LexerControl {
         }
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
 
-        if (stacked) {
+        if (flags != slf_none) {
+            if (flags & slf_stack_word) {
+                token -> stacked_prev = stack_token;
+                stack_token = token;
+            } else {
+                if (stack_token) {
+                    grammar -> stackDropable(stack_token -> lexem, lexem);
+                    stack_token = stack_token -> stacked_prev;
+                } else {
+                    cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
+                }
+            }
+        }
+    }
+    inline void replaceToken(const StateLexem & lexem, const uint & flags = slf_none) {
+        token -> lexem = lexem;
+        token -> length += cached_length;
+
+        if (flags != slf_none && stack_token != token) {
             token -> stacked_prev = stack_token;
             stack_token = token;
         }
-    }
-    inline void replaceToken(const StateLexem & lexem) {
-        token -> lexem = lexem;
-        token -> length += cached_length;
     }
 
     void popStack() {
