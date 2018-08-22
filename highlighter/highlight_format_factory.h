@@ -16,6 +16,8 @@ protected:
 
     void registerSpellcheckFormat();
 
+    void registerUnknownName();
+
     void registerLabelFormat();
 
     void registerOperatorFormat();

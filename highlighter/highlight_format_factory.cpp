@@ -27,6 +27,15 @@ void HighlightFormatFactory::registerSpellcheckFormat() {
     _formats.insert(hid_notice, format);
 }
 
+void HighlightFormatFactory::registerUnknownName() {
+    QTextCharFormat format;
+    format.setFontWeight(QFont::Black);
+    format.setFontUnderline(true);
+    format.setUnderlineColor(QColor(Qt::gray));
+    format.setUnderlineStyle(QTextCharFormat::SingleUnderline);
+    _formats.insert(hid_unknown_name, format);
+}
+
 void HighlightFormatFactory::registerLabelFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Black);
@@ -125,6 +134,8 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerErrorFormat();
     registerWarningFormat();
     registerSpellcheckFormat();
+
+    registerUnknownName();
 }
 
 const QTextCharFormat & HighlightFormatFactory::getFormatFor(const Identifier & uid) { return _formats[uid]; }

@@ -101,25 +101,19 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
         state -> lex_delimiter =
             predefined_delimiter == lex_none ? Predefined::obj().lexem(state -> cached) : predefined_delimiter;
 
-        if (state -> lex_word == lex_none) {
-            StateLexem new_state =
-                state -> grammar -> translate(state -> lex_prev_delimiter, state -> lex_delimiter);
+        StateLexem new_state =
+            state -> grammar -> translate(state -> lex_prev_delimiter, state -> lex_delimiter);
 
-            if (new_state == lex_error) {
-                state -> lightWithMessage(
-                    lex_error,
-                    ERROR_STATE(QByteArrayLiteral("Wrong delimiter satisfy state!!!"), state -> lex_prev_delimiter, state -> lex_delimiter)
-                );
-                //return false;
-            }
-
-            state -> lex_delimiter = new_state;
-
-            state -> replaceToken(state -> lex_delimiter, flags & slf_delimiter_related);
+        if (new_state == lex_error) {
+            state -> lightWithMessage(
+                lex_error,
+                ERROR_STATE(QByteArrayLiteral("Wrong delimiter satisfy state!!!"), state -> lex_prev_delimiter, state -> lex_delimiter)
+            );
+            //return false;
         }
-        else {
-            state -> attachToken(state -> lex_delimiter, flags & slf_delimiter_related);
-        }
+
+        state -> lex_delimiter = new_state;
+        state -> attachToken(state -> lex_delimiter, flags & slf_delimiter_related);
     }
 
     state -> dropCached();

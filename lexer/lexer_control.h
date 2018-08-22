@@ -90,11 +90,14 @@ struct LexerControl {
 
         if (lex_word != lex_none) {
             lex_prev_word = lex_word;
-            lex_prev_delimiter = lex_none;
         }
 
-        if (cached_length && !ignore_para) {
-            attachPara(cached);
+        if (cached_length) {
+            lex_prev_delimiter = lex_none;
+
+            if (!ignore_para) {
+                attachPara(cached);
+            }
         }
     }
     inline void cachingDelimiter() {

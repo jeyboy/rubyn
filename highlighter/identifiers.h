@@ -36,6 +36,8 @@ enum Identifier : LEXEM_TYPE {
 //    lex_name = 1 << 30,
 //    //////////
 
+    hid_unknown_name,
+
     hid_error,
     hid_warning,
     hid_notice

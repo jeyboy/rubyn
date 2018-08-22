@@ -458,6 +458,8 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
 
         //hid_scope_visibility
 
+        case lex_word: return hid_unknown_name;
+
         case lex_error: return hid_error;
 
         default: return hid_none;
