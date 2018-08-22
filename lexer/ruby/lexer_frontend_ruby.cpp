@@ -344,7 +344,7 @@ bool LexerFrontend::parseString(LexerControl * state) {
         ++state -> buffer;
     }
 
-    return cutWord(state, lex, flags);
+    return cutWord(state, lex, lex_none, flags);
 }
 
 bool LexerFrontend::parseEString(LexerControl * state) {
@@ -705,8 +705,36 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
     while(true) {
         switch(ECHAR0) {
-            case ' ':
-            case '\t':
+            case ' ': {
+                StateLexem status = lex_blank;
+
+                if (ECHAR1 == ' ') {
+                    status = lex_blanks;
+                    int iter = 1;
+
+                    do { ++state -> next_offset; }
+                    while(*(state -> buffer + ++iter) == ' ');
+                }
+
+                if(!cutWord(state, lex_none, status)) goto exit;
+            break;}
+
+            case '\t':{
+                StateLexem status = lex_tab;
+
+                if (ECHAR1 == '\t') {
+                    status = lex_tabs;
+                    int iter = 1;
+
+                    do { ++state -> next_offset; }
+                    while(*(state -> buffer + ++iter) == '\t');
+                }
+
+                if(!cutWord(state, lex_none, status)) goto exit;
+            break;}
+
+
+
             case ',':
             case '^':
             case '~':
@@ -733,29 +761,21 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case '`': {
-                state -> attachToken(lex_command_start, true);
-                state -> next_offset = 0;
-                ++state -> buffer;
+                if (!cutWord(state, lex_none, lex_command_start, slf_stack_delimiter)) goto exit;
 
                 if (!parseCommand(state)) goto exit;
             break;}
 
 
             case '\'': {
-                state -> attachToken(lex_string_start, true);
-                state -> next_offset = 0;
-                ++state -> buffer;
+                if (!cutWord(state, lex_none, lex_string_start, slf_stack_delimiter)) goto exit;
 
                 if (!parseString(state)) goto exit;
             break;}
 
 
             case '"': {
-                if (!cutWord(state)) goto exit;
-
-                state -> attachToken(lex_estring_start, true);
-                state -> next_offset = 0;
-                ++state -> buffer;
+                if (!cutWord(state, lex_none, lex_estring_start, slf_stack_delimiter)) goto exit;
 
                 if (!parseEString(state)) goto exit;
             break;}
