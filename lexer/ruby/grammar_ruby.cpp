@@ -23,11 +23,11 @@ Grammar::Grammar() : IGrammar() {
         rules[i][lex_close_curly_bracket] = lex_expression;
     }
 
-    rules[lex_blank][lex_blank] = lex_blanks;
+//    rules[lex_blank][lex_blank] = lex_blanks;
     rules[lex_blank][lex_tab] = lex_blanks;
     rules[lex_tab][lex_blank] = lex_blanks;
-    rules[lex_tab][lex_tab] = lex_blanks;
-    rules[lex_blanks][lex_blank] = lex_blanks;
+//    rules[lex_tab][lex_tab] = lex_blanks;
+//    rules[lex_blanks][lex_blank] = lex_blanks;
     rules[lex_blanks][lex_tab] = lex_blanks;
 
 

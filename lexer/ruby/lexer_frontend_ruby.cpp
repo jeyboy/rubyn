@@ -101,18 +101,18 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
         state -> lex_delimiter =
             predefined_delimiter == lex_none ? Predefined::obj().lexem(state -> cached) : predefined_delimiter;
 
-        StateLexem new_state =
-            state -> grammar -> translate(state -> lex_prev_delimiter, state -> lex_delimiter);
+//        StateLexem new_state =
+//            state -> grammar -> translate(state -> lex_prev_delimiter, state -> lex_delimiter);
 
-        if (new_state == lex_error) {
-            state -> lightWithMessage(
-                lex_error,
-                ERROR_STATE(QByteArrayLiteral("Wrong delimiter satisfy state!!!"), state -> lex_prev_delimiter, state -> lex_delimiter)
-            );
-            //return false;
-        }
+//        if (new_state == lex_error) {
+//            state -> lightWithMessage(
+//                lex_error,
+//                ERROR_STATE(QByteArrayLiteral("Wrong delimiter satisfy state!!!"), state -> lex_prev_delimiter, state -> lex_delimiter)
+//            );
+//            //return false;
+//        }
 
-        state -> lex_delimiter = new_state;
+//        state -> lex_delimiter = new_state;
         state -> attachToken(state -> lex_delimiter, flags & slf_delimiter_related);
     }
 
@@ -316,71 +316,76 @@ bool LexerFrontend::parseNumber(LexerControl * state) {
 
 bool LexerFrontend::parseString(LexerControl * state) {
     StateLexem lex = lex_none;
+    StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
-    state -> next_offset = 0;
 
-    while(lex == lex_none) {
+    while(true) {
         switch(ECHAR0) {
             case '\'': {
                 if (ECHAR_PREV1 != '\\') {
                     ++state -> buffer;
-                    lex = lex_string_end;
+                    del_lex = lex_string_end;
                     flags = slf_unstack_word;
                 }
             break;}
 
             case 0: {
                 lex = lex_string_continue;
-                break;
-            }
+                state -> next_offset = 0;
+            break;}
         }
 
-        ++state -> buffer;
+        if (lex == lex_none)
+            ++state -> buffer;
+        else break;
     }
 
-    return cutWord(state, lex, lex_none, flags);
+    return cutWord(state, lex, del_lex, flags);
 }
 
 bool LexerFrontend::parseEString(LexerControl * state) {
     StateLexem lex = lex_none;
-    state -> next_offset = 0;
+    StackLexemFlag flags = slf_none;
 
-    while(lex == lex_none) {
+    while(true) {
         switch(ECHAR0) {
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
-                    state -> next_offset += 2;
+                    ++state -> next_offset;
                     lex = lex_estring_interception;
+                    flags = slf_stack_delimiter;
                 }
             break; }
 
             case '"': {
                 if (ECHAR_PREV1 != '\\') {
-                    ++state -> buffer;
                     lex = lex_estring_end;
+                    flags = slf_unstack_delimiter;
                 }
             break;}
 
             case 0: {
+                state -> next_offset = 0;
                 lex = lex_estring_continue;
             break;}
         }
 
-        ++state -> buffer;
+        if (lex == lex_none)
+            ++state -> buffer;
+        else break;
     }
 
-    return cutWord(state, lex);
+    return cutWord(state, lex, lex_none, flags);
 }
 
 bool LexerFrontend::parseCommand(LexerControl * state) {
     StateLexem lex = lex_none;
-    state -> next_offset = 0;
 
     while(lex == lex_none) {
         switch(ECHAR0) {
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
-                    state -> next_offset += 2;
+                    ++state -> next_offset;
                     lex = lex_command_interception;
                 }
             break; }
@@ -394,6 +399,7 @@ bool LexerFrontend::parseCommand(LexerControl * state) {
 
             case 0: {
                 lex = lex_command_continue;
+                state -> next_offset = 0;
             break;}
         }
 
@@ -732,13 +738,36 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case ',':
             case '^':
             case '~':
-            case '(':
-            case ')':
             case ';':
             case '\r':
             case '\n':
             case '\v': {
                 if(!cutWord(state)) goto exit;
+            break;}
+
+
+            case '{':
+            case '[':
+            case '(': {
+                if(!cutWord(state, lex_none, lex_none, slf_stack_delimiter)) goto exit;
+            break;}
+            case ']':
+            case ')':{
+                if(!cutWord(state, lex_none, lex_none, slf_unstack_delimiter)) goto exit;
+            break;}
+            case '}': {
+                if(!cutWord(state, lex_none, lex_none, slf_unstack_delimiter)) goto exit;
+
+                StateLexem top = state -> stack_token -> lexem;
+                StateLexem top_conv = Grammar::obj().fromContinious(top);
+
+                if (top_conv != lex_none) { // after interpolation
+    //                    if (Grammar::obj().isStackDroppable(top))
+    //                        state -> stack -> pushToLevel(1, top_conv);
+
+                    if (!parseContinious(state))
+                        goto exit;
+                }
             break;}
 
 
@@ -894,33 +923,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     ++state -> next_offset;
 
                 if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '[': {
-                if (!cutWord(state)) goto exit;
-            break;}
-            case ']': {
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '{': {
-                if (!cutWord(state)) goto exit;
-            break;}
-            case '}': {
-                if (!cutWord(state)) goto exit;
-
-                StateLexem top = state -> stack_token -> lexem;
-                StateLexem top_conv = Grammar::obj().fromContinious(top);
-
-                if (top_conv != lex_none) { // after interpolation
-//                    if (Grammar::obj().isStackDroppable(top))
-//                        state -> stack -> pushToLevel(1, top_conv);
-
-                    if (!parseContinious(state))
-                        goto exit;
-                }
             break;}
 
 

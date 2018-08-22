@@ -95,13 +95,14 @@ struct LexerControl {
         if (cached_length) {
             lex_prev_delimiter = lex_none;
 
-            if (!ignore_para) {
+            if (!ignore_para)
                 attachPara(cached);
-            }
         }
     }
     inline void cachingDelimiter() {
-        lex_prev_delimiter = lex_delimiter;
+        if (lex_word == lex_none)
+            lex_prev_delimiter = lex_delimiter;
+
         prev = buffer;
         buffer += next_offset;
 
@@ -133,7 +134,7 @@ struct LexerControl {
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
 
         if (flags != slf_none) {
-            if (flags & slf_stack_word) {
+            if ((flags & slf_stack_word) || (flags & slf_stack_delimiter)) {
                 token -> stacked_prev = stack_token;
                 stack_token = token;
             } else {
