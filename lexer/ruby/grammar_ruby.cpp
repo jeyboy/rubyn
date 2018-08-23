@@ -4,7 +4,7 @@ using namespace Ruby;
 
 Grammar::Grammar() : IGrammar() {
     for(quint32 i = 0; i < lex_max; i++) {
-        StateLexem curr = (StateLexem)i;
+        StateLexem curr = static_cast<StateLexem>(i);
 
         rules[i][lex_end_line] = curr;
         rules[lex_end_line][i] = curr;
@@ -38,9 +38,9 @@ Grammar::Grammar() : IGrammar() {
     rules[lex_percent_presentation_start][lex_percent_presentation_end] = lex_expression;
     rules[lex_epercent_presentation_start][lex_epercent_presentation_end] = lex_expression;
 
-    rules[lex_epercent_presentation_start][lex_epercent_presentation_interception] = lex_epercent_presentation_intercepted;
+//    rules[lex_epercent_presentation_start][lex_epercent_presentation_interception] = lex_epercent_presentation_intercepted;
 
-    rules[lex_epercent_presentation_intercepted][lex_interpolation] = lex_inline_block_start;
+//    rules[lex_epercent_presentation_intercepted][lex_interpolation] = lex_inline_block_start;
 
 
     // MODULE DEFINITION
@@ -202,8 +202,25 @@ Grammar::Grammar() : IGrammar() {
 }
 
 bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) {
+    switch(input) {
+        case lex_close_curly_bracket: {
+            switch(state) {
+                case lex_estring_interception:
+                case lex_regexp_interception:
+                case lex_epercent_presentation_interception:
+                case lex_command_interception:
+                case lex_eheredoc_interception:
+                case lex_eheredoc_intended_interception:
+                case lex_cheredoc_interception:
+                case lex_cheredoc_intended_interception:
+                    return true;
 
-    return false;
+                default: return false;
+            }
+        break;}
+
+        default: return false;
+    }
 }
 
 StateLexem Grammar::toInterceptor(const StateLexem & lex) {
@@ -419,29 +436,29 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
 
 //            case lex_string:
         case lex_command_continue:
-        case lex_command_intercepted:
+//        case lex_command_intercepted:
         case lex_command_interception:
         case lex_command_end:
         case lex_string_continue:
         case lex_string_end:
         case lex_estring_continue:
-        case lex_estring_intercepted:
+//        case lex_estring_intercepted:
         case lex_estring_interception:
         case lex_estring_end:
         case lex_heredoc_continue:
         case lex_heredoc_intended_continue:
         case lex_heredoc_end:
         case lex_eheredoc_continue:
-        case lex_eheredoc_intercepted:
+//        case lex_eheredoc_intercepted:
         case lex_eheredoc_interception:
         case lex_eheredoc_intended_continue:
         case lex_cheredoc_continue:
-        case lex_cheredoc_intercepted:
+//        case lex_cheredoc_intercepted:
         case lex_cheredoc_interception:
         case lex_cheredoc_intended_continue:
         case lex_require_path:
 
-        case lex_epercent_presentation_intercepted:
+//        case lex_epercent_presentation_intercepted:
         case lex_epercent_presentation_interception:
         case lex_epercent_presentation_end:
         case lex_percent_presentation_end:
@@ -450,7 +467,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
             return hid_string;
 
         case lex_regexp_continue:
-        case lex_regexp_intercepted:
+//        case lex_regexp_intercepted:
         case lex_regexp_interception:
         case lex_regexp_end:
             return hid_regexp;

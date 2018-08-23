@@ -228,7 +228,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_command_content,
     lex_command_start,
     lex_command_interception,
-    lex_command_intercepted,
+//    lex_command_intercepted,
     lex_command_continue,
     lex_command_end,
 
@@ -240,7 +240,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_estring_content,
     lex_estring_start, // "
     lex_estring_interception,
-    lex_estring_intercepted,
+//    lex_estring_intercepted,
     lex_estring_continue,
     lex_estring_end,
 
@@ -253,7 +253,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_epercent_presentation_content,
     lex_epercent_presentation_start, // %N/.../
     lex_epercent_presentation_interception,
-    lex_epercent_presentation_intercepted,
+//    lex_epercent_presentation_intercepted,
     lex_epercent_presentation_continue,
     lex_epercent_presentation_end,
 
@@ -273,28 +273,28 @@ enum StateLexem : LEXEM_TYPE {
     lex_eheredoc_content,
     lex_eheredoc_start,
     lex_eheredoc_interception,
-    lex_eheredoc_intercepted,
+//    lex_eheredoc_intercepted,
     lex_eheredoc_continue,
 
     lex_eheredoc_intended_mark,
     lex_eheredoc_intended_content,
     lex_eheredoc_intended_start,
     lex_eheredoc_intended_interception,
-    lex_eheredoc_intended_intercepted,
+//    lex_eheredoc_intended_intercepted,
     lex_eheredoc_intended_continue,
 
     lex_cheredoc_mark,
     lex_cheredoc_content,
     lex_cheredoc_start,
     lex_cheredoc_interception,
-    lex_cheredoc_intercepted,
+//    lex_cheredoc_intercepted,
     lex_cheredoc_continue,
 
     lex_cheredoc_intended_mark,
     lex_cheredoc_intended_content,
     lex_cheredoc_intended_start,
     lex_cheredoc_intended_interception,
-    lex_cheredoc_intended_intercepted,
+//    lex_cheredoc_intended_intercepted,
     lex_cheredoc_intended_continue,
     //////////////////////////////////////
 
@@ -302,7 +302,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_regexp_start, // /\a+/
     lex_regexp_content,
     lex_regexp_interception,
-    lex_regexp_intercepted,
+//    lex_regexp_intercepted,
     lex_regexp_continue,
     lex_regexp_end,
 

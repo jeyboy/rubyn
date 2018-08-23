@@ -35,7 +35,7 @@ struct LexerControl {
 
     StateLexem lex_prev_word;
     StateLexem lex_word;
-    StateLexem lex_prev_delimiter;
+//    StateLexem lex_prev_delimiter;
     StateLexem lex_delimiter;
 
 //    Scope * scope;
@@ -63,7 +63,7 @@ struct LexerControl {
 
     LexerControl(IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, Highlighter * lighter = nullptr) :
         lighter(lighter), grammar(cgrammar),
-        lex_prev_word(lex_none), lex_word(lex_none), lex_prev_delimiter(lex_none), lex_delimiter(lex_none),
+        lex_prev_word(lex_none), lex_word(lex_none)/*, lex_prev_delimiter(lex_none)*/, lex_delimiter(lex_none),
         next_offset(1), stack_token(stack_token), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()),
         control_para(nullptr), last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2), last_light_len(0),
         start(nullptr), buffer(nullptr), prev(nullptr), user_data(user_data)
@@ -93,15 +93,15 @@ struct LexerControl {
         }
 
         if (cached_length) {
-            lex_prev_delimiter = lex_none;
+//            lex_prev_delimiter = lex_none;
 
             if (!ignore_para)
                 attachPara(cached);
         }
     }
     inline void cachingDelimiter() {
-        if (lex_word == lex_none)
-            lex_prev_delimiter = lex_delimiter;
+//        if (lex_word == lex_none)
+//            lex_prev_delimiter = lex_delimiter;
 
         prev = buffer;
         buffer += next_offset;
@@ -145,6 +145,9 @@ struct LexerControl {
                     cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
                 }
             }
+
+            lex_prev_word = lex_none;
+            lex_word = lex_none;
         }
     }
     inline void replaceToken(const StateLexem & lexem, const uint & flags = slf_none) {
@@ -186,7 +189,7 @@ struct LexerControl {
             last_uid = uid;
 
             lighter -> setFormat(
-                last_light_pos, (int)last_light_len,
+                last_light_pos, static_cast<int>(last_light_len),
                 HighlightFormatFactory::obj().getFormatFor(last_uid)
             );
         }

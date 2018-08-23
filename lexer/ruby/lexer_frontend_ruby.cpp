@@ -315,7 +315,7 @@ bool LexerFrontend::parseNumber(LexerControl * state) {
 }
 
 bool LexerFrontend::parseString(LexerControl * state) {
-    StateLexem lex = lex_none;
+    StateLexem lex = lex_string_content;
     StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 
@@ -323,15 +323,15 @@ bool LexerFrontend::parseString(LexerControl * state) {
         switch(ECHAR0) {
             case '\'': {
                 if (ECHAR_PREV1 != '\\') {
-                    ++state -> buffer;
                     del_lex = lex_string_end;
                     flags = slf_unstack_word;
                 }
             break;}
 
             case 0: {
-                lex = lex_string_continue;
-                state -> next_offset = 0;
+//                state -> next_offset = 0;
+                del_lex = lex_string_continue;
+                flags = slf_stack_delimiter;
             break;}
         }
 
@@ -344,7 +344,8 @@ bool LexerFrontend::parseString(LexerControl * state) {
 }
 
 bool LexerFrontend::parseEString(LexerControl * state) {
-    StateLexem lex = lex_none;
+    StateLexem lex = lex_estring_content;
+    StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 
     while(true) {
@@ -352,21 +353,22 @@ bool LexerFrontend::parseEString(LexerControl * state) {
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
                     ++state -> next_offset;
-                    lex = lex_estring_interception;
+                    del_lex = lex_estring_interception;
                     flags = slf_stack_delimiter;
                 }
             break; }
 
             case '"': {
                 if (ECHAR_PREV1 != '\\') {
-                    lex = lex_estring_end;
+                    del_lex = lex_estring_end;
                     flags = slf_unstack_delimiter;
                 }
             break;}
 
             case 0: {
-                state -> next_offset = 0;
-                lex = lex_estring_continue;
+//                state -> next_offset = 0;
+                del_lex = lex_estring_continue;
+                flags = slf_stack_delimiter;
             break;}
         }
 
@@ -375,11 +377,13 @@ bool LexerFrontend::parseEString(LexerControl * state) {
         else break;
     }
 
-    return cutWord(state, lex, lex_none, flags);
+    return cutWord(state, lex, del_lex, flags);
 }
 
 bool LexerFrontend::parseCommand(LexerControl * state) {
     StateLexem lex = lex_none;
+    StateLexem del_lex = lex_none;
+    StackLexemFlag flags = slf_none;
 
     while(lex == lex_none) {
         switch(ECHAR0) {
@@ -398,15 +402,19 @@ bool LexerFrontend::parseCommand(LexerControl * state) {
             break;}
 
             case 0: {
-                lex = lex_command_continue;
-                state -> next_offset = 0;
+//                state -> next_offset = 0;
+
+                del_lex = lex_command_continue;
+                flags = slf_stack_delimiter;
             break;}
         }
 
-        ++state -> buffer;
+        if (lex == lex_none)
+            ++state -> buffer;
+        else break;
     }
 
-    return cutWord(state, lex);
+    return cutWord(state, lex, del_lex, flags);
 }
 
 bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
