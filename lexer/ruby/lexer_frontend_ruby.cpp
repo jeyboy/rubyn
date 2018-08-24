@@ -381,7 +381,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
 }
 
 bool LexerFrontend::parseCommand(LexerControl * state) {
-    StateLexem lex = lex_none;
+    StateLexem lex = lex_command_content;
     StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 

@@ -19,8 +19,12 @@ Grammar::Grammar() : IGrammar() {
         rules[lex_tab][i] = curr;
 
         rules[i][lex_inline_commentary] = lex_inline_commentary;
-        rules[lex_inline_block_start][i] = curr;
-        rules[i][lex_close_curly_bracket] = lex_expression;
+
+        rules[lex_estring_interception][i] = curr;
+        rules[lex_command_interception][i] = curr;
+
+//        rules[lex_inline_block_start][i] = curr;
+//        rules[i][lex_close_curly_bracket] = lex_expression;
     }
 
 //    rules[lex_blank][lex_blank] = lex_blanks;
@@ -30,6 +34,14 @@ Grammar::Grammar() : IGrammar() {
 //    rules[lex_blanks][lex_blank] = lex_blanks;
     rules[lex_blanks][lex_tab] = lex_blanks;
 
+    rules[lex_string_start][lex_string_content] = lex_string_content;
+    rules[lex_string_content][lex_string_end] = lex_string_end;
+
+    rules[lex_estring_start][lex_estring_content] = lex_estring_content;
+    rules[lex_estring_content][lex_estring_end] = lex_estring_end;
+
+    rules[lex_command_start][lex_command_content] = lex_command_content;
+    rules[lex_command_content][lex_command_end] = lex_command_end;
 
     // PERCENTAGE PRESENTATION
 //        %r(/home/#{foo})#=> "/\\/home\\/Foo/"
