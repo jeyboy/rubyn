@@ -325,7 +325,7 @@ bool LexerFrontend::parseString(LexerControl * state) {
                 if (ECHAR_PREV1 != '\\') {
                     lex = lex_string_content;
                     del_lex = lex_string_end;
-                    flags = slf_unstack_word;
+                    flags = slf_unstack_delimiter;
                 }
             break;}
 
@@ -405,6 +405,7 @@ bool LexerFrontend::parseCommand(LexerControl * state) {
                     ++state -> buffer;
                     lex = lex_command_content;
                     del_lex = lex_command_end;
+                    flags = slf_unstack_delimiter;
                 }
             break;}
 
