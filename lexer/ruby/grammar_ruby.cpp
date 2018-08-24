@@ -310,41 +310,60 @@ StateLexem Grammar::toHeredocContinious(const StateLexem & lexem) {
     }
 }
 
-bool Grammar::isContinious(const StateLexem & lexem) {
-    switch(lexem) {
-        case lex_string_continue:
-        case lex_estring_continue:
-        case lex_commentary_continue:
-        case lex_command_continue:
-        case lex_heredoc_continue:
-        case lex_heredoc_intended_continue:
-        case lex_eheredoc_continue:
-        case lex_eheredoc_intended_continue:
-        case lex_cheredoc_continue:
-        case lex_cheredoc_intended_continue:
-        case lex_regexp_continue:
-        case lex_epercent_presentation_continue:
-        case lex_percent_presentation_continue:
-            return true;
-        default: return false;
-    }
-}
+//bool Grammar::isContinious(const StateLexem & lexem) {
+//    switch(lexem) {
+//        case lex_string_continue:
+//        case lex_estring_continue:
+//        case lex_commentary_continue:
+//        case lex_command_continue:
+//        case lex_heredoc_continue:
+//        case lex_heredoc_intended_continue:
+//        case lex_eheredoc_continue:
+//        case lex_eheredoc_intended_continue:
+//        case lex_cheredoc_continue:
+//        case lex_cheredoc_intended_continue:
+//        case lex_regexp_continue:
+//        case lex_epercent_presentation_continue:
+//        case lex_percent_presentation_continue:
+//            return true;
+//        default: return false;
+//    }
+//}
 
 StateLexem Grammar::fromContinious(const StateLexem & lexem) {
     switch(lexem) {
         case lex_string_continue: return lex_string_start;
+
+        case lex_estring_start:
         case lex_estring_continue: return lex_estring_start;
+
         case lex_commentary_continue: return lex_commentary_start;
+
+        case lex_command_start:
         case lex_command_continue: return lex_command_start;
+
         case lex_heredoc_continue: return lex_heredoc_start;
         case lex_heredoc_intended_continue: return lex_heredoc_intended_start;
+
+        case lex_eheredoc_start:
         case lex_eheredoc_continue: return lex_eheredoc_start;
+
+        case lex_eheredoc_intended_start:
         case lex_eheredoc_intended_continue: return lex_eheredoc_intended_start;
+
+        case lex_cheredoc_start:
         case lex_cheredoc_continue: return lex_cheredoc_start;
+
+        case lex_cheredoc_intended_start:
         case lex_cheredoc_intended_continue: return lex_cheredoc_intended_start;
+
+        case lex_regexp_start:
         case lex_regexp_continue: return lex_regexp_start;
-        case lex_epercent_presentation_continue: return lex_epercent_presentation_start;
+
         case lex_percent_presentation_continue: return lex_percent_presentation_start;
+
+        case lex_epercent_presentation_start:
+        case lex_epercent_presentation_continue: return lex_epercent_presentation_start;
 
         default: return lex_none;
     }
