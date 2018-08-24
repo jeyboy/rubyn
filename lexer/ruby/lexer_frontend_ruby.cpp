@@ -22,8 +22,9 @@ void LexerFrontend::identifyWordType(LexerControl * state) {
             else if (isUpper(state -> cached[0])) {
                 const char * it = state -> cached;
                 bool is_const = true;
+                EDITOR_LEN_TYPE pos = 0;
 
-                while(is_const && *++it) { is_const = is_const && isUpper(*++it); }
+                while(is_const && *++it && (++pos < state -> cached_length)) { is_const = is_const && isUpper(*it); }
 
                 if (is_const)
                     state -> lex_word = lex_const;
@@ -1079,7 +1080,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == '@')
                     ++state -> buffer;
 
-                if (!cutWord(state)) goto exit;
+                goto iterate;
+
+//                if (!cutWord(state)) goto exit;
             break;}
 
 

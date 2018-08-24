@@ -433,7 +433,9 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
             return hid_numeric;
 
 
+        case lex_symbol_key:
         case lex_symbol: return hid_symbol;
+
 
         case lex_const: return hid_const;
 
