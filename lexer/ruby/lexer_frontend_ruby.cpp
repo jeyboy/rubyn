@@ -315,7 +315,7 @@ bool LexerFrontend::parseNumber(LexerControl * state) {
 }
 
 bool LexerFrontend::parseString(LexerControl * state) {
-    StateLexem lex = lex_string_content;
+    StateLexem lex = lex_none;
     StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 
@@ -386,7 +386,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
 }
 
 bool LexerFrontend::parseCommand(LexerControl * state) {
-    StateLexem lex = lex_command_content;
+    StateLexem lex = lex_none;
     StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 
