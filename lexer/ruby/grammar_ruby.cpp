@@ -18,6 +18,8 @@ Grammar::Grammar() : IGrammar() {
         rules[i][lex_tab] = curr;
         rules[lex_tab][i] = curr;
 
+        rules[lex_symbol_key][i] = curr;
+
         rules[i][lex_inline_commentary] = lex_inline_commentary;
 
         rules[lex_estring_interception][i] = curr;
@@ -26,6 +28,14 @@ Grammar::Grammar() : IGrammar() {
 //        rules[lex_inline_block_start][i] = curr;
 //        rules[i][lex_close_curly_bracket] = lex_expression;
     }
+
+    rules[lex_symbol_key][lex_end_line] = lex_symbol_key;
+
+    rules[lex_symbol_key][lex_blank] = lex_symbol_key;
+    rules[lex_symbol_key][lex_blanks] = lex_symbol_key;
+
+    rules[lex_symbol_key][lex_tab] = lex_symbol_key;
+    rules[lex_symbol_key][lex_tabs] = lex_symbol_key;
 
 //    rules[lex_blank][lex_blank] = lex_blanks;
     rules[lex_blank][lex_tab] = lex_blanks;

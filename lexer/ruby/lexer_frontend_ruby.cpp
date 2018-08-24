@@ -18,7 +18,16 @@ void LexerFrontend::identifyWordType(LexerControl * state) {
         break;}
         default: {
             if (ECHAR_PREV1 == ':')
-                state -> lex_word = lex_symbol;
+                state -> lex_word = lex_symbol_key;
+            else if (isUpper(state -> cached[0])) {
+                const char * it = state -> cached;
+                bool is_const = true;
+
+                while(is_const && *++it) { is_const = is_const && isUpper(*++it); }
+
+                if (is_const)
+                    state -> lex_word = lex_const;
+            }
         }
     }
 }

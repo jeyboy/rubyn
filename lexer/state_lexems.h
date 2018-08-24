@@ -49,6 +49,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_float,
     lex_double,
 
+    lex_symbol_key,
     lex_symbol,
     lex_const,
     lex_var_scoped, // variables in blocks and etc // |a, b|
