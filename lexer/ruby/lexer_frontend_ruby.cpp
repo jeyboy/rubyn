@@ -323,6 +323,7 @@ bool LexerFrontend::parseString(LexerControl * state) {
         switch(ECHAR0) {
             case '\'': {
                 if (ECHAR_PREV1 != '\\') {
+                    lex = lex_string_content;
                     del_lex = lex_string_end;
                     flags = slf_unstack_word;
                 }
@@ -330,6 +331,7 @@ bool LexerFrontend::parseString(LexerControl * state) {
 
             case 0: {
 //                state -> next_offset = 0;
+                lex = lex_string_content;
                 del_lex = lex_string_continue;
                 flags = slf_stack_delimiter;
             break;}
@@ -344,7 +346,7 @@ bool LexerFrontend::parseString(LexerControl * state) {
 }
 
 bool LexerFrontend::parseEString(LexerControl * state) {
-    StateLexem lex = lex_estring_content;
+    StateLexem lex = lex_none;
     StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 
@@ -353,6 +355,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
                     ++state -> next_offset;
+                    lex = lex_estring_content;
                     del_lex = lex_estring_interception;
                     flags = slf_stack_delimiter;
                 }
@@ -360,6 +363,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
 
             case '"': {
                 if (ECHAR_PREV1 != '\\') {
+                    lex = lex_estring_content;
                     del_lex = lex_estring_end;
                     flags = slf_unstack_delimiter;
                 }
@@ -367,6 +371,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
 
             case 0: {
 //                state -> next_offset = 0;
+                lex = lex_estring_content;
                 del_lex = lex_estring_continue;
                 flags = slf_stack_delimiter;
             break;}
@@ -390,20 +395,22 @@ bool LexerFrontend::parseCommand(LexerControl * state) {
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
                     ++state -> next_offset;
-                    lex = lex_command_interception;
+                    lex = lex_command_content;
+                    del_lex = lex_command_interception;
                 }
             break; }
 
             case '`': {
                 if (ECHAR_PREV1 != '\\') {
                     ++state -> buffer;
-                    lex = lex_command_end;
+                    lex = lex_command_content;
+                    del_lex = lex_command_end;
                 }
             break;}
 
             case 0: {
 //                state -> next_offset = 0;
-
+                lex = lex_command_content;
                 del_lex = lex_command_continue;
                 flags = slf_stack_delimiter;
             break;}
