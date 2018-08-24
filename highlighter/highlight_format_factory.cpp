@@ -29,10 +29,10 @@ void HighlightFormatFactory::registerSpellcheckFormat() {
 
 void HighlightFormatFactory::registerUnknownName() {
     QTextCharFormat format;
-    format.setFontWeight(QFont::Black);
+    format.setFontItalic(true);
     format.setFontUnderline(true);
     format.setUnderlineColor(QColor(Qt::gray));
-    format.setUnderlineStyle(QTextCharFormat::SingleUnderline);
+    format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
     _formats.insert(hid_unknown_name, format);
 }
 
