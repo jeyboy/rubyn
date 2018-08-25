@@ -9,6 +9,7 @@ struct TokenCell {
     TokenCell * next;
 
     TokenCell * stacked_prev;
+    StateLexem stacked_state_lexem;
 
     StateLexem lexem;
     EDITOR_POS_TYPE start_pos;
@@ -18,7 +19,7 @@ struct TokenCell {
 
     TokenCell(const StateLexem & lexem, const EDITOR_POS_TYPE & start_pos,
               const EDITOR_LEN_TYPE & length, TokenCell * prev_token = nullptr)
-        : prev(nullptr), next(nullptr), stacked_prev(nullptr),
+        : prev(nullptr), next(nullptr), stacked_prev(nullptr), stacked_state_lexem(lex_none),
           lexem(lexem), start_pos(start_pos), length(length), data(nullptr)
     {
         if ((prev = prev_token)) {

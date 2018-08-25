@@ -134,19 +134,28 @@ struct LexerControl {
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
 
         if (flags != slf_none) {
-            if ((flags & slf_stack_word) || (flags & slf_stack_delimiter)) {
+            bool stack_word = flags & slf_stack_word;
+            bool stack_delimiter = flags & slf_stack_delimiter;
+
+            if (stack_word || stack_delimiter) {
                 token -> stacked_prev = stack_token;
                 stack_token = token;
+
+                stack_token -> stacked_state_lexem = stack_word ? lex_prev_word : lex_word;
+                lex_prev_word = lex_none;
             } else {
                 if (stack_token) {
-                    grammar -> stackDropable(stack_token -> lexem, lexem);
-                    stack_token = stack_token -> stacked_prev;
+                    if (!grammar -> stackDropable(stack_token -> lexem, lexem))
+                        cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
+                    else {
+                        lex_prev_word = stack_token -> stacked_state_lexem;
+                        stack_token = stack_token -> stacked_prev;
+                    }
                 } else {
                     cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
                 }
             }
 
-            lex_prev_word = lex_none;
             lex_word = lex_none;
             lex_delimiter = lex_none;
         }
