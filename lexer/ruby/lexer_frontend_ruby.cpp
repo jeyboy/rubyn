@@ -1104,8 +1104,10 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     if (!cutWord(state)) goto exit;
                 } else {
                     StateLexem lex = state -> firstNonBlankLexem();
+                    bool next_is_blank = isBlank(ECHAR1);
 
-                    bool is_division = lex != lex_none && isBlank(ECHAR1);
+                    bool is_division =
+                        (lex != lex_none && next_is_blank) || isAlphaNum(ECHAR_PREV1);
 
                     if (is_division) {
                         if (!cutWord(state)) goto exit;
