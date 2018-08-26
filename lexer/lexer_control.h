@@ -119,6 +119,15 @@ struct LexerControl {
         prev = buffer;
     }
 
+    inline StateLexem firstNonBlankLexem() {
+        TokenCell * it = token;
+
+        while(true) {
+            if (it -> lexem < lex_tab)
+                return it -> lexem;
+        }
+    }
+
     inline EDITOR_POS_TYPE bufferPos() { return prev - start; }
     inline EDITOR_LEN_TYPE strLength() { return static_cast<EDITOR_LEN_TYPE>(buffer - prev); }
 

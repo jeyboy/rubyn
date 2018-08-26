@@ -32,6 +32,8 @@ protected:
 
     void registerConstFormat();
 
+    void registerStringBorderFormat();
+
     void registerStringFormat();
 
 //    void registerMethodFormat() {
@@ -46,7 +48,9 @@ protected:
 
     void registerNumericFormat();
 
-    void registerRegularExpresionsFormat();
+    void registerRegularExpresionFormat();
+
+    void registerRegularExpresionBorderFormat();
 
 //    void registerPreprocessingFormat() {
 //        QTextCharFormat format;

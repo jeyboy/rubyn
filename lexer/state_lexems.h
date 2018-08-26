@@ -472,7 +472,6 @@ enum StateLexem : LEXEM_TYPE {
     lex_blank,
     lex_blanks,
     lex_ignore,
-//    lex_chain_item, // service token
 
 //    lef_max_token,
 

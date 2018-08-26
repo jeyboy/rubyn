@@ -115,6 +115,10 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
                 Predefined::obj().lexem(state -> cached) :
                 predefined_delimiter;
 
+        Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_delimiter);
+        if (highlightable != hid_none)
+            state -> light(highlightable);
+
         state -> attachToken(state -> lex_delimiter, flags & slf_delimiter_related);
 
         if (state -> lex_word == lex_none) {
@@ -1066,16 +1070,14 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
                     if (!cutWord(state)) goto exit;
                 } else {
-                    bool is_regexp = true; //state -> new_line_state != lex_predefined;
+                    StateLexem lex = state -> firstNonBlankLexem();
 
-                    state -> next_offset = is_regexp ? 0 : 1;
+                    bool is_division = lex != lex_none && isBlank(ECHAR1);
 
-                    if (!cutWord(state)) goto exit;
-
-                    if (is_regexp) {
-                        state -> attachToken(lex_regexp_start);
-//                        state -> stack -> push(lex_regexp_start);
-
+                    if (is_division) {
+                        if (!cutWord(state)) goto exit;
+                    } else {
+                        if (!cutWord(state, lex_none, lex_regexp_start, slf_stack_delimiter)) goto exit;
                         if (!parseRegexp(state)) goto exit;
                     }
                 }

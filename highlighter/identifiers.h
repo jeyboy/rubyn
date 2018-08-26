@@ -18,7 +18,9 @@ enum Identifier : LEXEM_TYPE {
     hid_keyword,
     hid_numeric,
     hid_string,
+    hid_string_border,
     hid_regexp,
+    hid_regexp_border,
     hid_commentary,
     hid_scope_visibility,
 

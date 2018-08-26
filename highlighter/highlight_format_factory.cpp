@@ -89,6 +89,14 @@ void HighlightFormatFactory::registerConstFormat() {
     _formats.insert(hid_const, format);
 }
 
+void HighlightFormatFactory::registerStringBorderFormat() {
+    QTextCharFormat format;
+    format.setFontWeight(QFont::Bold);
+    format.setBackground(QColor::fromRgb(0, 255, 0, 92));
+//        format.setForeground(Qt::darkGreen);
+    _formats.insert(hid_string_border, format);
+}
+
 void HighlightFormatFactory::registerStringFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
@@ -109,11 +117,20 @@ void HighlightFormatFactory::registerNumericFormat() {
     format.setForeground(Qt::blue);
     _formats.insert(hid_numeric, format);
 }
-void HighlightFormatFactory::registerRegularExpresionsFormat() {
+
+void HighlightFormatFactory::registerRegularExpresionFormat() {
     QTextCharFormat format;
     format.setBackground(QColor::fromRgb(0, 255, 0, 32));
     _formats.insert(hid_regexp, format);
 }
+
+void HighlightFormatFactory::registerRegularExpresionBorderFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(0, 255, 0, 32));
+    _formats.insert(hid_regexp_border, format);
+}
+
+
 
 HighlightFormatFactory::HighlightFormatFactory() {
     registerLabelFormat();
@@ -123,11 +140,13 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerNameCallFormat();
     registerNameDefFormat();
     registerConstFormat();
+    registerStringBorderFormat();
     registerStringFormat();
 //        registerMethodFormat();
     registerCommentFormat();
     registerNumericFormat();
-    registerRegularExpresionsFormat();
+    registerRegularExpresionFormat();
+    registerRegularExpresionBorderFormat();
 //        registerPreprocessingFormat();
 //        registerDatatypeFormat();
 

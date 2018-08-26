@@ -490,11 +490,21 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_commentary_end:
             return hid_commentary;
 
-        case lex_command_content:
-//        case lex_command_interception:
+
+        case lex_string_start:
+        case lex_string_end:
+        case lex_estring_start:
+        case lex_estring_end:
+        case lex_command_start:
+        case lex_command_end:
+            return hid_string_border;
+
+
         case lex_string_content:
         case lex_estring_content:
 //        case lex_estring_interception:
+        case lex_command_content:
+//        case lex_command_interception:
 
         case lex_heredoc_continue:
         case lex_heredoc_intended_continue:
@@ -517,9 +527,11 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
 
         case lex_regexp_continue:
         case lex_regexp_interception:
-        case lex_regexp_end:
             return hid_regexp;
 
+        case lex_regexp_start:
+        case lex_regexp_end:
+            return hid_regexp_border;
 
         //hid_scope_visibility
 
