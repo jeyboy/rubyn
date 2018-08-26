@@ -649,41 +649,26 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
 
 bool LexerFrontend::parseRegexp(LexerControl * state) {   
     StateLexem lex = lex_none;
+    StateLexem del_lex = lex_none;
+    StackLexemFlag flags = slf_none;
 
-    while(lex == lex_none) {
+    while(true) {
         switch(ECHAR0) {
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
-                    state -> next_offset += 2;
-                    lex = lex_regexp_interception;
+                    ++state -> next_offset;
+
+                    lex = lex_regexp_content;
+                    del_lex = lex_regexp_interception;
+                    flags = slf_stack_delimiter;
                 }
             break;}
 
             case '/': {
                 if (ECHAR_PREV1 != '\\') {
-                    while(lex == lex_none) {
-                        ++state -> buffer;
-
-                        switch(ECHAR0) {
-                            case 'm': // Treat a newline as a character matched by .
-                            case 'i': // Ignore case
-                            case 'x': // Ignore whitespace and comments in the pattern
-                            case 'o': // Perform #{} interpolation only once
-                            case 'u': // encoding:  UTF-8
-                            case 'e': // encoding:  EUC-JP
-                            case 's': // encoding:  Windows-31J
-                            case 'n': // encoding:  ASCII-8BIT
-                                { break;}
-                            case 0: { lex = lex_regexp_end; break; }
-                            default: {
-                                lex = lex_regexp_end;
-
-                                if (isAlphaNum(ECHAR0)) {
-                                    state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong regexp flag"));
-                                }
-                            }
-                        }
-                    }
+                    lex = lex_regexp_content;
+                    del_lex = lex_regexp_end;
+                    flags = slf_unstack_delimiter;
                 }
             break;}
 
@@ -692,10 +677,58 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
             break;}
         }
 
-        ++state -> buffer;
+        if (lex == lex_none)
+            ++state -> buffer;
+        else break;
     }
 
-    return cutWord(state, lex);
+    bool status = cutWord(state, lex, del_lex, flags);
+
+    /// check regexp flags
+
+    bool check_flags = false;
+    bool has_flags = false;
+
+    lex = lex_none;
+    del_lex = lex_regexp_end;
+    flags = slf_stack_delimiter;
+
+    while(lex != lex_none) {
+        switch(ECHAR0) {
+            case 'm': // Treat a newline as a character matched by .
+            case 'i': // Ignore case
+            case 'x': // Ignore whitespace and comments in the pattern
+            case 'o': // Perform #{} interpolation only once
+            case 'u': // encoding:  UTF-8
+            case 'e': // encoding:  EUC-JP
+            case 's': // encoding:  Windows-31J
+            case 'n': // encoding:  ASCII-8BIT
+            {
+                has_flags = true;
+            break;}
+            case 0: {
+                lex = lex_regexp_flags;
+            break;}
+            default: {
+                check_flags = true;
+                lex = lex_regexp_content;
+            }
+        }
+
+        if (lex == lex_none)
+            ++state -> buffer;
+        else break;
+    }
+
+    if (has_flags)
+        status = /*status &&*/ cutWord(state, lex, del_lex, flags);
+
+
+    if (check_flags && isAlphaNum(ECHAR0)) {
+        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong regexp flag"));
+    }
+
+    return status;
 }
 
 bool LexerFrontend::parseComment(LexerControl * state) {

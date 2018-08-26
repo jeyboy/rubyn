@@ -306,6 +306,7 @@ enum StateLexem : LEXEM_TYPE {
 //    lex_regexp_intercepted,
     lex_regexp_continue,
     lex_regexp_end,
+    lex_regexp_flags,
 
 
     lex_require, // require some source
