@@ -686,7 +686,7 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
 
     /// check regexp flags
 
-    bool check_flags = false;
+    bool has_wrong_flags = false;
     bool has_flags = false;
 
     lex = lex_none;
@@ -710,7 +710,11 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
                 lex = lex_regexp_flags;
             break;}
             default: {
-                check_flags = true;
+                if (has_flags && isAlphaNum(ECHAR0)) {
+                    has_wrong_flags = true;
+                    state -> next_offset = 0;
+                }
+
                 lex = lex_regexp_flags;
             }
         }
@@ -724,7 +728,7 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
         status = /*status &&*/ cutWord(state, lex, del_lex, flags);
 
 
-    if (check_flags && isAlphaNum(ECHAR0)) {
+    if (has_wrong_flags) {
         state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong regexp flag"));
     }
 
@@ -1106,8 +1110,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     StateLexem lex = state -> firstNonBlankLexem();
                     bool next_is_blank = isBlank(ECHAR1);
 
-                    bool is_division =
-                        (lex != lex_none && next_is_blank) || isAlphaNum(ECHAR_PREV1);
+                    bool is_division = (lex != lex_none && next_is_blank) || isAlphaNum(ECHAR_PREV1);
 
                     if (is_division) {
                         if (!cutWord(state)) goto exit;

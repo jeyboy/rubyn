@@ -126,7 +126,8 @@ void HighlightFormatFactory::registerRegularExpresionFormat() {
 
 void HighlightFormatFactory::registerRegularExpresionBorderFormat() {
     QTextCharFormat format;
-    format.setBackground(QColor::fromRgb(0, 255, 0, 32));
+    format.setFontWeight(QFont::Bold);
+    format.setBackground(QColor::fromRgb(255, 0, 0, 32));
     _formats.insert(hid_regexp_border, format);
 }
 

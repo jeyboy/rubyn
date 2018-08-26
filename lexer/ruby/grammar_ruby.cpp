@@ -335,26 +335,6 @@ StateLexem Grammar::toHeredocContinious(const StateLexem & lexem) {
     }
 }
 
-//bool Grammar::isContinious(const StateLexem & lexem) {
-//    switch(lexem) {
-//        case lex_string_continue:
-//        case lex_estring_continue:
-//        case lex_commentary_continue:
-//        case lex_command_continue:
-//        case lex_heredoc_continue:
-//        case lex_heredoc_intended_continue:
-//        case lex_eheredoc_continue:
-//        case lex_eheredoc_intended_continue:
-//        case lex_cheredoc_continue:
-//        case lex_cheredoc_intended_continue:
-//        case lex_regexp_continue:
-//        case lex_epercent_presentation_continue:
-//        case lex_percent_presentation_continue:
-//            return true;
-//        default: return false;
-//    }
-//}
-
 StateLexem Grammar::fromContinious(const StateLexem & lexem) {
     switch(lexem) {
         case lex_string_continue: return lex_string_start;
@@ -506,6 +486,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_estring_content:
 //        case lex_estring_interception:
         case lex_command_content:
+        case lex_regexp_content:
 //        case lex_command_interception:
 
         case lex_heredoc_continue:
@@ -533,6 +514,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
 
         case lex_regexp_start:
         case lex_regexp_end:
+        case lex_regexp_flags:
             return hid_regexp_border;
 
         //hid_scope_visibility
