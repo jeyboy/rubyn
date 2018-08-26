@@ -122,9 +122,11 @@ struct LexerControl {
     inline StateLexem firstNonBlankLexem() {
         TokenCell * it = token;
 
-        while(true) {
+        while(it) {
             if (it -> lexem < lex_tab)
                 return it -> lexem;
+
+            it = it -> prev;
         }
     }
 

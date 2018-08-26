@@ -693,7 +693,7 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
     del_lex = lex_regexp_end;
     flags = slf_stack_delimiter;
 
-    while(lex != lex_none) {
+    while(lex == lex_none) {
         switch(ECHAR0) {
             case 'm': // Treat a newline as a character matched by .
             case 'i': // Ignore case
@@ -711,7 +711,7 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
             break;}
             default: {
                 check_flags = true;
-                lex = lex_regexp_content;
+                lex = lex_regexp_flags;
             }
         }
 

@@ -252,6 +252,8 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
 
         case lex_string_end: return state == lex_string_start;
         case lex_estring_end: return state == lex_estring_start;
+
+        case lex_regexp_end: return state == lex_regexp_start;
         case lex_command_end: return state == lex_command_start;
 
         default: return false;
