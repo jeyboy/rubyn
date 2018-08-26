@@ -141,7 +141,7 @@ struct LexerControl {
                 token -> stacked_prev = stack_token;
                 stack_token = token;
 
-                stack_token -> stacked_state_lexem = stack_word ? lex_prev_word : lex_word;
+                stack_token -> stacked_state_lexem = lex_none; //stack_word ? lex_prev_word : lex_word;
                 lex_prev_word = lex_none;
             } else {
                 if (stack_token) {
@@ -149,6 +149,10 @@ struct LexerControl {
                         cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
                     else {
                         lex_prev_word = stack_token -> stacked_state_lexem;
+
+//                        if (lex_prev_word == lex_none)
+//                            lex_prev_word = stack_token -> lexem;
+
                         stack_token = stack_token -> stacked_prev;
                     }
                 } else {

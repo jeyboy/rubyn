@@ -7,7 +7,7 @@ Grammar::Grammar() : IGrammar() {
         StateLexem curr = static_cast<StateLexem>(i);
 
         rules[i][lex_end_line] = curr;
-        rules[lex_end_line][i] = curr;
+//        rules[lex_end_line][i] = curr;
 
         rules[i][lex_blank] = curr;
         rules[lex_blank][i] = curr;
@@ -17,6 +17,13 @@ Grammar::Grammar() : IGrammar() {
 
         rules[i][lex_tab] = curr;
         rules[lex_tab][i] = curr;
+
+        rules[i][lex_tabs] = curr;
+        rules[lex_tabs][i] = curr;
+
+
+        rules[lex_operator_assigment][i] = curr;
+
 
         rules[lex_symbol_key][i] = curr;
 
@@ -37,12 +44,10 @@ Grammar::Grammar() : IGrammar() {
     rules[lex_symbol_key][lex_tab] = lex_symbol_key;
     rules[lex_symbol_key][lex_tabs] = lex_symbol_key;
 
-//    rules[lex_blank][lex_blank] = lex_blanks;
     rules[lex_blank][lex_tab] = lex_blanks;
     rules[lex_tab][lex_blank] = lex_blanks;
-//    rules[lex_tab][lex_tab] = lex_blanks;
-//    rules[lex_blanks][lex_blank] = lex_blanks;
     rules[lex_blanks][lex_tab] = lex_blanks;
+    rules[lex_blanks][lex_tabs] = lex_blanks;
 
     rules[lex_string_start][lex_string_content] = lex_string_content;
     rules[lex_string_content][lex_string_end] = lex_string_end;

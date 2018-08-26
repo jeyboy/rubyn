@@ -90,8 +90,8 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
         translateState(state);
 
         if (state -> cached_length) {
-            if (state -> lex_word == lex_word)
-                registerVariable(state);
+//            if (state -> lex_word == lex_word)
+//                registerVariable(state);
 
             Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
             if (highlightable == hid_none) {
@@ -107,23 +107,29 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
     else state -> lex_word = lex_none;
 
     if (state -> next_offset) {
+        StateLexem prev_delimiter = state -> lex_delimiter;
+
         state -> cachingDelimiter();
         state -> lex_delimiter =
-            predefined_delimiter == lex_none ? Predefined::obj().lexem(state -> cached) : predefined_delimiter;
+            predefined_delimiter == lex_none ?
+                Predefined::obj().lexem(state -> cached) :
+                predefined_delimiter;
 
-//        StateLexem new_state =
-//            state -> grammar -> translate(state -> lex_prev_delimiter, state -> lex_delimiter);
-
-//        if (new_state == lex_error) {
-//            state -> lightWithMessage(
-//                lex_error,
-//                ERROR_STATE(QByteArrayLiteral("Wrong delimiter satisfy state!!!"), state -> lex_prev_delimiter, state -> lex_delimiter)
-//            );
-//            //return false;
-//        }
-
-//        state -> lex_delimiter = new_state;
         state -> attachToken(state -> lex_delimiter, flags & slf_delimiter_related);
+
+        if (state -> lex_word == lex_none) {
+            StateLexem new_state = state -> grammar -> translate(prev_delimiter, state -> lex_delimiter);
+
+            if (new_state == lex_error) {
+                state -> lightWithMessage(
+                    lex_error,
+                    ERROR_STATE(QByteArrayLiteral("Wrong delimiter satisfy state!!!"), prev_delimiter, state -> lex_delimiter)
+                );
+                //return false;
+            }
+
+            state -> lex_delimiter = new_state;
+        }
     }
 
     state -> dropCached();
