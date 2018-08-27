@@ -486,22 +486,20 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_estring_content:
 //        case lex_estring_interception:
         case lex_command_content:
-        case lex_regexp_content:
 //        case lex_command_interception:
 
         case lex_heredoc_continue:
         case lex_heredoc_intended_continue:
         case lex_heredoc_end:
         case lex_eheredoc_continue:
-        case lex_eheredoc_interception:
+//        case lex_eheredoc_interception:
         case lex_eheredoc_intended_continue:
         case lex_cheredoc_continue:
-        case lex_cheredoc_interception:
+//        case lex_cheredoc_interception:
         case lex_cheredoc_intended_continue:
         case lex_require_path:
 
-//        case lex_epercent_presentation_intercepted:
-        case lex_epercent_presentation_interception:
+//        case lex_epercent_presentation_interception:
         case lex_epercent_presentation_end:
         case lex_percent_presentation_end:
         case lex_epercent_presentation_continue:
@@ -509,7 +507,8 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
             return hid_string;
 
         case lex_regexp_continue:
-        case lex_regexp_interception:
+//        case lex_regexp_interception:
+        case lex_regexp_content:
             return hid_regexp;
 
         case lex_regexp_start:
