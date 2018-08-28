@@ -21,7 +21,7 @@ bool TextDocument::identificateLexer() {
     if (_lexer)
         new Highlighter(this);
 
-    return _lexer != 0;
+    return _lexer != nullptr;
 }
 
 TextDocument::TextDocument(File * file) : IDocument(), pos(-1), removed(0), added(0), _doc(nullptr), _lexer(nullptr), _file(file) {

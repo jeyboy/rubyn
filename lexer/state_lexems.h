@@ -72,6 +72,7 @@ enum StateLexem : LEXEM_TYPE {
 
     lex_interpolation, // #{
     lex_interpolation_close, // }
+    lex_wrap_end, // )
 
     lex_dot,  // .
     lex_colon,  // :
@@ -342,7 +343,6 @@ enum StateLexem : LEXEM_TYPE {
 
 
     lex_wrap_start, // (
-    lex_wrap_end, // )
 
 
     lex_hash_start,

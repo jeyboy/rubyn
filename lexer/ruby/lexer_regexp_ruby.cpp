@@ -98,3 +98,5 @@ LexerRegexp::LexerRegexp() : RegexpLexer() {
         )
     );
 }
+
+LexerRegexp::~LexerRegexp() {}

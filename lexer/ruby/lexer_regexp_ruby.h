@@ -7,7 +7,7 @@ namespace Ruby {
     class LexerRegexp : public RegexpLexer {
     public:
         LexerRegexp();
-        ~LexerRegexp() {}
+        ~LexerRegexp();
     };
 }
 
