@@ -1113,7 +1113,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     bool is_division = (lex != lex_none || (!state -> isBufferStart() && isAlphaNum(ECHAR_PREV1))) &&
                         (
                             next_is_blank ||
-                                ((lex < lex_division_braker_start || lex > lex_division_braker_end) && lex != lex_wrap_start)
+                                (lex < lex_division_braker_start || lex > lex_division_braker_end)
                         );
 
                     if (is_division) {

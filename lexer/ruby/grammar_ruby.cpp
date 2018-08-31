@@ -61,13 +61,8 @@ Grammar::Grammar() : IGrammar() {
     // PERCENTAGE PRESENTATION
 //        %r(/home/#{foo})#=> "/\\/home\\/Foo/"
 
-
     rules[lex_percent_presentation_start][lex_percent_presentation_end] = lex_expression;
     rules[lex_epercent_presentation_start][lex_epercent_presentation_end] = lex_expression;
-
-//    rules[lex_epercent_presentation_start][lex_epercent_presentation_interception] = lex_epercent_presentation_intercepted;
-
-//    rules[lex_epercent_presentation_intercepted][lex_interpolation] = lex_inline_block_start;
 
 
     // MODULE DEFINITION
@@ -100,14 +95,10 @@ Grammar::Grammar() : IGrammar() {
     rules[lex_class_def_ancestor][lex_semicolon] = lex_block_start;
     rules[lex_class_def_ancestor][lex_end_line] = lex_block_start;
 
-
-
     rules[lex_method_def][lex_word] = lex_method_def_scope_or_name;
     rules[lex_method_def_scope_or_name][lex_dot] = lex_method_def_scoped_delimiter;
     rules[lex_method_def_scope_or_name][lex_blank] = lex_method_def_vars_start;
     rules[lex_method_def_scope_or_name][lex_blanks] = lex_method_def_vars_start;
-
-
 
     rules[lex_method_def_vars_start][lex_operator_multiplication] = lex_method_def_var_access_type;
     rules[lex_method_def_vars_start][lex_operator_exponentiation] = lex_method_def_var_access_type;

@@ -26,9 +26,11 @@ enum StackLexemFlag : uint {
 };
 
 enum StateLexem : LEXEM_TYPE {
-    lex_none = -1,
+    lex_default = -1,
 
     lex_error = 0,
+
+    lex_none,
 
     lex_yield,
     lex_raise,
@@ -59,6 +61,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_dot_dot_dot,  // ...
     lex_rocket,  // =>
     lex_comma,  // ,
+    lex_wrap_start, // (
     lex_open_curly_bracket, // {
     lex_open_square_bracket, // [
     lex_word, // names and etc
@@ -342,7 +345,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_alias_alt_name,
 
 
-    lex_wrap_start, // (
+//    lex_wrap_start, // (
 
 
     lex_hash_start,
