@@ -91,10 +91,8 @@ HEADERS  += ide_window.h \
     highlighter/para_list.h \
     lexer/ruby/grammar_ruby.h \
     lexer/ruby/predefined_ruby.h \
-    misc/chain.h \
     misc/defines.h \
     misc/singleton.h \
-    misc/stack.h \
     misc/token_list.h \
     misc/utils.h \
     project/file.h \
@@ -173,7 +171,9 @@ HEADERS  += ide_window.h \
     lexer/state_lexems.h \
     lexer/obj_lexems.h \
     lexer/igrammar.h \
-    lexer/ruby/_lexer_ruby.h
+    lexer/ruby/_lexer_ruby.h \
+    misc/_stack.h \
+    misc/_chain.h
 
 FORMS    += ide_window.ui
 

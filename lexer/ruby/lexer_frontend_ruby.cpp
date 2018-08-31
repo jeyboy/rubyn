@@ -690,8 +690,6 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
     bool has_flags = false;
 
     lex = lex_none;
-    del_lex = lex_regexp_end;
-    flags = slf_stack_delimiter;
 
     while(lex == lex_none) {
         switch(ECHAR0) {
@@ -725,7 +723,8 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
     }
 
     if (has_flags)
-        status = /*status &&*/ cutWord(state, lex, del_lex, flags);
+        state -> next_offset = 0;
+        status = /*status &&*/ cutWord(state, lex);
 
 
     if (has_wrong_flags) {
@@ -1111,10 +1110,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     bool next_is_blank = isBlank(ECHAR1);
 
                     bool is_division = (lex != lex_none || (!state -> isBufferStart() && isAlphaNum(ECHAR_PREV1))) &&
-                        (
-                            next_is_blank ||
-                                (lex < lex_division_braker_start || lex > lex_division_braker_end)
-                        );
+                        (next_is_blank || (lex < lex_division_braker_start || lex > lex_division_braker_end));
 
                     if (is_division) {
                         if (!cutWord(state)) goto exit;
