@@ -240,7 +240,6 @@ enum StateLexem : LEXEM_TYPE {
     lex_command_content,
     lex_command_start,
     lex_command_interception,
-//    lex_command_intercepted,
     lex_command_continue,
     lex_command_end,
 
@@ -252,7 +251,6 @@ enum StateLexem : LEXEM_TYPE {
     lex_estring_content,
     lex_estring_start, // "
     lex_estring_interception,
-//    lex_estring_intercepted,
     lex_estring_continue,
     lex_estring_end,
 
@@ -265,7 +263,6 @@ enum StateLexem : LEXEM_TYPE {
     lex_epercent_presentation_content,
     lex_epercent_presentation_start, // %N/.../
     lex_epercent_presentation_interception,
-//    lex_epercent_presentation_intercepted,
     lex_epercent_presentation_continue,
     lex_epercent_presentation_end,
 
