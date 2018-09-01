@@ -453,12 +453,51 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
         return true; // false;
     }
 
+    state -> next_offset = 0;
     const char blocker = stack_state -> data -> operator[](0);
 
-    if (isAlphaNum(blocker)) {
-        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong limiter for construction. Must be any non alpha numeric"));
-        return true; // false;
-    }
+    StateLexem lex = lex_none;
+    StateLexem del_lex = lex_none;
+    StackLexemFlag flags = slf_none;
+
+//    while(true) {
+//        switch(ECHAR0) {
+//            case '#': {
+//                if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
+//                    ++state -> next_offset;
+//                    lex = lex_estring_content;
+//                    del_lex = lex_estring_interception;
+//                    flags = slf_stack_delimiter;
+//                }
+//            break; }
+
+//            case '"': {
+//                if (ECHAR_PREV1 != '\\') {
+//                    lex = lex_estring_content;
+//                    del_lex = lex_estring_end;
+//                    flags = slf_unstack_delimiter;
+//                }
+//            break;}
+
+//            case 0: {
+////                state -> next_offset = 0;
+//                lex = lex_estring_content;
+//                del_lex = lex_estring_continue;
+//                flags = slf_stack_delimiter;
+//            break;}
+//        }
+
+//        if (lex == lex_none)
+//            ++state -> buffer;
+//        else break;
+//    }
+
+//    return cutWord(state, lex, del_lex, flags);
+
+
+
+
+
 
     switch(stack_state -> lexem) {
         case lex_percent_presentation_start:
@@ -806,7 +845,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
             break;}
 
 
-
             case ',':
             case '^':
             case '~':
@@ -824,7 +862,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if(!cutWord(state, lex_none, lex_none, slf_stack_delimiter)) goto exit;
             break;}
             case ']':
-            case ')':{
+            case ')': {
                 if(!cutWord(state, lex_none, lex_none, slf_unstack_delimiter)) goto exit;
             break;}
             case '}': {
@@ -1001,13 +1039,13 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '#': { // inline comment
                 StateLexem predef = lex_none;
 
-                if (ECHAR1 == '{' && Grammar::obj().isInterpolable(state -> stack_token -> lexem)) {
-                    ++state -> next_offset;
-                } else {
+//                if (ECHAR1 == '{' && Grammar::obj().isInterpolable(state -> stack_token -> lexem)) {
+//                    ++state -> next_offset;
+//                } else {
                     predef = lex_inline_commentary;
                     state -> moveBufferToEnd();
                     state -> next_offset = 0;
-                }
+//                }
 
                 if (!cutWord(state, predef)) goto exit;
             break;}
@@ -1063,34 +1101,48 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
             case '%': {
                 StateLexem res = lex_none;
-                bool shorted = false;
+                char braker = '\0';
 
                 switch(ECHAR1) {
                     case '=': { ++state -> next_offset; break; }
-                    case '/': shorted = true;
+
+                    case '{':
+                    case '/': {
+                        ++state -> next_offset;
+                        braker = ECHAR1;
+                        res = lex_epercent_presentation_start;
+                    break;}
+
+
                     case 'l': // Interpolated Array of Symbols
                     case 'Q': // double quoted string
                     case 'r': // Regular Expression
                     case 'W': // Array of double quoted Strings
                     case 'x': // Backtick (capture subshell result)
-                        { res = lex_epercent_presentation_start; break;}
+                        {
+                            state -> next_offset += 2;
+                            braker = ECHAR2;
+                            res = lex_epercent_presentation_start;
+                        break;}
 
                     case 'i': // Array of Symbols
                     case 'q': // single quoted string
                     case 's': // Symbol
                     case 'w': // Array of Strings
-                        { res = lex_percent_presentation_start; break;}
+                        {
+                            state -> next_offset += 2;
+                            braker = ECHAR2;
+                            res = lex_percent_presentation_start;
+                        break;}
                 };
 
                 if (res != lex_none) {
-                    state -> next_offset = 0;
-//                    state -> stack -> push(res, QByteArray(1, shorted ? '/' : Grammar::obj().percentagePresentationBlocker(ECHAR2)));
+//                    if (state -> buffer != state -> prev)
+                        if (!cutWord(state, lex_none, res, slf_stack_delimiter)) goto exit;
 
-                    if (state -> buffer != state -> prev)
-                        if (!cutWord(state, res))
-                            goto exit;
+                    state -> stack_token -> data =
+                        new QByteArray(1, Grammar::obj().percentagePresentationBlocker(braker));
 
-                    state -> buffer += shorted ? 2 : 3;
                     if (!parsePercentagePresenation(state))
                         goto exit;
                 } else {

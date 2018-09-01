@@ -50,12 +50,13 @@ enum StateLexem : LEXEM_TYPE {
     lex_float,
     lex_double,
 
-    lex_symbol_key,
     lex_symbol,
 
     lex_var_scoped, // variables in blocks and etc // |a, b|
 
     lex_division_braker_start,
+
+    lex_symbol_key,
 
     lex_dot_dot,  // ..
     lex_dot_dot_dot,  // ...
