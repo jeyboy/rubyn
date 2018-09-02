@@ -240,6 +240,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_command_content,
     lex_command_start,
     lex_command_interception,
+
     lex_command_continue,
     lex_command_end,
 

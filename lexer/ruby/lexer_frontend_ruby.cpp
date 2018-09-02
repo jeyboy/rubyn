@@ -504,68 +504,72 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
 }
 
 bool LexerFrontend::parseHeredocMarks(LexerControl * state, StateLexem & lex) {
-    if (!isBlank(ECHAR2) && (state -> isBufferStart() || !isWord(ECHAR_PREV1))) {
-        const char * curr = state -> buffer + 2;
-        bool is_intended = false;
+    const char * curr = state -> buffer + 2;
+    bool is_intended = false;
 
-        if (*curr == '-' || *curr == '~') {
-            ++state -> next_offset;
-            curr++;
-            is_intended = true;
-        }
-
-        const char * control = curr;
-        bool is_simple = *curr == '\'';
-        bool is_command = *curr == '`';
-        bool is_quoted = is_simple || is_command || *curr == '"';
-
-        lex =
-            is_simple ?
-                is_intended ? lex_heredoc_intended_mark : lex_heredoc_mark
-                  :
-                is_command ?
-                    is_intended ? lex_cheredoc_intended_mark : lex_cheredoc_mark
-                        :
-                    is_intended ? lex_eheredoc_intended_mark : lex_eheredoc_mark;
-
-        if (is_quoted) {
-            bool ended = false;
-
-            while(!ended) {
-                switch(*++curr) {
-                    case '\'':
-                    case '"':
-                    case '`': {
-                        if (*control == *curr)
-                            ended = true;
-                    break;}
-
-                    case 0: {
-                        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Heredoc mark is not closed"));
-                        ended = true;
-                    break;}
-                }
-            }
-            ++control;
-        }
-        else while(isWord(*(++curr)));
-
-
-        QByteArray doc_name(control, curr - control);
-        state -> buffer += curr - state -> buffer + (is_quoted ? 1 : 0);
-        state -> next_offset = 0;
-
-        //INFO: stacked heredocs going in revert order so we must to insert new heredoc before previous if heredocs is stacked
-        StateLexem top = Grammar::obj().toHeredocContinious(state -> stack_token -> lexem);
-
-        if (top != lex_none) {
-//                            STACK_INT_TYPE level = 0;
-//                            while(Grammar::obj().toHeredocContinious(state -> stack -> touch(++level)) != lex_none);
-//                            state -> stack -> pushToLevel(level, lex, doc_name);
-        }
+    if (*curr == '-' || *curr == '~') { // ~ added only in Ruby 2.3.0
+        curr++;
+        is_intended = true;
     }
 
-    return true;
+    const char * control = curr;
+    bool is_simple = *curr == '\'';
+    bool is_command = *curr == '`';
+    bool is_quoted = is_simple || is_command || *curr == '"';
+
+    lex =
+        is_simple ?
+            is_intended ? lex_heredoc_intended_mark : lex_heredoc_mark
+              :
+            is_command ?
+                is_intended ? lex_cheredoc_intended_mark : lex_cheredoc_mark
+                    :
+                is_intended ? lex_eheredoc_intended_mark : lex_eheredoc_mark;
+
+    if (is_quoted) {
+        bool ended = false;
+
+        while(!ended) {
+            switch(*++curr) {
+                case '\'':
+                case '"':
+                case '`': {
+                    if (*control == *curr)
+                        ended = true;
+                break;}
+
+                case 0: {
+                    state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Heredoc mark is not closed"));
+                    ended = true;
+                break;}
+            }
+        }
+        ++control;
+    }
+    else while(isWord(*(++curr)));
+
+    QByteArray doc_name(control, curr - control);
+    state -> next_offset = 0;
+
+    bool res = cutWord(state, lex, lex_none, slf_stack_word);
+
+    if (!state -> stack_token || state -> stack_token -> lexem != lex) {
+        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state for heredoc"));
+        return true; // false;
+    } else {
+        if (state -> heredoc_token) {
+            TokenCell * temp = state -> stack_token -> stacked_prev;
+            state -> stack_token -> stacked_prev = state -> heredoc_token -> stacked_prev;
+            state -> heredoc_token = state -> stack_token;
+            state -> stack_token = temp;
+        } else {
+            state -> heredoc_token = state -> stack_token;
+        }
+
+        state -> heredoc_token -> data = new QByteArray(doc_name);
+    }
+
+    return res;
 }
 
 bool LexerFrontend::parseHeredoc(LexerControl * state) {
@@ -959,7 +963,10 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == '<') {
                     ++state -> next_offset;
 
-                    parseHeredocMarks(state, lex);
+                    if (!isBlank(ECHAR2)) {
+                        if (parseHeredocMarks(state, lex))
+                            goto iterate;
+                    }
                 } else {
                     if (ECHAR1 == '=') {
                         ++state -> next_offset;
@@ -969,7 +976,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     }
                 }
 
-                if (!cutWord(state, lex)) goto exit;
+                if (!cutWord(state)) goto exit;
             break;}
 
 
