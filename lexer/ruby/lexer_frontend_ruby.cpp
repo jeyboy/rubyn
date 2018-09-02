@@ -450,7 +450,6 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
         return true; // false;
     }
 
-    state -> next_offset = 0;
     const char blocker = stack_state -> data -> operator[](0);
 
     StateLexem stack_lexem = state -> stack_token -> lexem;
@@ -475,6 +474,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
             break; }
 
             case 0: {
+                state -> next_offset = 0;
                 lex = is_interable ? lex_epercent_presentation_content : lex_percent_presentation_content;
                 del_lex = Grammar::obj().toInterceptor(stack_lexem);
                 flags = slf_stack_delimiter;
@@ -820,9 +820,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 StateLexem top_conv = Grammar::obj().fromContinious(top);
 
                 if (top_conv != lex_none) { // after interpolation
-    //                    if (Grammar::obj().isStackDroppable(top))
-    //                        state -> stack -> pushToLevel(1, top_conv);
-
                     if (!parseContinious(state))
                         goto exit;
                 }

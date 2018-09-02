@@ -219,42 +219,69 @@ Grammar::Grammar() : IGrammar() {
 //    lex_method_call_vars_end,
 }
 
-bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input, const char & ch) {
-    switch(input) {
-        case lex_close_curly_bracket: {
-            switch(state) {
-                case lex_open_curly_bracket:
-                case lex_estring_interception:
-                case lex_regexp_interception:
-                case lex_epercent_presentation_interception:
-                case lex_command_interception:
-                case lex_eheredoc_interception:
-                case lex_eheredoc_intended_interception:
-                case lex_cheredoc_interception:
-                case lex_cheredoc_intended_interception:
-                    return true;
+bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) {
+    switch(state) {
+        case lex_open_curly_bracket:
+        case lex_estring_interception:
+        case lex_regexp_interception:
+        case lex_epercent_presentation_interception:
+        case lex_command_interception:
+        case lex_eheredoc_interception:
+        case lex_eheredoc_intended_interception:
+        case lex_cheredoc_interception:
+        case lex_cheredoc_intended_interception: return input == lex_close_curly_bracket;
 
-                case lex_epercent_presentation_start:
-                    return ch == '}';
+        case lex_epercent_presentation_start: return input == lex_epercent_presentation_end;
+        case lex_percent_presentation_start: return input == lex_percent_presentation_end;
 
-                default: return false;
-            }
-        break;}
+        case lex_wrap_start: return input == lex_wrap_end;
+        case lex_open_square_bracket: return input == lex_close_square_bracket;
 
-        case lex_wrap_end: return state == lex_wrap_start;
-        case lex_close_square_bracket: return state == lex_open_square_bracket;
+        case lex_string_start: return input == lex_string_end;
+        case lex_estring_start: return input == lex_estring_end;
 
-        case lex_string_end: return state == lex_string_start;
-        case lex_estring_end: return state == lex_estring_start;
-
-        case lex_regexp_end: return state == lex_regexp_start;
-        case lex_command_end: return state == lex_command_start;
-
-        case lex_epercent_presentation_end: return state == lex_epercent_presentation_start;
-        case lex_percent_presentation_end: return state == lex_percent_presentation_start;
+        case lex_regexp_start: return input == lex_regexp_end;
+        case lex_command_start: return input == lex_command_end;
 
         default: return false;
     }
+
+
+//    switch(input) {
+//        case lex_close_curly_bracket: {
+//            switch(state) {
+//                case lex_open_curly_bracket:
+//                case lex_estring_interception:
+//                case lex_regexp_interception:
+//                case lex_epercent_presentation_interception:
+//                case lex_command_interception:
+//                case lex_eheredoc_interception:
+//                case lex_eheredoc_intended_interception:
+//                case lex_cheredoc_interception:
+//                case lex_cheredoc_intended_interception:
+//                    return true;
+
+//                case lex_epercent_presentation_start:
+//                    return ch == '}';
+
+//                default: return false;
+//            }
+//        break;}
+
+//        case lex_wrap_end: return state == lex_wrap_start;
+//        case lex_close_square_bracket: return state == lex_open_square_bracket;
+
+//        case lex_string_end: return state == lex_string_start;
+//        case lex_estring_end: return state == lex_estring_start;
+
+//        case lex_regexp_end: return state == lex_regexp_start;
+//        case lex_command_end: return state == lex_command_start;
+
+//        case lex_epercent_presentation_end: return state == lex_epercent_presentation_start;
+//        case lex_percent_presentation_end: return state == lex_percent_presentation_start;
+
+//        default: return false;
+//    }
 }
 
 StateLexem Grammar::toInterceptor(const StateLexem & lex) {

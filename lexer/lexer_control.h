@@ -159,9 +159,7 @@ struct LexerControl {
                 lex_prev_word = lex_none;
             } else {
                 if (stack_token) {
-                    const char blocker = stack_token -> data ? stack_token -> data -> operator[](0) : '\0';
-
-                    if (!grammar -> stackDropable(stack_token -> lexem, lexem, blocker))
+                    if (!grammar -> stackDropable(stack_token -> lexem, lexem))
                         cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
                     else {
                         lex_prev_word = stack_token -> stacked_state_lexem;

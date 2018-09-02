@@ -9,7 +9,7 @@ namespace Ruby {
 
         friend class Singleton<Grammar>;
     public:
-        bool stackDropable(const StateLexem & state, const StateLexem & input, const char & ch = '\0');
+        bool stackDropable(const StateLexem & state, const StateLexem & input);
 
         StateLexem toInterceptor(const StateLexem & lex);
 
