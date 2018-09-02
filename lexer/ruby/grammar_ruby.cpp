@@ -219,7 +219,7 @@ Grammar::Grammar() : IGrammar() {
 //    lex_method_call_vars_end,
 }
 
-bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) {
+bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input, const char & ch) {
     switch(input) {
         case lex_close_curly_bracket: {
             switch(state) {
@@ -234,6 +234,9 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
                 case lex_cheredoc_intended_interception:
                     return true;
 
+                case lex_epercent_presentation_start:
+                    return ch == '}';
+
                 default: return false;
             }
         break;}
@@ -246,6 +249,9 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
 
         case lex_regexp_end: return state == lex_regexp_start;
         case lex_command_end: return state == lex_command_start;
+
+        case lex_epercent_presentation_end: return state == lex_epercent_presentation_start;
+        case lex_percent_presentation_end: return state == lex_percent_presentation_start;
 
         default: return false;
     }
@@ -490,15 +496,15 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_cheredoc_intended_continue:
         case lex_require_path:
 
-//        case lex_epercent_presentation_interception:
+        case lex_epercent_presentation_start:
+        case lex_percent_presentation_start:
         case lex_epercent_presentation_end:
         case lex_percent_presentation_end:
-        case lex_epercent_presentation_continue:
-        case lex_percent_presentation_continue:
+        case lex_epercent_presentation_content:
+        case lex_percent_presentation_content:
             return hid_string;
 
         case lex_regexp_continue:
-//        case lex_regexp_interception:
         case lex_regexp_content:
             return hid_regexp;
 

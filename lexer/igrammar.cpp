@@ -17,4 +17,4 @@ StateLexem IGrammar::translate(const StateLexem & state, const StateLexem & inpu
     return rules[state][input];
 }
 
-bool IGrammar::stackDropable(const StateLexem & /*state*/, const StateLexem & /*input*/) { return true; }
+bool IGrammar::stackDropable(const StateLexem & /*state*/, const StateLexem & /*input*/, const char & /*ch*/) { return true; }

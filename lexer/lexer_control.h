@@ -129,6 +129,8 @@ struct LexerControl {
 
             it = it -> prev;
         }
+
+        return lex_none;
     }
 
     inline EDITOR_POS_TYPE bufferPos() { return prev - start; }
@@ -157,7 +159,9 @@ struct LexerControl {
                 lex_prev_word = lex_none;
             } else {
                 if (stack_token) {
-                    if (!grammar -> stackDropable(stack_token -> lexem, lexem))
+                    const char blocker = stack_token -> data ? stack_token -> data -> operator[](0) : '\0';
+
+                    if (!grammar -> stackDropable(stack_token -> lexem, lexem, blocker))
                         cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
                     else {
                         lex_prev_word = stack_token -> stacked_state_lexem;
@@ -196,7 +200,7 @@ struct LexerControl {
         last_uid = uid;
 
         lighter -> setFormat(
-            last_light_pos, (int)last_light_len,
+            last_light_pos, static_cast<int>(last_light_len),
             HighlightFormatFactory::obj().getFormatFor(last_uid)
         );
     }

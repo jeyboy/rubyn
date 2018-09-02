@@ -564,6 +564,8 @@ bool LexerFrontend::parseHeredocMarks(LexerControl * state, StateLexem & lex) {
 //                            state -> stack -> pushToLevel(level, lex, doc_name);
         }
     }
+
+    return true;
 }
 
 bool LexerFrontend::parseHeredoc(LexerControl * state) {
@@ -1083,8 +1085,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 };
 
                 if (res != lex_none) {
-//                    if (state -> buffer != state -> prev)
-                        if (!cutWord(state, lex_none, res, slf_stack_delimiter)) goto exit;
+                    if (!cutWord(state, lex_none, res, slf_stack_delimiter)) goto exit;
 
                     state -> stack_token -> data =
                         new QByteArray(1, Grammar::obj().percentagePresentationBlocker(braker));
