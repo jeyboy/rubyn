@@ -75,6 +75,8 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
     state -> cachingPredicate(has_predefined);
 
     if (state -> cached_length || has_predefined) {
+        bool has_stack_word_relation = flags & slf_word_related;
+
         state -> lex_word =
             has_predefined ? predefined_lexem : Predefined::obj().lexem(state -> cached);
 
@@ -86,6 +88,8 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
             if (highlightable != hid_none)
                 state -> light(highlightable);
         }
+
+        state -> attachToken(state -> lex_word, has_stack_word_relation);
 
         translateState(state);
 
@@ -101,8 +105,6 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
             if (highlightable != hid_none)
                 state -> light(highlightable);
         }
-
-        state -> attachToken(state -> lex_word, flags & slf_word_related);
     }
     else state -> lex_word = lex_none;
 
@@ -110,6 +112,7 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
         StateLexem prev_delimiter = state -> lex_delimiter;
 
         state -> cachingDelimiter();
+
         state -> lex_delimiter =
             predefined_delimiter == lex_none ?
                 Predefined::obj().lexem(state -> cached) :
@@ -549,6 +552,7 @@ bool LexerFrontend::parseHeredocMarks(LexerControl * state, StateLexem & lex) {
     else while(isWord(*(++curr)));
 
     QByteArray doc_name(control, curr - control);
+    state -> buffer += (curr - state -> buffer);
     state -> next_offset = 0;
 
     bool res = cutWord(state, lex, lex_none, slf_stack_word);
@@ -558,16 +562,33 @@ bool LexerFrontend::parseHeredocMarks(LexerControl * state, StateLexem & lex) {
         return true; // false;
     } else {
         if (state -> heredoc_token) {
-            TokenCell * temp = state -> stack_token -> stacked_prev;
-            state -> stack_token -> stacked_prev = state -> heredoc_token -> stacked_prev;
-            state -> heredoc_token = state -> stack_token;
-            state -> stack_token = temp;
+            TokenCell * temp = state -> heredoc_token;
+            QByteArray * curr_anchor = new QByteArray(doc_name);
+
+            while(temp != state -> stack_token) {
+                switch(temp -> lexem) {
+                    case lex_heredoc_intended_mark:
+                    case lex_heredoc_mark:
+                    case lex_cheredoc_intended_mark:
+                    case lex_cheredoc_mark:
+                    case lex_eheredoc_intended_mark:
+                    case lex_eheredoc_mark: {
+                        QByteArray * anchor = temp -> data;
+                        temp -> data = curr_anchor;
+                        curr_anchor = anchor;
+                    }
+
+                    default: temp = temp -> next;
+                }
+            }
         } else {
             state -> heredoc_token = state -> stack_token;
+            state -> heredoc_token -> data = new QByteArray(doc_name);
         }
-
-        state -> heredoc_token -> data = new QByteArray(doc_name);
     }
+
+    // decrease buffer on 1 symbol because after func we go to the iteration
+    --state -> buffer;
 
     return res;
 }

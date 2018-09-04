@@ -33,7 +33,6 @@ Grammar::Grammar() : IGrammar() {
         rules[lex_command_interception][i] = curr;
 
 //        rules[lex_inline_block_start][i] = curr;
-//        rules[i][lex_close_curly_bracket] = lex_expression;
     }
 
     rules[lex_symbol_key][lex_end_line] = lex_symbol_key;
@@ -217,6 +216,11 @@ Grammar::Grammar() : IGrammar() {
 //    lex_method_call_var_entry,
 //    lex_method_call_vars_splitter,
 //    lex_method_call_vars_end,
+
+
+    // HEREDOC
+
+//    rules[lex_method_call_vars_start][lex_eheredoc_intended_mark] = lex_eheredoc_intended_mark;
 }
 
 bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) {
