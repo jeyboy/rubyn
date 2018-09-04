@@ -552,7 +552,7 @@ bool LexerFrontend::parseHeredocMarks(LexerControl * state, StateLexem & lex) {
     else while(isWord(*(++curr)));
 
     QByteArray doc_name(control, curr - control);
-    state -> buffer += (curr - state -> buffer);
+    state -> buffer += (curr - state -> buffer) + (is_quoted ? 1 : 0);
     state -> next_offset = 0;
 
     bool res = cutWord(state, lex, lex_none, slf_stack_word);
