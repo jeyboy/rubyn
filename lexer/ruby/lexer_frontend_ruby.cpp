@@ -561,11 +561,12 @@ bool LexerFrontend::parseHeredocMarks(LexerControl * state, StateLexem & lex) {
         state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state for heredoc"));
         return true; // false;
     } else {
+        QByteArray * curr_anchor = new QByteArray(doc_name);
+
         if (state -> heredoc_token) {
             TokenCell * temp = state -> heredoc_token;
-            QByteArray * curr_anchor = new QByteArray(doc_name);
 
-            while(temp != state -> stack_token) {
+            while(temp && temp != state -> stack_token) {
                 switch(temp -> lexem) {
                     case lex_heredoc_intended_mark:
                     case lex_heredoc_mark:
@@ -581,10 +582,12 @@ bool LexerFrontend::parseHeredocMarks(LexerControl * state, StateLexem & lex) {
                     default: temp = temp -> next;
                 }
             }
+
         } else {
             state -> heredoc_token = state -> stack_token;
-            state -> heredoc_token -> data = new QByteArray(doc_name);
         }
+
+        state -> stack_token -> data = curr_anchor;
     }
 
     // decrease buffer on 1 symbol because after func we go to the iteration
