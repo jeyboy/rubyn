@@ -561,33 +561,7 @@ bool LexerFrontend::parseHeredocMarks(LexerControl * state, StateLexem & lex) {
         state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state for heredoc"));
         return true; // false;
     } else {
-        QByteArray * curr_anchor = new QByteArray(doc_name);
-
-        if (state -> heredoc_token) {
-            TokenCell * temp = state -> heredoc_token;
-
-            while(temp && temp != state -> stack_token) {
-                switch(temp -> lexem) {
-                    case lex_heredoc_intended_mark:
-                    case lex_heredoc_mark:
-                    case lex_cheredoc_intended_mark:
-                    case lex_cheredoc_mark:
-                    case lex_eheredoc_intended_mark:
-                    case lex_eheredoc_mark: {
-                        QByteArray * anchor = temp -> data;
-                        temp -> data = curr_anchor;
-                        curr_anchor = anchor;
-                    }
-
-                    default: temp = temp -> next;
-                }
-            }
-
-        } else {
-            state -> heredoc_token = state -> stack_token;
-        }
-
-        state -> stack_token -> data = curr_anchor;
+        state -> registerHeredocMark(lex, new QByteArray(doc_name));
     }
 
     // decrease buffer on 1 symbol because after func we go to the iteration
@@ -1251,9 +1225,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
     }
 
     exit:;
-//        StateLexem replaceable = Grammar::obj().toHeredocContinious(state -> stack_token -> lexem);
-//        if (replaceable != lex_none)
-//            state -> stack -> replace(replaceable, false);
+//        state -> validateHeredocState();
 }
 
 LexerFrontend::LexerFrontend() {}
