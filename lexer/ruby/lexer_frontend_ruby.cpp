@@ -576,26 +576,27 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
         return true; // false;
     }
 
+    StateLexem lex = lex_none;
+    StateLexem del_lex = lex_none;
+    StackLexemFlag flags = slf_none;
+
     QByteArray stop_token = *state -> stack_token -> data;
 
     if (state -> isBufferStart()) {
         switch(state -> stack_token -> lexem) {
-            case lex_heredoc_intended_continue:
-            case lex_eheredoc_intended_continue:
-            case lex_cheredoc_intended_continue: {
-                --state -> buffer;
+            case lex_heredoc_intended_start:
+            case lex_eheredoc_intended_start:
+            case lex_cheredoc_intended_start: {
                 while(isBlank(*++state -> buffer)) ++state -> prev;
             }
 
-            case lex_heredoc_continue:
-            case lex_eheredoc_continue:
-            case lex_cheredoc_continue: {
+            case lex_heredoc_start:
+            case lex_eheredoc_start:
+            case lex_cheredoc_start: {
                 int token_length = stop_token.length();
 
                 if (QByteArray(state -> buffer, token_length) == stop_token) {
                     state -> buffer += token_length;
-
-                    return cutWord(state, lex_heredoc_mark);
                 }
             break;}
 
@@ -603,37 +604,44 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
         }
     }
 
-    switch(state -> stack_token -> lexem) {
-        case lex_heredoc_continue:
-        case lex_heredoc_intended_continue: { state -> moveBufferToEnd(); break;}
+    if (lex == lex_none) {
+        switch(state -> stack_token -> lexem) {
+            case lex_heredoc_start:
+            case lex_heredoc_intended_start: { state -> moveBufferToEnd(); break;}
 
-        case lex_eheredoc_intended_continue:
-        case lex_cheredoc_intended_continue:
-        case lex_eheredoc_continue:
-        case lex_cheredoc_continue: {
-            bool ended = false;
+            case lex_eheredoc_intended_start:
+            case lex_cheredoc_intended_start:
+            case lex_eheredoc_start:
+            case lex_cheredoc_start: {
+                while(true) {
+                    switch(ECHAR0) {
+                        case '#': {
+                            if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
+                                ++state -> next_offset;
+                                lex = lex_heredoc_content;
+                                del_lex = lex_heredoc_interception;
+                                flags = slf_stack_delimiter;
+                            }
+    //                            return cutWord(state, Grammar::obj().toInterceptor(state -> stack_token -> lexem));
+                        break; }
 
-            while(!ended) {
-                switch(ECHAR0) {
-                    case 0: {
-                        ended = true;
-                    break;}
-
-                    case '#': {
-                        if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
-                            state -> next_offset += 2;
-                            return cutWord(state, Grammar::obj().toInterceptor(state -> stack_token -> lexem));
-                        }
+                        case 0: {
+                            lex = lex_heredoc_content;
+                            del_lex = lex_end_line;
+                        break;}
                     }
 
-                    ++state -> buffer;
+                    if (lex == lex_none)
+                        ++state -> buffer;
+                    else break;
                 }
-            }
-        break;}
-        default:;
+            break;}
+
+            default:;
+        }
     }
 
-    return cutWord(state, lex_heredoc_continue);
+    return cutWord(state, lex, del_lex, flags);
 }
 
 bool LexerFrontend::parseRegexp(LexerControl * state) {   

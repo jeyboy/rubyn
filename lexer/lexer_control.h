@@ -208,10 +208,26 @@ struct LexerControl {
         }
     }
     inline void registerHeredocMark(const StateLexem & lexem, QByteArray * name) {
-        TokenCell * new_heredoc =
-            TokenList::insert(user_data -> token_begin, lexem, 0, 0);
+        StateLexem doc_lex = lex_none;
 
-        new_heredoc -> data = name;
+        switch(lexem) {
+            case lex_heredoc_intended_mark:     { doc_lex = lex_heredoc_intended_start; break;}
+            case lex_heredoc_mark:              { doc_lex = lex_heredoc_start; break;}
+            case lex_cheredoc_intended_mark:    { doc_lex = lex_cheredoc_intended_start; break;}
+            case lex_cheredoc_mark:             { doc_lex = lex_cheredoc_start; break;}
+            case lex_eheredoc_intended_mark:    { doc_lex = lex_eheredoc_intended_start; break;}
+            case lex_eheredoc_mark:             { doc_lex = lex_eheredoc_start; break;}
+            default:;
+        };
+
+        if (doc_lex != lex_none) {
+            TokenCell * new_heredoc =
+                TokenList::insert(user_data -> token_begin, doc_lex, 0, 0);
+
+            new_heredoc -> data = name;
+        } else {
+            int i = 0;
+        }
     }
 
 //    void popStack() {

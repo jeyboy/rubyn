@@ -13,6 +13,8 @@ namespace Ruby {
 
 //        StateLexem toInterceptor(const StateLexem & lex);
 
+        StateLexem stateForHeredoc(const StateLexem & lex, const bool & content);
+
         char percentagePresentationBlocker(const char & ch);
 
 //        bool isStackDroppable(const StateLexem & lexem);

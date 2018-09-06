@@ -276,6 +276,18 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
 //    };
 //}
 
+StateLexem Grammar::stateForHeredoc(const StateLexem & lex, const bool & content) {
+    switch(lex) {
+        case lex_eheredoc_intended_continue: return lex_eheredoc_intended_content;
+        case lex_cheredoc_intended_continue: return lex_cheredoc_intended_content;
+        case lex_eheredoc_continue: return lex_eheredoc_content;
+        case lex_cheredoc_continue: return lex_cheredoc_content;
+        case lex_command_continue: return lex_command_content;
+
+        default: return lex_none;
+    };
+}
+
 char Grammar::percentagePresentationBlocker(const char & ch) {
     switch(ch) {
         case '(': return ')';
