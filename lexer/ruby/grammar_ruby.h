@@ -11,17 +11,15 @@ namespace Ruby {
     public:
         bool stackDropable(const StateLexem & state, const StateLexem & input);
 
-        StateLexem toInterceptor(const StateLexem & lex);
+//        StateLexem toInterceptor(const StateLexem & lex);
 
         char percentagePresentationBlocker(const char & ch);
 
-        bool isStackDroppable(const StateLexem & lexem);
+//        bool isStackDroppable(const StateLexem & lexem);
 
-        bool isInterpolable(const StateLexem & lexem);
+//        bool isInterpolable(const StateLexem & lexem);
 
-        StateLexem toHeredocContinious(const StateLexem & lexem);
-
-        bool isContinious(const StateLexem & lexem);
+//        StateLexem toHeredocContinious(const StateLexem & lexem);
 
         StateLexem fromContinious(const StateLexem & lexem);
 

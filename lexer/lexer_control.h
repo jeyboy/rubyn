@@ -187,23 +187,26 @@ struct LexerControl {
         }
     }
 
-//    inline void validateHeredocState() {
-//        switch(user_data -> token_begin -> next -> lexem) {
-//            case lex_heredoc_intended_mark:
-//            case lex_heredoc_mark:
-//            case lex_cheredoc_intended_mark:
-//            case lex_cheredoc_mark:
-//            case lex_eheredoc_intended_mark:
-//            case lex_eheredoc_mark: { break;}
+    inline void validateHeredocState() {
+        //TODO: remove all stack values till we have heredoc start on the top
+        if (stack_token) {
+            switch(stack_token -> lexem) {
+                case lex_heredoc_intended_start:
+                case lex_heredoc_start:
+                case lex_cheredoc_intended_start:
+                case lex_cheredoc_start:
+                case lex_eheredoc_intended_start:
+                case lex_eheredoc_start: { break;}
 
-//            default: {
-//                lightWithMessage(
-//                    lex_error,
-//                    QByteArrayLiteral("Wrong stack state for begin of heredoc")
-//                );
-//            }
-//        }
-//    }
+                default: {
+                    lightWithMessage(
+                        lex_error,
+                        QByteArrayLiteral("Wrong stack state for begin of heredoc")
+                    );
+                }
+            }
+        }
+    }
     inline void registerHeredocMark(const StateLexem & lexem, QByteArray * name) {
         TokenCell * new_heredoc =
             TokenList::insert(user_data -> token_begin, lexem, 0, 0);

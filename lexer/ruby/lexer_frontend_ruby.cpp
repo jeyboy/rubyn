@@ -479,8 +479,8 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
             case 0: {
                 state -> next_offset = 0;
                 lex = is_interable ? lex_epercent_presentation_content : lex_percent_presentation_content;
-                del_lex = Grammar::obj().toInterceptor(stack_lexem);
-                flags = slf_stack_delimiter;
+//                del_lex = Grammar::obj().toInterceptor(stack_lexem);
+//                flags = slf_stack_delimiter;
             break;}
 
             default: {
