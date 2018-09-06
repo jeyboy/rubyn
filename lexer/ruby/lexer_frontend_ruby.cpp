@@ -148,38 +148,25 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
 bool LexerFrontend::parseContinious(LexerControl * state) {
     if (state -> stack_token) {
         switch(state -> stack_token -> lexem) {
-            case lex_string_start:
-            case lex_string_continue: { return parseString(state); }
+            case lex_string_start: { return parseString(state); }
 
-            case lex_estring_start:
-            case lex_estring_continue: { return parseEString(state); }
+            case lex_estring_start: { return parseEString(state); }
 
-
-            case lex_regexp_start:
-            case lex_regexp_continue: { return parseRegexp(state); }
+            case lex_regexp_start: { return parseRegexp(state); }
 
             case lex_percent_presentation_start:
-            case lex_percent_presentation_continue:
-            case lex_epercent_presentation_start:
-            case lex_epercent_presentation_continue: { return parsePercentagePresenation(state); }
+            case lex_epercent_presentation_start: { return parsePercentagePresenation(state); }
 
-            case lex_commentary_start:
-            case lex_commentary_continue: { return parseComment(state); }
+            case lex_commentary_start: { return parseComment(state); }
+
             case lex_cheredoc_start:
-            case lex_cheredoc_continue:
             case lex_cheredoc_intended_start:
-            case lex_cheredoc_intended_continue:
             case lex_eheredoc_start:
-            case lex_eheredoc_continue:
             case lex_eheredoc_intended_start:
-            case lex_eheredoc_intended_continue:
             case lex_heredoc_start:
-            case lex_heredoc_continue:
-            case lex_heredoc_intended_start:
-            case lex_heredoc_intended_continue: { return parseHeredoc(state); }
+            case lex_heredoc_intended_start: { return parseHeredoc(state); }
 
-            case lex_command_start:
-            case lex_command_continue: { return parseCommand(state); }
+            case lex_command_start: { return parseCommand(state); }
 
             default:;
         };
@@ -353,9 +340,9 @@ bool LexerFrontend::parseString(LexerControl * state) {
             break;}
 
             case 0: {
+                state -> next_offset = 0;
                 lex = lex_string_content;
-                del_lex = lex_string_continue;
-                flags = slf_stack_delimiter;
+                del_lex = lex_end_line;
             break;}
         }
 
@@ -392,9 +379,9 @@ bool LexerFrontend::parseEString(LexerControl * state) {
             break;}
 
             case 0: {
+                state -> next_offset = 0;
                 lex = lex_estring_content;
-                del_lex = lex_estring_continue;
-                flags = slf_stack_delimiter;
+                del_lex = lex_end_line;
             break;}
         }
 
@@ -431,9 +418,9 @@ bool LexerFrontend::parseCommand(LexerControl * state) {
             break;}
 
             case 0: {
+                state -> next_offset = 0;
                 lex = lex_command_content;
-                del_lex = lex_command_continue;
-                flags = slf_stack_delimiter;
+                del_lex = lex_end_line;
             break;}
         }
 
@@ -460,8 +447,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
     StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 
-    bool is_interable =
-        stack_lexem != lex_percent_presentation_start && stack_lexem != lex_percent_presentation_continue;
+    bool is_interable = stack_lexem != lex_percent_presentation_start;
 
     while(true) {
         switch(ECHAR0) {
@@ -469,7 +455,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
                 if (is_interable) {
                     if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
                         ++state -> next_offset;
-                        lex = is_interable ? lex_epercent_presentation_content : lex_percent_presentation_content;
+                        lex = lex_percent_presentation_content;
                         del_lex = lex_epercent_presentation_interception;
                         flags = slf_stack_delimiter;
                     }
@@ -478,21 +464,13 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
 
             case 0: {
                 state -> next_offset = 0;
-                lex = is_interable ? lex_epercent_presentation_content : lex_percent_presentation_content;
-//                del_lex = Grammar::obj().toInterceptor(stack_lexem);
-//                flags = slf_stack_delimiter;
+                lex = lex_percent_presentation_content;
             break;}
 
             default: {
                 if (ECHAR0 == blocker && ECHAR_PREV1 != '\\') {
-                    if (is_interable) {
-                        lex = lex_epercent_presentation_content;
-                        del_lex = lex_epercent_presentation_end;
-                    } else {
-                        lex = lex_percent_presentation_content;
-                        del_lex = lex_percent_presentation_end;
-                    }
-
+                    lex = lex_percent_presentation_content;
+                    del_lex = lex_percent_presentation_end;
                     flags = slf_unstack_delimiter;
                 }
             }

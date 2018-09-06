@@ -230,10 +230,7 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
         case lex_regexp_interception:
         case lex_epercent_presentation_interception:
         case lex_command_interception:
-        case lex_eheredoc_interception:
-        case lex_eheredoc_intended_interception:
-        case lex_cheredoc_interception:
-        case lex_cheredoc_intended_interception: return input == lex_close_curly_bracket;
+        case lex_heredoc_interception: return input == lex_close_curly_bracket;
 
         case lex_epercent_presentation_start: return input == lex_epercent_presentation_end;
         case lex_percent_presentation_start: return input == lex_percent_presentation_end;
