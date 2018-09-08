@@ -244,12 +244,12 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
         case lex_regexp_start: return input == lex_regexp_end;
         case lex_command_start: return input == lex_command_end;
 
-        case lex_heredoc_mark:
-        case lex_heredoc_intended_mark:
-        case lex_cheredoc_intended_mark:
-        case lex_cheredoc_mark:
-        case lex_eheredoc_intended_mark:
-        case lex_eheredoc_mark: return input == lex_heredoc_close_mark;
+        case lex_heredoc_start:
+        case lex_heredoc_intended_start:
+        case lex_cheredoc_intended_start:
+        case lex_cheredoc_start:
+        case lex_eheredoc_intended_start:
+        case lex_eheredoc_start: return input == lex_heredoc_close_mark;
 
         default: return false;
     }

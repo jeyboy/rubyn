@@ -75,8 +75,6 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
     state -> cachingPredicate(has_predefined);
 
     if (state -> cached_length || has_predefined) {
-        bool has_stack_word_relation = flags & slf_word_related;
-
         state -> lex_word =
             has_predefined ? predefined_lexem : Predefined::obj().lexem(state -> cached);
 
@@ -89,7 +87,7 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
                 state -> light(highlightable);
         }
 
-        state -> attachToken(state -> lex_word, has_stack_word_relation);
+        state -> attachToken(state -> lex_word, flags & slf_word_related);
 
         translateState(state);
 
@@ -576,7 +574,6 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
 
                     if (QByteArray(state -> buffer, token_length) == stop_token) {
                         state -> buffer += token_length;
-
                         state -> next_offset = 0;
                         lex = lex_heredoc_close_mark;
                         del_lex = lex_end_line;
