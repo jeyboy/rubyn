@@ -455,7 +455,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
                 if (is_interable) {
                     if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
                         ++state -> next_offset;
-                        lex = lex_percent_presentation_content;
+                        lex = lex_epercent_presentation_content;
                         del_lex = lex_epercent_presentation_interception;
                         flags = slf_stack_delimiter;
                     }
@@ -464,13 +464,13 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
 
             case 0: {
                 state -> next_offset = 0;
-                lex = lex_percent_presentation_content;
+                lex = is_interable ? lex_epercent_presentation_content : lex_percent_presentation_content;
             break;}
 
             default: {
                 if (ECHAR0 == blocker && ECHAR_PREV1 != '\\') {
-                    lex = lex_percent_presentation_content;
-                    del_lex = lex_percent_presentation_end;
+                    lex = is_interable ? lex_epercent_presentation_content : lex_percent_presentation_content;
+                    del_lex = is_interable ? lex_epercent_presentation_end  : lex_percent_presentation_end;
                     flags = slf_unstack_delimiter;
                 }
             }
@@ -648,7 +648,8 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
             break;}
 
             case 0: {
-                lex = lex_regexp_continue;
+                lex = lex_regexp_content;
+                del_lex = lex_end_line;
             break;}
         }
 
@@ -720,7 +721,7 @@ bool LexerFrontend::parseComment(LexerControl * state) {
     }
 
     state -> moveBufferToEnd();
-    cutWord(state, lex_commentary_continue);
+    cutWord(state, lex_commentary_content);
     return false;
 }
 
@@ -804,13 +805,8 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '}': {
                 if(!cutWord(state, lex_none, lex_none, slf_unstack_delimiter)) goto exit;
 
-                StateLexem top = state -> stack_token -> lexem;
-                StateLexem top_conv = Grammar::obj().fromContinious(top);
-
-                if (top_conv != lex_none) { // after interpolation
-                    if (!parseContinious(state))
-                        goto exit;
-                }
+                if (!parseContinious(state))
+                    goto exit;
             break;}
 
 
@@ -973,17 +969,10 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case '#': { // inline comment
-                StateLexem predef = lex_none;
+                state -> moveBufferToEnd();
+                state -> next_offset = 0;
 
-//                if (ECHAR1 == '{' && Grammar::obj().isInterpolable(state -> stack_token -> lexem)) {
-//                    ++state -> next_offset;
-//                } else {
-                    predef = lex_inline_commentary;
-                    state -> moveBufferToEnd();
-                    state -> next_offset = 0;
-//                }
-
-                if (!cutWord(state, predef)) goto exit;
+                if (!cutWord(state, lex_inline_commentary_content)) goto exit;
             break;}
 
 

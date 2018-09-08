@@ -230,58 +230,71 @@ enum StateLexem : LEXEM_TYPE {
     lex_proc_def_vars_splitter,
     lex_proc_def_vars_end,
 
-    lex_inline_commentary,
 
-    lex_commentary_content,
+    lex_inline_commentary_content,
+
     lex_commentary_start,
+    lex_commentary_content,
     lex_commentary_end,
 
-    lex_command_content,
     lex_command_start,
+    lex_command_content,
     lex_command_interception,
     lex_command_end,
 
-    lex_string_content,
     lex_string_start,
+    lex_string_content,
     lex_string_end,
 
     lex_estring_start, // "
+    lex_estring_content,
     lex_estring_interception,
     lex_estring_end,
 
-    lex_percent_presentation_content,
     lex_percent_presentation_start, // %n/.../
+    lex_percent_presentation_content,
     lex_percent_presentation_end,
 
     lex_epercent_presentation_start, // %N/.../
+    lex_epercent_presentation_content,
     lex_epercent_presentation_interception,
+    lex_epercent_presentation_end,
 
     // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
     lex_heredoc_mark,
-    lex_heredoc_content,
     lex_heredoc_start,
-    lex_heredoc_end,
+    lex_heredoc_content,
     lex_heredoc_interception,
+    lex_heredoc_end,
 
     lex_heredoc_intended_mark,
-//    lex_heredoc_intended_content,
     lex_heredoc_intended_start,
+    lex_heredoc_intended_content,
+    lex_heredoc_intended_end,
 
     lex_eheredoc_mark,
-//    lex_eheredoc_content,
     lex_eheredoc_start,
+    lex_eheredoc_content,
+//    lex_eheredoc_interception,
+    lex_eheredoc_end,
 
     lex_eheredoc_intended_mark,
-//    lex_eheredoc_intended_content,
     lex_eheredoc_intended_start,
+    lex_eheredoc_intended_content,
+//    lex_eheredoc_intended_interception,
+    lex_eheredoc_intended_end,
 
     lex_cheredoc_mark,
-//    lex_cheredoc_content,
     lex_cheredoc_start,
+    lex_cheredoc_content,
+//    lex_cheredoc_interception,
+    lex_cheredoc_end,
 
     lex_cheredoc_intended_mark,
-//    lex_cheredoc_intended_content,
     lex_cheredoc_intended_start,
+    lex_cheredoc_intended_content,
+//    lex_cheredoc_intended_interception,
+    lex_cheredoc_intended_end,
     //////////////////////////////////////
 
 

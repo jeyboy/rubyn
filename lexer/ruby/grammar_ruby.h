@@ -23,7 +23,7 @@ namespace Ruby {
 
 //        StateLexem toHeredocContinious(const StateLexem & lexem);
 
-        StateLexem fromContinious(const StateLexem & lexem);
+//        StateLexem fromContinious(const StateLexem & lexem);
 
         Identifier toHighlightable(const StateLexem & lexem);
     };
