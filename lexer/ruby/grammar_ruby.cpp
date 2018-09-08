@@ -249,7 +249,7 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
         case lex_cheredoc_intended_mark:
         case lex_cheredoc_mark:
         case lex_eheredoc_intended_mark:
-        case lex_eheredoc_mark: return input == lex_heredoc_end;
+        case lex_eheredoc_mark: return input == lex_heredoc_close_mark;
 
         default: return false;
     }
@@ -283,8 +283,10 @@ StateLexem Grammar::stateForHeredoc(const StateLexem & lex, const bool & content
             return content ? lex_eheredoc_content : lex_eheredoc_end;
         case lex_cheredoc_start:
             return content ? lex_cheredoc_content : lex_cheredoc_end;
-        case lex_command_start:
-            return content ? lex_command_content : lex_command_end;
+        case lex_heredoc_start:
+            return content ? lex_heredoc_content : lex_heredoc_end;
+        case lex_heredoc_intended_start:
+            return content ? lex_heredoc_intended_content : lex_heredoc_intended_end;
 
         default: return lex_none;
     };
@@ -462,6 +464,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
             return hid_var;
 
 
+        case lex_heredoc_close_mark:
         case lex_heredoc_mark:
         case lex_heredoc_intended_mark:
         case lex_eheredoc_mark:
@@ -469,6 +472,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_cheredoc_mark:
         case lex_cheredoc_intended_mark:
             return hid_label;
+
 
         case lex_method_def_name:
         case lex_method_def_scope_or_name:
@@ -496,9 +500,6 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_string_content:
         case lex_estring_content:
         case lex_command_content:
-
-
-        case lex_heredoc_content:
         case lex_require_path:
 
         case lex_epercent_presentation_start:
@@ -507,6 +508,13 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_percent_presentation_end:
         case lex_epercent_presentation_content:
         case lex_percent_presentation_content:
+
+        case lex_heredoc_content:
+        case lex_heredoc_intended_content:
+        case lex_eheredoc_intended_content:
+        case lex_cheredoc_intended_content:
+        case lex_eheredoc_content:
+        case lex_cheredoc_content:
             return hid_string;
 
 

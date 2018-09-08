@@ -83,6 +83,7 @@ struct LexerControl {
     }
     inline bool isBufferStart() { return buffer == start; }
     inline bool isBufferEof() { return *buffer == 0; }
+    inline bool bufferIsEmpty() { return *start == '\0'; }
 
     inline void cachingPredicate(const bool & ignore_para = false) {
         cached_str_pos = bufferPos();

@@ -262,6 +262,7 @@ enum StateLexem : LEXEM_TYPE {
 
     // <<HEREDOC ... HEREDOC // <<-HEREDOC ... HEREDOC // <<~HEREDOC .. HEREDOC
     lex_heredoc_mark,
+    lex_heredoc_close_mark,
     lex_heredoc_start,
     lex_heredoc_content,
     lex_heredoc_interception,

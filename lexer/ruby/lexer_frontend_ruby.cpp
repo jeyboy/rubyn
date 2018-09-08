@@ -571,14 +571,17 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
             case lex_heredoc_start:
             case lex_eheredoc_start:
             case lex_cheredoc_start: {
-                int token_length = stop_token.length();
+                if (*state -> buffer == stop_token[0]) {
+                    int token_length = stop_token.length();
 
-                if (QByteArray(state -> buffer, token_length) == stop_token) {
-                    state -> buffer += token_length;
+                    if (QByteArray(state -> buffer, token_length) == stop_token) {
+                        state -> buffer += token_length;
 
-                    state -> next_offset = 0;
-                    lex = lex_heredoc_mark;
-                    del_lex = lex_end_line;
+                        state -> next_offset = 0;
+                        lex = lex_heredoc_close_mark;
+                        del_lex = lex_end_line;
+                        flags = slf_unstack_word;
+                    }
                 }
             break;}
 
@@ -604,7 +607,6 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
                                 del_lex = lex_heredoc_interception;
                                 flags = slf_stack_delimiter;
                             }
-    //                            return cutWord(state, Grammar::obj().toInterceptor(state -> stack_token -> lexem));
                         break; }
 
                         case 0: {
@@ -751,6 +753,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
     //        if(!cutWord(state, status)) goto exit;
     //    break;}
+
+    if (state -> bufferIsEmpty())
+        goto exit;
 
     if (!parseContinious(state))
         goto exit;
