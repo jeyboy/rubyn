@@ -575,6 +575,10 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
 
                 if (QByteArray(state -> buffer, token_length) == stop_token) {
                     state -> buffer += token_length;
+
+                    state -> next_offset = 0;
+                    lex = lex_heredoc_mark;
+                    del_lex = lex_end_line;
                 }
             break;}
 
@@ -596,7 +600,7 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
                         case '#': {
                             if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
                                 ++state -> next_offset;
-                                lex = lex_heredoc_content;
+                                lex = Grammar::obj().stateForHeredoc(state -> stack_token -> lexem, true);
                                 del_lex = lex_heredoc_interception;
                                 flags = slf_stack_delimiter;
                             }
@@ -604,7 +608,7 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
                         break; }
 
                         case 0: {
-                            lex = lex_heredoc_content;
+                            lex = Grammar::obj().stateForHeredoc(state -> stack_token -> lexem, true);
                             del_lex = lex_end_line;
                         break;}
                     }

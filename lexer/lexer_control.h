@@ -41,9 +41,10 @@ struct LexerControl {
 //    Scope * scope;
     quint8 next_offset;
 
+    TokenCell * heredoc_token;
     TokenCell * stack_token;
-
     TokenCell * token;
+
     ParaCell * para;
     ParaCell * control_para;
 
@@ -64,10 +65,10 @@ struct LexerControl {
     LexerControl(IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, Highlighter * lighter = nullptr) :
         lighter(lighter), grammar(cgrammar),
         lex_prev_word(lex_none), lex_word(lex_none)/*, lex_prev_delimiter(lex_none)*/, lex_delimiter(lex_none),
-        next_offset(1), stack_token(stack_token), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()),
+        next_offset(1), heredoc_token(nullptr), stack_token(stack_token), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()),
         control_para(nullptr), last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2), last_light_len(0),
         start(nullptr), buffer(nullptr), prev(nullptr), user_data(user_data)
-    {}
+    { }
 
     ~LexerControl() {}
 
@@ -151,6 +152,10 @@ struct LexerControl {
             bool stack_delimiter = flags & slf_stack_delimiter;
 
             if (stack_word || stack_delimiter) {
+                if (!stack_token) {
+                    heredoc_token = token;
+                }
+
                 token -> stacked_prev = stack_token;
                 stack_token = token;
 
@@ -225,6 +230,8 @@ struct LexerControl {
                 TokenList::insert(user_data -> token_begin, doc_lex, 0, 0);
 
             new_heredoc -> data = name;
+            new_heredoc -> stacked_prev = heredoc_token -> stacked_prev;
+            heredoc_token -> stacked_prev = new_heredoc;
         } else {
             int i = 0;
         }
