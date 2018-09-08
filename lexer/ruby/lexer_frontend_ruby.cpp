@@ -533,15 +533,9 @@ bool LexerFrontend::parseHeredocMarks(LexerControl * state, StateLexem & lex) {
     state -> buffer += (curr - state -> buffer) + (is_quoted ? 1 : 0);
     state -> next_offset = 0;
 
-    bool res = cutWord(state, lex, lex_none, slf_stack_word);
+    bool res = cutWord(state, lex);
 
-    if (!state -> stack_token || state -> stack_token -> lexem != lex) {
-        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state for heredoc"));
-        return true; // false;
-    } else {
-        state -> registerHeredocMark(lex, new QByteArray(doc_name));
-    }
-
+    state -> registerHeredocMark(lex, new QByteArray(doc_name));
     // decrease buffer on 1 symbol because after func we go to the iteration
     --state -> buffer;
 
@@ -560,12 +554,18 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
 
     QByteArray stop_token = *state -> stack_token -> data;
 
-    if (state -> isBufferStart()) {
+    if (state -> isBufferStart()) { // this branching required here?
         switch(state -> stack_token -> lexem) {
             case lex_heredoc_intended_start:
             case lex_eheredoc_intended_start:
             case lex_cheredoc_intended_start: {
-                while(isBlank(*++state -> buffer)) ++state -> prev;
+                while(true) {
+                    if (isBlank(*state -> buffer)) {
+                        ++state -> prev;
+                        ++state -> buffer;
+                    }
+                    else break;
+                }
             }
 
             case lex_heredoc_start:
@@ -1204,6 +1204,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
     }
 
     exit:;
+    int y = 0;
 //        state -> validateHeredocState();
 }
 
