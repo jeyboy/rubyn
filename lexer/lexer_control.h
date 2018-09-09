@@ -72,6 +72,25 @@ struct LexerControl {
 
     ~LexerControl() {}
 
+    inline int lineState() {
+        if (stack_token) {
+            if (stack_token -> data) {
+                int data_state = 0;
+
+                QByteArray data = *stack_token -> data;
+                QByteArray::ConstIterator it = data.constBegin();
+
+                for(int pos = 1; it != data.constEnd(); it++, pos++) {
+                    data_state += pos * *it;
+                }
+
+                return lex_max + data_state;
+            }
+            else return stack_token -> lexem;
+        }
+        else return lex_none;
+    }
+
     inline void setBuffer(const char * buff) {
         prev = start = buffer = buff;
         cached.clear();

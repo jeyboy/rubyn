@@ -1236,7 +1236,6 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
 
     lexicate(&state);
 
-    int new_user_state = state.stack_token ? state.stack_token -> lexem : lex_none;
-    block.setUserState(new_user_state);
+    block.setUserState(state.lineState());
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
 }
