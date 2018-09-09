@@ -572,7 +572,7 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
                 if (*state -> buffer == stop_token[0]) {
                     int token_length = stop_token.length();
 
-                    if (QByteArray(state -> buffer, token_length) == stop_token) {
+                    if (QByteArray(state -> buffer, token_length) == stop_token && !isWord(*(state -> buffer + token_length))) {
                         state -> buffer += token_length;
                         state -> next_offset = 0;
                         lex = lex_heredoc_close_mark;
