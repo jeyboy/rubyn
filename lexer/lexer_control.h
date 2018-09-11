@@ -140,7 +140,12 @@ struct LexerControl {
         prev = buffer;
     }
 
-    inline StateLexem firstNonBlankLexem() {
+    inline EDITOR_POS_TYPE bufferPos() { return prev - start; }
+    inline EDITOR_LEN_TYPE strLength() { return static_cast<EDITOR_LEN_TYPE>(buffer - prev); }
+
+    inline StateLexem & sublastToken() { return token -> prev -> lexem; }
+    inline StateLexem & lastToken() { return token -> lexem; }
+    inline StateLexem lastNonBlankLexem() {
         TokenCell * it = token;
 
         while(it) {
@@ -153,11 +158,6 @@ struct LexerControl {
         return lex_none;
     }
 
-    inline EDITOR_POS_TYPE bufferPos() { return prev - start; }
-    inline EDITOR_LEN_TYPE strLength() { return static_cast<EDITOR_LEN_TYPE>(buffer - prev); }
-
-    inline StateLexem & sublastToken() { return token -> prev -> lexem; }
-    inline StateLexem & lastToken() { return token -> lexem; }
     inline void attachToken(const StateLexem & lexem, const uint & flags = slf_none) {
         if (token -> next) {
             token = token -> next;

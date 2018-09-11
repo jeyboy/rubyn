@@ -69,7 +69,7 @@ void LexerFrontend::translateState(LexerControl * state) {
     state -> lex_word = new_state;
 }
 
-bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_lexem, const StateLexem & predefined_delimiter, const StackLexemFlag & flags) {
+bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_lexem, const StateLexem & predefined_delimiter, StackLexemFlag flags) {
     bool has_predefined = predefined_lexem != lex_none;
 
     state -> cachingPredicate(has_predefined);
@@ -79,8 +79,32 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
             has_predefined ? predefined_lexem : Predefined::obj().lexem(state -> cached);
 
         if (state -> cached_length) {
-            if (state -> lex_word == lex_word)
-                identifyWordType(state);
+            switch(state -> lex_word) {
+                case lex_word: {
+                    identifyWordType(state);
+                break;}
+
+                case lex_if:
+                case lex_unless: {
+                    StateLexem lex = state -> lastNonBlankLexem();
+
+                    switch(lex) {
+                        case lex_word:
+                        case lex_const:
+                        case lex_var_local:
+                        case lex_var_instance:
+                        case lex_var_object:
+                        case lex_var_global:
+                        case lex_wrap_end:
+                        case lex_none: {
+                            flags = slf_stack_word;
+                        break;}
+                        default:;
+                    }
+                break;}
+
+                default:;
+            }
 
             Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
             if (highlightable != hid_none)
@@ -1088,7 +1112,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
                     if (!cutWord(state)) goto exit;
                 } else {
-                    StateLexem lex = state -> firstNonBlankLexem();
+                    StateLexem lex = state -> lastNonBlankLexem();
                     bool next_is_blank = isBlank(ECHAR1);
 
                     bool is_division = (lex != lex_none || (!state -> isBufferStart() && isAlphaNum(ECHAR_PREV1))) &&
