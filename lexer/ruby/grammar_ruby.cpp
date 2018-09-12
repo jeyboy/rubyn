@@ -225,6 +225,9 @@ Grammar::Grammar() : IGrammar() {
 
 bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) {
     switch(state) {
+        case lex_if:
+        case lex_unless: return input == lex_end;
+
         case lex_open_curly_bracket:
         case lex_estring_interception:
         case lex_regexp_interception:

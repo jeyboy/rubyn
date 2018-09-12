@@ -97,9 +97,10 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
                         case lex_var_global:
                         case lex_wrap_end:
                         case lex_none: {
-                            flags = slf_stack_word;
+
                         break;}
-                        default:;
+
+                        default: flags = slf_stack_word;
                     }
                 break;}
 
