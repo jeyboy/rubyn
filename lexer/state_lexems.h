@@ -79,6 +79,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_wrap_end, // )
 
     lex_dot,  // .
+    lex_question_mark,  // ?
     lex_colon,  // :
     lex_semicolon,  // ;
     lex_resolution,  // ::

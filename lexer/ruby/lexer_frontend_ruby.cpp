@@ -878,6 +878,8 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case ':': {
+                StateLexem del_state = lex_none;
+
                 if (ECHAR1 == ':')
                     ++state -> next_offset;
                 else { // if we have deal with symbol
@@ -887,10 +889,12 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     } else {
                         if (state -> strLength() == 0 && isWord(ECHAR1))
                             goto iterate;
+                        else
+                            del_state = lex_ternary_alt_start;
                     }
                 }
 
-                if (!cutWord(state)) goto exit;
+                if (!cutWord(state, lex_none, del_state)) goto exit;
             break;}
 
 
@@ -954,20 +958,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '?': {
                 if (isAlphaNum(ECHAR_PREV1)) goto iterate;
 
-                StateLexem st = lex_none;
-
-//                bool is_spec_sym = ECHAR1 == '\\';
-
-//                if ((!is_spec_sym && !isAlphaNum(ECHAR3)) || (is_spec_sym && !isAlphaNum(ECHAR4))) {
-//                    st = lex_dec;
-
-//                    if (is_spec_sym)
-//                        state -> buffer += 3;
-//                    else
-//                        state -> buffer += 2;
-//                }
-
-                if (!cutWord(state, st)) goto exit;
+                if (!cutWord(state, lex_none, lex_ternary_main_start)) goto exit;
             break;}
 
 
