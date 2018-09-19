@@ -104,6 +104,9 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
                     }
                 break;}
 
+                case lex_elsif:
+                case lex_else: { flags = slf_stack_word; break;}
+
                 default:;
             }
 

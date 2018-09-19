@@ -130,6 +130,7 @@ Predefined::Predefined() {
     keys.insert(QByteArrayLiteral(">>"), lex_operator_bit_right_shift);
 
     keys.insert(QByteArrayLiteral("=>"), lex_rocket);
+    keys.insert(QByteArrayLiteral("?"), lex_ternary_main_start);
     keys.insert(QByteArrayLiteral(":"), lex_colon);
 
     keys.insert(QByteArrayLiteral("!"), lex_operator_not);
