@@ -3,7 +3,7 @@
 
 #include <qhash.h>
 
-#include "para_info.h"
+#include "para_type.h"
 
 struct ParaCell {
     ParaCell * prev;
@@ -61,8 +61,8 @@ class ParaList {
     ParaCell * root, * last;
 public:
     inline ParaList() : root(nullptr), last(nullptr) {
-        root = new ParaCell(ParaInfo::pt_none, 0);
-        last = new ParaCell(ParaInfo::pt_max_end, 0, root);
+        root = new ParaCell(pt_none, 0);
+        last = new ParaCell(pt_max_end, 0, root);
     }
 
     inline ~ParaList() {
@@ -89,8 +89,8 @@ public:
         if (!prev_end)
             prev_end = last -> prev;
 
-        left = new ParaCell(ParaInfo::pt_none, 0, prev_end);
-        right = new ParaCell(ParaInfo::pt_max, 0, left);
+        left = new ParaCell(pt_none, 0, prev_end);
+        right = new ParaCell(pt_max, 0, left);
     }
 
     static void removeLine(ParaCell * left, ParaCell * right) {

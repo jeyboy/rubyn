@@ -104,7 +104,7 @@ struct LexerControl {
     inline bool isBufferEof() { return *buffer == 0; }
     inline bool bufferIsEmpty() { return *start == '\0'; }
 
-    inline void cachingPredicate(const bool & ignore_para = false) {
+    inline void cachingPredicate() {
         cached_str_pos = bufferPos();
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
@@ -115,9 +115,6 @@ struct LexerControl {
 
         if (cached_length) {
 //            lex_prev_delimiter = lex_none;
-
-            if (!ignore_para)
-                attachPara(cached);
         }
     }
     inline void cachingDelimiter() {
@@ -131,9 +128,6 @@ struct LexerControl {
         cached_length = strLength();
 
         cached.setRawData(prev, cached_length);
-
-        if (cached_length)
-            attachPara(cached);
     }
     inline void dropCached() {
         next_offset = 1;
@@ -181,6 +175,8 @@ struct LexerControl {
 
 //                stack_token -> stacked_state_lexem = lex_none; //stack_word ? lex_prev_word : lex_word;
                 lex_prev_word = lex_none;
+
+                attachPara(grammar -> paraType(lexem));
             } else {
                 if (stack_token) {
                     if (!grammar -> stackDropable(stack_token -> lexem, lexem))
@@ -192,6 +188,7 @@ struct LexerControl {
 //                            lex_prev_word = stack_token -> lexem;
 
                         stack_token = stack_token -> stacked_prev;
+                        attachPara(grammar -> paraType(lexem));
                     }
                 } else {
                     cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
@@ -247,7 +244,7 @@ struct LexerControl {
 
         if (doc_lex != lex_none) {
             TokenCell * new_heredoc =
-                TokenList::insert(user_data -> token_begin, doc_lex, 0, 0);
+                TokenList::insert(user_data -> token_begin, doc_lex, -1, 0);
 
             new_heredoc -> data = name;
 
@@ -316,9 +313,9 @@ struct LexerControl {
         user_data -> msgs.append(MsgInfo{lexem, last_light_pos, last_light_len, msg});
     }
 
-    inline void attachPara(const QByteArray & pos_para) {
-        attachPara(ParaInfo::paraType(pos_para));
-    }
+//    inline void attachPara(const QByteArray & pos_para) {
+//        attachPara(ParaInfo::paraType(pos_para));
+//    }
     inline void attachPara(const PARA_TYPE & ptype) {
         if (!ptype) return;
 
@@ -329,7 +326,7 @@ struct LexerControl {
         }
         else para = ParaList::insert(para, ptype, cached_str_pos);
 
-        if (ptype & ParaInfo::pt_foldable) {
+        if (ptype & pt_foldable) {
             if (!control_para)
                 control_para = para;
         }

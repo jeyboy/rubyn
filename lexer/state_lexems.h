@@ -62,7 +62,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_dot_dot_dot,  // ...
     lex_rocket,  // =>
     lex_comma,  // ,
-    lex_wrap_start, // (
+    lex_wrap_open, // (
     lex_open_curly_bracket, // {
     lex_open_square_bracket, // [
     lex_word, // names and etc
@@ -76,7 +76,7 @@ enum StateLexem : LEXEM_TYPE {
 
     lex_interpolation, // #{
     lex_interpolation_close, // }
-    lex_wrap_end, // )
+    lex_wrap_close, // )
 
     lex_dot,  // .
     lex_question_mark,  // ?

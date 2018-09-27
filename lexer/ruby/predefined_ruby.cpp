@@ -12,8 +12,8 @@ Predefined::Predefined() {
     keys.insert(QByteArrayLiteral("["), lex_open_square_bracket);
     keys.insert(QByteArrayLiteral("]"), lex_close_square_bracket);
 
-    keys.insert(QByteArrayLiteral("("), lex_wrap_start);
-    keys.insert(QByteArrayLiteral(")"), lex_wrap_end);
+    keys.insert(QByteArrayLiteral("("), lex_wrap_open);
+    keys.insert(QByteArrayLiteral(")"), lex_wrap_close);
 
     keys.insert(QByteArrayLiteral("->"), lex_lambda_def);
 

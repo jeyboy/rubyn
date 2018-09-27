@@ -3,6 +3,56 @@
 using namespace Ruby;
 
 Grammar::Grammar() : IGrammar() {
+    para_tokens = {
+        { lex_open_curly_bracket, pt_open_curly_bracket },
+        { lex_interpolation, pt_open_curly_bracket },
+        { lex_close_curly_bracket, pt_close_curly_bracket },
+        { lex_open_square_bracket, pt_open_square_bracket },
+        { lex_close_square_bracket, pt_close_square_bracket },
+        { lex_wrap_open, pt_open_round_bracket },
+        { lex_wrap_close, pt_close_round_bracket },
+    //    { lex_operator_less, pt_open_angle_bracket },
+    //    { lex_operator_great, pt_close_angle_bracket },
+
+        { lex_do, pt_open_do_block },
+        { lex_begin, pt_open_begin_block },
+        { lex_method_def, pt_open_method },
+        { lex_class_def, pt_open_class },
+        { lex_module_def, pt_open_module },
+
+        { lex_if, pt_open_if },
+        { lex_unless, pt_open_unless },
+        { lex_case, pt_open_case },
+        { lex_while, pt_open_while },
+        { lex_until, pt_open_until },
+        { lex_for, pt_open_for },
+
+        { lex_end, pt_close_struct },
+    };
+
+    para_opposition = {
+        { pt_open_curly_bracket, pt_close_curly_bracket },
+        { pt_close_curly_bracket, pt_open_curly_bracket },
+        { pt_open_square_bracket, pt_close_square_bracket },
+        { pt_close_square_bracket, pt_open_square_bracket },
+        { pt_open_round_bracket, pt_close_round_bracket },
+        { pt_close_round_bracket, pt_open_round_bracket },
+
+        { pt_open_do_block, pt_close_struct },
+        { pt_open_method, pt_close_struct },
+        { pt_open_class, pt_close_struct },
+        { pt_open_module, pt_close_struct },
+
+        { pt_open_if, pt_close_struct },
+        { pt_open_unless, pt_close_struct },
+        { pt_open_case, pt_close_struct },
+        { pt_open_while, pt_close_struct },
+        { pt_open_until, pt_close_struct },
+        { pt_open_for, pt_close_struct },
+
+        { pt_close_struct, pt_open_struct },
+    };
+
     for(quint32 i = 0; i < lex_max; i++) {
         StateLexem curr = static_cast<StateLexem>(i);
 
@@ -123,8 +173,8 @@ Grammar::Grammar() : IGrammar() {
     rules[lex_method_def_scoped_delimiter][lex_word] = lex_method_def_name;
     rules[lex_method_def_name][lex_blank] = lex_method_def_vars_start;
     rules[lex_method_def_name][lex_blanks] = lex_method_def_vars_start;
-    rules[lex_method_def_name][lex_wrap_start] = lex_method_def_args_start;
-    rules[lex_method_def_scope_or_name][lex_wrap_start] = lex_method_def_args_start;
+    rules[lex_method_def_name][lex_wrap_open] = lex_method_def_args_start;
+    rules[lex_method_def_scope_or_name][lex_wrap_open] = lex_method_def_args_start;
 
 
     rules[lex_method_def_args_start][lex_operator_multiplication] = lex_method_def_arg_access_type;
@@ -147,8 +197,8 @@ Grammar::Grammar() : IGrammar() {
 
 
 
-    rules[lex_method_def_var_assign_val][lex_wrap_end] = lex_method_def_args_end;
-    rules[lex_method_def_args_start][lex_wrap_end] = lex_method_def_args_end;
+    rules[lex_method_def_var_assign_val][lex_wrap_close] = lex_method_def_args_end;
+    rules[lex_method_def_args_start][lex_wrap_close] = lex_method_def_args_end;
     rules[lex_method_def_args_end][lex_end_line] = lex_method_call_block;
 
 
@@ -196,8 +246,8 @@ Grammar::Grammar() : IGrammar() {
     rules[lex_word][lex_blank] = lex_method_call_vars_start;
     rules[lex_word][lex_blanks] = lex_method_call_vars_start;
 
-    rules[lex_word][lex_wrap_start] = lex_method_call_args_start;
-    rules[lex_wrap_start][lex_wrap_end] = lex_method_call_args_close;
+    rules[lex_word][lex_wrap_open] = lex_method_call_args_start;
+    rules[lex_wrap_open][lex_wrap_close] = lex_method_call_args_close;
     rules[lex_method_call_args_close][lex_end_line] = lex_none;
     rules[lex_method_call_args_close][lex_semicolon] = lex_none;
 
@@ -238,7 +288,7 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
         case lex_epercent_presentation_start: return input == lex_epercent_presentation_end;
         case lex_percent_presentation_start: return input == lex_percent_presentation_end;
 
-        case lex_wrap_start: return input == lex_wrap_end;
+        case lex_wrap_open: return input == lex_wrap_close;
         case lex_open_square_bracket: return input == lex_close_square_bracket;
 
         case lex_string_start: return input == lex_string_end;

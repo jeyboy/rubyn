@@ -72,7 +72,7 @@ void LexerFrontend::translateState(LexerControl * state) {
 bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_lexem, const StateLexem & predefined_delimiter, StackLexemFlag flags) {
     bool has_predefined = predefined_lexem != lex_none;
 
-    state -> cachingPredicate(has_predefined);
+    state -> cachingPredicate();
 
     if (state -> cached_length || has_predefined) {
         state -> lex_word =
@@ -89,18 +89,50 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
                     StateLexem lex = state -> lastNonBlankLexem();
 
                     switch(lex) {
-                        case lex_word:
-                        case lex_const:
-                        case lex_var_local:
-                        case lex_var_instance:
-                        case lex_var_object:
-                        case lex_var_global:
-                        case lex_wrap_end:
-                        case lex_none: {
+                        case lex_none:
 
+                        case lex_question_mark:
+
+                        case lex_operator_assigment:
+                        case lex_operator_comparison:
+                        case lex_operator_equality:
+                        case lex_operator_not_equal:
+
+                        case lex_operator_less:
+                        case lex_operator_less_eql:
+                        case lex_operator_great:
+                        case lex_operator_great_eql:
+
+                        case lex_operator_sort:
+
+                        case lex_operator_add:
+                        case lex_operator_add_assigment:
+                        case lex_operator_minus:
+                        case lex_operator_minus_assigment:
+                        case lex_operator_multiplication:
+                        case lex_operator_multiplication_assigment:
+                        case lex_operator_division:
+                        case lex_operator_division_assigment:
+                        case lex_operator_exponentiation:
+                        case lex_operator_exponentiation_assigment:
+                        case lex_operator_modulus:
+                        case lex_operator_modulus_assigment:
+
+                        case lex_operator_bit_and:
+                        case lex_operator_bit_or:
+                        case lex_operator_bit_exclusive_or:
+                        case lex_operator_bit_not:
+                        case lex_operator_bit_left_shift:
+                        case lex_operator_bit_right_shift:
+
+                        case lex_operator_and:
+                        case lex_operator_or:
+                        case lex_operator_or_assigment:
+                        case lex_operator_not: {
+                            flags = slf_stack_word;
                         break;}
 
-                        default: flags = slf_stack_word;
+                        default: ;
                     }
                 break;}
 

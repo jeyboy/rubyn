@@ -17,7 +17,6 @@ SOURCES += main.cpp\
     editor/parts/body_overlay_info.cpp \
     editor/code_editor.cpp \
     highlighter/highlighter.cpp \
-    highlighter/para_info.cpp \
     project/file.cpp \
     project/project.cpp \
     project/projects.cpp \
@@ -173,7 +172,8 @@ HEADERS  += ide_window.h \
     lexer/igrammar.h \
     lexer/ruby/_lexer_ruby.h \
     misc/_stack.h \
-    misc/_chain.h
+    misc/_chain.h \
+    highlighter/para_type.h
 
 FORMS    += ide_window.ui
 
