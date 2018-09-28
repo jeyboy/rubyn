@@ -48,9 +48,7 @@ void BlockUserData::syncLine(TokenCell * stack_sync_token, TokenCell * sync_toke
         delete sync;
     }
 
-    token_end -> prev = sync_token;
-    token_end -> prev -> next = token_end;
-
+    token_end = sync_token;
 
     /////// SYNC PARA //////////
     ParaCell * psync = sync_para -> next;

@@ -158,6 +158,9 @@ struct LexerControl {
             token -> lexem = lexem;
             token -> start_pos = cached_str_pos;
             token -> length = cached_length;
+
+            delete token -> data;
+            token -> data = nullptr;
         }
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
 
