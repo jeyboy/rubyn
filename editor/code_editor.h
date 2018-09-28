@@ -21,6 +21,37 @@ class File;
 class OverlayInfo;
 
 
+// replace text witout undo/redo clearing
+//QTextDocument *doc = plainTextEdit->document();
+//QTextCursor curs (doc);
+//curs.select (QTextCursor::Document);
+//curs.insertText (newText);
+
+
+
+//TODO: get changed text
+//void TextEdit::slotCheckRange(int pos, int removed, int added){
+//    if(removed > 0){
+//        undo();
+//        QTextCursor c(textCursor());
+//        c.setPosition(pos);
+//        c.setPosition(pos + removed, QTextCursor::KeepAnchor);
+//        qDebug() << "Removed: " << removed << " (" << c.selectedText() << ")";
+//        redo();
+//    }
+//    if(added > 0){
+//        QTextCursor c(textCursor());
+//        c.setPosition(pos);
+//        c.setPosition(pos + added, QTextCursor::KeepAnchor);
+//        qDebug() << "Added: " << added << " (" << c.selectedText() << ")";
+//    }
+//}
+
+
+
+
+
+
 // draw on additional things // need to use timer for redrawing of additional carets and other things
 
 // http://doc.qt.io/qt-5/qobject.html#startTimer
