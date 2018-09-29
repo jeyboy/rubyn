@@ -44,6 +44,7 @@ struct LexerControl {
     TokenCell * heredoc_token;
     TokenCell * stack_token;
     TokenCell * token;
+    TokenCell * last_non_blank_token;
 
     ParaCell * para;
     ParaCell * control_para;
@@ -66,8 +67,9 @@ struct LexerControl {
     LexerControl(IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, Highlighter * lighter = nullptr) :
         lighter(lighter), grammar(cgrammar),
         lex_prev_word(lex_none), lex_word(lex_none)/*, lex_prev_delimiter(lex_none)*/, lex_delimiter(lex_none), next_offset(1),
-        heredoc_token(nullptr), stack_token(stack_token), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()),
-        control_para(nullptr), active_para(nullptr), last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2),
+        heredoc_token(nullptr), stack_token(stack_token), token(user_data -> lineControlToken()), last_non_blank_token(nullptr),
+        para(user_data -> lineControlPara()), control_para(nullptr), active_para(nullptr),
+        last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2),
         last_light_len(0), start(nullptr), buffer(nullptr), prev(nullptr), user_data(user_data)
     { }
 
@@ -141,11 +143,14 @@ struct LexerControl {
     inline StateLexem & sublastToken() { return token -> prev -> lexem; }
     inline StateLexem & lastToken() { return token -> lexem; }
     inline StateLexem lastNonBlankLexem() {
+        if (last_non_blank_token)
+            return last_non_blank_token -> lexem;
+
         TokenCell * it = token;
 
         while(it) {
             if (it -> lexem < lex_tab)
-                return it -> lexem;
+                return (last_non_blank_token = it) -> lexem;
 
             it = it -> prev;
         }
@@ -179,23 +184,11 @@ struct LexerControl {
         }
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
 
+        if (token -> lexem < lex_tab)
+            last_non_blank_token = token;
+
         if (flags != slf_none) {
-            bool stack_word = flags & slf_stack_word;
-            bool stack_delimiter = flags & slf_stack_delimiter;
-
-            if (stack_word || stack_delimiter) {
-                if (!heredoc_token) {
-                    heredoc_token = token;
-                }
-
-                token -> stacked_prev = stack_token;
-                stack_token = token;
-
-//                stack_token -> stacked_state_lexem = lex_none; //stack_word ? lex_prev_word : lex_word;
-                lex_prev_word = lex_none;
-
-                attachPara(grammar -> paraType(lexem));
-            } else {
+            if (flags & slf_unstack_word || flags & slf_unstack_delimiter) {
                 if (stack_token) {
                     if (!grammar -> stackDropable(stack_token -> lexem, lexem))
                         cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
@@ -211,6 +204,20 @@ struct LexerControl {
                 } else {
                     cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
                 }
+            }
+
+            if (flags & slf_stack_word || flags & slf_stack_delimiter) {
+                if (!heredoc_token) {
+                    heredoc_token = token;
+                }
+
+                token -> stacked_prev = stack_token;
+                stack_token = token;
+
+//                stack_token -> stacked_state_lexem = lex_none; //stack_word ? lex_prev_word : lex_word;
+                lex_prev_word = lex_none;
+
+                attachPara(grammar -> paraType(lexem));
             }
 
             lex_word = lex_none;

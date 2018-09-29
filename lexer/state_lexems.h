@@ -21,6 +21,11 @@ enum StackLexemFlag : uint {
     slf_unstack_word = 4,
     slf_unstack_delimiter = 8,
 
+    slf_non_para = 16,
+
+    slf_stack_non_para_word = slf_stack_word | slf_non_para,
+    slf_replace_word = slf_unstack_word | slf_stack_word,
+
     slf_word_related = slf_stack_word | slf_unstack_word,
     slf_delimiter_related = slf_stack_delimiter | slf_unstack_delimiter
 };
@@ -449,8 +454,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_block_rescue,
     lex_block_ensure,
     lex_block_retry,
-
-    lex_block_end,
+//    lex_block_end,
 //    lex_inline_block_end, lex_close_curly_bracket
 
 

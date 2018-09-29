@@ -30,29 +30,6 @@ Grammar::Grammar() : IGrammar() {
         { lex_end, pt_close_struct },
     };
 
-    para_opposition = {
-        { pt_open_curly_bracket, pt_close_curly_bracket },
-        { pt_close_curly_bracket, pt_open_curly_bracket },
-        { pt_open_square_bracket, pt_close_square_bracket },
-        { pt_close_square_bracket, pt_open_square_bracket },
-        { pt_open_round_bracket, pt_close_round_bracket },
-        { pt_close_round_bracket, pt_open_round_bracket },
-
-        { pt_open_do_block, pt_close_struct },
-        { pt_open_method, pt_close_struct },
-        { pt_open_class, pt_close_struct },
-        { pt_open_module, pt_close_struct },
-
-        { pt_open_if, pt_close_struct },
-        { pt_open_unless, pt_close_struct },
-        { pt_open_case, pt_close_struct },
-        { pt_open_while, pt_close_struct },
-        { pt_open_until, pt_close_struct },
-        { pt_open_for, pt_close_struct },
-
-        { pt_close_struct, pt_open_struct },
-    };
-
     for(quint32 i = 0; i < lex_max; i++) {
         StateLexem curr = static_cast<StateLexem>(i);
 
@@ -273,10 +250,97 @@ Grammar::Grammar() : IGrammar() {
 //    rules[lex_method_call_vars_start][lex_eheredoc_intended_mark] = lex_eheredoc_intended_mark;
 }
 
+void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const StateLexem & last_non_blank_lex) {
+    switch(lex) {
+        case lex_end: { flags = slf_unstack_word; break;}
+
+        case lex_if:
+        case lex_unless: {
+            switch(last_non_blank_lex) {
+                case lex_none:
+
+                case lex_question_mark:
+
+                case lex_operator_assigment:
+                case lex_operator_comparison:
+                case lex_operator_equality:
+                case lex_operator_not_equal:
+
+                case lex_operator_less:
+                case lex_operator_less_eql:
+                case lex_operator_great:
+                case lex_operator_great_eql:
+
+                case lex_operator_sort:
+
+                case lex_operator_add:
+                case lex_operator_add_assigment:
+                case lex_operator_minus:
+                case lex_operator_minus_assigment:
+                case lex_operator_multiplication:
+                case lex_operator_multiplication_assigment:
+                case lex_operator_division:
+                case lex_operator_division_assigment:
+                case lex_operator_exponentiation:
+                case lex_operator_exponentiation_assigment:
+                case lex_operator_modulus:
+                case lex_operator_modulus_assigment:
+
+                case lex_operator_bit_and:
+                case lex_operator_bit_or:
+                case lex_operator_bit_exclusive_or:
+                case lex_operator_bit_not:
+                case lex_operator_bit_left_shift:
+                case lex_operator_bit_right_shift:
+
+                case lex_operator_and:
+                case lex_operator_or:
+                case lex_operator_or_assigment:
+                case lex_operator_not: {
+                    flags = slf_stack_word;
+                break;}
+
+                default: ;
+            }
+        break;}
+
+        case lex_case:
+            { flags = slf_stack_non_para_word; break;}
+
+        case lex_until:
+        case lex_for:
+        case lex_while:
+        case lex_begin:
+        case lex_method_def:
+        case lex_module_def:
+        case lex_class_def:
+            { flags = slf_stack_word; break;}
+
+        case lex_when:
+        case lex_elsif:
+        case lex_else:
+//        case lex_block_rescue:
+//        case lex_block_ensure
+//        case lex_block_retry
+            { flags = slf_replace_word; break;}
+
+        default:;
+    }
+}
+
 bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) {
     switch(state) {
         case lex_if:
-        case lex_unless: return input == lex_end;
+            return input == lex_end || input == lex_elsif || input == lex_else;
+
+        case lex_unless:
+            return input == lex_end || input == lex_else;
+
+        case lex_else:
+            return input == lex_end;
+
+        case lex_elsif:
+            return input == lex_end || input == lex_elsif || input == lex_else;
 
         case lex_open_curly_bracket:
         case lex_estring_interception:
@@ -297,12 +361,27 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
         case lex_regexp_start: return input == lex_regexp_end;
         case lex_command_start: return input == lex_command_end;
 
+        case lex_begin:
+        case lex_method_def:
+        case lex_module_def:
+        case lex_class_def:
+        case lex_for:
+        case lex_until:
+        case lex_while:
+            return input == lex_end;
+
         case lex_heredoc_start:
         case lex_heredoc_intended_start:
         case lex_cheredoc_intended_start:
         case lex_cheredoc_start:
         case lex_eheredoc_intended_start:
         case lex_eheredoc_start: return input == lex_heredoc_close_mark;
+
+        case lex_case:
+            return input == lex_end || input == lex_when;
+
+        case lex_when:
+            return input == lex_end || input == lex_when || input == lex_else;
 
         default: return false;
     }

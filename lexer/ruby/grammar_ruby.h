@@ -9,6 +9,8 @@ namespace Ruby {
 
         friend class Singleton<Grammar>;
     public:
+        void initFlags(StackLexemFlag & flags, const StateLexem & lex, const StateLexem & last_non_blank_lex);
+
         bool stackDropable(const StateLexem & state, const StateLexem & input);
 
 //        StateLexem toInterceptor(const StateLexem & lex);

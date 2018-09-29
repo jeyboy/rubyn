@@ -79,68 +79,10 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
             has_predefined ? predefined_lexem : Predefined::obj().lexem(state -> cached);
 
         if (state -> cached_length) {
-            switch(state -> lex_word) {
-                case lex_word: {
-                    identifyWordType(state);
-                break;}
-
-                case lex_if:
-                case lex_unless: {
-                    StateLexem lex = state -> lastNonBlankLexem();
-
-                    switch(lex) {
-                        case lex_none:
-
-                        case lex_question_mark:
-
-                        case lex_operator_assigment:
-                        case lex_operator_comparison:
-                        case lex_operator_equality:
-                        case lex_operator_not_equal:
-
-                        case lex_operator_less:
-                        case lex_operator_less_eql:
-                        case lex_operator_great:
-                        case lex_operator_great_eql:
-
-                        case lex_operator_sort:
-
-                        case lex_operator_add:
-                        case lex_operator_add_assigment:
-                        case lex_operator_minus:
-                        case lex_operator_minus_assigment:
-                        case lex_operator_multiplication:
-                        case lex_operator_multiplication_assigment:
-                        case lex_operator_division:
-                        case lex_operator_division_assigment:
-                        case lex_operator_exponentiation:
-                        case lex_operator_exponentiation_assigment:
-                        case lex_operator_modulus:
-                        case lex_operator_modulus_assigment:
-
-                        case lex_operator_bit_and:
-                        case lex_operator_bit_or:
-                        case lex_operator_bit_exclusive_or:
-                        case lex_operator_bit_not:
-                        case lex_operator_bit_left_shift:
-                        case lex_operator_bit_right_shift:
-
-                        case lex_operator_and:
-                        case lex_operator_or:
-                        case lex_operator_or_assigment:
-                        case lex_operator_not: {
-                            flags = slf_stack_word;
-                        break;}
-
-                        default: ;
-                    }
-                break;}
-
-                case lex_elsif:
-                case lex_else: { flags = slf_stack_word; break;}
-
-                default:;
-            }
+            if (state -> lex_word == lex_word)
+                identifyWordType(state);
+            else
+                state -> grammar -> initFlags(flags, state -> lex_word, state -> lastNonBlankLexem());
 
             Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
             if (highlightable != hid_none)
