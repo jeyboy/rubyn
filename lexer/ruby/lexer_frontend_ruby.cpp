@@ -847,7 +847,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if(!cutWord(state, lex_none, status)) goto exit;
             break;}
 
-
             case ',':
             case '^':
             case '~':

@@ -86,7 +86,7 @@ public:
         if (!prev_end)
             prev_end = last -> prev;
 
-        left = prev_end; //new TokenCell(lex_none, 0, 0, prev_end);
+        left = new TokenCell(lex_none, 0, 0, prev_end);
         right = new TokenCell(lex_end_line, 0, 0, left);
     }
 
