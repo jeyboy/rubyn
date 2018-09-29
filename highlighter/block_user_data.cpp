@@ -9,6 +9,7 @@ BlockUserData::BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * t
 
 BlockUserData::~BlockUserData() {
     TokenList::removeLine(token_begin, token_end);
+    ParaList::removeLine(para_begin, para_end);
 }
 
 // maybe better to remove full tokens sequence in another thread instead of use sync and etc ???
