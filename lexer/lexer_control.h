@@ -47,6 +47,7 @@ struct LexerControl {
 
     ParaCell * para;
     ParaCell * control_para;
+    ParaCell * active_para;
 
     Identifier last_uid;
 
@@ -66,8 +67,8 @@ struct LexerControl {
         lighter(lighter), grammar(cgrammar),
         lex_prev_word(lex_none), lex_word(lex_none)/*, lex_prev_delimiter(lex_none)*/, lex_delimiter(lex_none), next_offset(1),
         heredoc_token(nullptr), stack_token(stack_token), token(user_data -> lineControlToken()), para(user_data -> lineControlPara()),
-        control_para(nullptr), last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2), last_light_len(0),
-        start(nullptr), buffer(nullptr), prev(nullptr), user_data(user_data)
+        control_para(nullptr), active_para(nullptr), last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2),
+        last_light_len(0), start(nullptr), buffer(nullptr), prev(nullptr), user_data(user_data)
     { }
 
     ~LexerControl() {}
@@ -152,6 +153,20 @@ struct LexerControl {
         return lex_none;
     }
 
+    inline ParaCell * lastNonClosedPara() {
+        ParaCell * it = active_para ? active_para : para;
+
+        while(it) {
+            if (!it -> close) {
+                return it;
+            }
+
+            it = it -> prev;
+        }
+
+        return nullptr;
+    }
+
     inline void attachToken(const StateLexem & lexem, const uint & flags = slf_none) {
         if (token -> next) {
             token = token -> next;
@@ -190,8 +205,8 @@ struct LexerControl {
 //                        if (lex_prev_word == lex_none)
 //                            lex_prev_word = stack_token -> lexem;
 
+                        attachPara(grammar -> paraType(lexem), grammar -> paraType(stack_token -> lexem));
                         stack_token = stack_token -> stacked_prev;
-                        attachPara(grammar -> paraType(lexem));
                     }
                 } else {
                     cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
@@ -316,10 +331,7 @@ struct LexerControl {
         user_data -> msgs.append(MsgInfo{lexem, last_light_pos, last_light_len, msg});
     }
 
-//    inline void attachPara(const QByteArray & pos_para) {
-//        attachPara(ParaInfo::paraType(pos_para));
-//    }
-    inline void attachPara(const PARA_TYPE & ptype) {
+    inline void attachPara(const PARA_TYPE & ptype, const PARA_TYPE & opo_type = 0) {
         if (!ptype) return;
 
         if (para -> next) {
@@ -333,6 +345,20 @@ struct LexerControl {
             if (!control_para)
                 control_para = para;
         }
+
+        if (opo_type != 0) {
+            if (!active_para)
+                active_para = lastNonClosedPara();
+
+            if (!active_para)
+                qDebug() << "Can't find nonclosed para token";
+
+            active_para -> close = para;
+            para -> close = active_para;
+
+            active_para = lastNonClosedPara();
+        }
+        else active_para = para;
     }
 };
 
