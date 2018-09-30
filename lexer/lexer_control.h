@@ -163,7 +163,7 @@ struct LexerControl {
         ParaCell * it = active_para ? active_para : para;
 
         while(it) {
-            if (!it -> close) {
+            if (!it -> close && it -> line_num != -1) {
                 return it;
             }
 
@@ -226,15 +226,15 @@ struct LexerControl {
             lex_delimiter = lex_none;
         }
     }
-    inline void replaceToken(const StateLexem & lexem, const uint & flags = slf_none) {
-        token -> lexem = lexem;
-        token -> length += cached_length;
+//    inline void replaceToken(const StateLexem & lexem, const uint & flags = slf_none) {
+//        token -> lexem = lexem;
+//        token -> length += cached_length;
 
-        if (flags != slf_none && stack_token != token) {
-            token -> stacked_prev = stack_token;
-            stack_token = token;
-        }
-    }
+//        if (flags != slf_none && stack_token != token) {
+//            token -> stacked_prev = stack_token;
+//            stack_token = token;
+//        }
+//    }
 
     inline void validateHeredocState() {
         //TODO: remove all stack values till we have heredoc start on the top
