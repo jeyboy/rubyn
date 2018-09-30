@@ -21,8 +21,11 @@ Grammar::Grammar() : IGrammar() {
         { lex_module_def, pt_open_module },
 
         { lex_if, pt_open_if },
+        { lex_elsif, pt_open_elsif },
+        { lex_else, pt_open_else },
         { lex_unless, pt_open_unless },
         { lex_case, pt_open_case },
+        { lex_when, pt_open_when },
         { lex_while, pt_open_while },
         { lex_until, pt_open_until },
         { lex_for, pt_open_for },

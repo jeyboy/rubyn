@@ -24,12 +24,11 @@ struct BlockUserData : public QTextBlockUserData {
     UserDataFlags flags;
 
     TokenCell * stack_token;
-
     TokenCell * token_begin;
-    TokenCell * token_end; // maybe no need to store end token ?
+    TokenCell * token_end;
 
     ParaCell * para_begin;
-    ParaCell * para_end; // maybe no need to store end token ?
+    ParaCell * para_end;
     ParaCell * para_control;
 
     QList<MsgInfo> msgs;
