@@ -189,6 +189,8 @@ struct LexerControl {
             last_non_blank_token = token;
 
         if (flags != slf_none) {
+            bool stackable = flags & slf_stack_word || flags & slf_stack_delimiter;
+
             if (flags & slf_unstack_word || flags & slf_unstack_delimiter) {
                 if (stack_token) {
                     if (!grammar -> stackDropable(stack_token -> lexem, lexem))
@@ -199,7 +201,7 @@ struct LexerControl {
 //                        if (lex_prev_word == lex_none)
 //                            lex_prev_word = stack_token -> lexem;
 
-                        attachPara(grammar -> paraType(lexem), grammar -> paraType(stack_token -> lexem));
+                        attachPara(grammar -> paraType(lexem), grammar -> paraType(stack_token -> lexem), stackable);
                         stack_token = stack_token -> stacked_prev;
                     }
                 } else {
@@ -207,7 +209,7 @@ struct LexerControl {
                 }
             }
 
-            if (flags & slf_stack_word || flags & slf_stack_delimiter) {
+            if (stackable) {
                 if (!heredoc_token) {
                     heredoc_token = token;
                 }
@@ -340,7 +342,7 @@ struct LexerControl {
         user_data -> msgs.append(MsgInfo{lexem, last_light_pos, last_light_len, msg});
     }
 
-    inline void attachPara(const PARA_TYPE & ptype, const PARA_TYPE & opo_type = 0) {
+    inline void attachPara(const PARA_TYPE & ptype, const PARA_TYPE & opo_type = 0, const bool & replaceable = false, const bool & blockable = false) {
         if (!ptype) return;
 
         bool closable = opo_type != 0;
@@ -360,6 +362,10 @@ struct LexerControl {
         else para = ParaList::insert(para, ptype, cached_str_pos);
 
         para -> line_num = line_num;
+        para -> offset = replaceable ? 1 : 0;
+
+        if (blockable)
+            para -> is_blockator = true;
 
         if (ptype & pt_foldable) {
             if (!control_para)
@@ -367,13 +373,38 @@ struct LexerControl {
         }
 
         if (closable) {
-            active_para -> close = para;
-            para -> close = active_para;
+            if (!blockable) {
+                active_para -> close = para;
+                para -> close = active_para;
+            }
+
+            if (replaceable)
+                para -> is_blockator = true;
+            else {
+                ParaCell * it = active_para;
+                ParaCell * blockator = nullptr;
+
+                while(it) {
+                    if (it -> is_blockator && !it -> close) {
+                        blockator = it;
+                        break;
+                    }
+
+                    it = it -> prev;
+                }
+
+                if (blockator)
+                    blockator -> close = para;
+                else
+                    qDebug() << "Can't find blockator for para";
+            }
 
             active_para = lastNonClosedPara();
             int i = 0;
         }
-        else active_para = para;
+
+        if (!closable || replaceable)
+            active_para = para;
     }
 };
 

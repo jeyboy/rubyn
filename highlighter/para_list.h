@@ -15,8 +15,11 @@ struct ParaCell {
     EDITOR_POS_TYPE line_num;
     EDITOR_POS_TYPE pos;
 
+    char offset;
+    bool is_blockator;
+
     ParaCell(const PARA_TYPE & para, const EDITOR_POS_TYPE & start_pos, ParaCell * prev_token = nullptr)
-        : prev(nullptr), next(nullptr), close(nullptr), para_type(para), line_num(-1), pos(start_pos)
+        : prev(nullptr), next(nullptr), close(nullptr), para_type(para), line_num(-1), pos(start_pos), offset(0), is_blockator(false)
     {
         if ((prev = prev_token)) {
             if ((next = prev -> next))
@@ -40,7 +43,7 @@ struct ParaCell {
             return 0;
         }
 
-        return close -> line_num - line_num;
+        return close -> line_num - line_num - offset;
     }
 
 //    T & operator++() // ++A

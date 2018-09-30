@@ -308,7 +308,7 @@ void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const St
         break;}
 
         case lex_case:
-            { flags = slf_stack_non_para_word; break;}
+            { flags = slf_blocker_word/*slf_stack_non_para_word*/; break;}
 
         case lex_until:
         case lex_for:
