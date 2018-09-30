@@ -14,6 +14,8 @@ BlockUserData::~BlockUserData() {
 
 // maybe better to remove full tokens sequence in another thread instead of use sync and etc ???
 TokenCell * BlockUserData::lineControlToken() {
+    msgs.clear();
+
     token_end -> prev -> next = nullptr; // detach end line
     return token_begin;
 }

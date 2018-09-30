@@ -40,6 +40,7 @@ struct LexerControl {
 
 //    Scope * scope;
     quint8 next_offset;
+    int line_num;
 
     TokenCell * heredoc_token;
     TokenCell * stack_token;
@@ -64,9 +65,9 @@ struct LexerControl {
 
     BlockUserData * user_data;
 
-    LexerControl(IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, Highlighter * lighter = nullptr) :
+    LexerControl(const int & line_number, IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, Highlighter * lighter = nullptr) :
         lighter(lighter), grammar(cgrammar),
-        lex_prev_word(lex_none), lex_word(lex_none)/*, lex_prev_delimiter(lex_none)*/, lex_delimiter(lex_none), next_offset(1),
+        lex_prev_word(lex_none), lex_word(lex_none)/*, lex_prev_delimiter(lex_none)*/, lex_delimiter(lex_none), next_offset(1), line_num(line_number),
         heredoc_token(nullptr), stack_token(stack_token), token(user_data -> lineControlToken()), last_non_blank_token(nullptr),
         para(user_data -> lineControlPara()), control_para(nullptr), active_para(nullptr),
         last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2),
@@ -217,7 +218,8 @@ struct LexerControl {
 //                stack_token -> stacked_state_lexem = lex_none; //stack_word ? lex_prev_word : lex_word;
                 lex_prev_word = lex_none;
 
-                attachPara(grammar -> paraType(lexem));
+                if ((flags & slf_non_para) == 0)
+                    attachPara(grammar -> paraType(lexem));
             }
 
             lex_word = lex_none;
@@ -341,6 +343,15 @@ struct LexerControl {
     inline void attachPara(const PARA_TYPE & ptype, const PARA_TYPE & opo_type = 0) {
         if (!ptype) return;
 
+        bool closable = opo_type != 0;
+
+        if (closable && !active_para) {
+            active_para = lastNonClosedPara();
+
+            if (!active_para)
+                qDebug() << "Can't find nonclosed para token";
+        }
+
         if (para -> next) {
             para = para -> next;
             para -> para_type = ptype;
@@ -348,22 +359,19 @@ struct LexerControl {
         }
         else para = ParaList::insert(para, ptype, cached_str_pos);
 
+        para -> line_num = line_num;
+
         if (ptype & pt_foldable) {
             if (!control_para)
                 control_para = para;
         }
 
-        if (opo_type != 0) {
-            if (!active_para)
-                active_para = lastNonClosedPara();
-
-            if (!active_para)
-                qDebug() << "Can't find nonclosed para token";
-
+        if (closable) {
             active_para -> close = para;
             para -> close = active_para;
 
             active_para = lastNonClosedPara();
+            int i = 0;
         }
         else active_para = para;
     }
