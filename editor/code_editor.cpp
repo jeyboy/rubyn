@@ -643,7 +643,8 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             QPoint(folding_offset_x, paint_top + (line_number_height - FOLDING_WIDTH) / 2),
             icons[folding_flags]
         );
-    } else if (on_block)
+    }
+    else if (on_block)
         hideOverlay();
 
     if (folding_lines_coverage > 0) {
@@ -781,7 +782,7 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     showOverlay(popup_rect, pixmap, uid);
 }
 
-void CodeEditor::prepareIcons(const int & size) {
+void CodeEditor::prepareIcons(const int & size) {   
     icons.insert(
         BlockUserData::udf_has_folding,
         PREPARE_PIXMAP(QStringLiteral(":/folding_close"), size)
