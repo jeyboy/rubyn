@@ -341,7 +341,7 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
             return input == lex_end || input == lex_else;
 
         case lex_else:
-            return input == lex_end;
+            return input == lex_end || input == lex_block_ensure; // can stacked with ensure if 'else' used in scope of error types catching
 
         case lex_elsif:
             return input == lex_end || input == lex_elsif || input == lex_else;           
@@ -368,13 +368,23 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
         case lex_regexp_start: return input == lex_regexp_end;
         case lex_command_start: return input == lex_command_end;
 
-        case lex_begin:
-        case lex_method_def:
         case lex_module_def:
         case lex_class_def:
+            return input == lex_end;
+
+        case lex_begin:
+        case lex_method_def:
+            return input == lex_end || input == lex_block_rescue || input == lex_block_ensure;
+
         case lex_for:
         case lex_until:
         case lex_while:
+            return input == lex_end;
+
+
+        case lex_block_rescue:
+            return input == lex_else || input == lex_block_ensure || input == lex_block_rescue || input == lex_end;
+        case lex_block_ensure:
             return input == lex_end;
 
         case lex_heredoc_start:
