@@ -43,7 +43,7 @@ struct ParaCell {
             return 0;
         }
 
-        return close -> line_num - line_num - offset;
+        return (close -> line_num - line_num) + offset;
     }
 
 //    T & operator++() // ++A

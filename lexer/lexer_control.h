@@ -160,7 +160,7 @@ struct LexerControl {
     }
 
     inline ParaCell * lastNonClosedPara() {
-        ParaCell * it = active_para ? active_para : para;
+        ParaCell * it = active_para ? active_para : para -> prev;
 
         while(it) {
             if (!it -> close && it -> line_num != -1) {
@@ -190,8 +190,9 @@ struct LexerControl {
 
         if (flags != slf_none) {
             bool stackable = flags & slf_stack_word || flags & slf_stack_delimiter;
+            bool unstackable = flags & slf_unstack_word || flags & slf_unstack_delimiter;
 
-            if (flags & slf_unstack_word || flags & slf_unstack_delimiter) {
+            if (unstackable) {
                 if (stack_token) {
                     if (!grammar -> stackDropable(stack_token -> lexem, lexem))
                         cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
@@ -221,7 +222,7 @@ struct LexerControl {
                 lex_prev_word = lex_none;
 
                 if ((flags & slf_non_para) == 0)
-                    attachPara(grammar -> paraType(lexem), 0, false, flags & slf_blocker);
+                    attachPara(grammar -> paraType(lexem), 0, unstackable, flags & slf_blocker);
             }
 
             lex_word = lex_none;
@@ -347,71 +348,52 @@ struct LexerControl {
 
         bool closable = opo_type != 0;
 
-        if (closable && !active_para) {
-            active_para = lastNonClosedPara();
+        if (!replaceable || (replaceable && closable)) {
+            if (para -> next) {
+                para = para -> next;
+                para -> para_type = ptype;
+                para -> pos = cached_str_pos;
+            }
+            else para = ParaList::insert(para, ptype, cached_str_pos);
 
-            if (!active_para)
-                qDebug() << "Can't find nonclosed para token";
+            para -> line_num = line_num;
+            para -> offset = replaceable ? -1 : 0;
         }
-
-        if (para -> next) {
-            para = para -> next;
-            para -> para_type = ptype;
-            para -> pos = cached_str_pos;
-        }
-        else para = ParaList::insert(para, ptype, cached_str_pos);
-
-        para -> line_num = line_num;
-        para -> offset = replaceable ? 1 : 0;
 
         if (blockable)
             para -> is_blockator = true;
 
-        if (ptype & pt_foldable) {
-            if (!control_para)
-                control_para = para;
+        if (!control_para && ptype & pt_foldable) {
+            control_para = para;
         }
 
         if (closable) {
+            if (!active_para) {
+                active_para = lastNonClosedPara();
+
+                if (!active_para) {
+                    qDebug() << "Can't find nonclosed para token";
+                }
+            }
+
             if (!active_para -> is_blockator) {
                 active_para -> close = para;
                 para -> close = active_para;
             }
 
-//            if (replaceable)
-//                para -> is_blockator = true;
-//            else if (is_part_of_blocker) {
-//                ParaCell * it = active_para;
-//                ParaCell * blockator = nullptr;
-
-//                while(it) {
-//                    if (it -> is_blockator && !it -> close) {
-//                        blockator = it;
-//                        break;
-//                    }
-
-//                    it = it -> prev;
-//                }
-
-//                if (blockator)
-//                    blockator -> close = para;
-//                else
-//                    qDebug() << "Can't find blockator for para";
-//            }
-
-            active_para = lastNonClosedPara();
-
-            if (!replaceable && active_para && active_para -> is_blockator) {
-                active_para -> close = para;
-
+            if (replaceable)
+                active_para = para;
+            else {
                 active_para = lastNonClosedPara();
+
+                if (active_para && active_para -> is_blockator) {
+                    active_para -> close = para;
+
+                    active_para = lastNonClosedPara();
+                }
             }
-
-            int i = 0;
         }
-
-        if (!closable || replaceable)
-            active_para = para;
+        else active_para = para;
     }
 };
 
