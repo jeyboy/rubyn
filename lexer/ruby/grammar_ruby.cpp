@@ -300,21 +300,22 @@ void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const St
                 case lex_operator_or:
                 case lex_operator_or_assigment:
                 case lex_operator_not: {
-                    flags = slf_stack_word;
+                    flags = slf_blocker_word/*slf_stack_word*/;
                 break;}
 
                 default: ;
             }
         break;}
 
+        case lex_do:
+        case lex_begin:
+        case lex_method_def:
         case lex_case:
             { flags = slf_blocker_word/*slf_stack_non_para_word*/; break;}
 
         case lex_until:
         case lex_for:
         case lex_while:
-        case lex_begin:
-        case lex_method_def:
         case lex_module_def:
         case lex_class_def:
             { flags = slf_stack_word; break;}
@@ -322,9 +323,9 @@ void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const St
         case lex_when:
         case lex_elsif:
         case lex_else:
-//        case lex_block_rescue:
-//        case lex_block_ensure
-//        case lex_block_retry
+        case lex_block_rescue:
+        case lex_block_ensure:
+        case lex_block_retry:
             { flags = slf_replace_word; break;}
 
         default:;
@@ -343,7 +344,7 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
             return input == lex_end;
 
         case lex_elsif:
-            return input == lex_end || input == lex_elsif || input == lex_else;
+            return input == lex_end || input == lex_elsif || input == lex_else;           
 
         case lex_open_curly_bracket:
         case lex_estring_interception:
@@ -351,6 +352,9 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
         case lex_epercent_presentation_interception:
         case lex_command_interception:
         case lex_heredoc_interception: return input == lex_close_curly_bracket;
+
+//        ruby 2.5: supports rescue/else/ensure in do/end blocks
+        case lex_do: return input == lex_end;
 
         case lex_epercent_presentation_start: return input == lex_epercent_presentation_end;
         case lex_percent_presentation_start: return input == lex_percent_presentation_end;

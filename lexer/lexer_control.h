@@ -221,7 +221,7 @@ struct LexerControl {
                 lex_prev_word = lex_none;
 
                 if ((flags & slf_non_para) == 0)
-                    attachPara(grammar -> paraType(lexem));
+                    attachPara(grammar -> paraType(lexem), 0, false, flags & slf_blocker);
             }
 
             lex_word = lex_none;
@@ -373,33 +373,40 @@ struct LexerControl {
         }
 
         if (closable) {
-            if (!blockable) {
+            if (!active_para -> is_blockator) {
                 active_para -> close = para;
                 para -> close = active_para;
             }
 
-            if (replaceable)
-                para -> is_blockator = true;
-            else {
-                ParaCell * it = active_para;
-                ParaCell * blockator = nullptr;
+//            if (replaceable)
+//                para -> is_blockator = true;
+//            else if (is_part_of_blocker) {
+//                ParaCell * it = active_para;
+//                ParaCell * blockator = nullptr;
 
-                while(it) {
-                    if (it -> is_blockator && !it -> close) {
-                        blockator = it;
-                        break;
-                    }
+//                while(it) {
+//                    if (it -> is_blockator && !it -> close) {
+//                        blockator = it;
+//                        break;
+//                    }
 
-                    it = it -> prev;
-                }
+//                    it = it -> prev;
+//                }
 
-                if (blockator)
-                    blockator -> close = para;
-                else
-                    qDebug() << "Can't find blockator for para";
-            }
+//                if (blockator)
+//                    blockator -> close = para;
+//                else
+//                    qDebug() << "Can't find blockator for para";
+//            }
 
             active_para = lastNonClosedPara();
+
+            if (!replaceable && active_para && active_para -> is_blockator) {
+                active_para -> close = para;
+
+                active_para = lastNonClosedPara();
+            }
+
             int i = 0;
         }
 
