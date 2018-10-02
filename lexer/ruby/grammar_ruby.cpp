@@ -34,6 +34,12 @@ Grammar::Grammar() : IGrammar() {
         { lex_block_ensure, pt_ensure },
 
         { lex_end, pt_close_struct },
+
+        { lex_string_start, pt_open_string },
+        { lex_string_end, pt_close_string },
+
+        { lex_estring_start, pt_open_string },
+        { lex_estring_end, pt_close_string },
     };
 
     for(quint32 i = 0; i < lex_max; i++) {

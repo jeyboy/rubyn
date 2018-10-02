@@ -72,7 +72,11 @@ enum ParaType : PARA_TYPE {
 
     pt_close_struct = 1 << 25 | pt_close,
 
-    pt_max = 1 << 26,
+    pt_open_string = 1 << 26,
+
+    pt_close_string = 1 << 27 | pt_close,
+
+    pt_max = 1 << 28,
     pt_max_end = pt_max | pt_close
 };
 

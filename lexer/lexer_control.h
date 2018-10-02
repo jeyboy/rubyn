@@ -344,7 +344,9 @@ struct LexerControl {
     }
 
     inline void attachPara(const PARA_TYPE & ptype, const PARA_TYPE & opo_type = 0, const bool & replaceable = false, const bool & blockable = false) {
-        if (!ptype) return;
+        if (!ptype) {
+            return;
+        }
 
         bool closable = opo_type != 0;
 
