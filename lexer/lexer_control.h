@@ -378,7 +378,9 @@ struct LexerControl {
 
             if (!active_para -> is_blockator) {
                 active_para -> close = para;
-                para -> close = active_para;
+
+                if (!replaceable)
+                    para -> close = active_para;
             }
 
             if (replaceable)
