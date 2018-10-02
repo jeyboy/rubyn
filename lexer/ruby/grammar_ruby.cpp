@@ -572,6 +572,9 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_global_pre_hook:
         case lex_global_post_hook:
         case lex_end_of_code:
+        case lex_block_rescue:
+        case lex_block_ensure:
+        case lex_block_retry:
             return hid_keyword;
 
         case lex_bin:
