@@ -30,6 +30,9 @@ Grammar::Grammar() : IGrammar() {
         { lex_until, pt_open_until },
         { lex_for, pt_open_for },
 
+        { lex_block_rescue, pt_rescue },
+        { lex_block_ensure, pt_ensure },
+
         { lex_end, pt_close_struct },
     };
 
