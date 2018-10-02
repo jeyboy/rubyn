@@ -303,7 +303,7 @@ void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const St
                 case lex_operator_or:
                 case lex_operator_or_assigment:
                 case lex_operator_not: {
-                    flags = slf_blocker_word/*slf_stack_word*/;
+                    flags = slf_stack_word;
                 break;}
 
                 default: ;

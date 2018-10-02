@@ -357,7 +357,7 @@ struct LexerControl {
             else para = ParaList::insert(para, ptype, cached_str_pos);
 
             para -> line_num = line_num;
-            para -> offset = replaceable ? -1 : 0;
+            para -> offset = replaceable ? -1 : 0; // comment me for collapsing of the 'end's
         }
 
         if (blockable)
@@ -381,6 +381,8 @@ struct LexerControl {
 
                 if (!replaceable)
                     para -> close = active_para;
+                else
+                    active_para -> offset = -1;
             }
 
             if (replaceable)
