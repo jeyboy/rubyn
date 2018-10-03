@@ -319,7 +319,7 @@ void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const St
                 case lex_operator_or:
                 case lex_operator_or_assigment:
                 case lex_operator_not: {
-                    flags = slf_stack_word;
+                    flags = slf_blocker_word;
                 break;}
 
                 default: ;
@@ -330,14 +330,12 @@ void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const St
         case lex_begin:
         case lex_method_def:
         case lex_case:
-            { flags = slf_blocker_word/*slf_stack_non_para_word*/; break;}
-
         case lex_until:
         case lex_for:
         case lex_while:
         case lex_module_def:
         case lex_class_def:
-            { flags = slf_stack_word; break;}
+            { flags = slf_blocker_word; break;}
 
         case lex_when:
         case lex_elsif:

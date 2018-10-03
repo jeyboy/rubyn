@@ -345,7 +345,7 @@ struct LexerControl {
         if (!ptype) return;
 
         bool replaceable = flags & slf_replace_word;
-        bool blockable = flags & slf_blocker_word;
+        bool blockable = flags & slf_blocker_word || flags & slf_unblocker_word;
         bool closable = opo_type != 0;
 
         if (!replaceable || (replaceable && closable)) {
@@ -358,13 +358,11 @@ struct LexerControl {
 
             para -> line_num = line_num;
             para -> offset = replaceable ? -1 : 0;
+            para -> is_blockator = blockable;
         }
 
-        if (blockable)
-            para -> is_blockator = true;
-
         if (closable) {
-            if (!active_para) {
+            if (!active_para || active_para -> close) {
                 active_para = lastNonClosedPara();
 
                 if (!active_para) {
@@ -373,51 +371,22 @@ struct LexerControl {
                 }
             }
 
-            if (!active_para -> is_blockator) {
+            if (active_para -> is_blockator) {
+                if (!para -> is_blockator)
+                    active_para = para;
+            } else {
                 active_para -> close = para;
+                para -> close = active_para;
+
+                if (blockable)
+                    active_para = lastNonClosedPara();
             }
 
-            if (active_para -> is_blockator == para -> is_blockator) {
+            if (blockable && active_para && active_para -> is_blockator) {
+                active_para -> close = para;
                 para -> close = active_para;
             }
-
-            if (replaceable) {
-                active_para -> offset = replaceable ? -1 : 0;
-                active_para = para;
-            } else {
-                active_para = lastNonClosedPara();
-
-                if (blockable && active_para && active_para -> is_blockator) {
-                    active_para -> close = para;
-
-                    active_para = lastNonClosedPara();
-                }
-            }
-
-
-
-//            if (!active_para -> is_blockator) {
-//                active_para -> close = para;
-
-//                if (!replaceable)
-//                    para -> close = active_para;
-//                else
-//                    active_para -> offset = -1;
-//            }
-
-//            if (replaceable)
-//                active_para = para;
-//            else {
-//                active_para = lastNonClosedPara();
-
-//                if (blockable && active_para && active_para -> is_blockator) {
-//                    active_para -> close = para;
-
-//                    active_para = lastNonClosedPara();
-//                }
-//            }
-        }
-        else {
+        } else {
             active_para = para;
 
             if (!control_para && ptype & pt_foldable) {
