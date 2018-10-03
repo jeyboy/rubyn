@@ -5,7 +5,14 @@ using namespace Ruby;
 Grammar::Grammar() : IGrammar() {
     para_tokens = {
         { lex_open_curly_bracket, pt_open_curly_bracket },
-        { lex_interpolation, pt_open_curly_bracket },
+
+        { lex_interpolation, pt_open_interpolation },
+        { lex_command_interception, pt_open_interpolation },
+        { lex_estring_interception, pt_open_interpolation },
+        { lex_epercent_presentation_interception, pt_open_interpolation },
+        { lex_heredoc_interception, pt_open_interpolation },
+        { lex_regexp_interception, pt_open_interpolation },
+
         { lex_close_curly_bracket, pt_close_curly_bracket },
         { lex_open_square_bracket, pt_open_square_bracket },
         { lex_close_square_bracket, pt_close_square_bracket },
@@ -40,6 +47,9 @@ Grammar::Grammar() : IGrammar() {
 
         { lex_estring_start, pt_open_string },
         { lex_estring_end, pt_close_string },
+
+        { lex_regexp_start, pt_open_regexp },
+        { lex_regexp_end, pt_close_regexp }
     };
 
     for(quint32 i = 0; i < lex_max; i++) {
@@ -264,7 +274,7 @@ Grammar::Grammar() : IGrammar() {
 
 void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const StateLexem & last_non_blank_lex) {
     switch(lex) {
-        case lex_end: { flags = slf_unstack_word; break;}
+        case lex_end: { flags = slf_unblocker_word; break;}
 
         case lex_if:
         case lex_unless: {

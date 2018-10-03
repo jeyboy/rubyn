@@ -72,11 +72,22 @@ enum ParaType : PARA_TYPE {
 
     pt_close_struct = 1 << 25 | pt_close,
 
-    pt_open_string = 1 << 26,
+    pt_string = 1 << 26,
 
-    pt_close_string = 1 << 27 | pt_close,
+    pt_open_string = pt_string | pt_open,
+    pt_close_string = pt_string | pt_close,
 
-    pt_max = 1 << 28,
+    pt_interpolation = 1 << 27,
+
+    pt_open_interpolation = pt_interpolation | pt_open,
+    pt_close_interpolation = pt_interpolation | pt_close,
+
+    pt_regexp = 1 << 28,
+
+    pt_open_regexp = pt_regexp | pt_open,
+    pt_close_regexp = pt_regexp | pt_close,
+
+    pt_max = 1 << 29,
     pt_max_end = pt_max | pt_close
 };
 

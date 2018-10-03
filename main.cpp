@@ -1,6 +1,9 @@
 #include "ide_window.h"
 #include <QApplication>
 
+//test localhost
+//https://dashboard.ngrok.com/get-started
+
 // debug
 //https://github.com/ruby-debug/ruby-debug-ide
 

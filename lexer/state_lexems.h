@@ -21,15 +21,15 @@ enum StackLexemFlag : uint {
     slf_unstack_word = 4,
     slf_unstack_delimiter = 8,
 
-    slf_non_para = 16,
-    slf_blocker = 32,
+    slf_blocker_word = 16,
+    slf_unblocker_word = 32,
+    slf_replace_word = 64,
 
-    slf_blocker_word = slf_blocker | slf_stack_word,
-    slf_stack_non_para_word = slf_stack_word | slf_non_para,
-    slf_replace_word = slf_unstack_word | slf_stack_word,
+    slf_word_related = slf_stack_word | slf_unstack_word | slf_blocker_word | slf_unblocker_word | slf_replace_word,
+    slf_delimiter_related = slf_stack_delimiter | slf_unstack_delimiter,
 
-    slf_word_related = slf_stack_word | slf_unstack_word | slf_stack_non_para_word | slf_blocker_word,
-    slf_delimiter_related = slf_stack_delimiter | slf_unstack_delimiter
+    slf_stackable = slf_stack_word | slf_stack_delimiter | slf_blocker_word | slf_replace_word,
+    slf_unstackable = slf_unstack_word | slf_unstack_delimiter | slf_unblocker_word | slf_replace_word
 };
 
 enum StateLexem : LEXEM_TYPE {
@@ -284,25 +284,21 @@ enum StateLexem : LEXEM_TYPE {
     lex_eheredoc_mark,
     lex_eheredoc_start,
     lex_eheredoc_content,
-//    lex_eheredoc_interception,
     lex_eheredoc_end,
 
     lex_eheredoc_intended_mark,
     lex_eheredoc_intended_start,
     lex_eheredoc_intended_content,
-//    lex_eheredoc_intended_interception,
     lex_eheredoc_intended_end,
 
     lex_cheredoc_mark,
     lex_cheredoc_start,
     lex_cheredoc_content,
-//    lex_cheredoc_interception,
     lex_cheredoc_end,
 
     lex_cheredoc_intended_mark,
     lex_cheredoc_intended_start,
     lex_cheredoc_intended_content,
-//    lex_cheredoc_intended_interception,
     lex_cheredoc_intended_end,
     //////////////////////////////////////
 

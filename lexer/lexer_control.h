@@ -158,7 +158,6 @@ struct LexerControl {
 
         return lex_none;
     }
-
     inline ParaCell * lastNonClosedPara() {
         ParaCell * it = active_para ? active_para : para -> prev;
 
@@ -189,8 +188,8 @@ struct LexerControl {
             last_non_blank_token = token;
 
         if (flags != slf_none) {
-            bool stackable = flags & slf_stack_word || flags & slf_stack_delimiter;
-            bool unstackable = flags & slf_unstack_word || flags & slf_unstack_delimiter;
+            bool stackable = flags & slf_stackable;
+            bool unstackable = flags & slf_unstackable;
 
             if (unstackable) {
                 if (stack_token) {
@@ -202,7 +201,7 @@ struct LexerControl {
 //                        if (lex_prev_word == lex_none)
 //                            lex_prev_word = stack_token -> lexem;
 
-                        attachPara(grammar -> paraType(lexem), grammar -> paraType(stack_token -> lexem), stackable);
+                        attachPara(grammar -> paraType(lexem), flags, grammar -> paraType(stack_token -> lexem));
                         stack_token = stack_token -> stacked_prev;
                     }
                 } else {
@@ -221,8 +220,7 @@ struct LexerControl {
 //                stack_token -> stacked_state_lexem = lex_none; //stack_word ? lex_prev_word : lex_word;
                 lex_prev_word = lex_none;
 
-                if ((flags & slf_non_para) == 0)
-                    attachPara(grammar -> paraType(lexem), 0, unstackable, flags & slf_blocker);
+                attachPara(grammar -> paraType(lexem), flags);
             }
 
             lex_word = lex_none;
@@ -343,11 +341,11 @@ struct LexerControl {
         user_data -> msgs.append(MsgInfo{lexem, last_light_pos, last_light_len, msg});
     }
 
-    inline void attachPara(const PARA_TYPE & ptype, const PARA_TYPE & opo_type = 0, const bool & replaceable = false, const bool & blockable = false) {
-        if (!ptype) {
-            return;
-        }
+    inline void attachPara(const ParaType & ptype, const uint & flags, const ParaType & opo_type = pt_none) {
+        if (!ptype) return;
 
+        bool replaceable = flags & slf_replace_word;
+        bool blockable = flags & slf_blocker_word;
         bool closable = opo_type != 0;
 
         if (!replaceable || (replaceable && closable)) {
@@ -359,47 +357,73 @@ struct LexerControl {
             else para = ParaList::insert(para, ptype, cached_str_pos);
 
             para -> line_num = line_num;
-            para -> offset = replaceable ? -1 : 0; // comment me for collapsing of the 'end's
+            para -> offset = replaceable ? -1 : 0;
         }
 
         if (blockable)
             para -> is_blockator = true;
-
-        if (!control_para && ptype & pt_foldable) {
-            control_para = para;
-        }
 
         if (closable) {
             if (!active_para) {
                 active_para = lastNonClosedPara();
 
                 if (!active_para) {
-                    qDebug() << "Can't find nonclosed para token";
+                    qDebug() << "Can't find nonclosed active para token";
+                    return;
                 }
             }
 
             if (!active_para -> is_blockator) {
                 active_para -> close = para;
-
-                if (!replaceable)
-                    para -> close = active_para;
-                else
-                    active_para -> offset = -1;
             }
 
-            if (replaceable)
+            if (active_para -> is_blockator == para -> is_blockator) {
+                para -> close = active_para;
+            }
+
+            if (replaceable) {
+                active_para -> offset = replaceable ? -1 : 0;
                 active_para = para;
-            else {
+            } else {
                 active_para = lastNonClosedPara();
 
-                if (active_para && active_para -> is_blockator) {
+                if (blockable && active_para && active_para -> is_blockator) {
                     active_para -> close = para;
 
                     active_para = lastNonClosedPara();
                 }
             }
+
+
+
+//            if (!active_para -> is_blockator) {
+//                active_para -> close = para;
+
+//                if (!replaceable)
+//                    para -> close = active_para;
+//                else
+//                    active_para -> offset = -1;
+//            }
+
+//            if (replaceable)
+//                active_para = para;
+//            else {
+//                active_para = lastNonClosedPara();
+
+//                if (blockable && active_para && active_para -> is_blockator) {
+//                    active_para -> close = para;
+
+//                    active_para = lastNonClosedPara();
+//                }
+//            }
         }
-        else active_para = para;
+        else {
+            active_para = para;
+
+            if (!control_para && ptype & pt_foldable) {
+                control_para = para;
+            }
+        }
     }
 };
 
