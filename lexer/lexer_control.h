@@ -376,7 +376,9 @@ struct LexerControl {
                     active_para = para;
             } else {
                 active_para -> close = para;
-                para -> close = active_para;
+
+                if (!replaceable)
+                    para -> close = active_para;
 
                 if (blockable)
                     active_para = lastNonClosedPara();
