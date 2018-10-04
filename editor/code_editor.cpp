@@ -25,6 +25,7 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     overlay(new OverlayInfo()), tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1),
     folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING), curr_block_number(-1)
 {
+    folding_content_color = QColor::fromRgb(172, 229, 238, 64);
     extra_area = new ExtraArea(this);  
 
     connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateExtraAreaWidth);
@@ -516,7 +517,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                 EDITOR_POS_TYPE chars = 0;
 
                                 while(--lines_coverage >= 0) {
-                                    blk = blk.next();                                
+                                    blk = blk.next();
 
 //                                if (!blk.isValid())
 //                                    break;
@@ -570,7 +571,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
 void CodeEditor::extraAreaLeaveEvent(QEvent *) {
     // fake missing mouse move event from Qt
-    QMouseEvent me(QEvent::MouseMove, QPoint(-1, -1), Qt::NoButton, 0, 0);
+    QMouseEvent me(QEvent::MouseMove, QPoint(-1, -1), Qt::NoButton, nullptr, nullptr);
     extraAreaMouseEvent(&me);
 }
 
@@ -611,7 +612,7 @@ void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const 
 
     int block_height = block_bottom - block_top;
 
-    painter.fillRect(0, paint_top, extra_zone_width, block_height + 1, QColor::fromRgb(172, 229, 238));
+    painter.fillRect(0, paint_top, extra_zone_width, block_height + 1, folding_content_color);
 
     painter.translate(QPoint(1, 0));
     block.layout() -> draw(&painter, QPoint(extra_zone_width + contentOffset().rx(), paint_top));
@@ -730,7 +731,7 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     int view_height = height();
     int rel_pos = view_height - parent_block_rect.top();
 
-    qreal potential_height = rel_pos - line_number_height - 3;
+    int potential_height = rel_pos - line_number_height - 3;
     bool place_after = potential_height >= line_number_height * 3 + 3;
 
     if (place_after) {
@@ -747,7 +748,8 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
 
 
     QPixmap pixmap(popup_rect.size());
-    pixmap.fill(palette().base().color().darker(105));
+    pixmap.fill(folding_content_color);
+//    pixmap.fill(palette().base().color().darker(105));
 
     {
         QPainter painter(&pixmap);

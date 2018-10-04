@@ -255,6 +255,7 @@ class CodeEditor : public QPlainTextEdit {
     int line_number_width;
 
     QFont curr_line_font;
+    QColor folding_content_color;
 
     QHash<DATA_FLAGS_TYPE, QPixmap> icons;
 public:
