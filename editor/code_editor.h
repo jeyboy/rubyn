@@ -156,7 +156,6 @@ class OverlayInfo;
 
 
 
-#define CHARS_AMOUNT_LINE 80
 #define HPADDING 3
 #define FOLDING_WIDTH 12
 #define NO_FOLDING -100
@@ -250,12 +249,16 @@ class CodeEditor : public QPlainTextEdit {
     int folding_width;
 
     qreal symbol_width;
+    uint chars_limit_line;
 
     int line_number_height;
     int line_number_width;
 
     QFont curr_line_font;
+
     QColor folding_content_color;
+    QColor folding_border_color;
+    QColor chars_limit_color;
 
     QHash<DATA_FLAGS_TYPE, QPixmap> icons;
 public:

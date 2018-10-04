@@ -25,7 +25,12 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     overlay(new OverlayInfo()), tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1),
     folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING), curr_block_number(-1)
 {
+    chars_limit_line = 80;
+
     folding_content_color = QColor::fromRgb(172, 229, 238, 64);
+    folding_border_color = QColor::fromRgb(192, 192, 192, 72);
+    chars_limit_color = QColor::fromRgb(255, 0, 0, 64);
+
     extra_area = new ExtraArea(this);  
 
     connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateExtraAreaWidth);
@@ -184,12 +189,12 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     painter.restore();
 
-//    if (lineWrapMode() == NoWrap) {
-//        painter.setPen(QColor::fromRgb(192, 192, 192, 72));
-//        int x = round(symbol_width * CHARS_AMOUNT_LINE) + contentOffset().rx() + document() -> documentMargin();
+    if (lineWrapMode() == NoWrap) {
+        painter.setPen(chars_limit_color);
+        int x = round(symbol_width * chars_limit_line) + contentOffset().rx() + document() -> documentMargin();
 
-//        painter.drawLine(x, 0, x, height());
-//    }
+        painter.drawLine(x, 0, x, height());
+    }
 
 /////////// HIGHLIGHT BLOCKS ////////////////
 
