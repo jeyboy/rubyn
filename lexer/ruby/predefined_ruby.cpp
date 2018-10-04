@@ -93,6 +93,8 @@ Predefined::Predefined() {
     keys.insert(QByteArrayLiteral("when"), lex_when); // A condition in a case expression
     keys.insert(QByteArrayLiteral("while"), lex_while); // Creates a loop that executes while the condition is true
     keys.insert(QByteArrayLiteral("yield"), lex_yield); // Starts execution of the block sent to the current method
+    keys.insert(QByteArrayLiteral("loop"), lex_loop); // Starts infinite loop
+
 
 
     keys.insert(QByteArrayLiteral("+"), lex_operator_add);

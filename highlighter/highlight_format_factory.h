@@ -22,6 +22,8 @@ protected:
 
     void registerOperatorFormat();
 
+    void registerSpecKeywordFormat();
+
     void registerKeywordFormat();
 
     void registerAssigmentFormat();

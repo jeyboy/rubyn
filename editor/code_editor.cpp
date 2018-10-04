@@ -54,11 +54,18 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
 //    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateExtraArea(QRect,int)));
 //    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 
-    setCursorWidth(16);
     updateExtraAreaWidth(0);
 //    highlightCurrentLine();
 
+//    setCursorWidth(16);
     setLineWrapMode(NoWrap);
+
+//    QPalette p = palette();
+//    p.setColor(QPalette::Highlight, QColor(255,  0, 0, 32));
+//    setPalette(p);
+
+//    setStyleSheet("selection-color: #000; selection-background-color: darkblue ");
+
 
     verticalScrollBar() -> setSingleStep(2);
 //    scrollBarWidgets()
@@ -203,12 +210,7 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     painter.restore();
 
-    if (lineWrapMode() == NoWrap) {
-        painter.setPen(chars_limit_color);
-        int x = round(symbol_width * chars_limit_line) + contentOffset().rx() + document() -> documentMargin();
-
-        painter.drawLine(x, 0, x, height());
-    }
+    drawCharsLimiter(painter);
 
 /////////// HIGHLIGHT BLOCKS ////////////////
 
@@ -427,7 +429,7 @@ void CodeEditor::highlightCurrentLine() {
 
     emit cursorPosChanged(QStringLiteral("Line: %1, Col: %2").arg(curr_block_number + 1).arg(cursor.positionInBlock()));
 
-    if (!isReadOnly()) {
+    if (!isReadOnly()) { //
         QTextEdit::ExtraSelection selection;
 
         QColor lineColor = currentLineColor();
@@ -705,6 +707,15 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 }
 
 //layout->draw(&painter, offset, selections, er);
+
+void CodeEditor::drawCharsLimiter(QPainter & painter) {
+    if (lineWrapMode() == NoWrap) {
+        painter.setPen(chars_limit_color);
+        int x = round(symbol_width * chars_limit_line) + contentOffset().rx() + document() -> documentMargin();
+
+        painter.drawLine(x, 0, x, height());
+    }
+}
 
 void CodeEditor::drawTextOverlays(QPainter & painter) {
     // test overlays

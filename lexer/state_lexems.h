@@ -39,6 +39,7 @@ enum StateLexem : LEXEM_TYPE {
 
     lex_none,
 
+    lex_loop,
     lex_yield,
     lex_raise,
 

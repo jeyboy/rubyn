@@ -52,6 +52,14 @@ void HighlightFormatFactory::registerOperatorFormat() {
     _formats.insert(hid_operator, format);
 }
 
+
+void HighlightFormatFactory::registerSpecKeywordFormat() {
+    QTextCharFormat format;
+    format.setFontWeight(QFont::Bold);
+    format.setForeground(QColor::fromRgb(220, 0, 220));
+    _formats.insert(hid_spec_keyword, format);
+}
+
 void HighlightFormatFactory::registerKeywordFormat() {
     QTextCharFormat format;
     format.setFontItalic(true);
@@ -136,6 +144,7 @@ void HighlightFormatFactory::registerRegularExpresionBorderFormat() {
 HighlightFormatFactory::HighlightFormatFactory() {
     registerLabelFormat();
     registerOperatorFormat();
+    registerSpecKeywordFormat();
     registerKeywordFormat();
     registerAssigmentFormat();
     registerNameCallFormat();

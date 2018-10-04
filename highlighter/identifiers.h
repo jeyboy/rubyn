@@ -16,6 +16,7 @@ enum Identifier : LEXEM_TYPE {
     hid_const,
     hid_symbol,
     hid_keyword,
+    hid_spec_keyword,
     hid_numeric,
     hid_string,
     hid_string_border,

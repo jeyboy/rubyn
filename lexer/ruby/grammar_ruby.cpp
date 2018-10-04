@@ -556,8 +556,6 @@ char Grammar::percentagePresentationBlocker(const char & ch) {
 
 Identifier Grammar::toHighlightable(const StateLexem & lexem) {
     switch(lexem) {
-        case lex_super:
-        case lex_self:
         case lex_method_def:
         case lex_class_def:
         case lex_module_def:
@@ -567,7 +565,6 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_undef:
         case lex_visibility_scope:
         case lex_alias:
-        case lex_then:
         case lex_unless:
         case lex_if:
         case lex_elsif:
@@ -579,13 +576,9 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_until:
         case lex_for:
         case lex_in:
-        case lex_loop_break:
-        case lex_loop_redo:
-        case lex_loop_next:
         case lex_do:
         case lex_begin:
         case lex_end:
-        case lex_return:
         case lex_global_pre_hook:
         case lex_global_post_hook:
         case lex_end_of_code:
@@ -593,6 +586,19 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_block_ensure:
         case lex_block_retry:
             return hid_keyword;
+
+
+        case lex_super:
+        case lex_self:
+        case lex_yield:
+        case lex_return:
+        case lex_then:
+        case lex_loop:
+        case lex_loop_break:
+        case lex_loop_redo:
+        case lex_loop_next:
+            return hid_spec_keyword;
+
 
         case lex_bin:
         case lex_oct:
@@ -684,8 +690,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_cheredoc_intended_content:
         case lex_eheredoc_content:
         case lex_cheredoc_content:
-            return hid_string;
-
+            return hid_string;          
 
         case lex_regexp_content:
             return hid_regexp;
