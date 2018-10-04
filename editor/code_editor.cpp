@@ -286,7 +286,7 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
     // TODO: need to use correct text block
 //    showFoldingContentPopup(document() -> findBlockByNumber(60));
 
-    drawTextOverlays(painter);
+//    drawTextOverlay(painter);
     drawAdditionalCarets(painter);
 }
 
@@ -671,10 +671,12 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     }
 
     if (folding_flags) {
+        bool opened = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
+
         if (on_block) {
             folding_flags |= BlockUserData::udf_folding_hovered;
 
-            if ((folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened) {
+            if (opened) {
                 hideOverlay();
 
                 folding_lines_coverage_min = block_num;
@@ -691,6 +693,25 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             QPoint(folding_offset_x, paint_top + (line_number_height - FOLDING_WIDTH) / 2),
             icons[folding_flags]
         );
+
+        if (!opened) {
+            if (user_data -> para_control && user_data -> para_control -> close) {
+                QStringRef end_str = blockText(
+                    user_data -> para_control -> close -> line_num,
+                    user_data -> para_control -> close -> pos,
+                    user_data -> para_control -> close -> length
+                );
+
+                EDITOR_POS_TYPE text_pos = block.length();
+
+                QString mark = QLatin1Literal(" ... ") + end_str;
+                QRect rect = textRect(block, text_pos, 1);
+
+                painter.drawText(rect.topLeft(), mark);
+
+                drawFoldingOverlay(painter, block, text_pos, mark.length());
+            }
+        }
     }
     else if (on_block) {
         hideOverlay();
@@ -717,16 +738,26 @@ void CodeEditor::drawCharsLimiter(QPainter & painter) {
     }
 }
 
-void CodeEditor::drawTextOverlays(QPainter & painter) {
-    // test overlays
-//    painter.save();
-//    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
-//    painter.setRenderHint(QPainter::Antialiasing);
+void CodeEditor::drawTextOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+    painter.save();
+    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
+    painter.setRenderHint(QPainter::Antialiasing);
 
-//    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
-//    painter.setBrush(QColor::fromRgb(255, 239, 11, 192));
-//    painter.drawRoundedRect(textRect(document() -> findBlockByNumber(8), 3, 5), 3, 3);
-//    painter.restore();
+    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
+    painter.setBrush(QColor::fromRgb(255, 239, 11, 192));
+    painter.drawRoundedRect(textRect(block, pos, length), 3, 3);
+    painter.restore();
+}
+
+void CodeEditor::drawFoldingOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+    painter.save();
+    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
+    painter.setBrush(QColor::fromRgb(128, 128, 128, 192));
+    painter.drawRoundedRect(textRect(block, pos, length), 3, 3);
+    painter.restore();
 }
 
 void CodeEditor::drawAdditionalCarets(QPainter & painter) {
@@ -922,6 +953,14 @@ bool CodeEditor::rectOnScreen(const QRect & r) {
 
 bool CodeEditor::blockOnScreen(const QTextBlock & block) {
     return rectOnScreen(blockBoundingGeometry(block).translated(contentOffset()).toRect());
+}
+
+QStringRef CodeEditor::blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length) {
+    QTextBlock block = document() -> findBlockByNumber(block_num);
+    if (block.isValid())
+        return block.text().midRef(pos, length);
+    else
+        return QStringRef();
 }
 
 QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {

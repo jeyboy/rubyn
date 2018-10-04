@@ -296,7 +296,8 @@ protected:
     void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num);
 
     void drawCharsLimiter(QPainter & painter);
-    void drawTextOverlays(QPainter & painter);
+    void drawTextOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
+    void drawFoldingOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
     void drawAdditionalCarets(QPainter & painter);
 
     void showFoldingContentPopup(const QTextBlock & block);
@@ -308,6 +309,7 @@ protected:
     bool rectOnScreen(const QRect & r);
     bool blockOnScreen(const QTextBlock & block);
 
+    QStringRef blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length = -1);
     QRect textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
 
     QString wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags = wuco_full);

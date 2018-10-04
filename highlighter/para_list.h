@@ -14,12 +14,13 @@ struct ParaCell {
     ParaType para_type;
     EDITOR_POS_TYPE line_num;
     EDITOR_POS_TYPE pos;
+    EDITOR_LEN_TYPE length;
 
     char offset;
     bool is_blockator;
 
     ParaCell(const ParaType & para, const EDITOR_POS_TYPE & start_pos, ParaCell * prev_token = nullptr)
-        : prev(nullptr), next(nullptr), close(nullptr), para_type(para), line_num(-1), pos(start_pos), offset(0), is_blockator(false)
+        : prev(nullptr), next(nullptr), close(nullptr), para_type(para), line_num(-1), pos(start_pos), length(1), offset(0), is_blockator(false)
     {
         if ((prev = prev_token)) {
             if ((next = prev -> next))
