@@ -504,25 +504,45 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                             setTextCursor(tc);
                         } else {
                             BlockUserData * user_data = static_cast<BlockUserData *>(blk.userData());
-                            DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
+                            DATA_FLAGS_TYPE folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
 
                             if (folding_flags) {
                                 folding_click = true;
                                 user_data -> invertFoldingState();
 
-                                bool show_blocks = (folding_flags & BlockUserData::udf_folding_opened) != BlockUserData::udf_folding_opened;
+                                bool status = (folding_flags & BlockUserData::udf_folding_opened) != BlockUserData::udf_folding_opened;
                                 EDITOR_POS_TYPE lines_coverage = user_data -> para_control -> linesCoverage();
                                 EDITOR_POS_TYPE start = blk.position() + blk.length();
-                                EDITOR_LEN_TYPE chars = 0;
+                                EDITOR_POS_TYPE chars = 0;
 
                                 while(--lines_coverage >= 0) {
-                                    blk = blk.next();
+                                    blk = blk.next();                                
 
-    //                                if (!blk.isValid())
-    //                                    break;
+//                                if (!blk.isValid())
+//                                    break;
 
-                                    blk.setVisible(show_blocks);
+                                    blk.setVisible(status);
+
                                     chars += blk.length();
+
+                                    if (status) {
+                                        user_data = static_cast<BlockUserData *>(blk.userData());
+                                        folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
+
+                                        if (folding_flags) {
+                                            bool substatus = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
+
+                                            if (substatus != status) {
+                                                EDITOR_POS_TYPE sublines_coverage = user_data -> para_control -> linesCoverage();
+
+                                                while(--sublines_coverage >= 0) {
+                                                    blk = blk.next();
+                                                    chars += blk.length();
+                                                    --lines_coverage;
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
 
                                 document() -> markContentsDirty(start, chars);
