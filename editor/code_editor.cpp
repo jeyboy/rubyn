@@ -629,8 +629,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             if ((folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened) {
                 hideOverlay();
 
-                if (!folding_lines_coverage)
-                    folding_lines_coverage = user_data -> para_control -> linesCoverage() + 1;
+                folding_lines_coverage = block_num + user_data -> para_control -> linesCoverage() + 1;
             }
             else {
                 if (folding_click)
@@ -647,10 +646,8 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     else if (on_block)
         hideOverlay();
 
-    if (folding_lines_coverage > 0) {
+    if (block_num < folding_lines_coverage) {
         painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, foldingColor());
-
-        --folding_lines_coverage;
     }
 
     painter.setFont(is_current ? curr_line_font : font());
