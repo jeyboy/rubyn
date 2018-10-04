@@ -247,6 +247,8 @@ class CodeEditor : public QPlainTextEdit {
 
     int folding_offset_x;
     int folding_width;
+    EDITOR_POS_TYPE folding_lines_coverage_min;
+    EDITOR_POS_TYPE folding_lines_coverage_max;
 
     qreal symbol_width;
     uint chars_limit_line;
@@ -290,8 +292,8 @@ protected:
     void prepareIcons(const int & size = FOLDING_WIDTH);
     int widthWithoutScroll();
 
-    void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, EDITOR_POS_TYPE & folding_lines_coverage);
-    void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num, EDITOR_POS_TYPE & folding_lines_coverage);
+    void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom);
+    void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num);
 
     void drawTextOverlays(QPainter & painter);
     void drawAdditionalCarets(QPainter & painter);
