@@ -200,6 +200,135 @@ bool CodeEditor::event(QEvent * event) {
     return QPlainTextEdit::event(event);
 }
 
+void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
+    QPointF offset(contentOffset());
+    QRect view_rect = viewport() -> rect();
+
+    bool editable = !isReadOnly();
+
+    QTextBlock block = firstVisibleBlock();
+    qreal max_width = document() -> documentLayout() -> documentSize().width();
+    qreal doc_margin = document() -> documentMargin();
+
+    // Set a brush origin so that the WaveUnderline knows where the wave started
+    painter.setBrushOrigin(offset);
+
+    // keep right margin clean from full-width selection
+    int max_x = offset.x() + qMax((qreal)view_rect.width(), max_width) - doc_margin;
+
+    QRect er = e -> rect();
+    er.setRight(qMin(er.right(), max_x));
+    painter.setClipRect(er);
+
+
+    QAbstractTextDocumentLayout::PaintContext context = getPaintContext();
+
+    while (block.isValid()) {
+        QRectF r = blockBoundingRect(block).translated(offset);
+        QTextLayout * layout = block.layout();
+
+        if (!block.isVisible()) {
+            offset.ry() += r.height();
+            block = block.next();
+            continue;
+        }
+
+        if (r.bottom() >= er.top() && r.top() <= er.bottom()) {
+            QTextBlockFormat blockFormat = block.blockFormat();
+            QBrush bg = blockFormat.background();
+
+            if (bg != Qt::NoBrush) {
+                QRectF contentsRect = r;
+                contentsRect.setWidth(qMax(r.width(), max_width));
+                fillBackground(&painter, contentsRect, bg);
+            }
+
+            QVector<QTextLayout::FormatRange> selections;
+            int blpos = block.position();
+            int bllen = block.length();
+
+            for (int i = 0; i < context.selections.size(); ++i) {
+                const QAbstractTextDocumentLayout::Selection & range = context.selections.at(i);
+                const int selStart = range.cursor.selectionStart() - blpos;
+                const int selEnd = range.cursor.selectionEnd() - blpos;
+
+                if (selStart < bllen && selEnd > 0
+                    && selEnd > selStart) {
+                    QTextLayout::FormatRange o;
+                    o.start = selStart;
+                    o.length = selEnd - selStart;
+                    o.format = range.format;
+                    selections.append(o);
+                } else if (!range.cursor.hasSelection() && range.format.hasProperty(QTextFormat::FullWidthSelection)
+                           && block.contains(range.cursor.position())) {
+                    // for full width selections we don't require an actual selection, just
+                    // a position to specify the line. that's more convenience in usage.
+                    QTextLayout::FormatRange o;
+                    QTextLine l = layout -> lineForTextPosition(range.cursor.position() - blpos);
+                    o.start = l.textStart();
+                    o.length = l.textLength();
+                    if (o.start + o.length == bllen - 1)
+                        ++o.length; // include newline
+                    o.format = range.format;
+                    selections.append(o);
+                }
+            }
+
+            bool drawCursor = ((editable || (textInteractionFlags() & Qt::TextSelectableByKeyboard))
+                               && context.cursorPosition >= blpos
+                               && context.cursorPosition < blpos + bllen);
+
+            bool drawCursorAsBlock = drawCursor && overwriteMode() ;
+
+            if (drawCursorAsBlock) {
+                if (context.cursorPosition == blpos + bllen - 1) {
+                    drawCursorAsBlock = false;
+                } else {
+                    QTextLayout::FormatRange o;
+                    o.start = context.cursorPosition - blpos;
+                    o.length = 1;
+                    o.format.setForeground(palette().base());
+                    o.format.setBackground(palette().text());
+                    selections.append(o);
+                }
+            }
+
+
+            if (!placeholderText().isEmpty() && document() -> isEmpty() && layout -> preeditAreaText().isEmpty()) {
+              QColor col = /*d->control->*/palette().text().color();
+              col.setAlpha(128);
+              painter.setPen(col);
+              painter.drawText(r.adjusted(doc_margin, 0, 0, 0), Qt::AlignTop | Qt::TextWordWrap, placeholderText());
+            } else {
+              layout -> draw(&painter, offset, selections, er);
+            }
+
+            if ((drawCursor && !drawCursorAsBlock)
+                || (editable && context.cursorPosition < -1
+                    && !layout -> preeditAreaText().isEmpty())) {
+                int cpos = context.cursorPosition;
+                if (cpos < -1)
+                    cpos = layout->preeditAreaPosition() - (cpos + 2);
+                else
+                    cpos -= blpos;
+                layout -> drawCursor(&painter, offset, cpos, cursorWidth());
+            }
+        }
+
+        offset.ry() += r.height();
+
+        if (offset.y() > view_rect.height())
+            break;
+
+        block = block.next();
+    }
+
+    if (backgroundVisible() && !block.isValid() && offset.y() <= er.bottom()
+        && (centerOnScroll() || verticalScrollBar()->maximum() == verticalScrollBar()->minimum())) {
+        painter.fillRect(QRect(QPoint((int)er.left(), (int)offset.y()), er.bottomRight()), palette().background());
+    }
+}
+
 void CodeEditor::paintEvent(QPaintEvent * e) {
     hideOverlayIfNoNeed();
 
@@ -207,7 +336,8 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     painter.save();
 
-    QPlainTextEdit::paintEvent(e);
+//    QPlainTextEdit::paintEvent(e);
+    customPaintEvent(painter, e);
 
     painter.restore();
 
@@ -899,6 +1029,22 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     }
 
     showOverlay(popup_rect, pixmap, uid);
+}
+
+void CodeEditor::fillBackground(QPainter *p, const QRectF &rect, QBrush brush, const QRectF &gradientRect) {
+    p->save();
+    if (brush.style() >= Qt::LinearGradientPattern && brush.style() <= Qt::ConicalGradientPattern) {
+        if (!gradientRect.isNull()) {
+            QTransform m = QTransform::fromTranslate(gradientRect.left(), gradientRect.top());
+            m.scale(gradientRect.width(), gradientRect.height());
+            brush.setTransform(m);
+            const_cast<QGradient *>(brush.gradient())->setCoordinateMode(QGradient::LogicalMode);
+        }
+    } else {
+        p->setBrushOrigin(rect.topLeft());
+    }
+    p->fillRect(rect, brush);
+    p->restore();
 }
 
 void CodeEditor::prepareIcons(const int & size) {   

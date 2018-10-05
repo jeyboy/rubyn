@@ -290,7 +290,9 @@ public:
 
         symbol_width = QFontMetricsF(font).averageCharWidth();
     }
-protected:   
+protected:
+    static void fillBackground(QPainter *p, const QRectF &rect, QBrush brush, const QRectF &gradientRect = QRectF());
+
     void prepareIcons(const int & size = FOLDING_WIDTH);
     int widthWithoutScroll();
 
@@ -321,6 +323,8 @@ protected:
 
     inline QColor currentLineColor(const int & transparency = 16) { return QColor::fromRgb(128, 128, 128, transparency); } // QColor lineColor = QColor(Qt::yellow).lighter(160);
     inline QColor foldingColor() { return QColor::fromRgb(64, 64, 64, 64); }
+
+    void customPaintEvent(QPainter & painter, QPaintEvent * e);
 
     bool event(QEvent * event) Q_DECL_OVERRIDE;
     void paintEvent(QPaintEvent * e) Q_DECL_OVERRIDE;
