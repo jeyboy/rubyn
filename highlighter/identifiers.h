@@ -6,6 +6,8 @@
 #include "misc/defines.h"
 
 enum Identifier : LEXEM_TYPE {
+    hid_selection = -1,
+
     hid_none = 0,
 
     hid_operator,

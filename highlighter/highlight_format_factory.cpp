@@ -1,5 +1,11 @@
 #include "highlight_format_factory.h"
 
+void HighlightFormatFactory::registerSelectionFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(51, 153, 255, 32));
+    _formats.insert(hid_selection, format);
+}
+
 void HighlightFormatFactory::registerErrorFormat() {
     QTextCharFormat format;
     format.setFontUnderline(true);
@@ -142,6 +148,8 @@ void HighlightFormatFactory::registerRegularExpresionBorderFormat() {
 
 
 HighlightFormatFactory::HighlightFormatFactory() {
+    registerSelectionFormat();
+
     registerLabelFormat();
     registerOperatorFormat();
     registerSpecKeywordFormat();

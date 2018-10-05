@@ -11,6 +11,7 @@
 #include <qabstractitemview.h> // completer dependency
 
 #include "highlighter/block_user_data.h"
+#include "highlighter/highlight_format_factory.h"
 
 #include "project/file.h"
 
@@ -222,6 +223,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
 
     QAbstractTextDocumentLayout::PaintContext context = getPaintContext();
+    QTextCharFormat selection_format = HighlightFormatFactory::obj().getFormatFor(hid_selection);
 
     while (block.isValid()) {
         QRectF r = blockBoundingRect(block).translated(offset);
@@ -252,12 +254,11 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 const int selStart = range.cursor.selectionStart() - blpos;
                 const int selEnd = range.cursor.selectionEnd() - blpos;
 
-                if (selStart < bllen && selEnd > 0
-                    && selEnd > selStart) {
+                if (selStart < bllen && selEnd > 0 && selEnd > selStart) {
                     QTextLayout::FormatRange o;
                     o.start = selStart;
                     o.length = selEnd - selStart;
-                    o.format = range.format;
+                    o.format = range.format; // selection_format
                     selections.append(o);
                 } else if (!range.cursor.hasSelection() && range.format.hasProperty(QTextFormat::FullWidthSelection)
                            && block.contains(range.cursor.position())) {
@@ -267,9 +268,11 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                     QTextLine l = layout -> lineForTextPosition(range.cursor.position() - blpos);
                     o.start = l.textStart();
                     o.length = l.textLength();
+
                     if (o.start + o.length == bllen - 1)
                         ++o.length; // include newline
-                    o.format = range.format;
+
+                    o.format = range.format; // selection_format
                     selections.append(o);
                 }
             }
@@ -570,6 +573,7 @@ void CodeEditor::highlightCurrentLine() {
 
         selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+//        selection.format.setProperty(QTextFormat::UserProperty, true);
 
         selection.cursor = cursor;
         selection.cursor.clearSelection();
