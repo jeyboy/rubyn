@@ -352,11 +352,11 @@ struct LexerControl {
             if (para -> next) {
                 para = para -> next;
                 para -> para_type = ptype;
-                para -> pos = cached_str_pos;
-                para -> length = cached_length;
+                para -> pos = cached_str_pos;  
             }
             else para = ParaList::insert(para, ptype, cached_str_pos);
 
+            para -> length = cached_length;
             para -> line_num = line_num;
             para -> offset = replaceable ? -1 : 0;
             para -> is_blockator = blockable;

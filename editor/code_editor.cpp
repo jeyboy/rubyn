@@ -36,6 +36,7 @@ QString CodeEditor::word_boundary("~#%^&*()+{}|\"<>,./;'[]\\-= "); // end of wor
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
     overlay(new OverlayInfo()), tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1),
     folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING), curr_block_number(-1),
+    screen_top_block_number(-1), screen_bottom_block_number(-1),
     folding_lines_coverage_min(-1), folding_lines_coverage_max(-1)
 {
     chars_limit_line = 80;
@@ -286,7 +287,8 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
     // TODO: need to use correct text block
 //    showFoldingContentPopup(document() -> findBlockByNumber(60));
 
-//    drawTextOverlay(painter);
+
+    drawFoldingOverlays(painter, e -> rect());
     drawAdditionalCarets(painter);
 }
 
@@ -613,8 +615,8 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
     QRectF block_geometry_rect = blockBoundingGeometry(block).translated(contentOffset());
 
-    int top = block_geometry_rect.top();
-    int bottom = block_geometry_rect.bottom();
+    qreal top = block_geometry_rect.top();
+    qreal bottom = block_geometry_rect.bottom();
 
     int rect_top = event -> rect().top();
     int rect_bottom = event -> rect().bottom();
@@ -625,7 +627,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
         block = block.next();
         top = bottom;
-        bottom = top + (int)blockBoundingRect(block).height();
+        bottom = top + blockBoundingRect(block).height();
         ++screen_end_block_num;
     }
 
@@ -693,25 +695,6 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             QPoint(folding_offset_x, paint_top + (line_number_height - FOLDING_WIDTH) / 2),
             icons[folding_flags]
         );
-
-        if (!opened) {
-            if (user_data -> para_control && user_data -> para_control -> close) {
-                QStringRef end_str = blockText(
-                    user_data -> para_control -> close -> line_num,
-                    user_data -> para_control -> close -> pos,
-                    user_data -> para_control -> close -> length
-                );
-
-                EDITOR_POS_TYPE text_pos = block.length();
-
-                QString mark = QLatin1Literal(" ... ") + end_str;
-                QRect rect = textRect(block, text_pos, 1);
-
-                painter.drawText(rect.topLeft(), mark);
-
-                drawFoldingOverlay(painter, block, text_pos, mark.length());
-            }
-        }
     }
     else if (on_block) {
         hideOverlay();
@@ -729,6 +712,55 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 
 //layout->draw(&painter, offset, selections, er);
 
+void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_rect) {
+    //TODO: need to cache blocks info and use it in "extraAreaPaintEvent"
+
+    QTextBlock block = firstVisibleBlock();
+    screen_top_block_number = screen_bottom_block_number = block.blockNumber();
+    QRectF block_geometry_rect = blockBoundingGeometry(block).translated(contentOffset());
+
+    qreal top = block_geometry_rect.top();
+    qreal bottom = block_geometry_rect.bottom();
+
+    int rect_top = target_rect.top();
+    int rect_bottom = target_rect.bottom();
+
+    while (block.isValid() && top <= rect_bottom) {
+        if (block.isVisible() && bottom >= rect_top) {
+            BlockUserData * user_data = static_cast<BlockUserData *>(block.userData());
+            DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
+
+            bool opened = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
+
+            if (!opened) {
+                if (user_data -> para_control && user_data -> para_control -> close) {
+                    QString end_str = blockText(
+                        user_data -> para_control -> close -> line_num,
+                        user_data -> para_control -> close -> pos,
+                        user_data -> para_control -> close -> length
+                    );
+
+                    EDITOR_POS_TYPE text_pos = block.length() - 1;
+
+                    QString mark = QLatin1Literal("...") + end_str;
+                    QRect rect = textRect(block, text_pos, 1);
+                    rect.adjust(3, 0, mark.length() * symbol_width + 10, 0);
+
+                    drawFoldingOverlay(painter, rect);
+
+                    painter.setPen(QColor::fromRgb(0, 0, 0));
+                    painter.drawText(rect, Qt::AlignCenter, mark);
+                }
+            }
+        }
+
+        block = block.next();
+        top = bottom;
+        bottom = top + blockBoundingRect(block).height();
+        ++screen_bottom_block_number;
+    }
+}
+
 void CodeEditor::drawCharsLimiter(QPainter & painter) {
     if (lineWrapMode() == NoWrap) {
         painter.setPen(chars_limit_color);
@@ -736,28 +768,6 @@ void CodeEditor::drawCharsLimiter(QPainter & painter) {
 
         painter.drawLine(x, 0, x, height());
     }
-}
-
-void CodeEditor::drawTextOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
-    painter.save();
-    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
-    painter.setBrush(QColor::fromRgb(255, 239, 11, 192));
-    painter.drawRoundedRect(textRect(block, pos, length), 3, 3);
-    painter.restore();
-}
-
-void CodeEditor::drawFoldingOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
-    painter.save();
-    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
-    painter.setBrush(QColor::fromRgb(128, 128, 128, 192));
-    painter.drawRoundedRect(textRect(block, pos, length), 3, 3);
-    painter.restore();
 }
 
 void CodeEditor::drawAdditionalCarets(QPainter & painter) {
@@ -781,6 +791,28 @@ void CodeEditor::drawAdditionalCarets(QPainter & painter) {
 //    qDebug() << "PO" << cpos << textRect(block, cpos, 1); // QRect(44,4 10x18) // QRect(39,3 11x20)
 
 //    layout -> drawCursor(&painter, contentOffset(), cpos, cursorWidth());
+}
+
+void CodeEditor::drawTextOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+    painter.save();
+    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
+    painter.setBrush(QColor::fromRgb(255, 239, 11, 192));
+    painter.drawRoundedRect(textRect(block, pos, length), 3, 3);
+    painter.restore();
+}
+
+void CodeEditor::drawFoldingOverlay(QPainter & painter, const QRect & fold_rect) {
+    painter.save();
+    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    painter.setPen(QColor::fromRgb(192, 192, 192, 192));
+    painter.setBrush(QColor::fromRgb(224, 224, 224, 128));
+    painter.drawRoundedRect(fold_rect, 3, 3);
+    painter.restore();
 }
 
 void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
@@ -955,12 +987,13 @@ bool CodeEditor::blockOnScreen(const QTextBlock & block) {
     return rectOnScreen(blockBoundingGeometry(block).translated(contentOffset()).toRect());
 }
 
-QStringRef CodeEditor::blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length) {
+QString CodeEditor::blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length) {
     QTextBlock block = document() -> findBlockByNumber(block_num);
-    if (block.isValid())
-        return block.text().midRef(pos, length);
-    else
-        return QStringRef();
+
+    if (block.isValid()) {
+        return block.text().mid(pos, length);
+    }
+    else return QString();
 }
 
 QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {

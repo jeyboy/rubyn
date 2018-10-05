@@ -242,6 +242,8 @@ class CodeEditor : public QPlainTextEdit {
     QPoint curr_folding_limits;
 
     int curr_block_number;
+    int screen_top_block_number;
+    int screen_bottom_block_number;
 
     int extra_zone_width;
 
@@ -295,10 +297,12 @@ protected:
     void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom);
     void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num);
 
+    void drawFoldingOverlays(QPainter & painter, const QRect & target_rect);
     void drawCharsLimiter(QPainter & painter);
-    void drawTextOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
-    void drawFoldingOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
     void drawAdditionalCarets(QPainter & painter);
+
+    void drawTextOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
+    void drawFoldingOverlay(QPainter & painter, const QRect & fold_rect);
 
     void showFoldingContentPopup(const QTextBlock & block);
     void showOverlay(const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid = -1);
@@ -309,7 +313,7 @@ protected:
     bool rectOnScreen(const QRect & r);
     bool blockOnScreen(const QTextBlock & block);
 
-    QStringRef blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length = -1);
+    QString blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length = -1);
     QRect textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
 
     QString wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags = wuco_full);
