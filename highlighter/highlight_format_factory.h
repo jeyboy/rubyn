@@ -12,6 +12,12 @@ class HighlightFormatFactory : public Singleton<HighlightFormatFactory> {
 protected:
     void registerSelectionFormat();
 
+    void registerCurrentLineFormat();
+
+    void registerFoldingDescriptionFormat();
+
+    void registerFoldingRangeFormat();
+
     void registerErrorFormat();
 
     void registerWarningFormat();

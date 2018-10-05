@@ -321,9 +321,6 @@ protected:
     QString wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags = wuco_full);
     void procSelectionIndent(const bool & right = true);
 
-    inline QColor currentLineColor(const int & transparency = 16) { return QColor::fromRgb(128, 128, 128, transparency); } // QColor lineColor = QColor(Qt::yellow).lighter(160);
-    inline QColor foldingColor() { return QColor::fromRgb(64, 64, 64, 64); }
-
     void customPaintEvent(QPainter & painter, QPaintEvent * e);
 
     bool event(QEvent * event) Q_DECL_OVERRIDE;

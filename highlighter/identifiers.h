@@ -6,6 +6,9 @@
 #include "misc/defines.h"
 
 enum Identifier : LEXEM_TYPE {
+    hid_folding_range = -4,
+    hid_folding_description = -3,
+    hid_current_line = -2,
     hid_selection = -1,
 
     hid_none = 0,

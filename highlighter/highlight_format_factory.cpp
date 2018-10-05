@@ -6,6 +6,25 @@ void HighlightFormatFactory::registerSelectionFormat() {
     _formats.insert(hid_selection, format);
 }
 
+void HighlightFormatFactory::registerCurrentLineFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(128, 128, 128, 24));
+    _formats.insert(hid_current_line, format);
+}
+
+void HighlightFormatFactory::registerFoldingDescriptionFormat() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(0, 0, 0));
+    format.setBackground(QColor::fromRgb(64, 64, 64, 64));
+    _formats.insert(hid_folding_description, format);
+}
+
+void HighlightFormatFactory::registerFoldingRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(128, 128, 128, 48));
+    _formats.insert(hid_folding_range, format);
+}
+
 void HighlightFormatFactory::registerErrorFormat() {
     QTextCharFormat format;
     format.setFontUnderline(true);
@@ -149,6 +168,9 @@ void HighlightFormatFactory::registerRegularExpresionBorderFormat() {
 
 HighlightFormatFactory::HighlightFormatFactory() {
     registerSelectionFormat();
+    registerCurrentLineFormat();
+    registerFoldingDescriptionFormat();
+    registerFoldingRangeFormat();
 
     registerLabelFormat();
     registerOperatorFormat();

@@ -206,6 +206,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     QRect view_rect = viewport() -> rect();
 
     bool editable = !isReadOnly();
+    bool need_placeholder = !placeholderText().isEmpty() && document() -> isEmpty();
 
     QTextBlock block = firstVisibleBlock();
     qreal max_width = document() -> documentLayout() -> documentSize().width();
@@ -258,7 +259,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                     QTextLayout::FormatRange o;
                     o.start = selStart;
                     o.length = selEnd - selStart;
-                    o.format = range.format; // selection_format
+                    o.format = range.format; //selection_format; //
                     selections.append(o);
                 } else if (!range.cursor.hasSelection() && range.format.hasProperty(QTextFormat::FullWidthSelection)
                            && block.contains(range.cursor.position())) {
@@ -296,8 +297,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 }
             }
 
-
-            if (!placeholderText().isEmpty() && document() -> isEmpty() && layout -> preeditAreaText().isEmpty()) {
+            if (need_placeholder && layout -> preeditAreaText().isEmpty()) {
               QColor col = /*d->control->*/palette().text().color();
               col.setAlpha(128);
               painter.setPen(col);
@@ -327,7 +327,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     }
 
     if (backgroundVisible() && !block.isValid() && offset.y() <= er.bottom()
-        && (centerOnScroll() || verticalScrollBar()->maximum() == verticalScrollBar()->minimum())) {
+        && (centerOnScroll() || verticalScrollBar() -> maximum() == verticalScrollBar() -> minimum())) {
         painter.fillRect(QRect(QPoint((int)er.left(), (int)offset.y()), er.bottomRight()), palette().background());
     }
 }
@@ -561,23 +561,23 @@ void CodeEditor::highlightCurrentLine() {
 
     QTextCursor cursor = textCursor();
     curr_block_number = cursor.blockNumber();
+    cursor.clearSelection();
 
     emit cursorPosChanged(QStringLiteral("Line: %1, Col: %2").arg(curr_block_number + 1).arg(cursor.positionInBlock()));
 
     if (!isReadOnly()) { //
         QTextEdit::ExtraSelection selection;
 
-        QColor lineColor = currentLineColor();
+        const QTextCharFormat & selection_format = HighlightFormatFactory::obj().getFormatFor(hid_current_line);
+        QColor lineColor = selection_format.background().color();
 
         QTextBlock origin_block = cursor.block();
 
         selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-//        selection.format.setProperty(QTextFormat::UserProperty, true);
-
         selection.cursor = cursor;
         selection.cursor.clearSelection();
-        extra_selections.append(selection);
+//        extra_selections.append(selection);
 
         if (wordWrapMode() != QTextOption::NoWrap) {
             int offset = 0;
@@ -602,6 +602,8 @@ void CodeEditor::highlightCurrentLine() {
                 else break;
             }
         }
+
+        selection.format.setProperty(QTextFormat::UserProperty, true);
 
         for(QTextBlock::iterator it = origin_block.begin(); it != origin_block.end(); it++) {
             QTextFragment fragment = it.fragment();
@@ -793,8 +795,10 @@ void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const 
 void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num) {
     bool is_current = curr_block_number == block_num;
 
-    if (is_current)
-        painter.fillRect(0, paint_top, extra_zone_width, block_bottom - block_top, currentLineColor(48));
+    if (is_current) {
+        const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_range);
+        painter.fillRect(0, paint_top, extra_zone_width, block_bottom - block_top, format.background());
+    }
 
     BlockUserData * user_data = static_cast<BlockUserData *>(block.userData());
     DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
@@ -835,7 +839,9 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     }
 
     if (block_num >= folding_lines_coverage_min && block_num < folding_lines_coverage_max) {
-        painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, foldingColor());
+        const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_description);
+        painter.setPen(format.foreground().color());
+        painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, format.background());
     }
 
     painter.setFont(is_current ? curr_line_font : font());
