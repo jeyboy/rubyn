@@ -64,7 +64,9 @@ TextDocument::TextDocument(File * file) : IDocument(), pos(-1), removed(0), adde
 
     connect(_doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
 
-    _doc -> setDocumentLayout(new QPlainTextDocumentLayout(_doc));
+    QPlainTextDocumentLayout * layout = new QPlainTextDocumentLayout(_doc);
+    layout -> setCursorWidth(1);
+    _doc -> setDocumentLayout(layout);
 
     QTextOption option = _doc -> defaultTextOption();
     option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);

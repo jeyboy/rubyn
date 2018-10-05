@@ -20,6 +20,8 @@
 
 #include "editor/document_types/text_document.h"
 
+#include "controls/logger.h"
+
 QString CodeEditor::word_boundary("~#%^&*()+{}|\"<>,./;'[]\\-= "); // end of word // "~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "
 
 //qApp->setCursorFlashTime(0);
@@ -59,7 +61,7 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     updateExtraAreaWidth(0);
 //    highlightCurrentLine();
 
-//    setCursorWidth(16);
+    setCursorWidth(8);
     setLineWrapMode(NoWrap);
 
 //    QPalette p = palette();
@@ -106,6 +108,8 @@ void CodeEditor::setCompleter(QCompleter * new_completer) {
 void CodeEditor::openDocument(File * file) {
     if (file && file -> isText()) {
         QFont new_font(font().family(), 11);
+        new_font.setKerning(true);
+        new_font.setLetterSpacing(QFont::AbsoluteSpacing, cursorWidth() - 1);
 //        new_font.setStretch(90);
 
         wrapper = file -> asText();
@@ -669,7 +673,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                             tc.setPosition(blk.position(), QTextCursor::KeepAnchor);
 
                             setTextCursor(tc);
-                        } else {
+                        } else {                            
                             BlockUserData * user_data = static_cast<BlockUserData *>(blk.userData());
                             DATA_FLAGS_TYPE folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
 
@@ -685,8 +689,8 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                 while(--lines_coverage >= 0) {
                                     blk = blk.next();
 
-//                                if (!blk.isValid())
-//                                    break;
+                                    if (!blk.isValid())
+                                        break;
 
                                     blk.setVisible(status);
 
@@ -1041,7 +1045,7 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     showOverlay(popup_rect, pixmap, uid);
 }
 
-void CodeEditor::fillBackground(QPainter *p, const QRectF &rect, QBrush brush, const QRectF &gradientRect) {
+void CodeEditor::fillBackground(QPainter * p, const QRectF & rect, QBrush brush, const QRectF & gradientRect) {
     p->save();
     if (brush.style() >= Qt::LinearGradientPattern && brush.style() <= Qt::ConicalGradientPattern) {
         if (!gradientRect.isNull()) {

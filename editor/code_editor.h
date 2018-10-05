@@ -291,7 +291,7 @@ public:
         symbol_width = QFontMetricsF(font).averageCharWidth();
     }
 protected:
-    static void fillBackground(QPainter *p, const QRectF &rect, QBrush brush, const QRectF &gradientRect = QRectF());
+    static void fillBackground(QPainter * p, const QRectF & rect, QBrush brush, const QRectF & gradientRect = QRectF());
 
     void prepareIcons(const int & size = FOLDING_WIDTH);
     int widthWithoutScroll();
