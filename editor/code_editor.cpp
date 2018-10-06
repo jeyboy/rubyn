@@ -155,9 +155,6 @@ bool CodeEditor::event(QEvent * event) {
         QTextCursor cursor = cursorForPosition(helpEvent -> pos() - QPoint(extraAreaWidth(), 0));
         QTextBlock blk = cursor.block();
 
-        //showOverlay(firstVisibleBlock());
-//        showOverlay(document() -> findBlockByNumber(60));
-
         if (blk.isValid()) {
             EDITOR_POS_TYPE pos = cursor.positionInBlock();
             bool tip_is_visible = QToolTip::isVisible();
@@ -412,10 +409,6 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 //    }
 /// //////////////////////////////////
 
-    // TODO: need to use correct text block
-//    showFoldingContentPopup(document() -> findBlockByNumber(60));
-
-
     drawFoldingOverlays(painter, e -> rect());
     drawAdditionalCarets(painter);
 }
@@ -552,6 +545,10 @@ void CodeEditor::focusInEvent(QFocusEvent * e) {
 }
 
 void CodeEditor::highlightCurrentLine() {
+    // need to show overlay for foldings in folding start/end not on the screen right now
+    //                showOverlay(document() -> findBlockByNumber(60));
+
+
     QList<QTextEdit::ExtraSelection> extra_selections;
 
     QTextCursor cursor = textCursor();
