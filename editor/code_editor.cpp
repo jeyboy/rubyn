@@ -38,8 +38,8 @@ QString CodeEditor::word_boundary("~#%^&*()+{}|\"<>,./;'[]\\-= "); // end of wor
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
     overlay(new OverlayInfo()), tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1),
-    folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING), curr_block_number(-1),
-    screen_top_block_number(-1), screen_bottom_block_number(-1),
+    can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
+    curr_block_number(-1), screen_top_block_number(-1), screen_bottom_block_number(-1),
     folding_lines_coverage_min(-1), folding_lines_coverage_max(-1)
 {
     chars_limit_line = 80;
@@ -646,6 +646,8 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                     || ((folding_y != NO_FOLDING) == (prev_folding_y == NO_FOLDING));
 
             if (invalidation_required) {
+                can_show_folding_popup = true;
+
                 if (folding_click)
                     folding_click = false;
 
@@ -673,13 +675,20 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                             tc.setPosition(blk.position(), QTextCursor::KeepAnchor);
 
                             setTextCursor(tc);
-                        } else {                            
+                        } else {
+//                            Logger::obj().startMark();
+
                             BlockUserData * user_data = static_cast<BlockUserData *>(blk.userData());
                             DATA_FLAGS_TYPE folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
 
                             if (folding_flags) {
                                 folding_click = true;
+                                can_show_folding_popup = false;
                                 user_data -> invertFoldingState();
+
+                                //TODO: need to check performance for bottom to top proc of blocks: possible what performance is broken by layout proceses
+
+//                                setUpdatesEnabled(false);
 
                                 bool status = (folding_flags & BlockUserData::udf_folding_opened) != BlockUserData::udf_folding_opened;
                                 EDITOR_POS_TYPE lines_coverage = user_data -> para_control -> linesCoverage();
@@ -717,6 +726,9 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                 }
 
                                 document() -> markContentsDirty(start, chars);
+
+//                                setUpdatesEnabled(true);
+//                                Logger::obj().endMark("Folding", "collapse");
                             }
                         }
                     }
@@ -827,9 +839,11 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
                 folding_lines_coverage_max = block_num + user_data -> para_control -> linesCoverage() + 1;
             }
             else {
-                if (folding_click)
+                if (folding_click) {
                     folding_click = false;
-                else showFoldingContentPopup(block);
+                }
+                else if (can_show_folding_popup)
+                    showFoldingContentPopup(block);
             }
         }
 
