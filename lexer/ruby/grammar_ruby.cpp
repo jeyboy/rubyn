@@ -584,10 +584,10 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_end_of_code:
         case lex_block_rescue:
         case lex_block_ensure:
-        case lex_block_retry:
             return hid_keyword;
 
 
+        case lex_raise:
         case lex_super:
         case lex_self:
         case lex_yield:
@@ -597,6 +597,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_loop_break:
         case lex_loop_redo:
         case lex_loop_next:
+        case lex_block_retry:
             return hid_spec_keyword;
 
 

@@ -75,14 +75,31 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
     state -> cachingPredicate();
 
     if (state -> cached_length || has_predefined) {
-        state -> lex_word =
-            has_predefined ? predefined_lexem : Predefined::obj().lexem(state -> cached);
+        StateLexem last_non_blank = state -> lastNonBlankLexem();
+
+        if (has_predefined)
+            state -> lex_word = predefined_lexem;
+        else {
+            StateLexem pot_lex = Predefined::obj().lexem(state -> cached);
+
+            switch(pot_lex) {
+                case lex_yield: { break; } // yield can call through object: 'block.yield'
+                case lex_word: { break; }
+
+                default: { // proc lex with dot in front like
+                    if (last_non_blank == lex_dot)
+                       pot_lex = lex_word;
+                }
+            }
+
+            state -> lex_word = pot_lex;
+        }
 
         if (state -> cached_length) {
             if (state -> lex_word == lex_word)
                 identifyWordType(state);
             else
-                state -> grammar -> initFlags(flags, state -> lex_word, state -> lastNonBlankLexem());
+                state -> grammar -> initFlags(flags, state -> lex_word, last_non_blank);
 
             Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
             if (highlightable != hid_none)
