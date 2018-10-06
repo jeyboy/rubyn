@@ -54,22 +54,11 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     connect(this, &CodeEditor::updateRequest, this, &CodeEditor::updateExtraArea);
     connect(this, &CodeEditor::cursorPositionChanged, this, &CodeEditor::highlightCurrentLine);
 
-//    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateExtraAreaWidth(int)));
-//    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateExtraArea(QRect,int)));
-//    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
-
     updateExtraAreaWidth(0);
 //    highlightCurrentLine();
 
     setCursorWidth(8);
     setLineWrapMode(NoWrap);
-
-//    QPalette p = palette();
-//    p.setColor(QPalette::Highlight, QColor(255,  0, 0, 32));
-//    setPalette(p);
-
-//    setStyleSheet("selection-color: #000; selection-background-color: darkblue ");
-
 
     verticalScrollBar() -> setSingleStep(2);
 //    scrollBarWidgets()
@@ -158,6 +147,8 @@ void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
 }
 
 bool CodeEditor::event(QEvent * event) {
+//    qDebug() << "EVENT" << event -> type();
+
     if (event -> type() == QEvent::ToolTip) {
         QHelpEvent * helpEvent = static_cast<QHelpEvent*>(event);
 
@@ -676,7 +667,13 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
                             setTextCursor(tc);
                         } else {
-//                            Logger::obj().startMark();
+                            qDebug() << "--------- START FOLDING";
+                            Logger::obj().startMark();
+
+//                            QTextDocument * curr_doc = document();
+//                            QTextDocument doc;
+//                            doc.setDocumentLayout(new QPlainTextDocumentLayout(&doc));
+//                            setDocument(&doc);
 
                             BlockUserData * user_data = static_cast<BlockUserData *>(blk.userData());
                             DATA_FLAGS_TYPE folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
@@ -725,10 +722,12 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                     }
                                 }
 
+                                qDebug() << "--------- MARK CONTENT";
                                 document() -> markContentsDirty(start, chars);
 
 //                                setUpdatesEnabled(true);
-//                                Logger::obj().endMark("Folding", "collapse");
+                                Logger::obj().endMark("Folding", "collapse");
+                                qDebug() << "--------- END FOLDING";
                             }
                         }
                     }
