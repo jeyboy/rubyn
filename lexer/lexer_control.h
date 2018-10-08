@@ -377,6 +377,7 @@ struct LexerControl {
                     active_para = para;
             } else {
                 active_para -> close = para;
+                active_para -> is_oneliner = active_para -> linesCoverage() <= 1;
 
                 if (!replaceable)
                     para -> close = active_para;
@@ -387,7 +388,10 @@ struct LexerControl {
 
             if (blockable && active_para && active_para -> is_blockator) {
                 active_para -> close = para;
+                active_para -> is_oneliner = active_para -> linesCoverage() <= 1;
+
                 para -> close = active_para;
+                para -> is_oneliner = active_para -> is_oneliner;
             }
         } else {
             active_para = para;

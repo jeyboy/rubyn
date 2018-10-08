@@ -222,7 +222,7 @@ void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
 
     formatChanges.clear();
 
-    _doc_wrapper -> calcFoldings();
+//    _doc_wrapper -> calcFoldings();
 }
 
 void Highlighter::reformatBlock(const QTextBlock & block, int from, int charsRemoved, int charsAdded) {

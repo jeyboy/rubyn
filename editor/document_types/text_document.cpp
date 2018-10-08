@@ -99,10 +99,10 @@ void TextDocument::lexicate(const QString & text, Highlighter * highlighter) {
         _lexer -> handle(text, highlighter);
 }
 
-void TextDocument::calcFoldings() {
-    if (_lexer)
-        _lexer -> calcFoldings();
-}
+//void TextDocument::calcFoldings() {
+//    if (_lexer)
+//        _lexer -> calcFoldings();
+//}
 
 void TextDocument::readNextBlock() {
     if (isFullyReaded()) return;

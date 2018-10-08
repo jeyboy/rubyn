@@ -19,7 +19,7 @@ public:
 
     virtual void handle(const QString & text, Highlighter * lighter) = 0;
 
-    void calcFoldings();
+//    void calcFoldings();
 };
 
 #endif // AB_LEXER_H

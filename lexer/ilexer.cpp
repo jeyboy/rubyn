@@ -28,6 +28,6 @@ ILexer::~ILexer() {
 
 }
 
-void ILexer::calcFoldings() {
+//void ILexer::calcFoldings() {
 
-}
+//}

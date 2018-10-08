@@ -42,7 +42,7 @@ public:
 
     void lexicate(const QString & text, Highlighter * highlighter);
 
-    void calcFoldings();
+//    void calcFoldings();
 protected slots:
     void changesInContent(int position, int removed_count, int added_count);
 };

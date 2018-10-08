@@ -342,7 +342,6 @@ void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const St
         case lex_else:
         case lex_block_rescue:
         case lex_block_ensure:
-        case lex_block_retry:
             { flags = slf_replace_word; break;}
 
         default:;

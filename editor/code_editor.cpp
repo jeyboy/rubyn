@@ -822,7 +822,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         curr_folding_limits.ry() = block_bottom;
     }
 
-    if (folding_flags) {
+    if (folding_flags && user_data -> para_control -> isValid()) {
         bool opened = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
 
         if (on_block) {
@@ -842,6 +842,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
                     showFoldingContentPopup(block);
             }
         }
+
 
         painter.drawPixmap(
             QPoint(folding_offset_x, paint_top + (line_number_height - FOLDING_WIDTH) / 2),
@@ -885,8 +886,9 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
             DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
             bool opened = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
+            bool ignore = opened || !user_data || (user_data && user_data -> para_control && !user_data -> para_control -> isValid());
 
-            if (!opened) {
+            if (!ignore) {
                 if (user_data -> para_control && user_data -> para_control -> close) {
                     QString end_str = blockText(
                         user_data -> para_control -> close -> line_num,

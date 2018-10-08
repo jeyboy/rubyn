@@ -46,7 +46,7 @@ public:
 
 //    virtual bool dump(QIODevice * device, ) { return false; }
 
-    virtual void calcFoldings();
+//    virtual void calcFoldings();
 };
 
 #endif // ILEXER_H

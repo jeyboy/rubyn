@@ -29,7 +29,7 @@ void BlockUserData::syncLine(TokenCell * stack_sync_token, TokenCell * sync_toke
     stack_token = stack_sync_token;
     para_control = control_sync_para;
 
-    if (control_sync_para) {
+    if (control_sync_para && !control_sync_para -> is_oneliner) {
         if (!foldingState())
             setFoldingState(udf_folding_opened);
     }
