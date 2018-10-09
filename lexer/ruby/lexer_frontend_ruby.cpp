@@ -720,9 +720,10 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
         else break;
     }
 
-    if (has_flags)
+    if (has_flags) {
         state -> next_offset = 0;
         status = /*status &&*/ cutWord(state, lex);
+    }
 
 
     if (has_wrong_flags) {
