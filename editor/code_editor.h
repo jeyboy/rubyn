@@ -330,6 +330,7 @@ protected:
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
     void focusInEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
 
     bool canInsertFromMimeData(const QMimeData * source) const Q_DECL_OVERRIDE {
         return source -> hasUrls() || QPlainTextEdit::canInsertFromMimeData(source);

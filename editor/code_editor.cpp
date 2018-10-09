@@ -544,6 +544,16 @@ void CodeEditor::focusInEvent(QFocusEvent * e) {
     QPlainTextEdit::focusInEvent(e);
 }
 
+void CodeEditor::mouseDoubleClickEvent(QMouseEvent * e) {
+    QTextCursor tc = cursorForPosition(e -> pos());
+
+    if (tc.isNull())
+        QPlainTextEdit::mouseDoubleClickEvent(e);
+    else {
+        wordUnderCursor(tc, wuco_select_full);
+    }
+}
+
 void CodeEditor::highlightCurrentLine() {
     // need to show overlay for foldings in folding start/end not on the screen right now
     //                showOverlay(document() -> findBlockByNumber(60));
