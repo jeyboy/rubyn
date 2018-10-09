@@ -890,11 +890,14 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
 
             if (!ignore) {
                 if (user_data -> para_control && user_data -> para_control -> close) {
-                    QString end_str = blockText(
-                        user_data -> para_control -> close -> line_num,
-                        user_data -> para_control -> close -> pos,
-                        user_data -> para_control -> close -> length
-                    );
+                    QString end_str =
+                            user_data -> para_control -> offset < 0 ?
+                                QString() :
+                                blockText(
+                                    user_data -> para_control -> close -> line_num,
+                                    user_data -> para_control -> close -> pos,
+                                    user_data -> para_control -> close -> length
+                                );
 
                     EDITOR_POS_TYPE text_pos = block.length() - 1;
 
