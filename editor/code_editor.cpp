@@ -674,13 +674,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
                             setTextCursor(tc);
                         } else {
-                            qDebug() << "--------- START FOLDING";
                             Logger::obj().startMark();
-
-//                            QTextDocument * curr_doc = document();
-//                            QTextDocument doc;
-//                            doc.setDocumentLayout(new QPlainTextDocumentLayout(&doc));
-//                            setDocument(&doc);
 
                             BlockUserData * user_data = static_cast<BlockUserData *>(blk.userData());
                             DATA_FLAGS_TYPE folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
@@ -700,8 +694,8 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                 while(--lines_coverage >= 0) {
                                     blk = blk.next();
 
-                                    if (!blk.isValid())
-                                        break;
+//                                    if (!blk.isValid())
+//                                        break;
 
                                     blk.setVisible(status);
                                     blk.setLineCount(status ? qMax(1, blk.layout() -> lineCount()) : 0);
@@ -725,15 +719,15 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                     }
                                 }
 
-                                qDebug() << "--------- MARK CONTENT";
-                                QPlainTextDocumentLayout * l = ((QPlainTextDocumentLayout *)document() -> documentLayout());
-
-                                emit l -> documentSizeChanged(l -> documentSize());
                                 setUpdatesEnabled(true);
-//                                l -> requestUpdate();
+
+                                ///// TODO: this implementation is a bit slow for huge blocks - need to rewrite _q_adjustScrollbars and use it
+                                QPlainTextDocumentLayout * l = ((QPlainTextDocumentLayout *)document() -> documentLayout());
+                                emit l -> documentSizeChanged(l -> documentSize());
+                                ////////////////////////////////////////////////////////////
+                                invalidation_required = false;
 
                                 Logger::obj().endMark("Folding", "collapse");
-                                qDebug() << "--------- END FOLDING";
                             }
                         }
                     }

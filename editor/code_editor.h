@@ -292,6 +292,76 @@ public:
         symbol_width = QFontMetricsF(font).averageCharWidth();
     }
 protected:
+//    void _q_adjustScrollbars() {
+//        QTextDocument * doc = document();
+//        QPlainTextDocumentLayout * documentLayout = qobject_cast<QPlainTextDocumentLayout*>(doc -> documentLayout());
+
+//        qreal margin = doc->documentMargin();
+
+//        int vmax = 0;
+
+//        int vSliderLength = 0;
+//        if (!centerOnScroll && isVisible()) {
+//            QTextBlock block = doc->lastBlock();
+//            const qreal visible = viewport->rect().height() - margin - 1;
+//            qreal y = 0;
+//            int visibleFromBottom = 0;
+
+//            while (block.isValid()) {
+//                if (!block.isVisible()) {
+//                    block = block.previous();
+//                    continue;
+//                }
+//                y += documentLayout->blockBoundingRect(block).height();
+
+//                QTextLayout *layout = block.layout();
+//                int layoutLineCount = layout->lineCount();
+//                if (y > visible) {
+//                    int lineNumber = 0;
+//                    while (lineNumber < layoutLineCount) {
+//                        QTextLine line = layout->lineAt(lineNumber);
+//                        const QRectF lr = line.naturalTextRect();
+//                        if (lr.top() >= y - visible)
+//                            break;
+//                        ++lineNumber;
+//                    }
+//                    if (lineNumber < layoutLineCount)
+//                        visibleFromBottom += (layoutLineCount - lineNumber);
+//                    break;
+
+//                }
+//                visibleFromBottom += layoutLineCount;
+//                block = block.previous();
+//            }
+//            vmax = qMax(0, doc->lineCount() - visibleFromBottom);
+//            vSliderLength = visibleFromBottom;
+
+//        } else {
+//            vmax = qMax(0, doc->lineCount() - 1);
+//            int lineSpacing = q->fontMetrics().lineSpacing();
+//            vSliderLength = lineSpacing != 0 ? viewport->height() / lineSpacing : 0;
+//        }
+
+
+
+//        QSizeF documentSize = documentLayout->documentSize();
+//        vbar->setRange(0, qMax(0, vmax));
+//        vbar->setPageStep(vSliderLength);
+//        int visualTopLine = vmax;
+//        QTextBlock firstVisibleBlock = q->firstVisibleBlock();
+//        if (firstVisibleBlock.isValid())
+//            visualTopLine = firstVisibleBlock.firstLineNumber() + topLine;
+
+//        {
+//            const QSignalBlocker blocker(vbar);
+//            vbar->setValue(visualTopLine);
+//        }
+
+//        hbar->setRange(0, (int)documentSize.width() - viewport->width());
+//        hbar->setPageStep(viewport->width());
+
+//        setTopLine(vbar->value());
+//    }
     static void fillBackground(QPainter * p, const QRectF & rect, QBrush brush, const QRectF & gradientRect = QRectF());
 
     void prepareIcons(const int & size = FOLDING_WIDTH);
