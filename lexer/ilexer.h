@@ -44,7 +44,7 @@ public:
 
     virtual void handle(const QString & text, Highlighter * lighter) = 0;
 
-    virtual bool getWord(QString & /*result*/, const QTextBlock & /*block*/, const EDITOR_POS_TYPE & /*pos*/) { return false; }
+    virtual bool getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_LEN_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos)  { return false; }
 
 //    virtual bool dump(QIODevice * device, ) { return false; }
 };
