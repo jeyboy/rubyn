@@ -692,12 +692,10 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
                                 //TODO: need to check performance for bottom to top proc of blocks: possible what performance is broken by layout proceses
 
-//                                setUpdatesEnabled(false);
+                                setUpdatesEnabled(false);
 
                                 bool status = (folding_flags & BlockUserData::udf_folding_opened) != BlockUserData::udf_folding_opened;
                                 EDITOR_POS_TYPE lines_coverage = user_data -> para_control -> linesCoverage();
-                                EDITOR_POS_TYPE start = blk.position() + blk.length();
-                                EDITOR_POS_TYPE chars = 0;
 
                                 while(--lines_coverage >= 0) {
                                     blk = blk.next();
@@ -706,8 +704,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                         break;
 
                                     blk.setVisible(status);
-
-                                    chars += blk.length();
+                                    blk.setLineCount(status ? qMax(1, blk.layout() -> lineCount()) : 0);
 
                                     if (status) {
                                         user_data = static_cast<BlockUserData *>(blk.userData());
@@ -721,7 +718,6 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
                                                 while(--sublines_coverage >= 0) {
                                                     blk = blk.next();
-                                                    chars += blk.length();
                                                     --lines_coverage;
                                                 }
                                             }
@@ -730,9 +726,12 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                 }
 
                                 qDebug() << "--------- MARK CONTENT";
-                                document() -> markContentsDirty(start, chars);
+                                QPlainTextDocumentLayout * l = ((QPlainTextDocumentLayout *)document() -> documentLayout());
 
-//                                setUpdatesEnabled(true);
+                                emit l -> documentSizeChanged(l -> documentSize());
+                                setUpdatesEnabled(true);
+//                                l -> requestUpdate();
+
                                 Logger::obj().endMark("Folding", "collapse");
                                 qDebug() << "--------- END FOLDING";
                             }
