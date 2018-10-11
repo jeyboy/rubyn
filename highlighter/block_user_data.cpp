@@ -12,6 +12,33 @@ BlockUserData::~BlockUserData() {
     ParaList::removeLine(para_begin, para_end);
 }
 
+TokenCell * BlockUserData::tokenForPos(const EDITOR_POS_TYPE & pos) {
+    EDITOR_POS_TYPE length = token_end -> start_pos + token_end -> length;
+
+    if (length - pos < length / 2) {
+        TokenCell * it = token_end;
+        TokenCell * stop_it = token_begin -> prev;
+
+        while(it != stop_it) {
+            if (pos >= it -> start_pos)
+                return it;
+
+            it = it -> prev;
+        }
+    } else {
+        TokenCell * it = token_begin;
+
+        while(it != token_end) {
+            if (pos < it -> start_pos)
+                return it -> prev;
+
+            it = it -> next;
+        }
+    }
+
+    return nullptr;
+}
+
 // maybe better to remove full tokens sequence in another thread instead of use sync and etc ???
 TokenCell * BlockUserData::lineControlToken() {
     msgs.clear();

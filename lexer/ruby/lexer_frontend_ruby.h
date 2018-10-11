@@ -30,6 +30,8 @@ namespace Ruby {
         ~LexerFrontend();
 
         void handle(const QString & text, Highlighter * lighter);
+
+        bool getWord(QString & result, const QTextBlock & block, const EDITOR_POS_TYPE & pos);
     };
 }
 

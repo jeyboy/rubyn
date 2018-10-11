@@ -44,14 +44,9 @@ public:
 
     virtual void handle(const QString & text, Highlighter * lighter) = 0;
 
-    virtual QHash<char, bool> beginWordBoundary() {
-//        "~#%^&*()+{}|\"<>,./;'[]\\-= "
-    }
-    virtual QHash<char, bool> endWordBoundary() {}
+    virtual bool getWord(QString & /*result*/, const QTextBlock & /*block*/, const EDITOR_POS_TYPE & /*pos*/) { return false; }
 
 //    virtual bool dump(QIODevice * device, ) { return false; }
-
-//    virtual void calcFoldings();
 };
 
 #endif // ILEXER_H
