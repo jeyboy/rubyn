@@ -266,31 +266,17 @@ class CodeEditor : public QPlainTextEdit {
     QColor chars_limit_color;
 
     QHash<DATA_FLAGS_TYPE, QPixmap> icons;
+
+    friend class ExtraArea;
 public:
     CodeEditor(QWidget * parent = nullptr);
     ~CodeEditor() Q_DECL_OVERRIDE;
 
     void setCompleter(QCompleter * new_completer);
 
-    void extraAreaMouseEvent(QMouseEvent * event);
-    void extraAreaLeaveEvent(QEvent * event);
-    void extraAreaPaintEvent(QPaintEvent * event);
-    int extraAreaWidth();
-    int foldingOffset();
-
     void openDocument(File * file);
 
-    inline void setFont(const QFont & font) {
-        curr_line_font = QFont(font.family(), font.pointSize());
-        curr_line_font.setUnderline(true);
-        curr_line_font.setBold(true);
-
-        QPlainTextEdit::setFont(font);
-
-        line_number_height = fontMetrics().height();
-
-        symbol_width = QFontMetricsF(font).averageCharWidth();
-    }
+    void setFont(const QFont & font);
 protected:
 //    void _q_adjustScrollbars() {
 //        QTextDocument * doc = document();
@@ -301,7 +287,7 @@ protected:
 //        int vmax = 0;
 
 //        int vSliderLength = 0;
-//        if (!centerOnScroll && isVisible()) {
+//        if (!centerOnScroll() && isVisible()) {
 //            QTextBlock block = doc->lastBlock();
 //            const qreal visible = viewport->rect().height() - margin - 1;
 //            qreal y = 0;
@@ -362,10 +348,14 @@ protected:
 
 //        setTopLine(vbar->value());
 //    }
+
     static void fillBackground(QPainter * p, const QRectF & rect, QBrush brush, const QRectF & gradientRect = QRectF());
 
     void prepareIcons(const int & size = FOLDING_WIDTH);
+
     int widthWithoutScroll();
+    int extraAreaWidth();
+    int foldingOffset();
 
     void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom);
     void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num);
@@ -391,6 +381,10 @@ protected:
 
     QString wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags = wuco_full);
     void procSelectionIndent(const bool & right = true);
+
+    void extraAreaMouseEvent(QMouseEvent * event);
+    void extraAreaLeaveEvent(QEvent * event);
+    void extraAreaPaintEvent(QPaintEvent * event);
 
     void customPaintEvent(QPainter & painter, QPaintEvent * e);
 
