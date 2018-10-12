@@ -114,41 +114,40 @@ void TextDocument::lexicate(const QString & text, Highlighter * highlighter) {
 bool TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos) {
     BlockUserData * udata = static_cast<BlockUserData *>(block.userData());
 
+    start = block.position();
+
     if (udata) {
         TokenCell * tkn = udata -> tokenForPos(pos);
 
         if (tkn) {
-            start = tkn -> start_pos;
+            start += tkn -> start_pos;
             length = tkn -> length;
             return true;
         }
-        else return false;
-    } else {
-        start = block.position();
+    }
 
-        const QString block_text = block.text();
+    const QString block_text = block.text();
 
-        if (block_text.isEmpty()) {
-            length = 0;
-            return true;
-        }
+    if (block_text.isEmpty()) {
+        length = 0;
+        return true;
+    }
 
-        int offset = 0;
-        for(int iter = pos - 1; iter >= 0; --iter, ++offset) {
+    int offset = 0;
+    for(int iter = pos - 1; iter >= 0; --iter, ++offset) {
+        if (word_boundary.contains(block_text[iter]))
+            break;
+    }
+
+    start += pos - offset;
+
+    if (length != -1) {
+        const int end_pos = block.length() - 1;
+        length = offset;
+
+        for(int iter = pos; iter < end_pos; ++iter, ++length) {
             if (word_boundary.contains(block_text[iter]))
                 break;
-        }
-
-        start += pos - offset;
-
-        if (length != -1) {
-            const int end_pos = block.length() - 1;
-            length = offset;
-
-            for(int iter = pos; iter < end_pos; ++iter, ++length) {
-                if (word_boundary.contains(block_text[iter]))
-                    break;
-            }
         }
     }
 

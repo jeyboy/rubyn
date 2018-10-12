@@ -13,11 +13,11 @@ BlockUserData::~BlockUserData() {
 }
 
 TokenCell * BlockUserData::tokenForPos(const EDITOR_POS_TYPE & pos) {
-    EDITOR_POS_TYPE length = token_end -> start_pos + token_end -> length;
+    TokenCell * it = token_end -> prev;
+    EDITOR_POS_TYPE length = it -> start_pos + it -> length;
 
     if (length - pos < length / 2) {
-        TokenCell * it = token_end;
-        TokenCell * stop_it = token_begin -> prev;
+        TokenCell * stop_it = token_begin;
 
         while(it != stop_it) {
             if (pos >= it -> start_pos)
@@ -26,7 +26,7 @@ TokenCell * BlockUserData::tokenForPos(const EDITOR_POS_TYPE & pos) {
             it = it -> prev;
         }
     } else {
-        TokenCell * it = token_begin;
+        it = token_begin -> next;
 
         while(it != token_end) {
             if (pos < it -> start_pos)
