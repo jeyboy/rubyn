@@ -1150,10 +1150,18 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             }
 
             QTextCursor tc = textCursor();
+            QTextBlock block = tc.block();
             bool has_selection = tc.hasSelection();
 
-            QString completion_prefix = wordUnderCursor(tc, wuco_before_caret_part);
-            QString text(wordUnderCursor(tc, wuco_full));
+            EDITOR_POS_TYPE pos = tc.positionInBlock();
+            EDITOR_POS_TYPE start = 0;
+            EDITOR_POS_TYPE length = 0;
+
+            wrapper -> getWordBoundaries(start, length, block, pos, false);
+            QString block_text = block.text();
+
+            QStringRef completion_prefix = block_text.midRef(start, pos - start);//wordUnderCursor(tc, wuco_before_caret_part);
+            QStringRef text = block_text.midRef(start, length); //(wordUnderCursor(tc, wuco_full));
 
             if (is_shortcut && has_selection) {
                 completer -> setCompletionPrefix(QString());
@@ -1165,8 +1173,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                     !is_shortcut &&
                         (
                             has_modifiers || text.isEmpty() //||
-                            //completion_prefix.length() < 3 ||
-//                            word_boundary.contains(text.right(1))
+                            //completion_prefix.length() < 3
                         )
                     )
                 {
@@ -1175,7 +1182,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                 }
 
                 if (completion_prefix != completer -> completionPrefix()) {
-                    completer -> setCompletionPrefix(completion_prefix);
+                    completer -> setCompletionPrefix(completion_prefix.toString());
                     completer -> popup() -> setCurrentIndex(
                         completer -> completionModel() -> index(0, 0)
                     );

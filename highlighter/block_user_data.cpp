@@ -29,7 +29,7 @@ TokenCell * BlockUserData::tokenForPos(const EDITOR_POS_TYPE & pos) {
         it = token_begin -> next;
 
         while(it != token_end) {
-            if (pos < it -> start_pos)
+            if (pos <= it -> start_pos)
                 return it -> prev;
 
             it = it -> next;
