@@ -4,6 +4,7 @@
 #include <qpointer.h>
 #include <qtextdocument.h>
 
+#include "misc/defines.h"
 #include "project/code_formats.h"
 #include "editor/idocument.h"
 
@@ -18,6 +19,7 @@ class TextDocument : public QObject, public IDocument {
     Q_OBJECT
 
     static QLatin1String tab_space;
+    static QHash<QChar, bool> word_boundary;
 
     int pos, removed, added;
 protected:
@@ -41,6 +43,8 @@ public:
     void readNextBlock();
 
     void lexicate(const QString & text, Highlighter * highlighter);
+
+    bool getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos);
 
 //    void calcFoldings();
 protected slots:

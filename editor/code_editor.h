@@ -223,8 +223,6 @@ class CodeEditor : public QPlainTextEdit {
         wuco_select_full = wuco_full | wuco_select,
     };
 
-    static QString word_boundary;
-
     ExtraArea * extra_area;
     QCompleter * completer;
     TextDocument * wrapper;

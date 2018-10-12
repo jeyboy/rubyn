@@ -30,8 +30,6 @@ namespace Ruby {
         ~LexerFrontend();
 
         void handle(const QString & text, Highlighter * lighter);
-
-        bool getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_LEN_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos);
     };
 }
 

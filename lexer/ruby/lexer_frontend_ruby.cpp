@@ -1250,19 +1250,3 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
     block.setUserState(state.lineState());
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
 }
-
-bool LexerFrontend::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_LEN_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos) {
-    BlockUserData * udata = static_cast<BlockUserData *>(block.userData());
-
-    if (udata) {
-        TokenCell * tkn = udata -> tokenForPos(pos);
-
-        if (tkn) {
-            start = tkn -> start_pos;
-            length = tkn -> length;
-            return true;
-        }
-    }
-
-    return false;
-}

@@ -22,8 +22,6 @@
 
 #include "controls/logger.h"
 
-QString CodeEditor::word_boundary("~#%^&*()+{}|\"<>,./;'[]\\-= "); // end of word // "~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "
-
 //qApp->setCursorFlashTime(0);
 
 
@@ -556,44 +554,38 @@ QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos
 
 
 QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags) {
+    bool only_before_caret_part = flags & wuco_before_caret_part;
+
     QTextBlock block = tc.block();
-    const int pos = tc.positionInBlock();
-    const int start_pos = block.position();
-    const int end_pos = block.length() - 1;
-    const QString block_text = block.text();
+    EDITOR_POS_TYPE pos = tc.positionInBlock();
+    EDITOR_POS_TYPE start = 0;
+    EDITOR_POS_TYPE length = only_before_caret_part ? -1 : 0;
 
-    if (block_text.isEmpty())
-        return block_text;
-
-    int offset = 0;
-    for(int iter = pos - 1; iter >= 0; --iter, ++offset) {
-        if (word_boundary.contains(block_text[iter]))
-            break;
-    }
-
-    if (flags & wuco_before_caret_part)
-        tc.setPosition(start_pos + pos - offset, QTextCursor::KeepAnchor);
-    else {
-        tc.setPosition(start_pos + pos - offset, QTextCursor::MoveAnchor);
-
-        offset = 0;
-        for(int iter = pos; iter < end_pos; ++iter, ++offset) {
-            if (word_boundary.contains(block_text[iter]))
-                break;
+    if (wrapper -> getWordBoundaries(start, length, block, pos)) {
+        if (only_before_caret_part)
+            tc.setPosition(start, QTextCursor::KeepAnchor);
+        else {
+            tc.setPosition(start, QTextCursor::MoveAnchor);
+            tc.setPosition(start + length, QTextCursor::KeepAnchor);
         }
 
-        tc.setPosition(start_pos + pos + offset, QTextCursor::KeepAnchor);
-    }
-
-    if (flags & wuco_remove) {
-        QString res(tc.selectedText());
-        tc.removeSelectedText();
-        return res;
-    }
-    else {
-        if (flags & wuco_select)
+        if (flags & wuco_remove) {
+            QString res(tc.selectedText());
+            tc.removeSelectedText();
+            return res;
+        }
+        else {
+            if (flags & wuco_select)
+                setTextCursor(tc);
+            return tc.selectedText();
+        }
+    } else {
+        if (flags & wuco_select) {
+            tc.clearSelection();
             setTextCursor(tc);
-        return tc.selectedText();
+        }
+
+        return QString();
     }
 }
 
@@ -1172,9 +1164,9 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                 if (
                     !is_shortcut &&
                         (
-                            has_modifiers || text.isEmpty() ||
+                            has_modifiers || text.isEmpty() //||
                             //completion_prefix.length() < 3 ||
-                            word_boundary.contains(text.right(1))
+//                            word_boundary.contains(text.right(1))
                         )
                     )
                 {
