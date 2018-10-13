@@ -131,7 +131,9 @@ enum StateLexem : LEXEM_TYPE {
     lex_operator_bit_left_shift, // <<
     lex_operator_bit_right_shift, // >>
 
+    lex_operator_and_word,
     lex_operator_and, // &&
+    lex_operator_or_word,
     lex_operator_or, // ||
     lex_operator_or_assigment, // ||=
     lex_operator_not, // !

@@ -42,7 +42,7 @@ Predefined::Predefined() {
     keys.insert(QByteArrayLiteral("END"), lex_global_post_hook); // Runs after any other code in the current file
 
     keys.insert(QByteArrayLiteral("alias"), lex_alias); // Creates an alias between two methods (and other things)
-    keys.insert(QByteArrayLiteral("and"), lex_operator_and); // Short-circuit Boolean and with lower precedence than &&
+    keys.insert(QByteArrayLiteral("and"), lex_operator_and_word); // Short-circuit Boolean and with lower precedence than &&
 
     keys.insert(QByteArrayLiteral("begin"), lex_begin); // Starts an exception handling block
     keys.insert(QByteArrayLiteral("break"), lex_loop_break); // Leaves a block early
@@ -72,7 +72,7 @@ Predefined::Predefined() {
     keys.insert(QByteArrayLiteral("new"), lex_method);
     keys.insert(QByteArrayLiteral("nil"), lex_method); // A false value usually indicating “no value” or “unknown”
     keys.insert(QByteArrayLiteral("not"), lex_operator_not); // Inverts the following boolean expression
-    keys.insert(QByteArrayLiteral("or"), lex_operator_or); // Boolean or with lower precedence than ||
+    keys.insert(QByteArrayLiteral("or"), lex_operator_or_word); // Boolean or with lower precedence than ||
     keys.insert(QByteArrayLiteral("private"), lex_visibility_scope);
     keys.insert(QByteArrayLiteral("proc"), lex_proc_def);
     keys.insert(QByteArrayLiteral("protected"), lex_visibility_scope);

@@ -110,7 +110,77 @@ void TextDocument::lexicate(const QString & text, Highlighter * highlighter) {
         _lexer -> handle(text, highlighter);
 }
 
-bool TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const bool & global_offset) {
+bool TextDocument::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & /*at_end*/) {
+    switch(lex) {
+        case lex_undefined: //INFO: compatibility for not lexable documents
+
+        case lex_method:
+        case lex_word:
+        case lex_const:
+        case lex_var_local:
+        case lex_var_instance:
+        case lex_var_object:
+        case lex_var_global:
+        case lex_end_of_code:
+        case lex_commentary_start:
+        case lex_commentary_end:
+
+        case lex_global_pre_hook:
+        case lex_global_post_hook:
+
+        case lex_alias:
+        case lex_operator_and_word:
+
+        case lex_begin:
+        case lex_loop_break:
+        case lex_case:
+        case lex_class_def:
+        case lex_method_def:
+        case lex_do:
+        case lex_else:
+        case lex_elsif:
+        case lex_end:
+        case lex_block_ensure:
+
+        case lex_operator_comparison:
+        case lex_operator_equality:
+
+        case lex_extend:
+        case lex_for:
+        case lex_if:
+        case lex_in:
+        case lex_include:
+
+        case lex_lambda_def:
+        case lex_module_def:
+        case lex_loop_next:
+        case lex_operator_not:
+        case lex_operator_or_word:
+        case lex_visibility_scope:
+        case lex_proc_def:
+        case lex_raise:
+        case lex_loop_redo:
+        case lex_require:
+        case lex_block_rescue:
+        case lex_block_retry:
+        case lex_return:
+        case lex_self:
+        case lex_super:
+        case lex_then:
+        case lex_undef:
+        case lex_unless:
+        case lex_until:
+        case lex_when:
+        case lex_while:
+        case lex_yield:
+        case lex_loop:
+            return true;
+    }
+
+    return false;
+}
+
+LEXEM_TYPE TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const bool & global_offset) {
     BlockUserData * udata = static_cast<BlockUserData *>(block.userData());
 
     start = global_offset ? block.position() : 0;
@@ -119,9 +189,24 @@ bool TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & 
         TokenCell * tkn = udata -> tokenForPos(pos);
 
         if (tkn) {
-            start += tkn -> start_pos;
-            length = tkn -> length;
-            return true;
+            switch(tkn -> lexem) {
+                case lex_blanks: {
+                    start += pos;
+                    length = 1;
+                    return lex_blank;
+                }
+                case lex_tabs: {
+                    start += pos;
+                    length = 1;
+                    return lex_tab;
+                }
+
+                default: {
+                    start += tkn -> start_pos;
+                    length = tkn -> length;
+                    return tkn -> lexem;
+                }
+            }
         }
     }
 
@@ -129,7 +214,7 @@ bool TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & 
 
     if (block_text.isEmpty()) {
         length = 0;
-        return true;
+        return lex_none;
     }
 
     int offset = 0;
@@ -150,7 +235,7 @@ bool TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & 
         }
     }
 
-    return true;
+    return lex_undefined;
 }
 
 //void TextDocument::calcFoldings() {

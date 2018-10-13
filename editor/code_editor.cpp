@@ -561,7 +561,9 @@ QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps &
     EDITOR_POS_TYPE start = 0;
     EDITOR_POS_TYPE length = only_before_caret_part ? -1 : 0;
 
-    if (wrapper -> getWordBoundaries(start, length, block, pos)) {
+    wrapper -> getWordBoundaries(start, length, block, pos);
+
+    if (length != 0) {
         if (only_before_caret_part)
             tc.setPosition(start, QTextCursor::KeepAnchor);
         else {
@@ -1156,7 +1158,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             EDITOR_POS_TYPE start = 0;
             EDITOR_POS_TYPE length = 0;
 
-            wrapper -> getWordBoundaries(start, length, block, pos, false);
+            LEXEM_TYPE lex = wrapper -> getWordBoundaries(start, length, block, pos, false);
             QString block_text = block.text();
 
             QStringRef completion_prefix = block_text.midRef(start, pos - start);//wordUnderCursor(tc, wuco_before_caret_part);
@@ -1177,11 +1179,14 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                 if (completion_prefix != completer -> completionPrefix()) {
                     completer -> popup() -> reset();
 
-                    //TODO: not worked for names like 'cool?' and etc.
-                    if (!completion_prefix.at(completion_prefix.length() - 1).isLetterOrNumber())
-                        completer -> setCompletionPrefix(QString());
-                    else
-                        completer -> setCompletionPrefix(completion_prefix.toString());
+                    int prefix_len = completion_prefix.length();
+                    bool from_scratch = !wrapper -> isCompleterContinuable(lex, prefix_len == length);
+
+                    Logger::obj().write("Completer: prefix from_scratch", from_scratch ? "true" : "false");
+
+                    completer -> setCompletionPrefix(
+                        from_scratch ? QString() : completion_prefix.toString()
+                    );
 //                    completer -> popup() -> setCurrentIndex(
 //                        completer -> completionModel() -> index(0, 0)
 //                    );
@@ -1190,8 +1195,10 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
 
             int completions_amount = completer -> completionCount();
 
-            if (completions_amount == 0)
+            if (completions_amount == 0) {
+                completer -> popup() -> hide();
                 return;
+            }
 
             if (is_shortcut && completions_amount == 1 && completion_prefix == text) {
                 applyCompletion(completer -> currentCompletion());
