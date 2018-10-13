@@ -33,7 +33,6 @@ void Highlighter::setDocument(TextDocument * new_doc) {
 //        QTimer::singleShot(0, this, SLOT(rehighlight()));
         rehighlight();
 //        }
-//        d->foldValidator.setup(qobject_cast<TextDocumentLayout *>(doc->documentLayout()));
     }
 }
 

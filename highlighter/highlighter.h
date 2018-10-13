@@ -46,7 +46,6 @@ public:
     void setFormat(const int & start, const int & count, const QFont & font);
 
     int previousBlockState() const;
-
     int currentBlockState() const;
     void setCurrentBlockState(const int & new_state);
 
