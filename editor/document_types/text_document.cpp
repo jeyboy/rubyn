@@ -55,12 +55,12 @@ TextDocument::TextDocument(File * file) : IDocument(), pos(-1), removed(0), adde
         qDebug() << "replaced";
 //        _doc = new QTextDocument(QString(buff));
         _doc = new QTextDocument(ar);
-        _doc -> setProperty("tab_space", TextDocument::tab_space);
+//        _doc -> setProperty("tab_space", TextDocument::tab_space);
 
 //        delete [] buff;
     } else {
         _doc = new QTextDocument();
-        _doc -> setProperty("tab_space", QLatin1String("\t"));
+//        _doc -> setProperty("tab_space", QLatin1String("\t"));
 
         QTextStream stream(_file -> source());
         QTextCursor * cursor = new QTextCursor(_doc);
@@ -97,7 +97,6 @@ TextDocument::TextDocument(File * file) : IDocument(), pos(-1), removed(0), adde
 //            fully_readed = false;
 //            readNextBlock();
 //        }
-
 
     identificateLexer();
 }

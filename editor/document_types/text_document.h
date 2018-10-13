@@ -38,6 +38,8 @@ public:
 
     ~TextDocument();
 
+    const QLatin1String & tabSpace() { return tab_space; }
+
     QTextDocument * toQDoc() { return _doc; }
 
     void readNextBlock();

@@ -591,7 +591,7 @@ QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps &
 
 void CodeEditor::procSelectionIndent(const bool & right) {
     QTextCursor curs = textCursor();
-    const QString tab_space = document() -> property("tab_space").toString();
+    const QString & tab_space = wrapper -> tabSpace();
     const int tab_space_length = tab_space.length();
 
     if(!curs.hasSelection()) {
@@ -1164,31 +1164,36 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
 
             if (is_shortcut && has_selection) {
                 completer -> setCompletionPrefix(QString());
-                completer -> popup() -> setCurrentIndex(
-                    completer -> completionModel() -> index(0, 0)
-                );
+                completer -> popup() -> reset();
+//                completer -> popup() -> setCurrentIndex(
+//                    completer -> completionModel() -> index(0, 0)
+//                );
             } else {
-                if (
-                    !is_shortcut &&
-                        (
-                            has_modifiers || text.isEmpty() //||
-                            //completion_prefix.length() < 3
-                        )
-                    )
-                {
+                if (!is_shortcut && (has_modifiers || text.isEmpty() /*|| completion_prefix.length() < 3*/)) {
                     completer -> popup() -> hide();
                     return;
                 }
 
                 if (completion_prefix != completer -> completionPrefix()) {
-                    completer -> setCompletionPrefix(completion_prefix.toString());
-                    completer -> popup() -> setCurrentIndex(
-                        completer -> completionModel() -> index(0, 0)
-                    );
+                    completer -> popup() -> reset();
+
+                    //TODO: not worked for names like 'cool?' and etc.
+                    if (!completion_prefix.at(completion_prefix.length() - 1).isLetterOrNumber())
+                        completer -> setCompletionPrefix(QString());
+                    else
+                        completer -> setCompletionPrefix(completion_prefix.toString());
+//                    completer -> popup() -> setCurrentIndex(
+//                        completer -> completionModel() -> index(0, 0)
+//                    );
                 }
             }
 
-            if (is_shortcut && completer -> completionCount() == 1 && completion_prefix == text) {
+            int completions_amount = completer -> completionCount();
+
+            if (completions_amount == 0)
+                return;
+
+            if (is_shortcut && completions_amount == 1 && completion_prefix == text) {
                 applyCompletion(completer -> currentCompletion());
             } else {
                 QRect cr = cursorRect();
