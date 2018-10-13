@@ -18,11 +18,10 @@ struct ParaCell {
 
     char offset;
     bool is_blockator;
-    bool is_oneliner;
 
     ParaCell(const ParaType & para, const EDITOR_POS_TYPE & start_pos, ParaCell * prev_token = nullptr)
         : prev(nullptr), next(nullptr), close(nullptr), para_type(para), line_num(-1), pos(start_pos),
-          length(1), offset(0), is_blockator(false), is_oneliner(false)
+          length(1), offset(0), is_blockator(false)
     {
         if ((prev = prev_token)) {
             if ((next = prev -> next))
@@ -38,6 +37,9 @@ struct ParaCell {
 
         if (next)
             next -> prev = prev;
+
+        if (close)
+            close -> close = nullptr;
     }
 
     bool isValid() { return close && linesCoverage() > 0; }
