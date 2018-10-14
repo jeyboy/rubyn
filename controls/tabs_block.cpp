@@ -12,6 +12,10 @@
 #include <qtoolbutton.h>
 #include <qmenu.h>
 
+void TabsBlock::activate(const bool & act) {
+    _active_btn -> setVisible(act);
+}
+
 void TabsBlock::setupLayout() {
     QVBoxLayout * col_layout = new QVBoxLayout(this);
 
@@ -28,6 +32,14 @@ void TabsBlock::setupLayout() {
     _bar -> setStyle(new TabBarNoFocusStyle());
     _bar -> setMovement(QListView::Free);
     _bar -> setContextMenuPolicy(Qt::CustomContextMenu);
+
+
+    _active_btn = new QToolButton(this);
+    _active_btn -> setIcon(QIcon(":/tools/help"));
+    _active_btn -> setFixedHeight(_bar -> height());
+    _active_btn -> setStyleSheet("background: qlineargradient(x1:0 y1:0, x2:1 y2:0, stop:0 rgba(0, 255, 255, 255), stop:1 rgba(0, 204, 255, 255)); border-radius: 3px; border: 1px solid black;");
+    _active_btn -> hide();
+    row_layout -> addWidget(_active_btn, 0);
 
     row_layout -> addWidget(_bar, 1);
 
@@ -96,7 +108,7 @@ void TabsBlock::setupCompleter() {
     _completer -> update();
 }
 
-TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(0), _completer(0), _list_btn(0), _scroll_left_btn(0), _scroll_right_btn(0), _files_list(0) {
+TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _completer(nullptr), _active_btn(nullptr), _list_btn(nullptr), _scroll_left_btn(nullptr), _scroll_right_btn(nullptr), _files_list(nullptr) {
 //    setStyleSheet("QWidget:focus {background-color: #FFFFCC;}");
 
     setupLayout();

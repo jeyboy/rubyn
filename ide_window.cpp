@@ -169,8 +169,13 @@ void IDEWindow::newEditorRequired(File * file, const bool & is_external) {
 }
 
 void IDEWindow::setActiveEditor(TabsBlock * new_active) {
+    if (active_editor)
+        active_editor -> activate(false);
+
     active_editor = new_active;
-    //TODO: need to mark somehow active editor
+
+    if (active_editor)
+        active_editor -> activate(true);
 }
 
 void IDEWindow::editorIsEmpty(TabsBlock * target_editor) {

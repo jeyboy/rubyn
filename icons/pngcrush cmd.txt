@@ -11,4 +11,4 @@ pngcrush -n -q *.png
      -q means suppress most of the output except for warnings.
 
 
-./icons//pngcrush_1_8_11_w64.exe -ow -rem alib -reduce ./icons/run_config.png
+./icons//pngcrush_1_8_11_w64.exe -ow -rem alib -reduce ./icons/help.png

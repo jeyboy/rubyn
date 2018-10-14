@@ -51,6 +51,8 @@
         <file alias="tool_pause">icons/tool_pause_on.png</file>
         <file alias="tool_run">icons/tool_run_on.png</file>
         <file alias="tool_stop">icons/tool_stop_on.png</file>
+        <file alias="help">icons/help.png</file>
+        <file alias="save">icons/save.png</file>
     </qresource>
     <qresource prefix="/completer">
         <file alias="const">icons/completer/comp_const.png</file>

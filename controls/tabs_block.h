@@ -24,6 +24,7 @@ class TabsBlock : public QWidget {
     TabBar * _bar;
     Completer * _completer;
 
+    QToolButton * _active_btn;
     QToolButton * _list_btn;
     QToolButton * _scroll_left_btn;
     QToolButton * _scroll_right_btn;
@@ -38,9 +39,10 @@ class TabsBlock : public QWidget {
     void setupCompleter();
     bool openFileInEditor(File * file);
 public:
-    TabsBlock(QWidget * parent = 0);
+    TabsBlock(QWidget * parent = nullptr);
     ~TabsBlock();
 
+    void activate(const bool & act = true);
     void registerCursorPosOutput(QLabel * output);
 
     bool openFile(File * file, const bool & is_external = false);
