@@ -352,7 +352,12 @@ struct LexerControl {
             if (para -> next) {
                 para = para -> next;
                 para -> para_type = ptype;
-                para -> pos = cached_str_pos;  
+                para -> pos = cached_str_pos;
+
+                if (para -> close) {
+                    para -> close -> close = nullptr;
+                    para -> close = nullptr;
+                }
             }
             else para = ParaList::insert(para, ptype, cached_str_pos);
 

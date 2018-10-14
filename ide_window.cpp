@@ -95,8 +95,26 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 IDEWindow::~IDEWindow() { delete ui; }
 
+void IDEWindow::splitterMoved(int /*pos*/, int index) {
+    QSplitter * obj = static_cast<QSplitter *>(sender());
+
+    if (obj) {
+        QList<int> sizes = obj -> sizes();
+
+        if (sizes.at(index) == 0) {
+            if (active_editor == obj -> widget(index)) {
+                active_editor = dynamic_cast<TabsBlock *>(obj -> widget(index - 1));
+            }
+        } else if (sizes.at(index - 1) == 0) {
+            if (active_editor == obj -> widget(index - 1)) {
+                active_editor = dynamic_cast<TabsBlock *>(obj -> widget(index));
+            }
+        }
+    }
+}
+
 void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool & in_new) {
-    File * _file = 0;
+    File * _file = nullptr;
     bool is_external = false;
 
     if (folder) {
@@ -119,7 +137,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
         }
     }
 
-    if (_file == 0) {
+    if (_file == nullptr) {
         qDebug() << "FILE IS NULL";
         Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Cant find file: '") % name % '\'',  Logger::log_error);
         return;
@@ -303,6 +321,8 @@ void IDEWindow::setupSplitter() {
     );
 
     setCentralWidget(widgets_list);
+
+    connect(widgets_list, &QSplitter::splitterMoved, this, &IDEWindow::splitterMoved);
 }
 
 void IDEWindow::setupToolWindows() {

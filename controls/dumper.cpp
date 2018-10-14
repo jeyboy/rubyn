@@ -156,7 +156,6 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
 
     QVariant tree_state = settings.value(QLatin1Literal("tree_state"));
     if (tree_state.isValid()) {
-        qDebug() << "";
         w -> tree -> restoreState(tree_state.toByteArray());
     }
 
@@ -167,6 +166,14 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
     QVariant widgets_list_state = settings.value(QLatin1Literal("widgets_list_state"));
     if (widgets_list_state.isValid())
         w -> widgets_list -> restoreState(widgets_list_state.toByteArray());
+
+    QVariant active_editor_index = settings.value(QLatin1Literal("active_editor_index"));
+
+    if (active_editor_index.isValid()) {
+        TabsBlock * active = dynamic_cast<TabsBlock *>(w -> widgets_list -> widget(active_editor_index.toInt()));
+        if (active)
+            w -> active_editor = active;
+    }
 }
 
 void Dumper::save(IDEWindow * w, const QString & settings_filename) {
@@ -184,6 +191,7 @@ void Dumper::save(IDEWindow * w, const QString & settings_filename) {
 
     settings.setValue(QLatin1Literal("widgets_list_state"), w -> widgets_list -> saveState());
     settings.setValue(QLatin1Literal("widgets_list_geom"), w -> widgets_list -> saveGeometry());
+    settings.setValue(QLatin1Literal("active_editor_index"), w -> widgets_list -> indexOf(w -> active_editor));
 
     settings.sync();
 }

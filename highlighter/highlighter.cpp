@@ -10,6 +10,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     if (doc) {
         disconnect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         disconnect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
+        disconnect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::blockCountChanged);
         disconnect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
 
         QTextCursor cursor(doc);
@@ -28,6 +29,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
 
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
+        connect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::blockCountChanged);
         connect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
 //            d->rehighlightPending = true;
 //        QTimer::singleShot(0, this, SLOT(rehighlight()));
@@ -195,26 +197,31 @@ void Highlighter::setCurrentBlockState(const int & new_state) {
 void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
 //    rehighlightPending = false;
 
+
+//    if (!rehighlighting) {
+//        // recalc folding queues
+//    }
+
     QTextBlock block = doc -> findBlock(from);
     if (!block.isValid())
         return;
 
-    QTextBlock lastBlock = doc -> findBlock(from + charsAdded + (charsRemoved > 0 ? 1 : 0));
-    int endPosition;
+    QTextBlock last_block = doc -> findBlock(from + charsAdded + (charsRemoved > 0 ? 1 : 0));
+    int end_position;
 
-    if (lastBlock.isValid())
-        endPosition = lastBlock.position() + lastBlock.length();
+    if (last_block.isValid())
+        end_position = last_block.position() + last_block.length();
     else
-        endPosition = doc -> lastBlock().position() + doc -> lastBlock().length();
+        end_position = doc -> lastBlock().position() + doc -> lastBlock().length();
 
-    bool forceHighlightOfNextBlock = false;
+    bool force_next_block_highlight = false;
 
-    while (block.isValid() && (block.position() < endPosition || forceHighlightOfNextBlock)) {
-        const int stateBeforeHighlight = block.userState();
+    while (block.isValid() && (block.position() < end_position || force_next_block_highlight)) {
+        const int state_before_highlight = block.userState();
 
         reformatBlock(block, from, charsRemoved, charsAdded);
 
-        forceHighlightOfNextBlock = !rehighlighting && (block.userState() != stateBeforeHighlight);
+        force_next_block_highlight = !rehighlighting && (block.userState() != state_before_highlight);
 
         block = block.next();
     }
@@ -297,6 +304,10 @@ void Highlighter::applyFormatChanges(int from, int charsRemoved, int charsAdded)
         layout -> setFormats(ranges);
         doc -> markContentsDirty(current_block.position(), current_block.length());
     }
+}
+
+void Highlighter::blockCountChanged(int count) {
+    qDebug() << "blockCountChanged" << count << doc -> blockCount();
 }
 
 void Highlighter::cursorPositionChanged(const QTextCursor & /*cursor*/) {

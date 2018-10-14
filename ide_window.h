@@ -56,10 +56,11 @@ protected:
 
     void closeEvent(QCloseEvent *);
 public:
-    explicit IDEWindow(QWidget * parent = 0);
+    explicit IDEWindow(QWidget * parent = nullptr);
     ~IDEWindow();
 
 protected slots:
+    void splitterMoved(int pos, int index);
     void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false);
     void newEditorRequired(File * file, const bool & is_external = false);
     void editorActivated(TabsBlock *);
