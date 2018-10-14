@@ -63,7 +63,7 @@ protected slots:
     void splitterMoved(int pos, int index);
     void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false);
     void newEditorRequired(File * file, const bool & is_external = false);
-    void editorActivated(TabsBlock *);
+    void setActiveEditor(TabsBlock *);
     void editorIsEmpty(TabsBlock *);
     void openResource(TabsBlock * target_editor, const QUrl & url);
 

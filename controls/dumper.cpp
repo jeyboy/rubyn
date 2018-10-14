@@ -172,7 +172,7 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
     if (active_editor_index.isValid()) {
         TabsBlock * active = dynamic_cast<TabsBlock *>(w -> widgets_list -> widget(active_editor_index.toInt()));
         if (active)
-            w -> active_editor = active;
+            w -> setActiveEditor(active);
     }
 }
 

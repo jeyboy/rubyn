@@ -103,11 +103,11 @@ void IDEWindow::splitterMoved(int /*pos*/, int index) {
 
         if (sizes.at(index) == 0) {
             if (active_editor == obj -> widget(index)) {
-                active_editor = dynamic_cast<TabsBlock *>(obj -> widget(index - 1));
+                setActiveEditor(dynamic_cast<TabsBlock *>(obj -> widget(index - 1)));
             }
         } else if (sizes.at(index - 1) == 0) {
             if (active_editor == obj -> widget(index - 1)) {
-                active_editor = dynamic_cast<TabsBlock *>(obj -> widget(index));
+                setActiveEditor(dynamic_cast<TabsBlock *>(obj -> widget(index)));
             }
         }
     }
@@ -168,8 +168,9 @@ void IDEWindow::newEditorRequired(File * file, const bool & is_external) {
     active_editor -> openFile(file, is_external);
 }
 
-void IDEWindow::editorActivated(TabsBlock * target_editor) {
-    active_editor = target_editor;
+void IDEWindow::setActiveEditor(TabsBlock * new_active) {
+    active_editor = new_active;
+    //TODO: need to mark somehow active editor
 }
 
 void IDEWindow::editorIsEmpty(TabsBlock * target_editor) {
@@ -181,12 +182,12 @@ void IDEWindow::editorIsEmpty(TabsBlock * target_editor) {
         else if (index + 1 < widgets_list -> count())
             ++index;
         else {
-            active_editor = 0;
+            setActiveEditor(nullptr);
             return;
         }
 
         QWidget * widget = widgets_list -> widget(index);
-        active_editor = dynamic_cast<TabsBlock *>(widget);
+        setActiveEditor(dynamic_cast<TabsBlock *>(widget));
 
         if (active_editor) {
             active_editor -> setFocus();
@@ -210,7 +211,7 @@ void IDEWindow::newFolder() {
 
 void IDEWindow::openResource(TabsBlock * target_editor, const QUrl & url) {
     if (url.isLocalFile()) {
-        active_editor = target_editor;
+        setActiveEditor(target_editor);
 
         QFileInfo f(url.toLocalFile());
 
@@ -265,12 +266,12 @@ void IDEWindow::setupPosOutput() {
 
 void IDEWindow::setupEditor() {
     TabsBlock * new_editor = new TabsBlock(this);
-    active_editor = new_editor;
+    setActiveEditor(new_editor);
 
     new_editor -> registerCursorPosOutput(pos_status);
     connect(new_editor, SIGNAL(newTabsBlockRequested(File*)), this, SLOT(newEditorRequired(File*)));
     connect(new_editor, SIGNAL(moveToBlankState(TabsBlock*)), this, SLOT(editorIsEmpty(TabsBlock*)));
-    connect(new_editor, SIGNAL(activated(TabsBlock*)), this, SLOT(editorActivated(TabsBlock*)));
+    connect(new_editor, SIGNAL(activated(TabsBlock*)), this, SLOT(setActiveEditor(TabsBlock*)));
     connect(new_editor, SIGNAL(resourceDropped(TabsBlock*,QUrl)), this, SLOT(openResource(TabsBlock*,QUrl)));
 
     widgets_list -> addWidget(new_editor);
