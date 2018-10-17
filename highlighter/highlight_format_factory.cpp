@@ -52,6 +52,15 @@ void HighlightFormatFactory::registerSpellcheckFormat() {
     _formats.insert(hid_notice, format);
 }
 
+void HighlightFormatFactory::registerScopeVisibilityFormat() {
+    QTextCharFormat format;
+    format.setFontWeight(QFont::Bold);
+    format.setTextOutline(QPen(QColor::fromRgb(220, 0, 220, 64)));
+    format.setForeground(QColor::fromRgb(220, 0, 220));
+
+    _formats.insert(hid_scope_visibility, format);
+}
+
 void HighlightFormatFactory::registerUnknownName() {
     QTextCharFormat format;
     format.setFontItalic(true);
@@ -171,7 +180,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerCurrentLineFormat();
     registerFoldingDescriptionFormat();
     registerFoldingRangeFormat();
-
+    registerScopeVisibilityFormat();
     registerLabelFormat();
     registerOperatorFormat();
     registerSpecKeywordFormat();

@@ -24,6 +24,8 @@ protected:
 
     void registerSpellcheckFormat();
 
+    void registerScopeVisibilityFormat();
+
     void registerUnknownName();
 
     void registerLabelFormat();
