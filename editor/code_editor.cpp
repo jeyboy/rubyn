@@ -717,59 +717,10 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
                             setTextCursor(tc);
                         } else {
-                            Logger::obj().startMark();
-
-                            BlockUserData * user_data = static_cast<BlockUserData *>(blk.userData());
-                            DATA_FLAGS_TYPE folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
-
-                            if (folding_flags) {
+                            if (toggleFolding(blk)) {
                                 folding_click = true;
                                 can_show_folding_popup = false;
-                                user_data -> invertFoldingState();
-
-                                //TODO: need to check performance for bottom to top proc of blocks: possible what performance is broken by layout proceses
-
-                                setUpdatesEnabled(false);
-
-                                bool status = (folding_flags & BlockUserData::udf_folding_opened) != BlockUserData::udf_folding_opened;
-                                EDITOR_POS_TYPE lines_coverage = user_data -> para_control -> linesCoverage();
-                                EDITOR_POS_TYPE sublines_coverage = 0;
-
-                                while(--lines_coverage >= 0) {
-                                    blk = blk.next();
-
-//                                    if (!blk.isValid())
-//                                        break;
-
-                                    if (sublines_coverage == 0) {
-                                        blk.setVisible(status);
-                                        blk.setLineCount(status ? qMax(1, blk.layout() -> lineCount()) : 0);
-
-                                        if (status) {
-                                            user_data = static_cast<BlockUserData *>(blk.userData());
-                                            folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
-
-                                            if (folding_flags) {
-                                                bool substatus = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
-
-                                                if (substatus != status) {
-                                                    sublines_coverage = user_data -> para_control -> linesCoverage();
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else --sublines_coverage;
-                                }
-
-                                setUpdatesEnabled(true);
-
-                                ///// TODO: this implementation is a bit slow for huge blocks - need to rewrite _q_adjustScrollbars and use it
-                                QPlainTextDocumentLayout * l = ((QPlainTextDocumentLayout *)document() -> documentLayout());
-                                emit l -> documentSizeChanged(l -> documentSize());
-                                ////////////////////////////////////////////////////////////
                                 invalidation_required = false;
-
-                                Logger::obj().endMark("Folding", "collapse");
                             }
                         }
                     }
@@ -1153,67 +1104,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             }
 
             QTextCursor tc = textCursor();
-            QTextBlock block = tc.block();
-            bool has_selection = tc.hasSelection();
-
-            EDITOR_POS_TYPE pos = tc.positionInBlock();
-            EDITOR_POS_TYPE start = 0;
-            EDITOR_POS_TYPE length = 0;
-
-            LEXEM_TYPE lex = wrapper -> getWordBoundaries(start, length, block, pos, false);
-            QString block_text = block.text();
-
-            QStringRef completion_prefix = block_text.midRef(start, pos - start);//wordUnderCursor(tc, wuco_before_caret_part);
-            QStringRef text = block_text.midRef(start, length); //(wordUnderCursor(tc, wuco_full));
-
-            if (is_shortcut && has_selection) {
-                completer -> setCompletionPrefix(QString());
-                completer -> popup() -> reset();
-//                completer -> popup() -> setCurrentIndex(
-//                    completer -> completionModel() -> index(0, 0)
-//                );
-            } else {
-                if (!is_shortcut && (has_modifiers || text.isEmpty() /*|| completion_prefix.length() < 3*/)) {
-                    completer -> popup() -> hide();
-                    return;
-                }
-
-                if (completion_prefix != completer -> completionPrefix()) {
-                    completer -> popup() -> reset();
-
-                    int prefix_len = completion_prefix.length();
-                    bool from_scratch = !wrapper -> isCompleterContinuable(lex, prefix_len == length);
-
-                    Logger::obj().write("Completer: prefix from_scratch", from_scratch ? "true" : "false");
-
-                    completer -> setCompletionPrefix(
-                        from_scratch ? QString() : completion_prefix.toString()
-                    );
-//                    completer -> popup() -> setCurrentIndex(
-//                        completer -> completionModel() -> index(0, 0)
-//                    );
-                }
-            }
-
-            int completions_amount = completer -> completionCount();
-
-            if (completions_amount == 0) {
-                completer -> popup() -> hide();
-                return;
-            }
-
-            if (is_shortcut && completions_amount == 1 && completion_prefix == text) {
-                applyCompletion(completer -> currentCompletion());
-            } else {
-                QRect cr = cursorRect();
-                cr.setLeft(cr.left() + extra_area -> width());
-                cr.setWidth(
-                    completer -> popup() -> sizeHintForColumn(0) +
-                        completer -> popup() -> verticalScrollBar() -> sizeHint().width()
-                );
-
-                completer -> complete(cr);
-            }
+            procCompleterForCursor(tc, is_shortcut, has_modifiers);
         }
     }
 }
@@ -1255,6 +1146,126 @@ void CodeEditor::mouseDoubleClickEvent(QMouseEvent * e) {
 }
 
 
+bool CodeEditor::toggleFolding(QTextBlock & blk) {
+    Logger::obj().startMark();
+
+    BlockUserData * user_data = static_cast<BlockUserData *>(blk.userData());
+    DATA_FLAGS_TYPE folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
+
+    if (folding_flags) {
+        user_data -> invertFoldingState();
+
+        //TODO: need to check performance for bottom to top proc of blocks: possible what performance is broken by layout proceses
+
+        setUpdatesEnabled(false);
+
+        bool status = (folding_flags & BlockUserData::udf_folding_opened) != BlockUserData::udf_folding_opened;
+        EDITOR_POS_TYPE lines_coverage = user_data -> para_control -> linesCoverage();
+        EDITOR_POS_TYPE sublines_coverage = 0;
+
+        while(--lines_coverage >= 0) {
+            blk = blk.next();
+
+//                                    if (!blk.isValid())
+//                                        break;
+
+            if (sublines_coverage == 0) {
+                blk.setVisible(status);
+                blk.setLineCount(status ? qMax(1, blk.layout() -> lineCount()) : 0);
+
+                if (status) {
+                    user_data = static_cast<BlockUserData *>(blk.userData());
+                    folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
+
+                    if (folding_flags) {
+                        bool substatus = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
+
+                        if (substatus != status) {
+                            sublines_coverage = user_data -> para_control -> linesCoverage();
+                        }
+                    }
+                }
+            }
+            else --sublines_coverage;
+        }
+
+        setUpdatesEnabled(true);
+
+        ///// TODO: this implementation is a bit slow for huge blocks - need to rewrite _q_adjustScrollbars and use it
+        QPlainTextDocumentLayout * l = ((QPlainTextDocumentLayout *)document() -> documentLayout());
+        emit l -> documentSizeChanged(l -> documentSize());
+        ////////////////////////////////////////////////////////////
+
+        Logger::obj().endMark("Folding", "collapse");
+        return true;
+    }
+
+    return false;
+}
+
+void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup, const bool & has_modifiers) {
+    QTextBlock block = tc.block();
+    bool has_selection = tc.hasSelection();
+
+    EDITOR_POS_TYPE pos = tc.positionInBlock();
+    EDITOR_POS_TYPE start = 0;
+    EDITOR_POS_TYPE length = 0;
+
+    LEXEM_TYPE lex = wrapper -> getWordBoundaries(start, length, block, pos, false);
+    QString block_text = block.text();
+
+    QStringRef completion_prefix = block_text.midRef(start, pos - start);//wordUnderCursor(tc, wuco_before_caret_part);
+    QStringRef text = block_text.midRef(start, length); //(wordUnderCursor(tc, wuco_full));
+
+    if (initiate_popup && has_selection) {
+        completer -> setCompletionPrefix(QString());
+        completer -> popup() -> reset();
+//                completer -> popup() -> setCurrentIndex(
+//                    completer -> completionModel() -> index(0, 0)
+//                );
+    } else {
+        if (!initiate_popup && (has_modifiers || text.isEmpty() /*|| completion_prefix.length() < 3*/)) {
+            completer -> popup() -> hide();
+            return;
+        }
+
+        if (completion_prefix != completer -> completionPrefix()) {
+            completer -> popup() -> reset();
+
+            int prefix_len = completion_prefix.length();
+            bool from_scratch = !wrapper -> isCompleterContinuable(lex, prefix_len == length);
+
+            Logger::obj().write("Completer: prefix from_scratch", from_scratch ? "true" : "false");
+
+            completer -> setCompletionPrefix(
+                from_scratch ? QString() : completion_prefix.toString()
+            );
+//                    completer -> popup() -> setCurrentIndex(
+//                        completer -> completionModel() -> index(0, 0)
+//                    );
+        }
+    }
+
+    int completions_amount = completer -> completionCount();
+
+    if (completions_amount == 0) {
+        completer -> popup() -> hide();
+        return;
+    }
+
+    if (initiate_popup && completions_amount == 1 && completion_prefix == text) {
+        applyCompletion(completer -> currentCompletion());
+    } else {
+        QRect cr = cursorRect();
+        cr.setLeft(cr.left() + extra_area -> width());
+        cr.setWidth(
+            completer -> popup() -> sizeHintForColumn(0) +
+                completer -> popup() -> verticalScrollBar() -> sizeHint().width()
+        );
+
+        completer -> complete(cr);
+    }
+}
 
 void CodeEditor::applyCompletion(const QString & completion) {
     if (completer -> widget() != this) return;
