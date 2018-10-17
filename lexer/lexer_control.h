@@ -40,7 +40,6 @@ struct LexerControl {
 
 //    Scope * scope;
     quint8 next_offset;
-    int line_num;
 
     TokenCell * heredoc_token;
     TokenCell * stack_token;
@@ -65,14 +64,14 @@ struct LexerControl {
 
     BlockUserData * user_data;
 
-    LexerControl(const int & line_number, IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, Highlighter * lighter = nullptr) :
+    LexerControl(IGrammar * cgrammar, BlockUserData * user_data, TokenCell * stack_token = nullptr, Highlighter * lighter = nullptr) :
         lighter(lighter), grammar(cgrammar),
-        lex_prev_word(lex_none), lex_word(lex_none)/*, lex_prev_delimiter(lex_none)*/, lex_delimiter(lex_none), next_offset(1), line_num(line_number),
+        lex_prev_word(lex_none), lex_word(lex_none)/*, lex_prev_delimiter(lex_none)*/, lex_delimiter(lex_none), next_offset(1),
         heredoc_token(nullptr), stack_token(stack_token), token(user_data -> lineControlToken()), last_non_blank_token(nullptr),
         para(user_data -> lineControlPara()), control_para(nullptr), active_para(nullptr),
         last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2),
         last_light_len(0), start(nullptr), buffer(nullptr), prev(nullptr), user_data(user_data)
-    { }
+    {}
 
     ~LexerControl() {}
 
@@ -162,9 +161,8 @@ struct LexerControl {
         ParaCell * it = active_para ? active_para : para -> prev;
 
         while(it) {
-            if (!it -> close && it -> line_num != -1) {
+            if (!it -> close)
                 return it;
-            }
 
             it = it -> prev;
         }
@@ -201,7 +199,7 @@ struct LexerControl {
 //                        if (lex_prev_word == lex_none)
 //                            lex_prev_word = stack_token -> lexem;
 
-                        attachPara(grammar -> paraType(lexem), flags, grammar -> paraType(stack_token -> lexem));
+                        attachPara(grammar -> paraType(lexem), flags, true);
                         stack_token = stack_token -> stacked_prev;
                     }
                 } else {
@@ -220,7 +218,7 @@ struct LexerControl {
 //                stack_token -> stacked_state_lexem = lex_none; //stack_word ? lex_prev_word : lex_word;
                 lex_prev_word = lex_none;
 
-                attachPara(grammar -> paraType(lexem), flags);
+                attachPara(grammar -> paraType(lexem), flags, false);
             }
 
             lex_word = lex_none;
@@ -341,33 +339,23 @@ struct LexerControl {
         user_data -> msgs.append(MsgInfo{lexem, last_light_pos, last_light_len, msg});
     }
 
-    inline void attachPara(const ParaType & ptype, const uint & flags, const ParaType & opo_type = pt_none) {
+    inline void attachPara(const ParaType & ptype, const uint & flags, const bool & closable) {
         if (!ptype) return;
 
         bool replaceable = flags & slf_replace_word;
-        bool blockable = flags & slf_blocker_word || flags & slf_unblocker_word;
-        bool closable = opo_type != 0;
 
         if (!replaceable || (replaceable && closable)) {
             if (para -> next) {
                 para = para -> next;
                 para -> para_type = ptype;
                 para -> pos = cached_str_pos;
-
-                if (para -> close) {
-                    para -> close -> close = nullptr;
-                    para -> close = nullptr;
-                }
             }
             else para = ParaList::insert(para, ptype, cached_str_pos);
-
-            para -> length = cached_length;
-            para -> line_num = line_num;
-            para -> offset = replaceable ? -1 : 0;
-            para -> is_blockator = blockable;
         }
 
         if (closable) {
+            para -> is_opener = false;
+
             if (!active_para || active_para -> close) {
                 active_para = lastNonClosedPara();
 
@@ -383,14 +371,13 @@ struct LexerControl {
             } else {
                 active_para -> close = para;
 
-                if (!replaceable)
+                if (!replaceable) {
                     para -> close = active_para;
-
-                if (blockable)
                     active_para = lastNonClosedPara();
+                }
             }
 
-            if (blockable && active_para && active_para -> is_blockator) {
+            if (!replaceable && active_para && active_para -> is_blockator) {
                 active_para -> close = para;
 
                 para -> close = active_para;

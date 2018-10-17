@@ -21,15 +21,13 @@ enum StackLexemFlag : uint {
     slf_unstack_word = 4,
     slf_unstack_delimiter = 8,
 
-    slf_blocker_word = 16,
-    slf_unblocker_word = 32,
-    slf_replace_word = 64,
+    slf_replace_word = 16,
 
-    slf_word_related = slf_stack_word | slf_unstack_word | slf_blocker_word | slf_unblocker_word | slf_replace_word,
+    slf_word_related = slf_stack_word | slf_unstack_word | slf_replace_word,
     slf_delimiter_related = slf_stack_delimiter | slf_unstack_delimiter,
 
-    slf_stackable = slf_stack_word | slf_stack_delimiter | slf_blocker_word | slf_replace_word,
-    slf_unstackable = slf_unstack_word | slf_unstack_delimiter | slf_unblocker_word | slf_replace_word
+    slf_stackable = slf_stack_word | slf_stack_delimiter | slf_replace_word,
+    slf_unstackable = slf_unstack_word | slf_unstack_delimiter | slf_replace_word
 };
 
 enum StateLexem : LEXEM_TYPE {

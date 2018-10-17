@@ -1,7 +1,7 @@
 #include "block_user_data.h"
 
 BlockUserData::BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev, ParaCell * para_prev, const UserDataFlags & data_flags)
-    : flags(data_flags), stack_token(nullptr), token_begin(nullptr), token_end(nullptr), para_begin(nullptr), para_end(nullptr), para_control(nullptr)
+    : flags(data_flags), stack_token(nullptr), token_begin(nullptr), token_end(nullptr), para_begin(nullptr), para_end(nullptr), para_control(nullptr), level(0)
 {
     tokens -> registerLine(token_begin, token_end, token_prev);
     paras -> registerLine(para_begin, para_end, para_prev);

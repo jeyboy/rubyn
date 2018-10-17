@@ -10,6 +10,9 @@ namespace Ruby {
         Grammar();
 
         friend class Singleton<Grammar>;
+    protected:
+        void initRules();
+        void initParas();
     public:
         void initFlags(StackLexemFlag & flags, const StateLexem & lex, const StateLexem & last_non_blank_lex);
 

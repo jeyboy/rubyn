@@ -44,6 +44,8 @@ public:
 
     virtual void handle(const QString & text, Highlighter * lighter) = 0;
 
+    virtual void paraOpositionStr(const PARA_TYPE & /*para*/, QString & res) { res.clear(); }
+
 //    virtual bool dump(QIODevice * device, ) { return false; }
 };
 

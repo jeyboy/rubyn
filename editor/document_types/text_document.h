@@ -48,6 +48,8 @@ public:
 
     bool isCompleterContinuable(const LEXEM_TYPE & lex, const bool & at_end = true);
 
+    void paraOpositionStr(const PARA_TYPE & para, QString & res);
+
     LEXEM_TYPE getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const bool & global_offset = true);
 
 //    void calcFoldings();

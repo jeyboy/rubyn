@@ -17,9 +17,10 @@ public:
     inline const ParaType & paraType(const StateLexem & poss_para) { return para_tokens[poss_para]; }
 //    inline PARA_TYPE oppositePara(const PARA_TYPE & para_type) { return para_opposition.value(para_type, pt_none); }
 
+    StateLexem translate(const StateLexem & state, const StateLexem & input);
+
     virtual void initFlags(StackLexemFlag & flags, const StateLexem & lex, const StateLexem & last_non_blank_lex) = 0;
 
-    StateLexem translate(const StateLexem & state, const StateLexem & input);
     virtual bool stackDropable(const StateLexem & state, const StateLexem & input);
 
     virtual Identifier toHighlightable(const StateLexem & /*lexem*/) = 0;

@@ -180,6 +180,13 @@ bool TextDocument::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & /
     return false;
 }
 
+void TextDocument::paraOpositionStr(const PARA_TYPE & para, QString & res) {
+    if (_lexer)
+        _lexer -> paraOpositionStr(para, res);
+    else
+        res.clear();
+}
+
 LEXEM_TYPE TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const bool & global_offset) {
     BlockUserData * udata = static_cast<BlockUserData *>(block.userData());
 

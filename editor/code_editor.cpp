@@ -225,32 +225,35 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         curr_folding_limits.ry() = block_bottom;
     }
 
-    if (folding_flags && user_data -> para_control -> isValid()) {
-        bool opened = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
+    if (folding_flags) {
+        EDITOR_POS_TYPE coverage = user_data -> para_control -> linesCoverage();
 
-        if (on_block) {
-            folding_flags |= BlockUserData::udf_folding_hovered;
+        if (coverage > 0) {
+            bool opened = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
 
-            if (opened) {
-                hideOverlay();
+            if (on_block) {
+                folding_flags |= BlockUserData::udf_folding_hovered;
 
-                folding_lines_coverage_min = block_num;
-                folding_lines_coverage_max = block_num + user_data -> para_control -> linesCoverage() + 1;
-            }
-            else {
-                if (folding_click) {
-                    folding_click = false;
+                if (opened) {
+                    hideOverlay();
+
+                    folding_lines_coverage_min = block_num;
+                    folding_lines_coverage_max = block_num + coverage + 1;
                 }
-                else if (can_show_folding_popup)
-                    showFoldingContentPopup(block);
+                else {
+                    if (folding_click) {
+                        folding_click = false;
+                    }
+                    else if (can_show_folding_popup)
+                        showFoldingContentPopup(block);
+                }
             }
+
+            painter.drawPixmap(
+                QPoint(folding_offset_x, paint_top + (line_number_height - FOLDING_WIDTH) / 2),
+                icons[folding_flags]
+            );
         }
-
-
-        painter.drawPixmap(
-            QPoint(folding_offset_x, paint_top + (line_number_height - FOLDING_WIDTH) / 2),
-            icons[folding_flags]
-        );
     }
     else if (on_block) {
         hideOverlay();
@@ -288,18 +291,17 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
             DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
             bool opened = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
-            bool ignore = opened || !user_data || (user_data && user_data -> para_control && !user_data -> para_control -> isValid());
+            bool ignore = opened || !user_data;
+
+            if (!ignore && user_data -> para_control) {
+                EDITOR_POS_TYPE coverage = user_data -> para_control -> linesCoverage();
+                ignore = coverage <= 0;
+            }
 
             if (!ignore) {
                 if (user_data -> para_control && user_data -> para_control -> close) {
-                    QString end_str =
-                            user_data -> para_control -> offset < 0 ?
-                                QString() :
-                                blockText(
-                                    user_data -> para_control -> close -> line_num,
-                                    user_data -> para_control -> close -> pos,
-                                    user_data -> para_control -> close -> length
-                                );
+                    QString end_str;
+                    wrapper -> paraOpositionStr(user_data -> para_control -> para_type, end_str);
 
                     EDITOR_POS_TYPE text_pos = block.length() - 1;
 
@@ -526,14 +528,14 @@ bool CodeEditor::blockOnScreen(const QTextBlock & block) {
 }
 
 
-QString CodeEditor::blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length) {
-    QTextBlock block = document() -> findBlockByNumber(block_num);
+//QString CodeEditor::blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length) {
+//    QTextBlock block = document() -> findBlockByNumber(block_num);
 
-    if (block.isValid()) {
-        return block.text().mid(pos, length);
-    }
-    else return QString();
-}
+//    if (block.isValid()) {
+//        return block.text().mid(pos, length);
+//    }
+//    else return QString();
+//}
 
 QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
     if (!block.isValid())

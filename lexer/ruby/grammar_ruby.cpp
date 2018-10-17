@@ -3,55 +3,11 @@
 using namespace Ruby;
 
 Grammar::Grammar() : IGrammar() {
-    para_tokens = {
-        { lex_open_curly_bracket, pt_open_curly_bracket },
+    initParas();
+    initRules();
+}
 
-        { lex_interpolation, pt_open_interpolation },
-        { lex_command_interception, pt_open_interpolation },
-        { lex_estring_interception, pt_open_interpolation },
-        { lex_epercent_presentation_interception, pt_open_interpolation },
-        { lex_heredoc_interception, pt_open_interpolation },
-        { lex_regexp_interception, pt_open_interpolation },
-
-        { lex_close_curly_bracket, pt_close_curly_bracket },
-        { lex_open_square_bracket, pt_open_square_bracket },
-        { lex_close_square_bracket, pt_close_square_bracket },
-        { lex_wrap_open, pt_open_round_bracket },
-        { lex_wrap_close, pt_close_round_bracket },
-    //    { lex_operator_less, pt_open_angle_bracket },
-    //    { lex_operator_great, pt_close_angle_bracket },
-
-        { lex_do, pt_open_do_block },
-        { lex_begin, pt_open_begin_block },
-        { lex_method_def, pt_open_method },
-        { lex_class_def, pt_open_class },
-        { lex_module_def, pt_open_module },
-
-        { lex_if, pt_open_if },
-        { lex_elsif, pt_open_elsif },
-        { lex_else, pt_open_else },
-        { lex_unless, pt_open_unless },
-        { lex_case, pt_open_case },
-        { lex_when, pt_open_when },
-        { lex_while, pt_open_while },
-        { lex_until, pt_open_until },
-        { lex_for, pt_open_for },
-
-        { lex_block_rescue, pt_rescue },
-        { lex_block_ensure, pt_ensure },
-
-        { lex_end, pt_close_struct },
-
-        { lex_string_start, pt_open_string },
-        { lex_string_end, pt_close_string },
-
-        { lex_estring_start, pt_open_string },
-        { lex_estring_end, pt_close_string },
-
-        { lex_regexp_start, pt_open_regexp },
-        { lex_regexp_end, pt_close_regexp }
-    };
-
+void Grammar::initRules() {
     for(quint32 i = 0; i < lex_max; i++) {
         StateLexem curr = static_cast<StateLexem>(i);
 
@@ -271,10 +227,50 @@ Grammar::Grammar() : IGrammar() {
 
 //    rules[lex_method_call_vars_start][lex_eheredoc_intended_mark] = lex_eheredoc_intended_mark;
 }
+void Grammar::initParas() {
+    para_tokens[lex_open_curly_bracket] = pt_foldable_curly_bracket;
+    para_tokens[lex_interpolation] = pt_interpolation;
+    para_tokens[lex_command_interception] = pt_interpolation;
+    para_tokens[lex_estring_interception] = pt_interpolation;
+    para_tokens[lex_epercent_presentation_interception] = pt_interpolation;
+    para_tokens[lex_heredoc_interception] = pt_interpolation;
+    para_tokens[lex_regexp_interception] = pt_interpolation;
+    para_tokens[lex_close_curly_bracket] = pt_close_curly_bracket;
+    para_tokens[lex_open_square_bracket] = pt_square_bracket;
+    para_tokens[lex_close_square_bracket] = pt_close_square_bracket;
+    para_tokens[lex_wrap_open] = pt_round_bracket;
+    para_tokens[lex_wrap_close] = pt_close_round_bracket;
+
+    para_tokens[lex_do] = pt_open_do_block;
+    para_tokens[lex_begin] = pt_open_begin_block;
+    para_tokens[lex_method_def] = pt_open_method;
+    para_tokens[lex_class_def] = pt_open_class;
+    para_tokens[lex_module_def] = pt_open_module;
+
+    para_tokens[lex_if] = pt_open_if;
+    para_tokens[lex_elsif] = pt_open_elsif;
+    para_tokens[lex_else] = pt_open_else;
+    para_tokens[lex_unless] = pt_open_unless;
+    para_tokens[lex_case] = pt_open_case;
+    para_tokens[lex_when] = pt_open_when;
+    para_tokens[lex_while] = pt_open_while;
+    para_tokens[lex_until] = pt_open_until;
+    para_tokens[lex_for] = pt_open_for;
+    para_tokens[lex_block_rescue] = pt_rescue;
+    para_tokens[lex_block_ensure] = pt_ensure;
+    para_tokens[lex_end] = pt_close_struct;
+
+    para_tokens[lex_string_start] = pt_string;
+    para_tokens[lex_string_end] = pt_close_string;
+    para_tokens[lex_estring_start] = pt_estring;
+    para_tokens[lex_estring_end] = pt_close_estring;
+    para_tokens[lex_regexp_start] = pt_regexp;
+    para_tokens[lex_regexp_end] = pt_close_regexp;
+}
 
 void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const StateLexem & last_non_blank_lex) {
     switch(lex) {
-        case lex_end: { flags = slf_unblocker_word; break;}
+        case lex_end: { flags = slf_unstack_word; break;}
 
         case lex_if:
         case lex_unless: {
@@ -319,7 +315,7 @@ void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const St
                 case lex_operator_or:
                 case lex_operator_or_assigment:
                 case lex_operator_not: {
-                    flags = slf_blocker_word;
+                    flags = slf_stack_word;
                 break;}
 
                 default: ;
@@ -335,7 +331,7 @@ void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const St
         case lex_while:
         case lex_module_def:
         case lex_class_def:
-            { flags = slf_blocker_word; break;}
+            { flags = slf_stack_word; break;}
 
         case lex_when:
         case lex_elsif:
@@ -502,57 +498,6 @@ char Grammar::percentagePresentationBlocker(const char & ch) {
 //    }
 //}
 
-//StateLexem Grammar::toHeredocContinious(const StateLexem & lexem) {
-//    switch(lexem) {
-//        case lex_heredoc_mark: return lex_heredoc_continue;
-//        case lex_heredoc_intended_mark: return lex_heredoc_intended_continue;
-//        case lex_eheredoc_mark: return lex_eheredoc_continue;
-//        case lex_eheredoc_intended_mark: return lex_eheredoc_intended_continue;
-//        case lex_cheredoc_mark: return lex_cheredoc_continue;
-//        case lex_cheredoc_intended_mark: return lex_cheredoc_intended_continue;
-//        default: return lex_none;
-//    }
-//}
-
-//StateLexem Grammar::fromContinious(const StateLexem & lexem) {
-//    switch(lexem) {
-//        case lex_string_continue: return lex_string_start;
-
-//        case lex_estring_start:
-//        case lex_estring_continue: return lex_estring_start;
-
-//        case lex_commentary_continue: return lex_commentary_start;
-
-//        case lex_command_start:
-//        case lex_command_continue: return lex_command_start;
-
-//        case lex_heredoc_continue: return lex_heredoc_start;
-//        case lex_heredoc_intended_continue: return lex_heredoc_intended_start;
-
-//        case lex_eheredoc_start:
-//        case lex_eheredoc_continue: return lex_eheredoc_start;
-
-//        case lex_eheredoc_intended_start:
-//        case lex_eheredoc_intended_continue: return lex_eheredoc_intended_start;
-
-//        case lex_cheredoc_start:
-//        case lex_cheredoc_continue: return lex_cheredoc_start;
-
-//        case lex_cheredoc_intended_start:
-//        case lex_cheredoc_intended_continue: return lex_cheredoc_intended_start;
-
-//        case lex_regexp_start:
-//        case lex_regexp_continue: return lex_regexp_start;
-
-//        case lex_percent_presentation_continue: return lex_percent_presentation_start;
-
-//        case lex_epercent_presentation_start:
-//        case lex_epercent_presentation_continue: return lex_epercent_presentation_start;
-
-//        default: return lex_none;
-//    }
-//}
-
 Identifier Grammar::toHighlightable(const StateLexem & lexem) {
     switch(lexem) {
         case lex_method_def:
@@ -562,7 +507,6 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_include:
         case lex_extend:
         case lex_undef:
-        case lex_visibility_scope:
         case lex_alias:
         case lex_unless:
         case lex_if:
@@ -621,7 +565,6 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_var_instance:
         case lex_var_object:
         case lex_var_global:
-//        case lex_method:
         case lex_method_def_scoped_name:
         case lex_method_def_var_name:
         case lex_method_call_block_var_name:
@@ -700,7 +643,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_regexp_flags:
             return hid_regexp_border;
 
-        //hid_scope_visibility
+        case lex_visibility_scope: return hid_scope_visibility;
 
         case lex_word: return hid_unknown_name;
 

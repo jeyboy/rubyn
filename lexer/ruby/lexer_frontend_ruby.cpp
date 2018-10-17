@@ -1234,7 +1234,6 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
     lighter -> initBlockUserData(block, prev_udata, udata);
 
     LexerControl state(
-        block.firstLineNumber(),
         &Ruby::Grammar::obj(),
         udata,
         prev_udata && prev_udata -> stack_token ? prev_udata -> stack_token : udata -> token_begin,
@@ -1249,4 +1248,53 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
 
     block.setUserState(state.lineState());
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
+}
+
+void LexerFrontend::paraOpositionStr(const PARA_TYPE & para, QString & res) {
+    switch(para) {
+        case pt_curly_bracket: { res = QLatin1Literal("}"); break;}
+        case pt_close_curly_bracket: { res = QLatin1Literal("{"); break;}
+        case pt_foldable_curly_bracket: { res = QLatin1Literal("}"); break;}
+        case pt_close_foldable_curly_bracket: { res = QLatin1Literal("{"); break;}
+
+        case pt_square_bracket: { res = QLatin1Literal("]"); break;}
+        case pt_close_square_bracket: { res = QLatin1Literal("["); break;}
+        case pt_foldable_square_bracket: { res = QLatin1Literal("]"); break;}
+        case pt_close_foldable_square_bracket: { res = QLatin1Literal("["); break;}
+
+        case pt_round_bracket: { res = QLatin1Literal(")"); break;}
+        case pt_close_round_bracket: { res = QLatin1Literal("("); break;}
+
+        case pt_angle_bracket: { res = QLatin1Literal(">"); break;}
+        case pt_close_angle_bracket: { res = QLatin1Literal("<"); break;}
+
+        case pt_string: { res = QLatin1Literal("'"); break;}
+        case pt_close_string: { res = QLatin1Literal("'"); break;}
+
+        case pt_estring: { res = QLatin1Literal("\""); break;}
+        case pt_close_estring: { res = QLatin1Literal("\""); break;}
+
+        case pt_command: { res = QLatin1Literal("`"); break;}
+        case pt_close_command: { res = QLatin1Literal("`"); break;}
+
+        case pt_interpolation: { res = QLatin1Literal("}"); break;}
+        case pt_close_interpolation: { res = QLatin1Literal("#{"); break;}
+
+        case pt_regexp: { res = QLatin1Literal("//"); break;}
+        case pt_close_regexp: { res = QLatin1Literal("//"); break;}
+
+        case pt_open_do_block: { res = QLatin1Literal("end"); break;}
+        case pt_open_begin_block: { res = QLatin1Literal("end"); break;}
+        case pt_open_method: { res = QLatin1Literal("end"); break;}
+        case pt_open_class: { res = QLatin1Literal("end"); break;}
+        case pt_open_module: { res = QLatin1Literal("end"); break;}
+        case pt_open_if: { res = QLatin1Literal("end"); break;}
+        case pt_open_unless: { res = QLatin1Literal("end"); break;}
+        case pt_open_case: { res = QLatin1Literal("end"); break;}
+        case pt_open_while: { res = QLatin1Literal("end"); break;}
+        case pt_open_until: { res = QLatin1Literal("end"); break;}
+        case pt_open_for: { res = QLatin1Literal("end"); break;}
+
+        default: ILexer::paraOpositionStr(para, res);
+    }
 }

@@ -30,6 +30,8 @@ namespace Ruby {
         ~LexerFrontend();
 
         void handle(const QString & text, Highlighter * lighter);
+
+        void paraOpositionStr(const PARA_TYPE & para, QString & res);
     };
 }
 

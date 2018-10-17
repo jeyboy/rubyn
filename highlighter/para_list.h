@@ -1,27 +1,21 @@
 #ifndef PARA_LIST_H
 #define PARA_LIST_H
 
-#include <qhash.h>
-
 #include "para_type.h"
 
 struct ParaCell {
     ParaCell * prev;
     ParaCell * next;
-
     ParaCell * close;
 
     ParaType para_type;
-    EDITOR_POS_TYPE line_num;
     EDITOR_POS_TYPE pos;
-    EDITOR_LEN_TYPE length;
-
-    char offset;
     bool is_blockator;
+    bool is_opener;
 
     ParaCell(const ParaType & para, const EDITOR_POS_TYPE & start_pos, ParaCell * prev_token = nullptr)
-        : prev(nullptr), next(nullptr), close(nullptr), para_type(para), line_num(-1), pos(start_pos),
-          length(1), offset(0), is_blockator(false)
+        : prev(nullptr), next(nullptr), close(nullptr), para_type(para), pos(start_pos),
+          is_blockator(true), is_opener(true)
     {
         if ((prev = prev_token)) {
             if ((next = prev -> next))
@@ -42,15 +36,38 @@ struct ParaCell {
             close -> close = nullptr;
     }
 
-    bool isValid() { return close && linesCoverage() > 0; }
-
     EDITOR_POS_TYPE linesCoverage() {
         if (!close) {
             qDebug() << "MISSED CLOSE";
             return 0;
         }
 
-        return (close -> line_num - line_num) + offset;
+        EDITOR_POS_TYPE coverage = 0;
+        ParaCell * it = this;
+
+        if (is_opener) {
+            while(it && it != close) {
+                if (it -> para_type == pt_max)
+                    coverage++;
+
+                it = it -> next;
+            }
+
+            if (!is_blockator && coverage != 0)
+                --coverage;
+        } else {
+            while(it && it != close) {
+                if (it -> para_type == pt_none)
+                    coverage--;
+
+                it = it -> prev;
+            }
+
+            if (!close -> is_blockator && coverage != 0)
+                ++coverage;
+        }
+
+        return coverage;
     }
 
 //    T & operator++() // ++A
@@ -71,8 +88,8 @@ class ParaList {
     ParaCell * root, * last;
 public:
     inline ParaList() : root(nullptr), last(nullptr) {
-        root = new ParaCell(pt_none, 0);
-        last = new ParaCell(pt_max_end, 0, root);
+        root = new ParaCell(pt_none, -1);
+        last = new ParaCell(pt_max_end, -1, root);
     }
 
     inline ~ParaList() {
@@ -101,6 +118,9 @@ public:
 
         left = new ParaCell(pt_none, 0, prev_end);
         right = new ParaCell(pt_max, 0, left);
+
+        left -> close = right;
+        right -> close = left;
     }
 
     static void removeLine(ParaCell * left, ParaCell * right) {

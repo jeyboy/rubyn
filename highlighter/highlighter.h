@@ -61,7 +61,10 @@ public:
             );
             block.setUserData(udata);
         }
-//        else clearExtraFormatForCurrBlock();
+
+        if (prev_udata) {
+            udata -> level = prev_udata -> level + (prev_udata -> para_control ? 1 : 0);
+        }
     }
 
 //    inline void clearExtraFormatForCurrBlock() {
