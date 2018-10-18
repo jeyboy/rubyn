@@ -36,7 +36,7 @@ bool TextDocument::identificateLexer() {
     return _lexer != nullptr;
 }
 
-TextDocument::TextDocument(File * file) : IDocument(), pos(-1), removed(0), added(0), _doc(nullptr), _lexer(nullptr), _file(file) {
+TextDocument::TextDocument(File * file) : IDocument()/*, pos(-1), removed(0), added(0)*/, _doc(nullptr), _lexer(nullptr), _file(file) {
     qint64 content_length = _file -> source() -> size();
 
     setFullyReaded(true);
@@ -63,18 +63,16 @@ TextDocument::TextDocument(File * file) : IDocument(), pos(-1), removed(0), adde
 //        _doc -> setProperty("tab_space", QLatin1String("\t"));
 
         QTextStream stream(_file -> source());
-        QTextCursor * cursor = new QTextCursor(_doc);
+        QTextCursor cursor(_doc);
 
         while(!stream.atEnd()) {
-            cursor -> insertText(stream.readLine());
-            cursor -> insertBlock();
+            cursor.insertText(stream.readLine());
+            cursor.insertBlock();
         }
-
-        delete cursor;
     }
 
 
-    connect(_doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
+//    connect(_doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
 
     QPlainTextDocumentLayout * layout = new QPlainTextDocumentLayout(_doc);
     layout -> setCursorWidth(1);
@@ -273,8 +271,8 @@ void TextDocument::readNextBlock() {
     setFullyReaded(source -> atEnd());
 }
 
-void TextDocument::changesInContent(int position, int removed_count, int added_count) {
-    pos = position;
-    removed = removed_count;
-    added = added_count;
-}
+//void TextDocument::changesInContent(int position, int removed_count, int added_count) {
+//    pos = position;
+//    removed = removed_count;
+//    added = added_count;
+//}

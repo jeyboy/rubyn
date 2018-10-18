@@ -52,7 +52,7 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     folding_border_color = QColor::fromRgb(192, 192, 192, 72);
     chars_limit_color = QColor::fromRgb(255, 0, 0, 64);
 
-    extra_area = new ExtraArea(this);  
+    extra_area = new ExtraArea(this);
 
     connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateExtraAreaWidth);
     connect(this, &CodeEditor::updateRequest, this, &CodeEditor::updateExtraArea);
@@ -100,6 +100,11 @@ void CodeEditor::openDocument(File * file) {
 
         wrapper = file -> asText();
         QTextDocument * text_doc = wrapper -> toQDoc();
+
+        QTextDocumentPrivate * handle = text_doc -> docHandle();
+//        handle ->
+
+//        text_doc -> setUseDesignMetrics(true);
 
         text_doc -> setDefaultFont(new_font);
         setFont(new_font);

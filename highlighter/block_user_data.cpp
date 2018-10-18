@@ -8,6 +8,10 @@ BlockUserData::BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * t
 }
 
 BlockUserData::~BlockUserData() {
+    if (para_control) {
+
+    }
+
     TokenList::removeLine(token_begin, token_end);
     ParaList::removeLine(para_begin, para_end);
 }

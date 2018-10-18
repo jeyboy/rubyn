@@ -10,7 +10,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     if (doc) {
         disconnect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         disconnect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
-        disconnect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::blockCountChanged);
+//        disconnect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::blockCountChanged);
         disconnect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
 
         QTextCursor cursor(doc);
@@ -29,7 +29,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
 
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
-        connect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::blockCountChanged);
+//        connect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::blockCountChanged);
         connect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
 //            d->rehighlightPending = true;
 //        QTimer::singleShot(0, this, SLOT(rehighlight()));
@@ -51,7 +51,7 @@ Highlighter::~Highlighter() {
 }
 
 void Highlighter::highlightBlock(const QString & text) {
-//    qDebug() << "*** " << currentBlock().firstLineNumber();
+//    qDebug() << "*** " << currentBlock().firstLineNumber() + 1;
 
     _doc_wrapper -> lexicate(text, this);
 }
@@ -227,18 +227,16 @@ void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
     }
 
     formatChanges.clear();
-
-//    _doc_wrapper -> calcFoldings();
 }
 
 void Highlighter::reformatBlock(const QTextBlock & block, int from, int charsRemoved, int charsAdded) {
+//    qDebug() << "reformatBlock" << block.text();
+
     current_block = block;
 
     formatChanges.fill(QTextCharFormat(), block.length() - 1);
     highlightBlock(block.text());
     applyFormatChanges(from, charsRemoved, charsAdded);
-
-//    foldValidator.process(currentBlock);
 
     current_block = QTextBlock();
 }
@@ -306,9 +304,9 @@ void Highlighter::applyFormatChanges(int from, int charsRemoved, int charsAdded)
     }
 }
 
-void Highlighter::blockCountChanged(int count) {
-    qDebug() << "blockCountChanged" << count << doc -> blockCount();
-}
+//void Highlighter::blockCountChanged(int count) {
+//    qDebug() << "blockCountChanged" << count << doc -> blockCount();
+//}
 
 void Highlighter::cursorPositionChanged(const QTextCursor & /*cursor*/) {
 

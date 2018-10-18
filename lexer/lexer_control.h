@@ -332,8 +332,9 @@ struct LexerControl {
         light(lexem);
 
         if (lexem == lex_error) {
-            if (!msg.contains("error_token"))
-                qWarning() << msg;
+            //TODO: return me later
+//            if (!msg.contains("error_token"))
+//                qWarning() << msg;
         }
 
         user_data -> msgs.append(MsgInfo{lexem, last_light_pos, last_light_len, msg});
@@ -351,6 +352,8 @@ struct LexerControl {
                 para -> pos = cached_str_pos;
             }
             else para = ParaList::insert(para, ptype, cached_str_pos);
+
+            para -> is_blockator = !replaceable;
         }
 
         if (closable) {

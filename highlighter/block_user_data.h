@@ -10,6 +10,7 @@
 //#include "misc/stack.h"
 
 struct BlockUserData : public QTextBlockUserData {
+// TODO: refactor me: udf_has_folding not needed - we have para_control for that
     enum UserDataFlags : DATA_FLAGS_TYPE {
         udf_none = 0,
         udf_has_folding = 1,

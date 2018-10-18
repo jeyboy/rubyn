@@ -114,7 +114,7 @@ public slots:
 protected slots:
 //    void contentsChanged();
     void reformatBlocks(int from, int charsRemoved, int charsAdded);
-    void blockCountChanged(int count);
+//    void blockCountChanged(int count);
     void cursorPositionChanged(const QTextCursor & cursor);
     void enterPressed();
 };

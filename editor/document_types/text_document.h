@@ -21,7 +21,7 @@ class TextDocument : public QObject, public IDocument {
     static QLatin1String tab_space;
     static QHash<QChar, bool> word_boundary;
 
-    int pos, removed, added;
+//    int pos, removed, added;
 protected:
     QPointer<QTextDocument> _doc;
 
@@ -54,7 +54,7 @@ public:
 
 //    void calcFoldings();
 protected slots:
-    void changesInContent(int position, int removed_count, int added_count);
+//    void changesInContent(int position, int removed_count, int added_count);
 };
 
 #endif // TEXT_DOCUMENT
