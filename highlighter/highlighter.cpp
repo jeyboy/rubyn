@@ -38,6 +38,10 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     }
 }
 
+void Highlighter::toggleFolding(QTextBlock & blk) {
+    _doc_wrapper -> layout -> toggleFolding(blk);
+}
+
 Highlighter::Highlighter(TextDocument * doc) : QObject(), rehighlighting(false),
     _tokens(new TokenList()), _paras(new ParaList()), _doc_wrapper(nullptr), doc(nullptr)
 {
@@ -198,7 +202,7 @@ void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
 //    rehighlightPending = false;
 
 
-//    if (!rehighlighting) {
+//    if (!rehighlighting && charsRemoved) {
 //        // recalc folding queues
 //    }
 

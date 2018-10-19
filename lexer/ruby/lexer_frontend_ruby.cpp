@@ -1247,6 +1247,11 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
     lexicate(&state);
 
     block.setUserState(state.lineState());
+
+    if (udata -> para_control && !state.control_para) {
+        lighter -> toggleFolding(block);
+    }
+
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
 }
 

@@ -10,17 +10,16 @@
 #include <qcompleter.h>
 #include <qabstractitemview.h> // completer dependency
 
-#include "highlighter/block_user_data.h"
-#include "highlighter/highlight_format_factory.h"
-
 #include "project/file.h"
 
+#include "editor/block_user_data.h"
 #include "editor/parts/overlay_info.h"
 #include "editor/parts/extra_area.h"
-
 #include "editor/document_types/text_document.h"
 
 #include "controls/logger.h"
+
+#include "highlighter/highlight_format_factory.h"
 
 //qApp->setCursorFlashTime(0);
 
@@ -219,6 +218,8 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_range);
         painter.fillRect(0, paint_top, extra_zone_width, block_bottom - block_top, format.background());
     }
+
+    qDebug() << block.text();
 
     BlockUserData * user_data = static_cast<BlockUserData *>(block.userData());
     DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
@@ -722,7 +723,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
                             setTextCursor(tc);
                         } else {
-                            if (toggleFolding(blk)) {
+                            if (wrapper -> layout -> toggleFolding(blk)) {
                                 folding_click = true;
                                 can_show_folding_popup = false;
                                 invalidation_required = false;
@@ -1151,63 +1152,6 @@ void CodeEditor::mouseDoubleClickEvent(QMouseEvent * e) {
 }
 
 
-bool CodeEditor::toggleFolding(QTextBlock & blk) {
-    Logger::obj().startMark();
-
-    BlockUserData * user_data = static_cast<BlockUserData *>(blk.userData());
-    DATA_FLAGS_TYPE folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
-
-    if (folding_flags) {
-        user_data -> invertFoldingState();
-
-        //TODO: need to check performance for bottom to top proc of blocks: possible what performance is broken by layout proceses
-
-        setUpdatesEnabled(false);
-
-        bool status = (folding_flags & BlockUserData::udf_folding_opened) != BlockUserData::udf_folding_opened;
-        EDITOR_POS_TYPE lines_coverage = user_data -> para_control -> linesCoverage();
-        EDITOR_POS_TYPE sublines_coverage = 0;
-
-        while(--lines_coverage >= 0) {
-            blk = blk.next();
-
-//                                    if (!blk.isValid())
-//                                        break;
-
-            if (sublines_coverage == 0) {
-                blk.setVisible(status);
-                blk.setLineCount(status ? qMax(1, blk.layout() -> lineCount()) : 0);
-
-                if (status) {
-                    user_data = static_cast<BlockUserData *>(blk.userData());
-                    folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
-
-                    if (folding_flags) {
-                        bool substatus = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
-
-                        if (substatus != status) {
-                            sublines_coverage = user_data -> para_control -> linesCoverage();
-                        }
-                    }
-                }
-            }
-            else --sublines_coverage;
-        }
-
-        setUpdatesEnabled(true);
-
-        ///// TODO: this implementation is a bit slow for huge blocks - need to rewrite _q_adjustScrollbars and use it
-        QPlainTextDocumentLayout * l = ((QPlainTextDocumentLayout *)document() -> documentLayout());
-        emit l -> documentSizeChanged(l -> documentSize());
-        ////////////////////////////////////////////////////////////
-
-        Logger::obj().endMark("Folding", "collapse");
-        return true;
-    }
-
-    return false;
-}
-
 void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup, const bool & has_modifiers) {
     QTextBlock block = tc.block();
     bool has_selection = tc.hasSelection();
@@ -1377,4 +1321,3 @@ void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
     if (rect.contains(viewport() -> rect()))
         updateExtraAreaWidth(0);
 }
-

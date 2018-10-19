@@ -7,6 +7,7 @@
 #include "misc/defines.h"
 #include "project/code_formats.h"
 #include "editor/idocument.h"
+#include "editor/text_document_layout.h"
 
 #define READ_LIMIT (qint64)(512000) // ~512 kb
 
@@ -34,6 +35,8 @@ signals:
     void enterPressed();
     void wordHovered(const QPoint & point, const int & start, const int & end);
 public:
+    TextDocumentLayout * layout;
+
     TextDocument(File * file);
 
     ~TextDocument();

@@ -3,10 +3,10 @@
 
 //#include <qobject.h>
 
-#include "highlighter/block_user_data.h"
-
 #include <qtextdocument.h>
 #include <qpointer.h>
+
+#include "editor/block_user_data.h"
 
 class TextDocument;
 
@@ -35,9 +35,11 @@ public:
 //    inline QPointer<TextDocument> document() { return doc; }
     void setDocument(TextDocument * new_doc);
 
-    QTextBlock prevBlock() const { return current_block.previous(); }
-    QTextBlock currentBlock() const { return current_block; }
-    QTextBlock nextBlock() const { return current_block.next(); }
+    void toggleFolding(QTextBlock & blk);
+
+    inline QTextBlock prevBlock() const { return current_block.previous(); }
+    inline QTextBlock currentBlock() const { return current_block; }
+    inline QTextBlock nextBlock() const { return current_block.next(); }
 
     QTextCharFormat format(const int & pos) const;
 

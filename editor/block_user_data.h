@@ -3,8 +3,8 @@
 
 #include <QTextBlockUserData>
 
-#include "para_list.h"
-#include "msg_info.h"
+#include "highlighter/para_list.h"
+#include "highlighter/msg_info.h"
 
 #include "misc/token_list.h"
 //#include "misc/stack.h"

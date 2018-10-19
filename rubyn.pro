@@ -69,8 +69,9 @@ SOURCES += main.cpp\
     highlighter/highlight_format_factory.cpp \
     lexer/ruby/predefined_ruby.cpp \
     lexer/ruby/grammar_ruby.cpp \
-    highlighter/block_user_data.cpp \
-    lexer/igrammar.cpp
+    editor/block_user_data.cpp \
+    lexer/igrammar.cpp \
+    editor/text_document_layout.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -82,7 +83,7 @@ HEADERS  += ide_window.h \
     editor/parts/body_overlay_info.h \
     editor/parts/extra_area.h \
     editor/code_editor.h \
-    highlighter/block_user_data.h \
+    editor/block_user_data.h \
     highlighter/msg_info.h \
     highlighter/highlight_format_factory.h \
     highlighter/highlighter.h \
@@ -173,7 +174,8 @@ HEADERS  += ide_window.h \
     lexer/ruby/_lexer_ruby.h \
     misc/_stack.h \
     misc/_chain.h \
-    highlighter/para_type.h
+    highlighter/para_type.h \
+    editor/text_document_layout.h
 
 FORMS    += ide_window.ui
 

@@ -411,7 +411,6 @@ protected:
         else QPlainTextEdit::insertFromMimeData(source);
 }
 
-    bool toggleFolding(QTextBlock & blk);
     void procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup = true, const bool & has_modifiers = false);
 signals:
     void inFocus();

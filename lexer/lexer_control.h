@@ -35,7 +35,6 @@ struct LexerControl {
 
     StateLexem lex_prev_word;
     StateLexem lex_word;
-//    StateLexem lex_prev_delimiter;
     StateLexem lex_delimiter;
 
 //    Scope * scope;
@@ -177,8 +176,10 @@ struct LexerControl {
             token -> start_pos = cached_str_pos;
             token -> length = cached_length;
 
-            delete token -> data;
-            token -> data = nullptr;
+            if (token -> data) {
+                delete token -> data;
+                token -> data = nullptr;
+            }
         }
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
 
@@ -386,6 +387,7 @@ struct LexerControl {
                 para -> close = active_para;
             }
         } else {
+            para -> is_opener = true;
             active_para = para;
 
             if (!control_para && ptype & pt_foldable) {

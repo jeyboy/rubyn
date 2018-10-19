@@ -6,9 +6,7 @@
 #include "lexer/lexers_factory.h"
 
 #include <qdebug.h>
-#include <qtextdocument.h>
 #include <qtextcursor.h>
-#include <QPlainTextDocumentLayout>
 
 #include <qelapsedtimer.h>
 
@@ -36,7 +34,7 @@ bool TextDocument::identificateLexer() {
     return _lexer != nullptr;
 }
 
-TextDocument::TextDocument(File * file) : IDocument()/*, pos(-1), removed(0), added(0)*/, _doc(nullptr), _lexer(nullptr), _file(file) {
+TextDocument::TextDocument(File * file) : IDocument()/*, pos(-1), removed(0), added(0)*/, _doc(nullptr), _lexer(nullptr), _file(file), layout(nullptr) {
     qint64 content_length = _file -> source() -> size();
 
     setFullyReaded(true);
@@ -74,7 +72,7 @@ TextDocument::TextDocument(File * file) : IDocument()/*, pos(-1), removed(0), ad
 
 //    connect(_doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
 
-    QPlainTextDocumentLayout * layout = new QPlainTextDocumentLayout(_doc);
+    layout = new TextDocumentLayout(_doc);
     layout -> setCursorWidth(1);
     _doc -> setDocumentLayout(layout);
 
