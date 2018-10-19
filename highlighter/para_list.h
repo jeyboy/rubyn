@@ -10,12 +10,15 @@ struct ParaCell {
 
     ParaType para_type;
     EDITOR_POS_TYPE pos;
+
     bool is_blockator;
     bool is_opener;
+    bool is_foldable;
+    bool is_oneliner;
 
     ParaCell(const ParaType & para, const EDITOR_POS_TYPE & start_pos, ParaCell * prev_token = nullptr)
         : prev(nullptr), next(nullptr), close(nullptr), para_type(para), pos(start_pos),
-          is_blockator(true), is_opener(true)
+          is_blockator(true), is_opener(true), is_foldable(false), is_oneliner(false)
     {
         if ((prev = prev_token)) {
             if ((next = prev -> next))

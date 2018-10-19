@@ -43,11 +43,11 @@ struct BlockUserData : public QTextBlockUserData {
 
     // maybe better to remove full tokens sequence in another thread instead of use sync and etc ???
     TokenCell * lineControlToken();
-
     ParaCell * lineControlPara();
 
     void syncLine(TokenCell * stack_sync_token, TokenCell * sync_token, ParaCell * sync_para, ParaCell * control_sync_para);
 
+    inline bool folded() { return (foldingState() & udf_folding_opened) != udf_folding_opened; }
     DATA_FLAGS_TYPE foldingState();
     void setFoldingState(const UserDataFlags & new_state);
     void invertFoldingState();

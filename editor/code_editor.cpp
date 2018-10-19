@@ -219,8 +219,6 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         painter.fillRect(0, paint_top, extra_zone_width, block_bottom - block_top, format.background());
     }
 
-    qDebug() << block.text();
-
     BlockUserData * user_data = static_cast<BlockUserData *>(block.userData());
     DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 

@@ -168,6 +168,19 @@ struct LexerControl {
 
         return nullptr;
     }
+    inline bool paraInActiveParaLine(ParaCell * pcell) {
+        ParaCell * it = active_para;
+
+        while(it && it -> para_type != pt_max) {
+            if (it == pcell)
+                return true;
+
+            it = it -> next;
+        }
+
+        return false;
+    }
+
 
     inline void attachToken(const StateLexem & lexem, const uint & flags = slf_none) {
         if (token -> next) {
@@ -351,6 +364,8 @@ struct LexerControl {
                 para = para -> next;
                 para -> para_type = ptype;
                 para -> pos = cached_str_pos;
+                para -> is_foldable = false;
+                para -> is_oneliner = false;
             }
             else para = ParaList::insert(para, ptype, cached_str_pos);
 
@@ -374,6 +389,10 @@ struct LexerControl {
                     active_para = para;
             } else {
                 active_para -> close = para;
+                active_para -> is_oneliner = paraInActiveParaLine(para);
+
+                if (active_para -> is_foldable)
+                    --user_data -> level;
 
                 if (!replaceable) {
                     para -> close = active_para;
@@ -383,6 +402,10 @@ struct LexerControl {
 
             if (!replaceable && active_para && active_para -> is_blockator) {
                 active_para -> close = para;
+                active_para -> is_oneliner = paraInActiveParaLine(para);
+
+                if (active_para -> is_foldable)
+                    --user_data -> level;
 
                 para -> close = active_para;
             }
@@ -392,6 +415,7 @@ struct LexerControl {
 
             if (!control_para && ptype & pt_foldable) {
                 control_para = para;
+                control_para -> is_foldable = true;
             }
         }
     }

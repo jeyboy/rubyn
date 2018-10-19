@@ -1248,8 +1248,9 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
 
     block.setUserState(state.lineState());
 
-    if (udata -> para_control && !state.control_para) {
-        lighter -> toggleFolding(block);
+    if (udata -> para_control && (!state.control_para || (state.control_para -> para_type != udata -> para_control -> para_type))) {
+        if (udata -> folded())
+            lighter -> toggleFolding(block);
     }
 
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
