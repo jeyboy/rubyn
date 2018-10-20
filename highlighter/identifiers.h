@@ -6,6 +6,9 @@
 #include "misc/defines.h"
 
 enum Identifier : LEXEM_TYPE {
+    hid_folding_scope_line = -10,
+    hid_folding_content_overlay = -9,
+    hid_chars_limiter_line = -8,
     hid_breakpoint_line = -7,
     hid_breakpoints_range = -6,
     hid_folding_scope_range = -5,

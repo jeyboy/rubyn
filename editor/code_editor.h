@@ -260,16 +260,15 @@ class CodeEditor : public QPlainTextEdit {
 
     qreal symbol_width;
     uint chars_limit_line;
+    int chars_limit_offset_x;
+
+    int pseudo_tab_width;
 
     int line_number_offset_x;
     int line_number_height;
     int line_number_width;
 
     QFont curr_line_font;
-
-    QColor folding_content_color;
-    QColor folding_border_color;
-    QColor chars_limit_color;
 
     QHash<DATA_FLAGS_TYPE, QPixmap> icons;
 
@@ -283,6 +282,8 @@ public:
     void openDocument(File * file);
 
     void setFont(const QFont & font);
+
+    void setCharsLimiterLineAt(const uint & char_pos);
 protected:
 //    void _q_adjustScrollbars() {
 //        QTextDocument * doc = document();

@@ -12,6 +12,19 @@ void HighlightFormatFactory::registerCurrentLineFormat() {
     _formats.insert(hid_current_line, format);
 }
 
+void HighlightFormatFactory::registerFoldingScopeLineFormat() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(64, 64, 64, 92));
+    _formats.insert(hid_folding_scope_line, format);
+}
+
+
+void HighlightFormatFactory::registerFoldingContentOverlayFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(172, 229, 238, 64));
+    _formats.insert(hid_folding_content_overlay, format);
+}
+
 void HighlightFormatFactory::registerFoldingDescriptionFormat() {
     QTextCharFormat format;
     format.setForeground(QColor::fromRgb(0, 0, 0));
@@ -42,6 +55,13 @@ void HighlightFormatFactory::registerBreakpointLineFormat() {
     format.setBackground(QColor::fromRgb(255, 0, 0, 16));
     _formats.insert(hid_breakpoint_line, format);
 }
+
+void HighlightFormatFactory::registerCharsLimiterLineFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(255, 0, 0, 64));
+    _formats.insert(hid_chars_limiter_line, format);
+}
+
 
 void HighlightFormatFactory::registerErrorFormat() {
     QTextCharFormat format;
@@ -196,12 +216,16 @@ void HighlightFormatFactory::registerRegularExpresionBorderFormat() {
 HighlightFormatFactory::HighlightFormatFactory() {
     registerSelectionFormat();
     registerCurrentLineFormat();
+    registerFoldingScopeLineFormat();
+    registerFoldingContentOverlayFormat();
     registerFoldingDescriptionFormat();
     registerFoldingRangeFormat();
     registerScopeVisibilityFormat();
     registerFoldingScopeRangeFormat();
     registerBreakpointsRangeFormat();
     registerBreakpointLineFormat();
+    registerCharsLimiterLineFormat();
+
     registerLabelFormat();
     registerOperatorFormat();
     registerSpecKeywordFormat();

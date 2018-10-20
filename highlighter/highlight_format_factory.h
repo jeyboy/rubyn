@@ -14,6 +14,10 @@ protected:
 
     void registerCurrentLineFormat();
 
+    void registerFoldingScopeLineFormat();
+
+    void registerFoldingContentOverlayFormat();
+
     void registerFoldingDescriptionFormat();
 
     void registerFoldingRangeFormat();
@@ -23,6 +27,8 @@ protected:
     void registerBreakpointsRangeFormat();
 
     void registerBreakpointLineFormat();
+
+    void registerCharsLimiterLineFormat();
 
     void registerErrorFormat();
 

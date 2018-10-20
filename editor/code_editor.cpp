@@ -45,11 +45,7 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     curr_block_number(-1), screen_top_block_number(-1), screen_bottom_block_number(-1),
     folding_lines_coverage_min(-1), folding_lines_coverage_max(-1)
 {
-    chars_limit_line = 80;
-
-    folding_content_color = QColor::fromRgb(172, 229, 238, 64);
-    folding_border_color = QColor::fromRgb(192, 192, 192, 72);
-    chars_limit_color = QColor::fromRgb(255, 0, 0, 64);
+    setCharsLimiterLineAt(80);
 
     extra_area = new ExtraArea(this);
 
@@ -127,6 +123,17 @@ void CodeEditor::setFont(const QFont & font) {
     line_number_height = fontMetrics().height();
 
     symbol_width = QFontMetricsF(font).averageCharWidth();
+
+    pseudo_tab_width = symbol_width * wrapper -> tabSpace().size();
+
+    setCharsLimiterLineAt(chars_limit_line);
+}
+
+void CodeEditor::setCharsLimiterLineAt(const uint & char_pos) {
+    chars_limit_line = char_pos;
+    chars_limit_offset_x = round(symbol_width * chars_limit_line);
+
+    update();
 }
 
 ///////////////////////// PROTECTED ///////////////////////
@@ -188,7 +195,8 @@ void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const 
 
     int block_height = block_bottom - block_top;
 
-    painter.fillRect(0, paint_top, extra_zone_width, block_height + 1, folding_content_color);
+    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_content_overlay);
+    painter.fillRect(0, paint_top, extra_zone_width, block_height + 1, format.background());
 
     painter.translate(QPoint(1, 0));
     block.layout() -> draw(&painter, QPoint(extra_zone_width + contentOffset().rx(), paint_top));
@@ -197,6 +205,7 @@ void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const 
 
     painter.setRenderHint(QPainter::Antialiasing, false);
 
+    //TODO: move border color to HighlightFormatFactory
     painter.setPen(extra_area -> borderColor());
     painter.drawLine(extra_zone_width - 1, paint_top, extra_zone_width - 1, paint_top + block_height + 1);
 
@@ -255,11 +264,11 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         hideOverlay();
     }
 
-    ////////////////////////////// TEST /////////////////
-    painter.drawText(
-        breakpoint_offset_x, paint_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
-    );
-    ////////////////////////////// END TEST /////////////////
+//    ////////////////////////////// TEST /////////////////
+//    painter.drawText(
+//        breakpoint_offset_x, paint_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
+//    );
+//    ////////////////////////////// END TEST /////////////////
 
 
     if (user_data && user_data -> hasBreakpoint()) {
@@ -340,12 +349,19 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
 }
 
 void CodeEditor::drawCharsLimiter(QPainter & painter) {
-    if (lineWrapMode() == NoWrap) {
-        painter.setPen(chars_limit_color);
-        int x = round(symbol_width * chars_limit_line) + contentOffset().rx() + document() -> documentMargin();
+// TODO: optimize me: return if 'x' not on the screen
+
+//    if (lineWrapMode() == NoWrap) {
+        painter.save();
+
+        const QTextCharFormat & chars_limiter_format = HighlightFormatFactory::obj().getFormatFor(hid_chars_limiter_line);
+        painter.setPen(chars_limiter_format.background().color());
+        int x = chars_limit_offset_x + contentOffset().rx() + document() -> documentMargin();
 
         painter.drawLine(x, 0, x, height());
-    }
+
+        painter.restore();
+//    }
 }
 
 void CodeEditor::drawAdditionalCarets(QPainter & painter) {
@@ -429,7 +445,8 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
 
 
     QPixmap pixmap(popup_rect.size());
-    pixmap.fill(folding_content_color);
+    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_content_overlay);
+    pixmap.fill(format.background().color());
 
     {
         QPainter painter(&pixmap);
@@ -785,7 +802,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     int rect_top = event -> rect().top();
     int rect_bottom = event -> rect().bottom();
 
-    QTextCharFormat breackpoints_scope_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoints_range);
+    const QTextCharFormat & breackpoints_scope_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoints_range);
     painter.fillRect(breakpoint_offset_x, rect_top, breakpoint_width, rect_bottom - rect_top, breackpoints_scope_format.background());
 
     while (block.isValid() && top <= rect_bottom) {
@@ -823,9 +840,9 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     er.setRight(qMin(er.right(), max_x));
     painter.setClipRect(er);
 
-
     QAbstractTextDocumentLayout::PaintContext context = getPaintContext();
-    QTextCharFormat selection_format = HighlightFormatFactory::obj().getFormatFor(hid_selection);
+    const QTextCharFormat & selection_format = HighlightFormatFactory::obj().getFormatFor(hid_selection);
+    const QTextCharFormat & folding_scope_line_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_scope_line);
 
     while (block.isValid()) {
         QRectF r = blockBoundingRect(block).translated(offset);
@@ -846,6 +863,23 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 contentsRect.setWidth(qMax(r.width(), max_width));
                 fillBackground(&painter, contentsRect, bg);
             }
+
+            //TODO: implement switcher and draw this only if enabled showing of folding scopes
+            int level = TextDocumentLayout::getBlockLevel(block);
+
+            if (level > 0) {
+                painter.save();
+                painter.setPen(folding_scope_line_format.foreground().color());
+                int folding_line_offset = offset.rx() + doc_margin + pseudo_tab_width;
+
+                while(--level > 0) {
+                    painter.drawLine(folding_line_offset, offset.ry(), folding_line_offset, offset.ry() + r.height());
+
+                    folding_line_offset += pseudo_tab_width;
+                }
+                painter.restore();
+            }
+            /////////
 
             QVector<QTextLayout::FormatRange> selections;
             int blpos = block.position();
@@ -899,7 +933,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
             }
 
             if (need_placeholder && layout -> preeditAreaText().isEmpty()) {
-              QColor col = /*d->control->*/palette().text().color();
+              QColor col = palette().text().color();
               col.setAlpha(128);
               painter.setPen(col);
               painter.drawText(r.adjusted(doc_margin, 0, 0, 0), Qt::AlignTop | Qt::TextWordWrap, placeholderText());
