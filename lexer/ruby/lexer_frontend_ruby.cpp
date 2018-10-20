@@ -242,8 +242,22 @@ bool LexerFrontend::parseNumber(LexerControl * state) {
             case '.': {
                 if (predef == lex_float)
                     ended = true;
-                else
-                    predef = lex_float;
+                else {
+                    switch(ECHAR1) {
+                        case '0':
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                        case '8':
+                        case '9': { predef = lex_float; break;}
+
+                        default: { ended = true; } //INFO: exit if we have deal with calling of the method for a number
+                    }
+                }
             break;}
 
             case 'a':
@@ -780,10 +794,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
     while(true) {
         switch(ECHAR0) {
             case ' ': {
-                StateLexem status = lex_blank;
+                StateLexem status = lex_blanks;
 
                 if (ECHAR1 == ' ') {
-                    status = lex_blanks;
                     int iter = 1;
 
                     do { ++state -> next_offset; }
@@ -794,10 +807,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
             break;}
 
             case '\t':{
-                StateLexem status = lex_tab;
+                StateLexem status = lex_tabs;
 
                 if (ECHAR1 == '\t') {
-                    status = lex_tabs;
                     int iter = 1;
 
                     do { ++state -> next_offset; }
