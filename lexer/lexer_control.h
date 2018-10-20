@@ -391,7 +391,7 @@ struct LexerControl {
                 active_para -> close = para;
                 active_para -> is_oneliner = paraInActiveParaLine(para);
 
-                if (active_para -> is_foldable)
+                if (active_para -> is_foldable && !active_para -> is_oneliner)
                     --user_data -> level;
 
                 if (!replaceable) {
@@ -404,7 +404,7 @@ struct LexerControl {
                 active_para -> close = para;
                 active_para -> is_oneliner = paraInActiveParaLine(para);
 
-                if (active_para -> is_foldable)
+                if (active_para -> is_foldable && !active_para -> is_oneliner)
                     --user_data -> level;
 
                 para -> close = active_para;

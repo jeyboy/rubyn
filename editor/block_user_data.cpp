@@ -1,5 +1,7 @@
 #include "block_user_data.h"
 
+//#include <QtConcurrent/QtConcurrent>
+
 BlockUserData::BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev, ParaCell * para_prev, const UserDataFlags & data_flags)
     : flags(data_flags), stack_token(nullptr), token_begin(nullptr), token_end(nullptr), para_begin(nullptr), para_end(nullptr), para_control(nullptr), level(0)
 {
@@ -67,31 +69,15 @@ void BlockUserData::syncLine(TokenCell * stack_sync_token, TokenCell * sync_toke
     }
 
     //////// SYNC TOKENS /////////////
-    TokenCell * sync = sync_token -> next;
-
-    if (sync) {
-        while(sync -> next) {
-            sync = sync -> next;
-            delete sync -> prev;
-        }
-
-        delete sync;
-    }
+//    QtConcurrent::run(this, &BlockUserData::removeTokenSequence, sync_token -> next);
+    removeTokenSequence(sync_token -> next);
 
     token_end -> prev = sync_token;
     token_end -> prev -> next = token_end;
 
     /////// SYNC PARA //////////
-    ParaCell * psync = sync_para -> next;
-
-    if (psync) {
-        while(psync -> next) {
-            psync = psync -> next;
-            delete psync -> prev;
-        }
-
-        delete psync;
-    }
+//    QtConcurrent::run(this, &BlockUserData::removeParaSequence, sync_para -> next);
+    removeParaSequence(sync_para -> next);
 
     para_end -> prev = sync_para;
     para_end -> prev -> next = para_end;
@@ -124,3 +110,24 @@ void BlockUserData::setBreakpoint(const bool & set) { // not tested
     }
 }
 void BlockUserData::invertBreakpointState() { setBreakpoint(!hasBreakpoint()); }
+
+void BlockUserData::removeTokenSequence(TokenCell * tkn) {
+    if (tkn) {
+        while(tkn -> next) {
+            tkn = tkn -> next;
+            delete tkn -> prev;
+        }
+
+        delete tkn;
+    }
+}
+void BlockUserData::removeParaSequence(ParaCell * tkn) {
+    if (tkn) {
+        while(tkn -> next) {
+            tkn = tkn -> next;
+            delete tkn -> prev;
+        }
+
+        delete tkn;
+    }
+}

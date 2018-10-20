@@ -65,7 +65,10 @@ public:
         }
 
         if (prev_udata) {
-            udata -> level = prev_udata -> level + (prev_udata -> para_control ? 1 : 0);
+            udata -> level =
+                prev_udata -> level + (
+                    prev_udata -> para_control && !prev_udata -> para_control -> is_oneliner ? 1 : 0
+                );
         }
     }
 

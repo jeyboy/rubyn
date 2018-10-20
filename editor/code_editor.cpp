@@ -255,6 +255,13 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         hideOverlay();
     }
 
+    ////////////////////////////// TEST /////////////////
+    painter.drawText(
+        breakpoint_offset_x, paint_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
+    );
+    ////////////////////////////// END TEST /////////////////
+
+
     if (user_data && user_data -> hasBreakpoint()) {
         painter.drawPixmap(
             QPoint(breakpoint_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),

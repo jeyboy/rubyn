@@ -55,6 +55,9 @@ struct BlockUserData : public QTextBlockUserData {
     bool hasBreakpoint();
     void setBreakpoint(const bool & set);
     void invertBreakpointState();
+
+    void removeTokenSequence(TokenCell * tkn);
+    void removeParaSequence(ParaCell * tkn);
 };
 
 #endif // BLOCK_USER_DATA_H
