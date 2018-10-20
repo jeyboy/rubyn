@@ -35,7 +35,7 @@ struct BlockUserData : public QTextBlockUserData {
     QList<MsgInfo> msgs;
     int level;
 
-    BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev = nullptr, ParaCell * para_prev = nullptr, const UserDataFlags & data_flags = udf_has_breakpoint);
+    BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev = nullptr, ParaCell * para_prev = nullptr, const UserDataFlags & data_flags = udf_none);
 
     ~BlockUserData();
 
@@ -54,6 +54,7 @@ struct BlockUserData : public QTextBlockUserData {
 
     bool hasBreakpoint();
     void setBreakpoint(const bool & set);
+    void invertBreakpointState();
 };
 
 #endif // BLOCK_USER_DATA_H

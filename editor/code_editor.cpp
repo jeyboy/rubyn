@@ -211,7 +211,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         painter.fillRect(0, paint_top, extra_zone_width, block_bottom - block_top, format.background());
     }
 
-    BlockUserData * user_data = static_cast<BlockUserData *>(block.userData());
+    BlockUserData * user_data = TextDocumentLayout::getUserDataForBlock(block);
     DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
     bool on_block = folding_y != NO_FOLDING && folding_y > block_top && folding_y < block_bottom;
@@ -423,7 +423,6 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
 
     QPixmap pixmap(popup_rect.size());
     pixmap.fill(folding_content_color);
-//    pixmap.fill(palette().base().color().darker(105));
 
     {
         QPainter painter(&pixmap);
@@ -676,15 +675,17 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
     int prev_folding_y = folding_y;
 
     bool invalidation_required = false;
-    bool in_number_zone = pos.rx() <= line_number_width;
-    bool in_folding_zone = !in_number_zone && (pos.rx() >= folding_offset_x && pos.rx() < extra_zone_width - HPADDING);
 
-    folding_y = in_folding_zone ? pos.ry() : NO_FOLDING;
+    bool in_breakpoint_zone = pos.rx() >= breakpoint_offset_x && pos.rx() <= breakpoint_offset_x + breakpoint_width;
+    bool in_number_zone = !in_breakpoint_zone && pos.rx() >= line_number_offset_x && pos.rx() <= line_number_offset_x + line_number_width;
+    bool in_folding_zone = !in_number_zone && (pos.rx() >= folding_offset_x && pos.rx() <= folding_offset_x + folding_width);
 
     if (!in_folding_zone) {
         folding_lines_coverage_min = -1;
         folding_lines_coverage_max = -1;
+        folding_y = NO_FOLDING;
     }
+    else folding_y = pos.ry();
 
     switch(event -> type()) {
         case QEvent::MouseMove: {
@@ -712,18 +713,22 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
         case QEvent::MouseButtonRelease: {
             if (event -> button() == Qt::LeftButton) {
-                if (in_number_zone || in_folding_zone) {
+                if (in_breakpoint_zone || in_number_zone || in_folding_zone) {
                     QTextCursor cursor = cursorForPosition(QPoint(1, pos.ry()));
                     QTextBlock blk = cursor.block();
 
                     if (blk.isValid()) {
-                        if (in_number_zone) {
-                            QTextCursor tc(blk);
+                        if (in_breakpoint_zone) {
+                            BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-                            tc.setPosition(blk.position() + blk.length(), QTextCursor::MoveAnchor);
-                            tc.setPosition(blk.position(), QTextCursor::KeepAnchor);
+                            udata -> invertBreakpointState();
 
-                            setTextCursor(tc);
+                            invalidation_required = true;
+                        } else if (in_number_zone) {
+                            cursor.setPosition(blk.position() + blk.length(), QTextCursor::MoveAnchor);
+                            cursor.setPosition(blk.position(), QTextCursor::KeepAnchor);
+
+                            setTextCursor(cursor);
                         } else {
                             if (wrapper -> layout -> toggleFolding(blk)) {
                                 folding_click = true;
@@ -1314,7 +1319,7 @@ void CodeEditor::updateExtraAreaWidth(int /* newBlockCount */) {
     breakpoint_offset_x = 2;
     breakpoint_width = ICO_WIDTH + HPADDING;
 
-    line_number_offset_x = breakpoint_offset_x + ICO_WIDTH + HPADDING;
+    line_number_offset_x = breakpoint_offset_x + breakpoint_width + 1;
     line_number_width = lineNumsWidth();
 
     folding_offset_x = line_number_offset_x + line_number_width + HPADDING;

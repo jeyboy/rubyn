@@ -118,8 +118,9 @@ void BlockUserData::setBreakpoint(const bool & set) { // not tested
         return;
 
     if (set) {
-        flags = static_cast<UserDataFlags>(flags & udf_has_breakpoint);
+        flags = static_cast<UserDataFlags>(flags | udf_has_breakpoint);
     } else {
         flags = static_cast<UserDataFlags>(flags - udf_has_breakpoint);
     }
 }
+void BlockUserData::invertBreakpointState() { setBreakpoint(!hasBreakpoint()); }
