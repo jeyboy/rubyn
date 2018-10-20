@@ -366,6 +366,11 @@ struct LexerControl {
                 para -> pos = cached_str_pos;
                 para -> is_foldable = false;
                 para -> is_oneliner = false;
+
+                if (para -> close) {
+                    para -> close -> close = nullptr;
+                    para -> close = nullptr;
+                }
             }
             else para = ParaList::insert(para, ptype, cached_str_pos);
 

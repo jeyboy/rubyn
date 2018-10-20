@@ -264,11 +264,11 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         hideOverlay();
     }
 
-//    ////////////////////////////// TEST /////////////////
-//    painter.drawText(
-//        breakpoint_offset_x, paint_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
-//    );
-//    ////////////////////////////// END TEST /////////////////
+    ////////////////////////////// TEST /////////////////
+    painter.drawText(
+        breakpoint_offset_x, paint_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
+    );
+    ////////////////////////////// END TEST /////////////////
 
 
     if (user_data && user_data -> hasBreakpoint()) {
@@ -625,6 +625,7 @@ QString CodeEditor::wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps &
 }
 
 void CodeEditor::procSelectionIndent(const bool & right) {
+    //TODO: optimize me: add text and update char length for first token and pos for second in token sequence for each line
     QTextCursor curs = textCursor();
     const QString & tab_space = wrapper -> tabSpace();
     const int tab_space_length = tab_space.length();
