@@ -100,9 +100,6 @@ void CodeEditor::openDocument(File * file) {
         wrapper = file -> asText();
         QTextDocument * text_doc = wrapper -> toQDoc();
 
-        QTextDocumentPrivate * handle = text_doc -> docHandle();
-//        handle ->
-
 //        text_doc -> setUseDesignMetrics(true);
 
         text_doc -> setDefaultFont(new_font);
@@ -173,21 +170,16 @@ void CodeEditor::prepareIcons(const int & size) {
         BlockUserData::udf_folding_opened | BlockUserData::udf_folding_hovered,
         PREPARE_PIXMAP(QStringLiteral(":/folding_open_hover"), size)
     );
+
+    icons.insert(
+        BlockUserData::udf_has_breakpoint,
+        PREPARE_PIXMAP(QStringLiteral(":/breakpoint"), size)
+    );
 }
 
 int CodeEditor::widthWithoutScroll() {
     return width() - (verticalScrollBar() -> isVisible() ? verticalScrollBar() -> width() : 0);
 }
-
-int CodeEditor::extraAreaWidth() {
-    return foldingOffset() + HPADDING + FOLDING_WIDTH;
-}
-
-int CodeEditor::foldingOffset() {
-    int digits = qMax(1, QString::number(blockCount()).length());
-    return HPADDING * 2 + symbol_width * digits;
-}
-
 
 void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom) {
     painter.save();
@@ -254,7 +246,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             }
 
             painter.drawPixmap(
-                QPoint(folding_offset_x, paint_top + (line_number_height - FOLDING_WIDTH) / 2),
+                QPoint(folding_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
                 icons[folding_flags]
             );
         }
@@ -263,15 +255,27 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         hideOverlay();
     }
 
+    if (user_data && user_data -> hasBreakpoint()) {
+        painter.drawPixmap(
+            QPoint(breakpoint_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
+            icons[BlockUserData::udf_has_breakpoint]
+        );
+    }
+
     if (block_num >= folding_lines_coverage_min && block_num < folding_lines_coverage_max) {
         const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_description);
         painter.setPen(format.foreground().color());
         painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, format.background());
+
+        //////////////////////////// TEST BLOCK //////////////////////
+        const QTextCharFormat & scope_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_scope_range);
+        painter.fillRect(folding_scope_offset_x, paint_top, folding_scope_width, block_bottom - block_top, scope_format.background());
+        //////////////////////////// END TEST BLOCK //////////////////////
     }
 
     painter.setFont(is_current ? curr_line_font : font());
     painter.drawText(
-        0, paint_top, line_number_width, line_number_height, Qt::AlignRight, QString::number(block_num + 1)
+        line_number_offset_x, paint_top, line_number_width, line_number_height, Qt::AlignRight, QString::number(block_num + 1)
     );
 }
 
@@ -768,6 +772,9 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
     int rect_top = event -> rect().top();
     int rect_bottom = event -> rect().bottom();
+
+    QTextCharFormat breackpoints_scope_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoints_range);
+    painter.fillRect(breakpoint_offset_x, rect_top, breakpoint_width, rect_bottom - rect_top, breackpoints_scope_format.background());
 
     while (block.isValid() && top <= rect_bottom) {
         if (block.isVisible() && bottom >= rect_top)
@@ -1302,12 +1309,23 @@ void CodeEditor::highlightCurrentLine() {
     setExtraSelections(extra_selections);
 }
 
+
 void CodeEditor::updateExtraAreaWidth(int /* newBlockCount */) {
-    extra_zone_width = extraAreaWidth();
+    breakpoint_offset_x = 2;
+    breakpoint_width = ICO_WIDTH + HPADDING;
+
+    line_number_offset_x = breakpoint_offset_x + ICO_WIDTH + HPADDING;
+    line_number_width = lineNumsWidth();
+
+    folding_offset_x = line_number_offset_x + line_number_width + HPADDING;
+    folding_width = ICO_WIDTH;
+
+    folding_scope_offset_x = folding_offset_x + folding_width + 1;
+    folding_scope_width = FOLDING_SCOPE_WIDTH + 1;
+
+    extra_zone_width = folding_scope_offset_x + folding_scope_width + 2;
+
     setViewportMargins(extra_zone_width, 0, 0, 0);
-    line_number_width = extra_zone_width - HPADDING * 2 - FOLDING_WIDTH;
-    folding_offset_x = foldingOffset();
-    folding_width = extra_zone_width - folding_offset_x;
 }
 
 void CodeEditor::updateExtraArea(const QRect & rect, int dy) {

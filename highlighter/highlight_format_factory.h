@@ -18,6 +18,12 @@ protected:
 
     void registerFoldingRangeFormat();
 
+    void registerFoldingScopeRangeFormat();
+
+    void registerBreakpointsRangeFormat();
+
+    void registerBreakpointLineFormat();
+
     void registerErrorFormat();
 
     void registerWarningFormat();

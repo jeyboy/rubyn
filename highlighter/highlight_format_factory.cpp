@@ -25,6 +25,24 @@ void HighlightFormatFactory::registerFoldingRangeFormat() {
     _formats.insert(hid_folding_range, format);
 }
 
+void HighlightFormatFactory::registerFoldingScopeRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(145, 196, 247));
+    _formats.insert(hid_folding_scope_range, format);
+}
+
+void HighlightFormatFactory::registerBreakpointsRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(255, 0, 0, 16));
+    _formats.insert(hid_breakpoints_range, format);
+}
+
+void HighlightFormatFactory::registerBreakpointLineFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(255, 0, 0, 16));
+    _formats.insert(hid_breakpoint_line, format);
+}
+
 void HighlightFormatFactory::registerErrorFormat() {
     QTextCharFormat format;
     format.setFontUnderline(true);
@@ -181,6 +199,9 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerFoldingDescriptionFormat();
     registerFoldingRangeFormat();
     registerScopeVisibilityFormat();
+    registerFoldingScopeRangeFormat();
+    registerBreakpointsRangeFormat();
+    registerBreakpointLineFormat();
     registerLabelFormat();
     registerOperatorFormat();
     registerSpecKeywordFormat();

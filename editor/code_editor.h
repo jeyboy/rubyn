@@ -156,8 +156,9 @@ class OverlayInfo;
 
 
 
-#define HPADDING 3
-#define FOLDING_WIDTH 12
+#define HPADDING 2
+#define ICO_WIDTH 12
+#define FOLDING_SCOPE_WIDTH 3
 #define NO_FOLDING -100
 
 #define PREPARE_PIXMAP(name, size) QPixmap(name).scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation)
@@ -246,6 +247,12 @@ class CodeEditor : public QPlainTextEdit {
 
     int extra_zone_width;
 
+    int breakpoint_offset_x;
+    int breakpoint_width;
+
+    int folding_scope_offset_x;
+    int folding_scope_width;
+
     int folding_offset_x;
     int folding_width;
     EDITOR_POS_TYPE folding_lines_coverage_min;
@@ -254,6 +261,7 @@ class CodeEditor : public QPlainTextEdit {
     qreal symbol_width;
     uint chars_limit_line;
 
+    int line_number_offset_x;
     int line_number_height;
     int line_number_width;
 
@@ -349,11 +357,11 @@ protected:
 
     static void fillBackground(QPainter * p, const QRectF & rect, QBrush brush, const QRectF & gradientRect = QRectF());
 
-    void prepareIcons(const int & size = FOLDING_WIDTH);
+    void prepareIcons(const int & size = ICO_WIDTH);
 
     int widthWithoutScroll();
-    int extraAreaWidth();
-    int foldingOffset();
+    inline int extraAreaWidth() { return extra_zone_width; }
+    inline int lineNumsWidth() { return symbol_width * qMax(1, QString::number(blockCount()).length()); }
 
     void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom);
     void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num);

@@ -6,6 +6,9 @@
 #include "misc/defines.h"
 
 enum Identifier : LEXEM_TYPE {
+    hid_breakpoint_line = -7,
+    hid_breakpoints_range = -6,
+    hid_folding_scope_range = -5,
     hid_folding_range = -4,
     hid_folding_description = -3,
     hid_current_line = -2,
