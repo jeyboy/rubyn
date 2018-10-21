@@ -4,10 +4,10 @@
 #include <qpointer.h>
 
 #include "misc/singleton.h"
+#include "controls/logger_window.h"
 
 #define TIME_MARK QDateTime::currentDateTime().toString(QLatin1String("dd.MM.yyyy hh:mm:ss "))
 
-class QPlainTextEdit;
 class QFile;
 class QTextStream;
 class QFontMetrics;
@@ -34,7 +34,7 @@ public:
 
     void initiate(const QString & fileName = "", const bool & create_editor = false);
     inline void setShowDateTime(bool show) { m_showDate = show; }
-    inline QPointer<QPlainTextEdit> & getEditor() { return m_editor; }
+    inline QPointer<LoggerWindow> & getEditor() { return m_editor; }
 
     void startMark();
     void endMark(const QString & initiator, const QString & value);
@@ -49,7 +49,7 @@ private:
 
     QTextStream * out;
     QFile * file;
-    QPointer<QPlainTextEdit> m_editor;
+    QPointer<LoggerWindow> m_editor;
     bool m_showDate;
     QString lastInitiator;
     QFontMetrics * fm;

@@ -74,6 +74,7 @@ struct LexerControl {
 
     ~LexerControl() {}
 
+
     inline void setBuffer(const char * buff) {
         prev = start = buffer = buff;
         cached.clear();

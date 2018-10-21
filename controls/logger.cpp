@@ -2,7 +2,6 @@
 
 #include "misc/format.h"
 
-#include <qplaintextedit.h>
 #include <qfile.h>
 #include <qdatetime.h>
 #include <qtextstream.h>
@@ -75,7 +74,7 @@ void Logger::write(const QString & initiator, const QString & value, const QStri
 
 void Logger::initiate(const QString & file_name, const bool & create_editor) {
     if (create_editor && !m_editor) {
-        m_editor = new QPlainTextEdit();
+        m_editor = new LoggerWindow();
         m_editor -> setReadOnly(true);
 
         fm = new QFontMetrics(m_editor -> document() -> defaultFont());

@@ -4,6 +4,8 @@
 #include "lexer/ruby/grammar_ruby.h"
 #include "lexer/ruby/predefined_ruby.h"
 
+#include "controls/logger.h"
+
 #include <qdatetime.h>
 
 using namespace Ruby;
@@ -1235,8 +1237,12 @@ void LexerFrontend::lexicate(LexerControl * state) {
 }
 
 int LexerFrontend::lineState(BlockUserData * udata, const int & prev_user_state) {
+    //INFO: Hack for heredoc marks
     if (udata -> stack_token) {
         TokenCell * it = udata -> token_begin -> next;
+
+        if (!it -> data)
+            it = udata -> stack_token;
 
         if (it -> data) {
             QByteArray res(*it -> data);
@@ -1245,11 +1251,12 @@ int LexerFrontend::lineState(BlockUserData * udata, const int & prev_user_state)
 
             while(it -> next -> data) {
                 it = it -> next;
+                res.append(' ');
                 res.append(*it -> data);
             }
 
             while(++steps < 100) {
-                uint seed = qHash(QDateTime::currentSecsSinceEpoch());
+                uint seed = qHash(QDateTime::currentMSecsSinceEpoch());
                 hash = static_cast<int>(qHash(res, seed));
 
                 if (hash > lex_max && hash != prev_user_state)
@@ -1296,7 +1303,12 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
 
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
 
-    block.setUserState(lineState(udata, block.userState()));
+    int prev_state = block.userState();
+    int new_state = lineState(udata, prev_state);
+
+    Logger::obj().write(QLatin1Literal("state"), QString::number(prev_state) + ' ' + QString::number(new_state), block.text());
+
+    block.setUserState(new_state);
 }
 
 void LexerFrontend::paraOpositionStr(const PARA_TYPE & para, QString & res) {

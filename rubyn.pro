@@ -71,7 +71,8 @@ SOURCES += main.cpp\
     lexer/ruby/grammar_ruby.cpp \
     editor/block_user_data.cpp \
     lexer/igrammar.cpp \
-    editor/text_document_layout.cpp
+    editor/text_document_layout.cpp \
+    controls/logger_window.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -175,7 +176,8 @@ HEADERS  += ide_window.h \
     misc/_stack.h \
     misc/_chain.h \
     highlighter/para_type.h \
-    editor/text_document_layout.h
+    editor/text_document_layout.h \
+    controls/logger_window.h
 
 FORMS    += ide_window.ui
 
