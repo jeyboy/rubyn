@@ -4,8 +4,6 @@
 #include "lexer/ruby/grammar_ruby.h"
 #include "lexer/ruby/predefined_ruby.h"
 
-#include "controls/logger.h"
-
 #include <qdatetime.h>
 
 using namespace Ruby;
@@ -644,8 +642,9 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
                         break; }
 
                         case 0: {
+                            state -> next_offset = 0;
                             lex = Grammar::obj().stateForHeredoc(state -> stack_token -> lexem, true);
-                            del_lex = lex_end_line;
+                            del_lex = lex_none;
                         break;}
                     }
 
@@ -1239,32 +1238,34 @@ void LexerFrontend::lexicate(LexerControl * state) {
 int LexerFrontend::lineState(BlockUserData * udata, const int & prev_user_state) {
     //INFO: Hack for heredoc marks
     if (udata -> stack_token) {
-        TokenCell * it = udata -> token_begin -> next;
+        TokenCell * it = udata -> stack_token;
 
-        if (!it -> data)
-            it = udata -> stack_token;
+//        if (!it -> data)
+//            it = udata -> stack_token;
 
         if (it -> data) {
-            QByteArray res(*it -> data);
+//            QByteArray res(*it -> data);
             int hash = 0;
-            int steps = 0;
+//            int steps = 0;
 
-            while(it -> next -> data) {
-                it = it -> next;
-                res.append(' ');
-                res.append(*it -> data);
-            }
+//            while(it -> next -> data) {
+//                it = it -> next;
+//                res.append(' ');
+//                res.append(*it -> data);
+//            }
 
-            while(++steps < 100) {
-                uint seed = qHash(QDateTime::currentMSecsSinceEpoch());
-                hash = static_cast<int>(qHash(res, seed));
+            while(true) {
+                hash = static_cast<int>(qHash(QDateTime::currentMSecsSinceEpoch()));
+//                uint seed = qHash(QDateTime::currentMSecsSinceEpoch());
+//                hash = static_cast<int>(qHash(res, seed));
 
-                if (hash > lex_max && hash != prev_user_state)
+                if ((hash > lex_max || hash < lex_default) && hash != prev_user_state)
                     break;
             }
 
             return hash;
         }
+        else return it -> lexem;
     }
 
     return ILexer::lineState(udata);
@@ -1305,8 +1306,6 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
 
     int prev_state = block.userState();
     int new_state = lineState(udata, prev_state);
-
-    Logger::obj().write(QLatin1Literal("state"), QString::number(prev_state) + ' ' + QString::number(new_state), block.text());
 
     block.setUserState(new_state);
 }

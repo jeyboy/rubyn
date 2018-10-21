@@ -76,14 +76,12 @@ struct LexerControl {
 
 
     inline void setBuffer(const char * buff) {
-        prev = start = buffer = buff;
         cached.clear();
+        prev = start = buffer = buff;
         cached_str_pos = cached_length = 0;
         next_offset = 1;
     }
-    inline void moveBufferToEnd() {
-        buffer = start + strlen(start);
-    }
+    inline void moveBufferToEnd() { buffer = start + strlen(start); }
     inline bool isBufferStart() { return buffer == start; }
     inline bool isBufferEof() { return *buffer == 0; }
     inline bool bufferIsEmpty() { return *start == '\0'; }
