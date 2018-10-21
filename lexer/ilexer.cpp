@@ -20,6 +20,14 @@ bool ILexer::isBlank(const char & c) { return c == ' ' || c == '\t'; }
     //template<typename ch_t> inline bool is_print(ch_t c)   {   return c>=' ' && c<='~';    }
     //template<typename ch_t> inline bool is_crlf(ch_t c) { return c=='\r' || c=='\n'; }
 
+int ILexer::lineState(BlockUserData * udata) {
+    // TODO: add level like a part of user state: use bit shift for that
+    if (udata -> stack_token) {
+        return udata -> stack_token -> lexem;
+    }
+    else return udata -> token_end -> prev -> lexem;
+}
+
 ILexer::ILexer() {
 
 }
@@ -27,7 +35,3 @@ ILexer::ILexer() {
 ILexer::~ILexer() {
 
 }
-
-//void ILexer::calcFoldings() {
-
-//}

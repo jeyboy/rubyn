@@ -55,7 +55,7 @@ public:
 
     LEXEM_TYPE getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const bool & global_offset = true);
 
-//    void calcFoldings();
+
 protected slots:
 //    void changesInContent(int position, int removed_count, int added_count);
 };

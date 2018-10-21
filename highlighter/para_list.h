@@ -35,7 +35,7 @@ struct ParaCell {
         if (next)
             next -> prev = prev;
 
-        if (close)
+        if (close && is_blockator)
             close -> close = nullptr;
     }
 

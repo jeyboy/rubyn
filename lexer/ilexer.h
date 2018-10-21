@@ -37,6 +37,7 @@ protected:
         //template<typename ch_t> inline bool is_print(ch_t c)   {   return c>=' ' && c<='~';    }
         //template<typename ch_t> inline bool is_crlf(ch_t c) { return c=='\r' || c=='\n'; }
 
+    virtual int lineState(BlockUserData * udata);
 public:
     ILexer();
 

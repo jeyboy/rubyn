@@ -25,6 +25,8 @@ namespace Ruby {
         bool parseComment(LexerControl * state);
 
         void lexicate(LexerControl * control);
+    protected:
+        int lineState(BlockUserData * udata, const int & prev_user_state);
     public:
         LexerFrontend();
         ~LexerFrontend();

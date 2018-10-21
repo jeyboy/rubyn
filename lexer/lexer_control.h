@@ -74,25 +74,6 @@ struct LexerControl {
 
     ~LexerControl() {}
 
-    inline int lineState() {
-        if (stack_token) {
-            if (stack_token -> data) {
-                int data_state = 0;
-
-                QByteArray data = *stack_token -> data;
-                QByteArray::ConstIterator it = data.constBegin();
-
-                for(int pos = 1; it != data.constEnd(); it++, pos++) {
-                    data_state += pos * *it;
-                }
-
-                return lex_max + data_state;
-            }
-            else return stack_token -> lexem;
-        }
-        else return lex_none;
-    }
-
     inline void setBuffer(const char * buff) {
         prev = start = buffer = buff;
         cached.clear();
@@ -205,6 +186,8 @@ struct LexerControl {
 
             if (unstackable) {
                 if (stack_token) {
+                    attachPara(grammar -> paraType(lexem), flags, true);
+
                     if (!grammar -> stackDropable(stack_token -> lexem, lexem))
                         cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
                     else {
@@ -213,7 +196,6 @@ struct LexerControl {
 //                        if (lex_prev_word == lex_none)
 //                            lex_prev_word = stack_token -> lexem;
 
-                        attachPara(grammar -> paraType(lexem), flags, true);
                         stack_token = stack_token -> stacked_prev;
                     }
                 } else {
@@ -368,7 +350,8 @@ struct LexerControl {
                 para -> is_oneliner = false;
 
                 if (para -> close) {
-                    para -> close -> close = nullptr;
+                    if (para -> is_blockator)
+                        para -> close -> close = nullptr;
                     para -> close = nullptr;
                 }
             }

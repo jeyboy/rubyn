@@ -220,7 +220,7 @@ void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
 
     bool force_next_block_highlight = false;
 
-    while (block.isValid() && (block.position() < end_position || force_next_block_highlight)) {
+    while (block.isValid() && (force_next_block_highlight || block.position() < end_position)) {
         const int state_before_highlight = block.userState();
 
         reformatBlock(block, from, charsRemoved, charsAdded);

@@ -4,6 +4,8 @@
 #include "lexer/ruby/grammar_ruby.h"
 #include "lexer/ruby/predefined_ruby.h"
 
+#include <qdatetime.h>
+
 using namespace Ruby;
 
 void LexerFrontend::identifyWordType(LexerControl * state) {
@@ -658,7 +660,7 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
     return cutWord(state, lex, del_lex, flags);
 }
 
-bool LexerFrontend::parseRegexp(LexerControl * state) {   
+bool LexerFrontend::parseRegexp(LexerControl * state) {
     StateLexem lex = lex_none;
     StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
@@ -1232,6 +1234,35 @@ void LexerFrontend::lexicate(LexerControl * state) {
 //        state -> validateHeredocState();
 }
 
+int LexerFrontend::lineState(BlockUserData * udata, const int & prev_user_state) {
+    if (udata -> stack_token) {
+        TokenCell * it = udata -> token_begin -> next;
+
+        if (it -> data) {
+            QByteArray res(*it -> data);
+            int hash = 0;
+            int steps = 0;
+
+            while(it -> next -> data) {
+                it = it -> next;
+                res.append(*it -> data);
+            }
+
+            while(++steps < 100) {
+                uint seed = qHash(QDateTime::currentSecsSinceEpoch());
+                hash = static_cast<int>(qHash(res, seed));
+
+                if (hash > lex_max && hash != prev_user_state)
+                    break;
+            }
+
+            return hash;
+        }
+    }
+
+    return ILexer::lineState(udata);
+}
+
 LexerFrontend::LexerFrontend() {}
 
 LexerFrontend::~LexerFrontend() {}
@@ -1258,14 +1289,14 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
 
     lexicate(&state);
 
-    block.setUserState(state.lineState());
-
     if (udata -> para_control && (!state.control_para || (state.control_para -> para_type != udata -> para_control -> para_type))) {
         if (udata -> folded())
             lighter -> toggleFolding(block);
     }
 
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
+
+    block.setUserState(lineState(udata, block.userState()));
 }
 
 void LexerFrontend::paraOpositionStr(const PARA_TYPE & para, QString & res) {
