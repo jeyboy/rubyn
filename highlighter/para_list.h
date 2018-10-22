@@ -119,11 +119,10 @@ public:
         if (!prev_end)
             prev_end = last -> prev;
 
-        left = new ParaCell(pt_none, 0, prev_end);
-        right = new ParaCell(pt_max, 0, left);
-
-        left -> close = right;
-        right -> close = left;
+        left = new ParaCell(pt_none, -1, prev_end);
+        right = new ParaCell(pt_max, -1, left);
+//        left -> close = right;
+//        right -> close = left;
     }
 
     static void removeLine(ParaCell * left, ParaCell * right) {

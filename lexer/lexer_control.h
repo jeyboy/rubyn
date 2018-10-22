@@ -140,7 +140,7 @@ struct LexerControl {
         ParaCell * it = active_para ? active_para : para -> prev;
 
         while(it) {
-            if (!it -> close)
+            if (!it -> close && it -> pos != -1)
                 return it;
 
             it = it -> prev;
@@ -343,16 +343,24 @@ struct LexerControl {
         if (!replaceable || (replaceable && closable)) {
             if (para -> next) {
                 para = para -> next;
+
+                // TODO: need to inject pseudo para in the end of the prev line for replaceables
+                if (replaceable && para -> para_type == ptype && para -> pos == cached_str_pos && para -> close) {
+                    --user_data -> level;
+                    return;
+                }
+
                 para -> para_type = ptype;
                 para -> pos = cached_str_pos;
-                para -> is_foldable = false;
-                para -> is_oneliner = false;
 
                 if (para -> close) {
                     if (para -> is_blockator)
                         para -> close -> close = nullptr;
                     para -> close = nullptr;
                 }
+
+                para -> is_foldable = false;
+                para -> is_oneliner = false;
             }
             else para = ParaList::insert(para, ptype, cached_str_pos);
 
