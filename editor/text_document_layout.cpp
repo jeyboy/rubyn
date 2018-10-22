@@ -2,9 +2,7 @@
 
 #include "controls/logger.h"
 
-TextDocumentLayout::TextDocumentLayout(QTextDocument * document) : QPlainTextDocumentLayout(document) {
-
-}
+TextDocumentLayout::TextDocumentLayout(QTextDocument * document) : QPlainTextDocumentLayout(document) {}
 
 bool TextDocumentLayout::toggleFolding(const QTextBlock & blk) {
     QTextBlock block = blk;
