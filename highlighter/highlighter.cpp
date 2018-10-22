@@ -3,6 +3,7 @@
 #include "misc/utils.h"
 
 #include "editor/document_types/text_document.h"
+#include "controls/logger.h"
 
 #include <qtimer.h>
 
@@ -38,8 +39,8 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     }
 }
 
-void Highlighter::toggleFolding(QTextBlock & blk) {
-    _doc_wrapper -> layout -> toggleFolding(blk);
+bool Highlighter::toggleFolding(const QTextBlock & blk) {
+    return _doc_wrapper -> layout -> toggleFolding(blk);
 }
 
 Highlighter::Highlighter(TextDocument * doc) : QObject(), rehighlighting(false),
@@ -81,12 +82,12 @@ void Highlighter::rehighlightBlock(const QTextBlock & block) {
 }
 
 void Highlighter::setFormat(const int & start, const int & count, const QTextCharFormat & format) {
-    if (start < 0 || start >= formatChanges.count())
+    if (start < 0 || start >= format_changes.count())
         return;
 
-    const int end = qMin(start + count, formatChanges.count());
+    const int end = qMin(start + count, format_changes.count());
     for (int i = start; i < end; ++i)
-        formatChanges[i] = format;
+        format_changes[i] = format;
 }
 
 void Highlighter::setFormat(const int & start, const int & count, const QColor & color) {
@@ -102,10 +103,10 @@ void Highlighter::setFormat(const int & start, const int & count, const QFont & 
 }
 
 QTextCharFormat Highlighter::format(const int & pos) const {
-    if (pos < 0 || pos >= formatChanges.count())
+    if (pos < 0 || pos >= format_changes.count())
         return QTextCharFormat();
 
-    return formatChanges.at(pos);
+    return format_changes.at(pos);
 }
 
 int Highlighter::previousBlockState() const {
@@ -198,11 +199,11 @@ void Highlighter::setCurrentBlockState(const int & new_state) {
 ////    inReformatBlocks = wasInReformatBlocks;
 //}
 
-void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
+void Highlighter::reformatBlocks(int from, int chars_removed, int chars_added) {
 //    rehighlightPending = false;
 
 
-//    if (!rehighlighting && charsRemoved) {
+//    if (!rehighlighting && chars_removed) {
 //        // recalc folding queues
 //    }
 
@@ -210,7 +211,7 @@ void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
     if (!block.isValid())
         return;
 
-    QTextBlock last_block = doc -> findBlock(from + charsAdded + (charsRemoved > 0 ? 1 : 0));
+    QTextBlock last_block = doc -> findBlock(from + chars_added + (chars_removed > 0 ? 1 : 0));
     int end_position;
 
     if (last_block.isValid())
@@ -220,47 +221,53 @@ void Highlighter::reformatBlocks(int from, int charsRemoved, int charsAdded) {
 
     bool force_next_block_highlight = false;
 
+    Logger::obj().startMark();
+
     while (block.isValid() && (force_next_block_highlight || block.position() < end_position)) {
         const int state_before_highlight = block.userState();
 
-        reformatBlock(block, from, charsRemoved, charsAdded);
+        reformatBlock(block, from, chars_removed, chars_added);
 
         force_next_block_highlight = !rehighlighting && (block.userState() != state_before_highlight);
+
+        Logger::obj().write("reformatBlocks", block.text());
 
         block = block.next();
     }
 
-    formatChanges.clear();
+    Logger::obj().endMark("reformatBlocks");
+
+    format_changes.clear();
 }
 
-void Highlighter::reformatBlock(const QTextBlock & block, int from, int charsRemoved, int charsAdded) {
+void Highlighter::reformatBlock(const QTextBlock & block, int from, int chars_removed, int chars_added) {
 //    qDebug() << "reformatBlock" << block.text();
 
     current_block = block;
 
-    formatChanges.fill(QTextCharFormat(), block.length() - 1);
+    format_changes.fill(QTextCharFormat(), block.length() - 1);
     highlightBlock(block.text());
-    applyFormatChanges(from, charsRemoved, charsAdded);
+    applyFormatChanges(from, chars_removed, chars_added);
 
     current_block = QTextBlock();
 }
 
-void Highlighter::applyFormatChanges(int from, int charsRemoved, int charsAdded) {
+void Highlighter::applyFormatChanges(int from, int chars_removed, int chars_added) {
     QVector<QTextLayout::FormatRange> old_ranges;
     QTextLayout * layout = current_block.layout();
     QVector<QTextLayout::FormatRange> ranges = layout -> formats();
 
-    bool formatsChanged = false;
-    bool doAdjustRange = current_block.contains(from);
+    bool formats_changed = false;
+    bool do_adjust_range = current_block.contains(from);
 
     if (!ranges.isEmpty()) {
         auto it = ranges.begin();
         while (it != ranges.end()) {
             if (it -> format.property(QTextFormat::UserProperty).toBool()) {
-                if (doAdjustRange)
-                    formatsChanged =
-                        adjustRange(*it, from - current_block.position(), charsRemoved, charsAdded)
-                            || formatsChanged;
+                if (do_adjust_range)
+                    formats_changed =
+                        adjustRange(*it, from - current_block.position(), chars_removed, chars_added)
+                            || formats_changed;
                 ++it;
             } else {
                 old_ranges.append(*it);
@@ -269,23 +276,23 @@ void Highlighter::applyFormatChanges(int from, int charsRemoved, int charsAdded)
         }
     }
 
-    QTextCharFormat emptyFormat;
+    QTextCharFormat empty_format;
     QTextLayout::FormatRange r;
     QVector<QTextLayout::FormatRange> new_ranges;
 
     int i = 0;
 
-    while (i < formatChanges.count()) {
-        while(i < formatChanges.count() && formatChanges.at(i) == emptyFormat)
+    while (i < format_changes.count()) {
+        while(i < format_changes.count() && format_changes.at(i) == empty_format)
             ++i;
 
-        if (i >= formatChanges.count())
+        if (i >= format_changes.count())
             break;
 
         r.start = i;
-        r.format = formatChanges.at(i);
+        r.format = format_changes.at(i);
 
-        while(i < formatChanges.count() && formatChanges.at(i) == r.format)
+        while(i < format_changes.count() && format_changes.at(i) == r.format)
             ++i;
 
         r.length = i - r.start;
@@ -293,15 +300,15 @@ void Highlighter::applyFormatChanges(int from, int charsRemoved, int charsAdded)
         new_ranges << r;
     }
 
-    formatsChanged = formatsChanged || (new_ranges.size() != old_ranges.size());
+    formats_changed = formats_changed || (new_ranges.size() != old_ranges.size());
 
-    for (int i = 0; !formatsChanged && i < new_ranges.size(); ++i) {
+    for (int i = 0; !formats_changed && i < new_ranges.size(); ++i) {
         const QTextLayout::FormatRange &o = old_ranges.at(i);
         const QTextLayout::FormatRange &n = new_ranges.at(i);
-        formatsChanged = (o.start != n.start || o.length != n.length || o.format != n.format);
+        formats_changed = (o.start != n.start || o.length != n.length || o.format != n.format);
     }
 
-    if (formatsChanged) {
+    if (formats_changed) {
         ranges.append(new_ranges);
         layout -> setFormats(ranges);
         doc -> markContentsDirty(current_block.position(), current_block.length());

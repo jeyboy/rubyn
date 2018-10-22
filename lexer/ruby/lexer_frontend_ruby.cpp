@@ -1235,15 +1235,15 @@ void LexerFrontend::lexicate(LexerControl * state) {
 //        state -> validateHeredocState();
 }
 
-int LexerFrontend::lineState(BlockUserData * udata, const int & prev_user_state) {
+int LexerFrontend::lineState(BlockUserData * udata, const int & prev_user_state, const bool & override_status) {
     //INFO: Hack for heredoc marks
-    if (udata -> stack_token) {
+    if (override_status || udata -> stack_token) {
         TokenCell * it = udata -> stack_token;
 
 //        if (!it -> data)
 //            it = udata -> stack_token;
 
-        if (it -> data) {
+        if (override_status || it -> data) {
 //            QByteArray res(*it -> data);
             int hash = 0;
 //            int steps = 0;
@@ -1292,19 +1292,22 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
 
     QByteArray text_val = text.toUtf8();
     const char * window = text_val.constData();
+    bool override_status = false;
+
     state.setBuffer(window);
 
     lexicate(&state);
 
     if (udata -> para_control && (!state.control_para || (state.control_para -> para_type != udata -> para_control -> para_type))) {
-        if (udata -> folded())
-            lighter -> toggleFolding(block);
+        if (udata -> folded()) {
+            override_status = lighter -> toggleFolding(block);
+        }
     }
 
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
 
     int prev_state = block.userState();
-    int new_state = lineState(udata, prev_state);
+    int new_state = lineState(udata, prev_state, override_status);
 
     block.setUserState(new_state);
 }

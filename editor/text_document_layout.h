@@ -15,7 +15,7 @@ public:
 
     TextDocumentLayout(QTextDocument * document);
 
-    bool toggleFolding(QTextBlock & blk);
+    bool toggleFolding(const QTextBlock & blk);
 //    bool toggleFolding2(QTextBlock & blk);
 
     inline void emitDocumentSizeChanged() { emit documentSizeChanged(documentSize()); }

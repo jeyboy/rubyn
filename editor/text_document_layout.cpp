@@ -6,8 +6,9 @@ TextDocumentLayout::TextDocumentLayout(QTextDocument * document) : QPlainTextDoc
 
 }
 
-bool TextDocumentLayout::toggleFolding(QTextBlock & blk) {
-    BlockUserData * user_data = getUserDataForBlock(blk);
+bool TextDocumentLayout::toggleFolding(const QTextBlock & blk) {
+    QTextBlock block = blk;
+    BlockUserData * user_data = getUserDataForBlock(block);
     bool has_folding = user_data && user_data -> hasFolding();
 
     if (has_folding) {
@@ -21,9 +22,9 @@ bool TextDocumentLayout::toggleFolding(QTextBlock & blk) {
         int sub_level = INT32_MAX;
 
         while(true) {
-            blk = blk.next();
+            block = block.next();
 
-            user_data = getUserDataForBlock(blk);
+            user_data = getUserDataForBlock(block);
 
             if (!user_data || user_data -> level < level || (user_data -> level == level && !level_blockator))
                 break;
@@ -32,8 +33,8 @@ bool TextDocumentLayout::toggleFolding(QTextBlock & blk) {
                 sub_level = INT32_MAX;
 
             if (!unfolding || user_data -> level < sub_level) {
-                blk.setVisible(unfolding);
-                blk.setLineCount(unfolding ? qMax(1, blk.layout() -> lineCount()) : 0);
+                block.setVisible(unfolding);
+                block.setLineCount(unfolding ? qMax(1, block.layout() -> lineCount()) : 0);
 
                 if (unfolding && user_data -> folded()) {
                     sub_level = user_data -> level;
@@ -57,7 +58,7 @@ bool TextDocumentLayout::toggleFolding(QTextBlock & blk) {
     return false;
 }
 
-//bool TextDocumentLayout::toggleFolding2(QTextBlock & blk) { //TODO: need to use line indent like mark of folding - right now unfold called from highlighter is not worked
+//bool TextDocumentLayout::toggleFolding2(const QTextBlock & blk) { //TODO: need to use line indent like mark of folding - right now unfold called from highlighter is not worked
 //    BlockUserData * user_data = getUserDataForBlock(blk);
 //    DATA_FLAGS_TYPE folding_flags = user_data && user_data -> para_control ? user_data -> foldingState() : 0;
 

@@ -27,7 +27,7 @@ protected:
     QTextBlock current_block;
 
     QVector<QTextCharFormat> formats;
-    QVector<QTextCharFormat> formatChanges;
+    QVector<QTextCharFormat> format_changes;
 public:
     Highlighter(TextDocument * doc);
     ~Highlighter();
@@ -35,7 +35,7 @@ public:
 //    inline QPointer<TextDocument> document() { return doc; }
     void setDocument(TextDocument * new_doc);
 
-    void toggleFolding(QTextBlock & blk);
+    bool toggleFolding(const QTextBlock & blk);
 
     inline QTextBlock prevBlock() const { return current_block.previous(); }
     inline QTextBlock currentBlock() const { return current_block; }
