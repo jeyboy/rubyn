@@ -1,5 +1,7 @@
 #include "ilexer.h"
 
+#include <qdebug.h>
+
 bool ILexer::isBDigit(const char & c) { return c == '0' || c == '1'; }
 bool ILexer::isODigit(const char & c) { return c >= '0' && c <= '7'; }
 bool ILexer::isDigit(const char & c) { return c >= '0' && c <= '9'; }
@@ -21,14 +23,16 @@ bool ILexer::isBlank(const char & c) { return c == ' ' || c == '\t'; }
     //template<typename ch_t> inline bool is_crlf(ch_t c) { return c=='\r' || c=='\n'; }
 
 int ILexer::lineState(BlockUserData * udata) {
-    // TODO: add level like a part of user state: use bit shift for that
-    if (udata -> stack_token) {
-        return udata -> stack_token -> lexem;
-    }
-    else return udata -> token_end -> prev -> lexem;
+    StateLexem lex = lex_none;
+
+    if (udata -> stack_token)
+        lex = udata -> stack_token -> lexem;
+    else lex = udata -> token_end -> prev -> lexem;
+
+    return lex | (udata -> level << int_offset);
 }
 
-ILexer::ILexer() {
+ILexer::ILexer() : int_offset(sizeof(int) / 2 * 8) {
 
 }
 

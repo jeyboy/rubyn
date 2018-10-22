@@ -1265,7 +1265,6 @@ int LexerFrontend::lineState(BlockUserData * udata, const int & prev_user_state)
 
             return hash;
         }
-        else return it -> lexem;
     }
 
     return ILexer::lineState(udata);
