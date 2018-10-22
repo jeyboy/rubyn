@@ -17,6 +17,7 @@ bool TextDocumentLayout::toggleFolding(QTextBlock & blk) {
 
         bool unfolding = !user_data -> folded();
         int level = user_data -> level;
+        bool level_blockator = user_data -> para_control -> is_blockator;
         int sub_level = INT32_MAX;
 
         while(true) {
@@ -24,7 +25,7 @@ bool TextDocumentLayout::toggleFolding(QTextBlock & blk) {
 
             user_data = getUserDataForBlock(blk);
 
-            if (!user_data || user_data -> level <= level)
+            if (!user_data || user_data -> level < level || (user_data -> level == level && !level_blockator))
                 break;
 
             if (user_data -> level == sub_level)
@@ -38,6 +39,9 @@ bool TextDocumentLayout::toggleFolding(QTextBlock & blk) {
                     sub_level = user_data -> level;
                 }
             }
+
+            if (user_data -> level == level)
+                break;
         }
 
         Logger::obj().endMark("toggleLevelFolding");
