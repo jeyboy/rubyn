@@ -15,7 +15,7 @@ class ILexer {
     //C++11
 
     //unsigned int hCount{0}; for(const auto& c : str) if(c == '#') ++hCount;
-    quint8 int_offset;
+    quint8 int_bits_offset;
 protected:
     bool isBDigit(const char & c);
     bool isODigit(const char & c);

@@ -38,6 +38,16 @@ Logger::~Logger() {
     fm = nullptr;
 }
 
+void Logger::write(const QString & initiator, const LogLevel & level) {
+    QMetaObject::invokeMethod(
+        this,
+        "writeToStream",
+        Qt::AutoConnection,
+        Q_ARG(const QString &, initiator),
+        Q_ARG(int, level)
+    );
+}
+
 void Logger::write(const QString & initiator, const QString & value, const LogLevel & level) {
     QMetaObject::invokeMethod(
         this,
@@ -138,6 +148,10 @@ void Logger::toEditor(const QString & initiator, const QString & value) {
         if (atEnd)
             m_editor -> ensureCursorVisible();
     }
+}
+
+void Logger::writeToStream(const QString & initiator, int level) {
+    writeToStream(initiator, QString(), QString(), level);
 }
 
 void Logger::writeToStream(const QString & initiator, const QString & value, int level) {

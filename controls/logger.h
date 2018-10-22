@@ -28,6 +28,7 @@ public:
 
     static void dump(const QByteArray & content);
 
+    void write(const QString & initiator, const LogLevel & level = log_info);
     void write(const QString & initiator, const QString & value, const LogLevel & level = log_info);
     void write(const QString & initiator, const QString & value, const QString & attr, const LogLevel & level = log_info);
     void write(const QString & initiator, const QString & value, const QStringList & attrs, const LogLevel & level = log_info);
@@ -37,7 +38,7 @@ public:
     inline QPointer<LoggerWindow> & getEditor() { return m_editor; }
 
     void startMark();
-    void endMark(const QString & initiator, const QString & value);
+    void endMark(const QString & initiator, const QString & value = QString());
 
 private:
     QString path(const QString & file);
@@ -58,6 +59,7 @@ private:
 
     static Logger * self;
 private slots:
+    void writeToStream(const QString & initiator, int level);
     void writeToStream(const QString & initiator, const QString & value, int level = log_info);
     void writeToStream(const QString & initiator, const QString & value, const QStringList & attrs, int level = log_info);
     void writeToStream(const QString & initiator, const QString & value, const QString & attr, int level = log_info);

@@ -54,6 +54,8 @@
         <file alias="tool_stop">icons/tool_stop_on.png</file>
         <file alias="help">icons/help.png</file>
         <file alias="save">icons/save.png</file>
+        <file alias="color_picker">icons/color_picker.png</file>
+        <file alias="indent">icons/indent.png</file>
     </qresource>
     <qresource prefix="/completer">
         <file alias="const">icons/completer/comp_const.png</file>
