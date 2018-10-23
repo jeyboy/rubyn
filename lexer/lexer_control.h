@@ -161,6 +161,16 @@ struct LexerControl {
 
         return false;
     }
+    inline bool paraIsNextToActiveParaLine(ParaCell * pcell) {
+        ParaCell * it = active_para;
+
+        if (it) {
+            while(it -> para_type != pt_none && (it = it -> next));
+            return it == pcell;
+        }
+
+        return false;
+    }
 
 
     inline void attachToken(const StateLexem & lexem, const uint & flags = slf_none) {
@@ -409,7 +419,7 @@ struct LexerControl {
                             return;
                         }
 
-                        active_para -> is_oneliner = false;
+                        active_para -> is_oneliner = paraIsNextToActiveParaLine(potential_closer);
                     }
                 } else {
                     potential_closer = para;
