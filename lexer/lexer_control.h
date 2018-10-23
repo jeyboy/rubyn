@@ -428,7 +428,7 @@ struct LexerControl {
                 active_para -> close = potential_closer;
                 potential_closer -> close = active_para;
 
-                if (active_para -> is_foldable && !active_para -> is_oneliner)
+                if (active_para -> is_foldable && (replaceable || (!replaceable && !active_para -> is_oneliner)))
                     --user_data -> level;
 
                 if (!replaceable) {
