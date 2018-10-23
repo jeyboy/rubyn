@@ -51,6 +51,12 @@ TokenCell * BlockUserData::lineControlToken() {
 
 ParaCell * BlockUserData::lineControlPara() {
     para_end -> prev -> next = nullptr; // detach end line
+
+    if (para_begin -> close) {
+        para_begin -> close -> close = nullptr;
+        para_begin -> close = nullptr;
+    }
+
     return para_begin;
 }
 

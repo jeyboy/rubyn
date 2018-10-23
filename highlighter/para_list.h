@@ -35,7 +35,7 @@ struct ParaCell {
         if (next)
             next -> prev = prev;
 
-        if (close && is_blockator)
+        if (close)
             close -> close = nullptr;
     }
 
@@ -121,14 +121,19 @@ public:
 
         left = new ParaCell(pt_none, -1, prev_end);
         right = new ParaCell(pt_max, -1, left);
-//        left -> close = right;
-//        right -> close = left;
+
+        right -> is_opener = false;
     }
 
     static void removeLine(ParaCell * left, ParaCell * right) {
         while(left && left != right) {
             ParaCell * curr = left;
             left = left -> next;
+
+//            //TODO: need to check: spped up this removing of sequence or not
+//            curr -> next = nullptr;
+//            curr -> prev = nullptr;
+//            ////////////
 
             delete curr;
         }

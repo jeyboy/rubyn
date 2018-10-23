@@ -136,12 +136,13 @@ struct LexerControl {
 
         return lex_none;
     }
-    inline ParaCell * lastNonClosedPara() {
-        ParaCell * it = active_para ? active_para : para -> prev;
+    inline ParaCell * lastNonClosedPara(const bool & replaceable) {
+        ParaCell * it = !replaceable && active_para ? active_para : para -> prev;
 
         while(it) {
-            if (!it -> close && it -> pos != -1)
+            if (!it -> close && ((replaceable && it -> para_type == pt_none) || (!replaceable && it -> pos != -1))) {
                 return it;
+            }
 
             it = it -> prev;
         }
@@ -344,18 +345,11 @@ struct LexerControl {
             if (para -> next) {
                 para = para -> next;
 
-                // TODO: need to inject pseudo para in the end of the prev line for replaceables
-                if (replaceable && para -> para_type == ptype && para -> pos == cached_str_pos && para -> close) {
-                    --user_data -> level;
-                    return;
-                }
-
                 para -> para_type = ptype;
                 para -> pos = cached_str_pos;
 
                 if (para -> close) {
-                    if (para -> is_blockator)
-                        para -> close -> close = nullptr;
+                    para -> close -> close = nullptr;
                     para -> close = nullptr;
                 }
 
@@ -371,7 +365,7 @@ struct LexerControl {
             para -> is_opener = false;
 
             if (!active_para || active_para -> close) {
-                active_para = lastNonClosedPara();
+                active_para = lastNonClosedPara(false);
 
                 if (!active_para) {
                     qDebug() << "Can't find nonclosed active para token";
@@ -383,15 +377,52 @@ struct LexerControl {
                 if (!para -> is_blockator)
                     active_para = para;
             } else {
-                active_para -> close = para;
                 active_para -> is_oneliner = paraInActiveParaLine(para);
+
+                ParaCell * potential_closer = nullptr;
+
+                if (replaceable) {
+                    if (active_para -> is_oneliner) {
+                        if (para -> next) {
+                            para = para -> next;
+
+                            para -> para_type = pt_close;
+                            para -> pos = cached_str_pos;
+
+                            if (para -> close) {
+                                para -> close -> close = nullptr;
+                                para -> close = nullptr;
+                            }
+
+                            para -> is_foldable = false;
+                            para -> is_oneliner = false;
+                        }
+                        else para = ParaList::insert(para, pt_close, cached_str_pos);
+
+                        potential_closer = para;
+                        active_para -> is_oneliner = true;
+                    } else {
+                        potential_closer = lastNonClosedPara(true);
+
+                        if (!potential_closer) {
+                            qDebug() << "Can't find closer for replaceable";
+                            return;
+                        }
+
+                        active_para -> is_oneliner = false;
+                    }
+                } else {
+                    potential_closer = para;
+                }
+
+                active_para -> close = potential_closer;
+                potential_closer -> close = active_para;
 
                 if (active_para -> is_foldable && !active_para -> is_oneliner)
                     --user_data -> level;
 
                 if (!replaceable) {
-                    para -> close = active_para;
-                    active_para = lastNonClosedPara();
+                    active_para = lastNonClosedPara(false);
                 }
             }
 
@@ -408,9 +439,8 @@ struct LexerControl {
             para -> is_opener = true;
             active_para = para;
 
-            if (!control_para && ptype & pt_foldable) {
+            if (!control_para && (para -> is_foldable = ptype & pt_foldable)) {
                 control_para = para;
-                control_para -> is_foldable = true;
             }
         }
     }
