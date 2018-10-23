@@ -41,7 +41,6 @@ TokenCell * BlockUserData::tokenForPos(const EDITOR_POS_TYPE & pos) {
     return nullptr;
 }
 
-// maybe better to remove full tokens sequence in another thread instead of use sync and etc ???
 TokenCell * BlockUserData::lineControlToken() {
     msgs.clear();
 

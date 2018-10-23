@@ -391,7 +391,7 @@ struct LexerControl {
 
                 ParaCell * potential_closer = nullptr;
 
-                if (replaceable) {
+                if (replaceable || !active_para -> is_blockator) {
                     if (active_para -> is_oneliner) {
                         if (para -> next) {
                             para = para -> next;

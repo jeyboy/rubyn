@@ -67,7 +67,7 @@ public:
         if (prev_udata) {
             udata -> level =
                 prev_udata -> level + (
-                    prev_udata -> para_control ? 1 : 0
+                    prev_udata -> para_control && prev_udata -> para_control -> is_opener ? 1 : 0
                 );
         }
     }
