@@ -160,6 +160,7 @@ class OverlayInfo;
 #define ICO_WIDTH 12
 #define FOLDING_SCOPE_WIDTH 3
 #define NO_FOLDING -100
+#define FOLDING_COVERAGE_LEVEL_STOPER -1
 
 #define PREPARE_PIXMAP(name, size) QPixmap(name).scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation)
 
@@ -255,8 +256,10 @@ class CodeEditor : public QPlainTextEdit {
 
     int folding_offset_x;
     int folding_width;
-    EDITOR_POS_TYPE folding_lines_coverage_min;
-    EDITOR_POS_TYPE folding_lines_coverage_max;
+
+    EDITOR_POS_TYPE folding_lines_coverage_level;
+    EDITOR_POS_TYPE folding_lines_coverage_level_stoper_min;
+    EDITOR_POS_TYPE folding_lines_coverage_level_stoper_max;
 
     qreal symbol_width;
     uint chars_limit_line;

@@ -43,7 +43,8 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     overlay(new OverlayInfo()), tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
     curr_block_number(-1), screen_top_block_number(-1), screen_bottom_block_number(-1),
-    folding_lines_coverage_min(-1), folding_lines_coverage_max(-1)
+    folding_lines_coverage_level(-1), folding_lines_coverage_level_stoper_min(FOLDING_COVERAGE_LEVEL_STOPER),
+    folding_lines_coverage_level_stoper_max(FOLDING_COVERAGE_LEVEL_STOPER)
 {
     setCharsLimiterLineAt(80);
 
@@ -72,7 +73,7 @@ CodeEditor::~CodeEditor() {
 
 void CodeEditor::setCompleter(QCompleter * new_completer) {
     if (completer)
-        QObject::disconnect(completer, 0, this, 0);
+        QObject::disconnect(completer, nullptr, this, nullptr);
 
     completer = new_completer;
 
@@ -224,6 +225,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
     bool on_block = folding_y != NO_FOLDING && folding_y > block_top && folding_y < block_bottom;
+    bool initiated = false;
 
     if (on_block) {
         curr_folding_limits.rx() = block_top;
@@ -231,9 +233,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     }
 
     if (folding_flags) {
-        EDITOR_POS_TYPE coverage = user_data -> para_control -> linesCoverage();
-
-        if (coverage > 0) {
+        if (!user_data -> para_control -> is_oneliner) {
             bool opened = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
 
             if (on_block) {
@@ -242,8 +242,10 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
                 if (opened) {
                     hideOverlay();
 
-                    folding_lines_coverage_min = block_num;
-                    folding_lines_coverage_max = block_num + coverage + 1;
+                    folding_lines_coverage_level = user_data -> level;
+                    folding_lines_coverage_level_stoper_min = block_num;
+                    folding_lines_coverage_level_stoper_max = FOLDING_COVERAGE_LEVEL_STOPER - (user_data -> para_control -> is_blockator ? 0 : 1);
+                    initiated = true;
                 }
                 else {
                     if (folding_click) {
@@ -278,7 +280,13 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         );
     }
 
-    if (block_num >= folding_lines_coverage_min && block_num < folding_lines_coverage_max) {
+    if (!initiated && folding_lines_coverage_level_stoper_max < 0 && user_data -> level <= folding_lines_coverage_level)
+        folding_lines_coverage_level_stoper_max = block_num + folding_lines_coverage_level_stoper_max + 1;
+
+    if (folding_lines_coverage_level_stoper_min >= 0 &&
+        block_num >= folding_lines_coverage_level_stoper_min &&
+            (folding_lines_coverage_level_stoper_max < 0 || block_num <= folding_lines_coverage_level_stoper_max)
+    ) {
         const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_description);
         painter.setPen(format.foreground().color());
         painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, format.background());
@@ -706,8 +714,9 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
     bool in_folding_zone = !in_number_zone && (pos.rx() >= folding_offset_x && pos.rx() <= folding_offset_x + folding_width);
 
     if (!in_folding_zone) {
-        folding_lines_coverage_min = -1;
-        folding_lines_coverage_max = -1;
+        folding_lines_coverage_level = -1;
+        folding_lines_coverage_level_stoper_min = FOLDING_COVERAGE_LEVEL_STOPER;
+        folding_lines_coverage_level_stoper_max = FOLDING_COVERAGE_LEVEL_STOPER;
         folding_y = NO_FOLDING;
     }
     else folding_y = pos.ry();
@@ -727,8 +736,9 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                     folding_click = false;
 
                 curr_folding_limits.ry() = NO_FOLDING;
-                folding_lines_coverage_min = -1;
-                folding_lines_coverage_max = -1;
+                folding_lines_coverage_level = -1;
+                folding_lines_coverage_level_stoper_min = FOLDING_COVERAGE_LEVEL_STOPER;
+                folding_lines_coverage_level_stoper_max = FOLDING_COVERAGE_LEVEL_STOPER;
             }
         break;}
 
