@@ -146,7 +146,7 @@ struct LexerControl {
                 ++lines_between;
                 it = it -> prev;
 
-                if (it)
+                if (it && it -> pos == -1)
                     it = it -> prev;
             } else {
                 if (it -> is_opener && it -> is_foldable == foldable) {
@@ -156,8 +156,8 @@ struct LexerControl {
 
                 if (!it -> is_opener && it -> close)
                     it = it -> close;
-                else
-                    it = it -> prev;
+
+                it = it -> prev;
             }
         }
 
@@ -401,13 +401,16 @@ struct LexerControl {
             ParaCell * parent = paraParent(lines_between, para, para -> is_foldable, false);
 
             if (parent) {
-                if (replaceable == false && parent -> is_blockator == false) {
-                    user_data -> level -= lines_between > 1 ? 2 : 1;
+                if (para -> is_foldable) {
+                    if (replaceable == false && parent -> is_blockator == false) {
+                        user_data -> level -= lines_between > 1 ? 2 : 1;
 
-                    if (para -> is_foldable)
-                        parent = paraParent(lines_between, para, true, true);
-                } else if (lines_between > 0 && parent -> is_blockator != replaceable)
-                    --user_data -> level;
+                        if (para -> is_foldable)
+                            parent = paraParent(lines_between, para, true, true);
+                    } else if (lines_between > 0 && parent -> is_blockator != replaceable) {
+                        --user_data -> level;
+                    }
+                }
 
                 if (!replaceable) {
                     if (parent -> close && parent -> close != para)

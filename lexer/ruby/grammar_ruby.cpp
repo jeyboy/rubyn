@@ -229,13 +229,13 @@ void Grammar::initRules() {
 }
 void Grammar::initParas() {
     para_tokens[lex_open_curly_bracket] = pt_foldable_curly_bracket;
+    para_tokens[lex_close_curly_bracket] = pt_close_foldable_curly_bracket;
     para_tokens[lex_interpolation] = pt_interpolation;
     para_tokens[lex_command_interception] = pt_interpolation;
     para_tokens[lex_estring_interception] = pt_interpolation;
     para_tokens[lex_epercent_presentation_interception] = pt_interpolation;
     para_tokens[lex_heredoc_interception] = pt_interpolation;
     para_tokens[lex_regexp_interception] = pt_interpolation;
-    para_tokens[lex_close_curly_bracket] = pt_close_curly_bracket;
     para_tokens[lex_open_square_bracket] = pt_square_bracket;
     para_tokens[lex_close_square_bracket] = pt_close_square_bracket;
     para_tokens[lex_wrap_open] = pt_round_bracket;
@@ -358,12 +358,13 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
         case lex_elsif:
             return input == lex_end || input == lex_elsif || input == lex_else;           
 
-        case lex_open_curly_bracket:
+        case lex_open_curly_bracket: return input == lex_close_curly_bracket;
+
         case lex_estring_interception:
         case lex_regexp_interception:
         case lex_epercent_presentation_interception:
         case lex_command_interception:
-        case lex_heredoc_interception: return input == lex_close_curly_bracket;
+        case lex_heredoc_interception: return input == lex_interception_close;
 
 //        ruby 2.5: supports rescue/else/ensure in do/end blocks
         case lex_do: return input == lex_end;

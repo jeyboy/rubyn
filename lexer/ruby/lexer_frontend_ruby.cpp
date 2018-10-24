@@ -843,7 +843,21 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if(!cutWord(state, lex_none, lex_none, slf_unstack_delimiter)) goto exit;
             break;}
             case '}': {
-                if(!cutWord(state, lex_none, lex_none, slf_unstack_delimiter)) goto exit;
+                StateLexem lex = lex_close_curly_bracket;
+
+                switch(state -> stack_token -> lexem) {
+                    case lex_estring_interception:
+                    case lex_regexp_interception:
+                    case lex_epercent_presentation_interception:
+                    case lex_command_interception:
+                    case lex_heredoc_interception: {
+                        lex = lex_interception_close;
+                    break;}
+
+                    default:;
+                }
+
+                if(!cutWord(state, lex_none, lex, slf_unstack_delimiter)) goto exit;
 
                 if (!parseContinious(state))
                     goto exit;
