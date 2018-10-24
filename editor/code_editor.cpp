@@ -266,35 +266,38 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         hideOverlay();
     }
 
-    ////////////////////////////// TEST /////////////////
-    painter.drawText(
-        breakpoint_offset_x, paint_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
-    );
-    ////////////////////////////// END TEST /////////////////
+    if (user_data) {
+
+    //    ////////////////////////////// TEST /////////////////
+    //    painter.drawText(
+    //        breakpoint_offset_x, paint_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
+    //    );
+    //    ////////////////////////////// END TEST /////////////////
 
 
-    if (user_data && user_data -> hasBreakpoint()) {
-        painter.drawPixmap(
-            QPoint(breakpoint_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
-            icons[BlockUserData::udf_has_breakpoint]
-        );
-    }
+        if (user_data -> hasBreakpoint()) {
+            painter.drawPixmap(
+                QPoint(breakpoint_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
+                icons[BlockUserData::udf_has_breakpoint]
+            );
+        }
 
-    if (!initiated && folding_lines_coverage_level_stoper_max < 0 && user_data -> level <= folding_lines_coverage_level)
-        folding_lines_coverage_level_stoper_max = block_num + folding_lines_coverage_level_stoper_max + 1;
+        if (!initiated && folding_lines_coverage_level_stoper_max < 0 && user_data -> level <= folding_lines_coverage_level)
+            folding_lines_coverage_level_stoper_max = block_num + folding_lines_coverage_level_stoper_max + 1;
 
-    if (folding_lines_coverage_level_stoper_min >= 0 &&
-        block_num >= folding_lines_coverage_level_stoper_min &&
-            (folding_lines_coverage_level_stoper_max < 0 || block_num <= folding_lines_coverage_level_stoper_max)
-    ) {
-        const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_description);
-        painter.setPen(format.foreground().color());
-        painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, format.background());
+        if (folding_lines_coverage_level_stoper_min >= 0 &&
+            block_num >= folding_lines_coverage_level_stoper_min &&
+                (folding_lines_coverage_level_stoper_max < 0 || block_num <= folding_lines_coverage_level_stoper_max)
+        ) {
+            const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_description);
+            painter.setPen(format.foreground().color());
+            painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, format.background());
 
-        //////////////////////////// TEST BLOCK //////////////////////
-        const QTextCharFormat & scope_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_scope_range);
-        painter.fillRect(folding_scope_offset_x, paint_top, folding_scope_width, block_bottom - block_top, scope_format.background());
-        //////////////////////////// END TEST BLOCK //////////////////////
+            //////////////////////////// TEST BLOCK //////////////////////
+            const QTextCharFormat & scope_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_scope_range);
+            painter.fillRect(folding_scope_offset_x, paint_top, folding_scope_width, block_bottom - block_top, scope_format.background());
+            //////////////////////////// END TEST BLOCK //////////////////////
+        }
     }
 
     painter.setFont(is_current ? curr_line_font : font());

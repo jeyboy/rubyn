@@ -11,7 +11,10 @@ public:
         return static_cast<BlockUserData *>(blk.userData());
     }
 
-    inline static int getBlockLevel(const QTextBlock & blk) { return getUserDataForBlock(blk) -> level; }
+    inline static int getBlockLevel(const QTextBlock & blk) {
+        BlockUserData * data = getUserDataForBlock(blk);
+        return data ? data -> level : DEFAULT_LEVEL;
+    }
 
     TextDocumentLayout(QTextDocument * document);
 

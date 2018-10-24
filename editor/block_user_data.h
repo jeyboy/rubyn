@@ -9,6 +9,8 @@
 #include "misc/token_list.h"
 //#include "misc/stack.h"
 
+#define DEFAULT_LEVEL 0
+
 struct BlockUserData : public QTextBlockUserData {
 // TODO: refactor me: udf_has_folding not needed - we have para_control for that
     enum UserDataFlags : DATA_FLAGS_TYPE {
