@@ -60,6 +60,10 @@ struct BlockUserData : public QTextBlockUserData {
 
     void removeTokenSequence(TokenCell * tkn);
     void removeParaSequence(ParaCell * tkn);
+
+    inline int levelForNextBlock() {
+        return level + (para_control && para_control -> is_opener ? 1 : 0);
+    }
 };
 
 #endif // BLOCK_USER_DATA_H

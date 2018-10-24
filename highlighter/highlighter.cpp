@@ -134,6 +134,20 @@ void Highlighter::setCurrentBlockState(const int & new_state) {
     current_block.setUserState(new_state);
 }
 
+void Highlighter::initBlockUserData(QTextBlock & block, BlockUserData * prev_udata, BlockUserData *& udata) {
+    if (!udata) {
+        udata = new BlockUserData(
+            _tokens, _paras,
+            prev_udata ? prev_udata -> token_end : nullptr,
+            prev_udata ? prev_udata -> para_end : nullptr
+        );
+        block.setUserData(udata);
+    }
+
+    if (prev_udata)
+        udata -> level = prev_udata -> levelForNextBlock();
+}
+
 //void Highlighter::setCurrentBlockUserData(QTextBlockUserData * data) {
 //    if (!current_block.isValid())
 //        return;

@@ -371,9 +371,9 @@ struct LexerControl {
             para -> is_blockator = !replaceable;
         }
 
-        if (closable) {
-            para -> is_opener = false;
+        para -> is_opener = !closable;
 
+        if (closable) {
             if (!active_para || active_para -> close) {
                 active_para = lastNonClosedPara(false);
 
@@ -446,7 +446,6 @@ struct LexerControl {
                 para -> close = active_para;
             }
         } else {
-            para -> is_opener = true;
             active_para = para;
 
             if (!control_para && (para -> is_foldable = ptype & pt_foldable)) {
