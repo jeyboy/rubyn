@@ -62,7 +62,7 @@ struct BlockUserData : public QTextBlockUserData {
     void removeParaSequence(ParaCell * tkn);
 
     inline int levelForNextBlock() {
-        return level + (para_control && para_control -> is_opener ? 1 : 0);
+        return level + (para_control && para_control -> is_opener && !para_control -> is_oneliner ? 1 : 0);
     }
 };
 

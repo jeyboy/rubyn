@@ -412,7 +412,9 @@ struct LexerControl {
                     }
                 }
 
-                if (!replaceable) {
+                if (!replaceable && parent) {
+                    parent -> is_oneliner = lines_between == 0;
+
                     if (parent -> close && parent -> close != para)
                         parent -> close -> close = nullptr;
 

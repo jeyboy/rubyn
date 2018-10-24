@@ -1245,7 +1245,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
     }
 
     exit:;
-    int y = 0;
 //        state -> validateHeredocState();
 }
 
