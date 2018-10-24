@@ -319,15 +319,13 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
 
     while (block.isValid() && top <= rect_bottom) {
         if (block.isVisible() && bottom >= rect_top) {
-            BlockUserData * user_data = static_cast<BlockUserData *>(block.userData());
-            DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
+            BlockUserData * user_data = TextDocumentLayout::getUserDataForBlock(block);
 
-            bool opened = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
+            bool opened = user_data && !user_data -> folded();
             bool ignore = opened || !user_data;
 
             if (!ignore && user_data -> para_control) {
-                EDITOR_POS_TYPE coverage = user_data -> para_control -> linesCoverage();
-                ignore = coverage <= 0;
+                ignore = user_data -> para_control -> is_oneliner;
             }
 
             if (!ignore) {

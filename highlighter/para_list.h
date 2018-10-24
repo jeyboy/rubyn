@@ -39,39 +39,39 @@ struct ParaCell {
             close -> close = nullptr;
     }
 
-    EDITOR_POS_TYPE linesCoverage() {
-        if (!close) {
-            qDebug() << "MISSED CLOSE";
-            return 0;
-        }
+//    EDITOR_POS_TYPE linesCoverage() {
+//        if (!close) {
+//            qDebug() << "MISSED CLOSE";
+//            return 0;
+//        }
 
-        EDITOR_POS_TYPE coverage = 0;
-        ParaCell * it = this;
+//        EDITOR_POS_TYPE coverage = 0;
+//        ParaCell * it = this;
 
-        if (is_opener) {
-            while(it && it != close) {
-                if (it -> para_type == pt_max)
-                    coverage++;
+//        if (is_opener) {
+//            while(it && it != close) {
+//                if (it -> para_type == pt_max)
+//                    coverage++;
 
-                it = it -> next;
-            }
+//                it = it -> next;
+//            }
 
-            if (!is_blockator && coverage != 0)
-                --coverage;
-        } else {
-            while(it && it != close) {
-                if (it -> para_type == pt_none)
-                    coverage--;
+//            if (!is_blockator && coverage != 0)
+//                --coverage;
+//        } else {
+//            while(it && it != close) {
+//                if (it -> para_type == pt_none)
+//                    coverage--;
 
-                it = it -> prev;
-            }
+//                it = it -> prev;
+//            }
 
-            if (!close -> is_blockator && coverage != 0)
-                ++coverage;
-        }
+//            if (!close -> is_blockator && coverage != 0)
+//                ++coverage;
+//        }
 
-        return coverage;
-    }
+//        return coverage;
+//    }
 
 //    T & operator++() // ++A
 //    {
