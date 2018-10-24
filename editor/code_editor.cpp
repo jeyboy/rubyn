@@ -268,11 +268,11 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 
     if (user_data) {
 
-    //    ////////////////////////////// TEST /////////////////
-    //    painter.drawText(
-    //        breakpoint_offset_x, paint_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
-    //    );
-    //    ////////////////////////////// END TEST /////////////////
+        ////////////////////////////// TEST /////////////////
+        painter.drawText(
+            breakpoint_offset_x, paint_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
+        );
+        ////////////////////////////// END TEST /////////////////
 
 
         if (user_data -> hasBreakpoint()) {

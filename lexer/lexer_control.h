@@ -403,11 +403,14 @@ struct LexerControl {
             if (parent) {
                 if (para -> is_foldable) {
                     if (replaceable == false && parent -> is_blockator == false) {
-                        user_data -> level -= lines_between > 1 ? 2 : 1;
+                        user_data -> level -= lines_between > 0 ? 2 : 1;
+
+                        parent -> is_oneliner = parent -> is_blockator ? lines_between == 1 : lines_between < 2;
 
                         if (para -> is_foldable)
                             parent = paraParent(lines_between, para, true, true);
                     } else if (lines_between > 0 && parent -> is_blockator != replaceable) {
+                        parent -> is_oneliner = lines_between < 2;
                         --user_data -> level;
                     }
                 }
