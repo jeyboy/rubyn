@@ -329,7 +329,7 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
             }
 
             if (!ignore) {
-                if (user_data -> para_control && user_data -> para_control -> close) {
+                if (user_data -> para_control) {
                     QString end_str;
                     wrapper -> paraOpositionStr(user_data -> para_control -> para_type, end_str);
 

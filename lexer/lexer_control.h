@@ -136,41 +136,67 @@ struct LexerControl {
 
         return lex_none;
     }
-    inline ParaCell * lastNonClosedPara(const bool & replaceable) {
-        ParaCell * it = !replaceable && active_para ? active_para : para -> prev;
+
+    inline ParaCell * paraParent(ParaCell * para, const bool & foldable, const bool & only_blockators = false) {
+        ParaCell * it = para -> prev;
 
         while(it) {
-            if (!it -> close && ((replaceable && it -> para_type == pt_none) || (!replaceable && it -> pos != -1))) {
-                return it;
-            }
+            if (it -> pos == -1) {
+                it = it -> prev;
 
-            it = it -> prev;
+                if (it)
+                    it = it -> prev;
+            } else {
+                if (it -> is_opener && it -> is_foldable == foldable) {
+                    if (!only_blockators || (only_blockators && it -> is_blockator))
+                        return it;
+                }
+
+                if (!it -> is_opener && it -> close)
+                    it = it -> close;
+                else
+                    it = it -> prev;
+            }
         }
 
         return nullptr;
     }
-    inline bool paraInActiveParaLine(ParaCell * pcell) {
-        ParaCell * it = active_para;
 
-        while(it && it -> para_type != pt_max) {
-            if (it == pcell)
-                return true;
+//    inline ParaCell * lastNonClosedPara(const bool & replaceable) {
+//        ParaCell * it = !replaceable && active_para ? active_para : para -> prev;
 
-            it = it -> next;
-        }
+//        while(it) {
+//            if (!it -> close && ((replaceable && it -> para_type == pt_none) || (!replaceable && it -> pos != -1))) {
+//                return it;
+//            }
 
-        return false;
-    }
-    inline bool paraIsNextToActiveParaLine(ParaCell * pcell) {
-        ParaCell * it = active_para;
+//            it = it -> prev;
+//        }
 
-        if (it) {
-            while(it -> para_type != pt_none && (it = it -> next));
-            return it == pcell;
-        }
+//        return nullptr;
+//    }
+//    inline bool paraInActiveParaLine(ParaCell * pcell) {
+//        ParaCell * it = active_para;
 
-        return false;
-    }
+//        while(it && it -> para_type != pt_max) {
+//            if (it == pcell)
+//                return true;
+
+//            it = it -> next;
+//        }
+
+//        return false;
+//    }
+//    inline bool paraIsNextToActiveParaLine(ParaCell * pcell) {
+//        ParaCell * it = active_para;
+
+//        if (it) {
+//            while(it -> para_type != pt_none && (it = it -> next));
+//            return it == pcell;
+//        }
+
+//        return false;
+//    }
 
 
     inline void attachToken(const StateLexem & lexem, const uint & flags = slf_none) {
@@ -357,12 +383,6 @@ struct LexerControl {
 
                 para -> para_type = ptype;
                 para -> pos = cached_str_pos;
-
-                if (para -> close) {
-                    para -> close -> close = nullptr;
-                    para -> close = nullptr;
-                }
-
                 para -> is_foldable = false;
                 para -> is_oneliner = false;
             }
@@ -372,86 +392,115 @@ struct LexerControl {
         }
 
         para -> is_opener = !closable;
+        para -> is_foldable = ptype & pt_foldable;
 
         if (closable) {
-            if (!active_para || active_para -> close) {
-                active_para = lastNonClosedPara(false);
+            ParaCell * parent = paraParent(para, para -> is_foldable, false);
 
-                if (!active_para) {
-                    qDebug() << "Can't find nonclosed active para token";
-                    return;
-                }
-            }
+            if (parent) {
+                if (replaceable == false && parent -> is_blockator == false) {
+                    user_data -> level -= 2;
 
-            if (active_para -> is_blockator) {
-                if (!para -> is_blockator)
-                    active_para = para;
-            } else {
-                active_para -> is_oneliner = paraInActiveParaLine(para);
-
-                ParaCell * potential_closer = nullptr;
-
-                if (replaceable || !active_para -> is_blockator) {
-                    if (active_para -> is_oneliner) {
-                        if (para -> next) {
-                            para = para -> next;
-
-                            para -> para_type = pt_close;
-                            para -> pos = cached_str_pos;
-
-                            if (para -> close) {
-                                para -> close -> close = nullptr;
-                                para -> close = nullptr;
-                            }
-
-                            para -> is_foldable = false;
-                            para -> is_oneliner = false;
-                        }
-                        else para = ParaList::insert(para, pt_close, cached_str_pos);
-
-                        potential_closer = para;
-                        active_para -> is_oneliner = true;
-                    } else {
-                        potential_closer = lastNonClosedPara(true);
-
-                        if (!potential_closer) {
-                            qDebug() << "Can't find closer for replaceable";
-                            return;
-                        }
-
-                        active_para -> is_oneliner = paraIsNextToActiveParaLine(potential_closer);
-                    }
-                } else {
-                    potential_closer = para;
-                }
-
-                active_para -> close = potential_closer;
-                potential_closer -> close = active_para;
-
-                if (active_para -> is_foldable && (replaceable || (!replaceable && !active_para -> is_oneliner)))
+                    if (para -> is_foldable)
+                        parent = paraParent(para, true, true);
+                } else if (parent -> is_blockator != replaceable)
                     --user_data -> level;
 
                 if (!replaceable) {
-                    active_para = lastNonClosedPara(false);
+                    if (parent -> close && parent -> close != para)
+                        parent -> close -> close = nullptr;
+
+                    parent -> close = para;
+
+                    if (para -> close && para -> close != parent)
+                        para -> close -> close = nullptr;
+
+                    para -> close = parent;
                 }
             }
-
-            if (!replaceable && active_para && active_para -> is_blockator) {
-                active_para -> close = para;
-                active_para -> is_oneliner = paraInActiveParaLine(para);
-
-                if (active_para -> is_foldable && !active_para -> is_oneliner)
-                    --user_data -> level;
-
-                para -> close = active_para;
-            }
-        } else {
-            active_para = para;
-
-            if (!control_para && (para -> is_foldable = ptype & pt_foldable)) {
-                control_para = para;
-            }
+        } else if (!control_para && para -> is_foldable) {
+            control_para = para;
         }
+
+//        if (closable) {
+//            if (!active_para || active_para -> close) {
+//                active_para = lastNonClosedPara(false);
+
+//                if (!active_para) {
+//                    qDebug() << "Can't find nonclosed active para token";
+//                    return;
+//                }
+//            }
+
+//            if (active_para -> is_blockator) {
+//                if (!para -> is_blockator)
+//                    active_para = para;
+//            } else {
+//                active_para -> is_oneliner = paraInActiveParaLine(para);
+
+//                ParaCell * potential_closer = nullptr;
+
+//                if (replaceable || !active_para -> is_blockator) {
+//                    if (active_para -> is_oneliner) {
+//                        if (para -> next) {
+//                            para = para -> next;
+
+//                            para -> para_type = pt_close;
+//                            para -> pos = cached_str_pos;
+
+//                            if (para -> close) {
+//                                para -> close -> close = nullptr;
+//                                para -> close = nullptr;
+//                            }
+
+//                            para -> is_foldable = false;
+//                            para -> is_oneliner = false;
+//                        }
+//                        else para = ParaList::insert(para, pt_close, cached_str_pos);
+
+//                        potential_closer = para;
+//                        active_para -> is_oneliner = true;
+//                    } else {
+//                        potential_closer = lastNonClosedPara(true);
+
+//                        if (!potential_closer) {
+//                            qDebug() << "Can't find closer for replaceable";
+//                            return;
+//                        }
+
+//                        active_para -> is_oneliner = paraIsNextToActiveParaLine(potential_closer);
+//                    }
+//                } else {
+//                    potential_closer = para;
+//                }
+
+//                active_para -> close = potential_closer;
+//                potential_closer -> close = active_para;
+
+//                if (active_para -> is_foldable && (replaceable || (!replaceable && !active_para -> is_oneliner)))
+//                    --user_data -> level;
+
+//                if (!replaceable) {
+//                    active_para = lastNonClosedPara(false);
+//                }
+//            }
+
+//            if (!replaceable && active_para && active_para -> is_blockator) {
+//                active_para -> close = para;
+//                active_para -> is_oneliner = paraInActiveParaLine(para);
+
+//                if (active_para -> is_foldable && !active_para -> is_oneliner)
+//                    --user_data -> level;
+
+//                para -> close = active_para;
+//            }
+//        } else {
+//            active_para = para;
+
+//            if (!closable && !control_para && (para -> is_foldable = ptype & pt_foldable)) {
+//                control_para = para;
+//            }
+//        }
     }
 };
 

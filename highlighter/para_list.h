@@ -6,6 +6,7 @@
 struct ParaCell {
     ParaCell * prev;
     ParaCell * next;
+
     ParaCell * close;
 
     ParaType para_type;
