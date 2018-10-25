@@ -42,7 +42,7 @@
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
     overlay(new OverlayInfo()), tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
-    curr_block_number(-1), screen_top_block_number(-1), screen_bottom_block_number(-1),
+    active_para_limits(QPoint(-1, -1)), curr_block_number(-1), screen_top_block_number(-1), screen_bottom_block_number(-1),
     folding_lines_coverage_level(-1), folding_lines_coverage_level_stoper_min(FOLDING_COVERAGE_LEVEL_STOPER),
     folding_lines_coverage_level_stoper_max(FOLDING_COVERAGE_LEVEL_STOPER)
 {
@@ -53,10 +53,11 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateExtraAreaWidth);
     connect(this, &CodeEditor::updateRequest, this, &CodeEditor::updateExtraArea);
     connect(this, &CodeEditor::cursorPositionChanged, this, &CodeEditor::highlightCurrentLine);
+    connect(this, &CodeEditor::cursorPositionChanged, this, &CodeEditor::cursorMoved);
 
     updateExtraAreaWidth(0);
 
-    setCursorWidth(8);
+//    setCursorWidth(8);
     setLineWrapMode(NoWrap);
 
     verticalScrollBar() -> setSingleStep(2);
@@ -283,11 +284,6 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_description);
             painter.setPen(format.foreground().color());
             painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, format.background());
-
-            //////////////////////////// TEST BLOCK //////////////////////
-            const QTextCharFormat & scope_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_scope_range);
-            painter.fillRect(folding_scope_offset_x, paint_top, folding_scope_width, block_bottom - block_top, scope_format.background());
-            //////////////////////////// END TEST BLOCK //////////////////////
         }
 
         if (user_data -> hasBreakpoint()) {
@@ -299,6 +295,11 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_line);
             painter.fillRect(breakpoint_offset_x, paint_top, extra_zone_width, block_bottom - block_top, breakpoint_line_format.background());
         }
+    }
+
+    if (active_para_limits.rx() >= 0 && block_num >= active_para_limits.rx() && block_num <= active_para_limits.ry()) {
+        const QTextCharFormat & scope_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_scope_range);
+        painter.fillRect(folding_scope_offset_x, paint_top, folding_scope_width, block_bottom - block_top, scope_format.background());
     }
 
     painter.setFont(is_current ? curr_line_font : font());
@@ -1391,6 +1392,50 @@ void CodeEditor::highlightCurrentLine() {
     setExtraSelections(extra_selections);
 }
 
+void CodeEditor::cursorMoved() {
+    QTextCursor cursor = textCursor();
+
+    //TODO: optimize me: need to memorize current para range and re-use it if cursor still in para range
+
+    QTextBlock blk = cursor.block();
+    ParaCell * para = wrapper -> getPara(blk, cursor.positionInBlock());
+
+    int start_pos = blk.firstLineNumber();
+    int end_pos = start_pos;
+
+    if (para) {
+        if (para -> closer) {
+            ParaCell * stoper = para -> closer;
+
+            if (para -> is_opener) {
+                while(para && para != stoper) {
+                    if (para -> para_type == pt_max)
+                        ++end_pos;
+
+                    para = para -> next;
+                }
+            } else {
+                while(para && para != stoper) {
+                    if (para -> para_type == pt_max)
+                        --start_pos;
+
+                    para = para -> prev;
+                }
+            }
+
+            active_para_limits.rx() = start_pos;
+            active_para_limits.ry() = end_pos;
+
+            update();
+            return;
+        } else {
+            qDebug() << "PARA WITHOUT CLOSER";
+        }
+    }
+
+    active_para_limits.rx() = -1;
+    active_para_limits.ry() = -1;
+}
 
 void CodeEditor::updateExtraAreaWidth(int /* newBlockCount */) {
     breakpoint_offset_x = 2;

@@ -3,6 +3,7 @@
 
 #include "misc/defines.h"
 
+// TODO: optimize size of the structure: need to move bite flags to the end of the sequence and use regular sequence order for non flags
 enum ParaType : PARA_TYPE {
     pt_none = 0,
 

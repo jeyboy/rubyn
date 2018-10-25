@@ -154,8 +154,8 @@ struct LexerControl {
                         return it;
                 }
 
-                if (!it -> is_opener && it -> close)
-                    it = it -> close;
+                if (!it -> is_opener && it -> closer)
+                    it = it -> closer;
 
                 it = it -> prev;
             }
@@ -385,10 +385,12 @@ struct LexerControl {
 
                 para -> para_type = ptype;
                 para -> pos = cached_str_pos;
+                para -> length = static_cast<quint8>(cached_length); // 8 bits should be enough for any type of para
+
                 para -> is_foldable = false;
                 para -> is_oneliner = false;
             }
-            else para = ParaList::insert(para, ptype, cached_str_pos);
+            else para = ParaList::insert(para, ptype, cached_str_pos, static_cast<quint8>(cached_length));
 
             para -> is_blockator = !replaceable;
         }
@@ -418,15 +420,15 @@ struct LexerControl {
                 if (!replaceable && parent) {
                     parent -> is_oneliner = lines_between == 0;
 
-                    if (parent -> close && parent -> close != para)
-                        parent -> close -> close = nullptr;
+                    if (parent -> closer && parent -> closer != para)
+                        parent -> closer -> closer = nullptr;
 
-                    parent -> close = para;
+                    parent -> closer = para;
 
-                    if (para -> close && para -> close != parent)
-                        para -> close -> close = nullptr;
+                    if (para -> closer && para -> closer != parent)
+                        para -> closer -> closer = nullptr;
 
-                    para -> close = parent;
+                    para -> closer = parent;
                 }
             }
         } else if (!control_para && para -> is_foldable) {

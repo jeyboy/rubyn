@@ -241,6 +241,7 @@ class CodeEditor : public QPlainTextEdit {
     int folding_overlay_y;
 
     QPoint curr_folding_limits;
+    QPoint active_para_limits;
 
     int curr_block_number;
     int screen_top_block_number;
@@ -433,6 +434,8 @@ private slots:
     void applyCompletion(const QString & completion);
 
     void highlightCurrentLine();
+
+    void cursorMoved();
 
     void updateExtraAreaWidth(int newBlockCount);
     void updateExtraArea(const QRect &, int);

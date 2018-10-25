@@ -7,18 +7,19 @@ struct ParaCell {
     ParaCell * prev;
     ParaCell * next;
 
-    ParaCell * close;
+    ParaCell * closer;
 
     ParaType para_type;
     EDITOR_POS_TYPE pos;
+    quint8 length;
 
     bool is_blockator;
     bool is_opener;
     bool is_foldable;
     bool is_oneliner;
 
-    ParaCell(const ParaType & para, const EDITOR_POS_TYPE & start_pos, ParaCell * prev_token = nullptr)
-        : prev(nullptr), next(nullptr), close(nullptr), para_type(para), pos(start_pos),
+    ParaCell(const ParaType & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0, ParaCell * prev_token = nullptr)
+        : prev(nullptr), next(nullptr), closer(nullptr), para_type(para), pos(start_pos), length(length),
           is_blockator(true), is_opener(true), is_foldable(false), is_oneliner(false)
     {
         if ((prev = prev_token)) {
@@ -36,8 +37,8 @@ struct ParaCell {
         if (next)
             next -> prev = prev;
 
-        if (close)
-            close -> close = nullptr;
+        if (closer) // remove link with chained elem
+            closer -> closer = nullptr;
     }
 
 //    EDITOR_POS_TYPE linesCoverage() {
@@ -93,7 +94,7 @@ class ParaList {
 public:
     inline ParaList() : root(nullptr), last(nullptr) {
         root = new ParaCell(pt_none, -1);
-        last = new ParaCell(pt_max_end, -1, root);
+        last = new ParaCell(pt_max_end, -1, 0, root);
     }
 
     inline ~ParaList() {
@@ -120,8 +121,8 @@ public:
         if (!prev_end)
             prev_end = last -> prev;
 
-        left = new ParaCell(pt_none, -1, prev_end);
-        right = new ParaCell(pt_max, -1, left);
+        left = new ParaCell(pt_none, -1, 0, prev_end);
+        right = new ParaCell(pt_max, -1, 0, left);
 
         right -> is_opener = false;
     }
@@ -142,12 +143,12 @@ public:
         delete right;
     }
 
-    ParaCell * append(const ParaType & para, const EDITOR_POS_TYPE & start_pos) {
-        return new ParaCell(para, start_pos, last -> prev);
+    ParaCell * append(const ParaType & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0) {
+        return new ParaCell(para, start_pos, length, last -> prev);
     }
 
-    static ParaCell * insert(ParaCell * left, const ParaType & para, const EDITOR_POS_TYPE & start_pos) {
-        return new ParaCell(para, start_pos, left);
+    static ParaCell * insert(ParaCell * left, const ParaType & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0) {
+        return new ParaCell(para, start_pos, length, left);
     }
 };
 

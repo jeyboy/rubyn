@@ -206,7 +206,7 @@ LEXEM_TYPE TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_T
 
                 default: {
                     start += tkn -> start_pos;
-                    length = tkn -> length;
+                    length = static_cast<int>(tkn -> length);
                     return tkn -> lexem;
                 }
             }
@@ -241,10 +241,11 @@ LEXEM_TYPE TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_T
     return lex_undefined;
 }
 
-//void TextDocument::calcFoldings() {
-//    if (_lexer)
-//        _lexer -> calcFoldings();
-//}
+ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE & pos) {
+    BlockUserData * udata = static_cast<BlockUserData *>(block.userData());
+
+    return udata -> paraForPos(pos);
+}
 
 void TextDocument::readNextBlock() {
     if (isFullyReaded()) return;

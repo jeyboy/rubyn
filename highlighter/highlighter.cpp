@@ -10,7 +10,7 @@
 void Highlighter::setDocument(TextDocument * new_doc) {
     if (doc) {
         disconnect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
-        disconnect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
+//        disconnect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
 //        disconnect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::blockCountChanged);
         disconnect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
 
@@ -29,7 +29,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
         doc = _doc_wrapper -> toQDoc();
 
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
-        connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
+//        connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
 //        connect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::blockCountChanged);
 //        connect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
 //            d->rehighlightPending = true;
@@ -333,9 +333,15 @@ void Highlighter::applyFormatChanges(int from, int chars_removed, int chars_adde
 //    qDebug() << "blockCountChanged" << count << doc -> blockCount();
 //}
 
-void Highlighter::cursorPositionChanged(const QTextCursor & /*cursor*/) {
-//    qDebug() << "CURSOR POS CHANGED";
-}
+//void Highlighter::cursorPositionChanged(const QTextCursor & cursor) {
+//    EDITOR_POS_TYPE pos = cursor.positionInBlock();
+//    EDITOR_POS_TYPE start = 0;
+//    EDITOR_POS_TYPE length = 0;
+
+//    LEXEM_TYPE lex = _doc_wrapper -> getWordBoundaries(start, length, cursor.block(), pos, false);
+
+
+//}
 
 //void Highlighter::enterPressed() {
 //    QTextCursor cursor(doc);

@@ -42,6 +42,7 @@ struct BlockUserData : public QTextBlockUserData {
     ~BlockUserData();
 
     TokenCell * tokenForPos(const EDITOR_POS_TYPE & pos);
+    ParaCell * paraForPos(const EDITOR_POS_TYPE & pos);
 
     // maybe better to remove full tokens sequence in another thread instead of use sync and etc ???
     TokenCell * lineControlToken();
