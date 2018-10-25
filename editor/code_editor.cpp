@@ -775,6 +775,14 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                 folding_click = true;
                                 can_show_folding_popup = false;
                                 invalidation_required = false;
+
+                                //INFO: move the cursor out from folded block
+                                QTextCursor current_cursor = textCursor();
+
+                                if (!current_cursor.block().isVisible()) {
+                                    current_cursor.setPosition(blk.position());
+                                    setTextCursor(current_cursor);
+                                }
                             }
                         }
                     }
