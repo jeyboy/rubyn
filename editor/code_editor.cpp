@@ -1393,48 +1393,75 @@ void CodeEditor::highlightCurrentLine() {
 }
 
 void CodeEditor::cursorMoved() {
-    QTextCursor cursor = textCursor();
+    bool initiated = false;
 
-    //TODO: optimize me: need to memorize current para range and re-use it if cursor still in para range
+    //INFO: when a document opened but do not have the focus yet we always have the cursor in pos 0:0 but it's not drawn. We should ignore this case.
+    if (hasFocus()) {
+        QTextCursor cursor = textCursor();
 
-    QTextBlock blk = cursor.block();
-    ParaCell * para = wrapper -> getPara(blk, cursor.positionInBlock());
+        QTextBlock blk = cursor.block();
+        ParaCell * para = wrapper -> getPara(blk, cursor.positionInBlock());
 
-    int start_pos = blk.firstLineNumber();
-    int end_pos = start_pos;
+        int start_pos = blk.firstLineNumber();
+        int end_pos = start_pos;
 
-    if (para) {
-        if (para -> closer) {
-            ParaCell * stoper = para -> closer;
+        if (para) {
+            if (para -> closer) {
+                ParaCell * stoper = para -> closer;
 
-            if (para -> is_opener) {
-                while(para && para != stoper) {
-                    if (para -> para_type == pt_max)
-                        ++end_pos;
+                if (para -> is_opener) {
+                    while(para && para != stoper) {
+                        if (para -> para_type == pt_max)
+                            ++end_pos;
 
-                    para = para -> next;
+                        para = para -> next;
+                    }
+                } else {
+                    while(para && para != stoper) {
+                        if (para -> para_type == pt_max)
+                            --start_pos;
+
+                        para = para -> prev;
+                    }
                 }
+
+                initiated = true;
             } else {
-                while(para && para != stoper) {
-                    if (para -> para_type == pt_max)
-                        --start_pos;
+                if (!para -> is_blockator) {
+                    int level = TextDocumentLayout::getBlockLevel(blk);
 
-                    para = para -> prev;
+                    while(para -> next) {
+                        if (para -> para_type == pt_max) {
+                            blk = blk.next();
+
+                            if (TextDocumentLayout::getBlockLevel(blk) <= level)
+                                break;
+                            else
+                                ++end_pos;
+                        }
+
+                        para = para -> next;
+                    }
+
+                    initiated = true;
                 }
+                else qDebug() << "PARA WITHOUT CLOSER";
             }
+        }
 
+        if (initiated) {
             active_para_limits.rx() = start_pos;
             active_para_limits.ry() = end_pos;
 
             update();
-            return;
-        } else {
-            qDebug() << "PARA WITHOUT CLOSER";
         }
     }
 
-    active_para_limits.rx() = -1;
-    active_para_limits.ry() = -1;
+    if (!initiated && active_para_limits.rx() != -1) {
+        active_para_limits.rx() = -1;
+        active_para_limits.ry() = -1;
+        update();
+    }
 }
 
 void CodeEditor::updateExtraAreaWidth(int /* newBlockCount */) {
