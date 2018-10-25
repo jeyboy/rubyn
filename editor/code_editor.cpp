@@ -1154,7 +1154,21 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         case Qt::Key_Shift:
         case Qt::Key_Control: { QPlainTextEdit::keyPressEvent(e); break;}
 
-        case Qt::Key_Return: { emit wrapper -> enterPressed(); }
+        case Qt::Key_Return: {
+            emit wrapper -> enterPressed();
+
+            QPlainTextEdit::keyPressEvent(e);
+
+            QTextCursor cursor = textCursor();
+            int level = TextDocumentLayout::getBlockLevel(cursor.block());
+
+            if (level > DEFAULT_LEVEL) {
+                const QLatin1String & tab_str = wrapper -> tabSpace();
+                QString str = QString(level * tab_str.size(), tab_str[0].toLatin1());
+
+                cursor.insertText(str);
+            }
+        break;}
         default: {
             if (!completer) {
                 QPlainTextEdit::keyPressEvent(e);

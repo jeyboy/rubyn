@@ -31,7 +31,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
         connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
 //        connect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::blockCountChanged);
-        connect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
+//        connect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
 //            d->rehighlightPending = true;
 //        QTimer::singleShot(0, this, SLOT(rehighlight()));
         rehighlight();
@@ -334,9 +334,16 @@ void Highlighter::applyFormatChanges(int from, int chars_removed, int chars_adde
 //}
 
 void Highlighter::cursorPositionChanged(const QTextCursor & /*cursor*/) {
-
+    qDebug() << "CURSOR POS CHANGED";
 }
 
-void Highlighter::enterPressed() {
-    qDebug() << "NEW LINE";
-}
+//void Highlighter::enterPressed() {
+//    QTextCursor cursor(doc);
+
+//    int level = TextDocumentLayout::getBlockLevel(cursor.block());
+//    const QLatin1String & tab_str = _doc_wrapper -> tabSpace();
+
+//    QString str = QString(tab_str[0].toLatin1(), level * tab_str.size());
+
+//    cursor.insertText(str);
+//}
