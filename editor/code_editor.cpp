@@ -273,14 +273,6 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         );
         ////////////////////////////// END TEST /////////////////
 
-
-        if (user_data -> hasBreakpoint()) {
-            painter.drawPixmap(
-                QPoint(breakpoint_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
-                icons[BlockUserData::udf_has_breakpoint]
-            );
-        }
-
         if (!initiated && folding_lines_coverage_level_stoper_max < 0 && user_data -> level <= folding_lines_coverage_level)
             folding_lines_coverage_level_stoper_max = block_num + folding_lines_coverage_level_stoper_max + 1;
 
@@ -296,6 +288,16 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             const QTextCharFormat & scope_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_scope_range);
             painter.fillRect(folding_scope_offset_x, paint_top, folding_scope_width, block_bottom - block_top, scope_format.background());
             //////////////////////////// END TEST BLOCK //////////////////////
+        }
+
+        if (user_data -> hasBreakpoint()) {
+            painter.drawPixmap(
+                QPoint(breakpoint_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
+                icons[BlockUserData::udf_has_breakpoint]
+            );
+
+            const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_line);
+            painter.fillRect(breakpoint_offset_x, paint_top, extra_zone_width, block_bottom - block_top, breakpoint_line_format.background());
         }
     }
 
