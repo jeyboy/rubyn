@@ -42,7 +42,8 @@
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
     overlay(new OverlayInfo()), tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
-    active_para_limits(QPoint(-1, -1)), curr_block_number(-1), screen_top_block_number(-1), screen_bottom_block_number(-1),
+    active_para_limits(QPoint(-1, -1)), active_para_opener(QPoint(-1, -1)), active_para_closer(QPoint(-1, -1)),
+    curr_block_number(-1), screen_top_block_number(-1), screen_bottom_block_number(-1),
     folding_lines_coverage_level(-1), folding_lines_coverage_level_stoper_min(FOLDING_COVERAGE_LEVEL_STOPER),
     folding_lines_coverage_level_stoper_max(FOLDING_COVERAGE_LEVEL_STOPER)
 {
@@ -1132,6 +1133,17 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 /// //////////////////////////////////
 
     drawFoldingOverlays(painter, e -> rect());
+
+    if (active_para_limits.rx() != -1) {
+        QTextBlock opener_blk = document() -> findBlockByNumber(active_para_limits.rx());
+        drawTextOverlay(painter, opener_blk, active_para_opener.rx(), active_para_opener.ry());
+
+        if (active_para_closer.rx() != -1) {
+            QTextBlock closer_blk = active_para_limits.rx() == active_para_limits.ry() ? opener_blk : document() -> findBlockByNumber(active_para_limits.ry());
+            drawTextOverlay(painter, closer_blk, active_para_closer.rx(), active_para_closer.ry());
+        }
+    }
+
     drawAdditionalCarets(painter);
 }
 
@@ -1418,6 +1430,12 @@ void CodeEditor::cursorMoved() {
                 ParaCell * stoper = para -> closer;
 
                 if (para -> is_opener) {
+                    active_para_opener.rx() = para -> pos;
+                    active_para_opener.ry() = para -> length;
+
+                    active_para_closer.rx() = stoper -> pos;
+                    active_para_closer.ry() = stoper -> length;
+
                     while(para && para != stoper) {
                         if (para -> para_type == pt_max)
                             ++end_pos;
@@ -1425,6 +1443,12 @@ void CodeEditor::cursorMoved() {
                         para = para -> next;
                     }
                 } else {
+                    active_para_opener.rx() = stoper -> pos;
+                    active_para_opener.ry() = stoper -> length;
+
+                    active_para_closer.rx() = para -> pos;
+                    active_para_closer.ry() = para -> length;
+
                     while(para && para != stoper) {
                         if (para -> para_type == pt_max)
                             --start_pos;
@@ -1437,6 +1461,11 @@ void CodeEditor::cursorMoved() {
             } else {
                 if (!para -> is_blockator) {
                     int level = TextDocumentLayout::getBlockLevel(blk);
+
+                    active_para_opener.rx() = para -> pos;
+                    active_para_opener.ry() = para -> length;
+
+                    active_para_closer.rx() = -1;
 
                     while(para -> next) {
                         if (para -> para_type == pt_max) {
@@ -1461,14 +1490,18 @@ void CodeEditor::cursorMoved() {
             active_para_limits.rx() = start_pos;
             active_para_limits.ry() = end_pos;
 
-            update();
+            viewport() -> update(); // update editor marks
+            update(); // update folding scope on extra area
         }
     }
 
     if (!initiated && active_para_limits.rx() != -1) {
         active_para_limits.rx() = -1;
-        active_para_limits.ry() = -1;
-        update();
+        active_para_opener.rx() = -1;
+        active_para_closer.rx() = -1;
+
+        viewport() -> update(); // update editor marks
+        update(); // update folding scope on extra area
     }
 }
 

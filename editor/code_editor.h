@@ -242,6 +242,8 @@ class CodeEditor : public QPlainTextEdit {
 
     QPoint curr_folding_limits;
     QPoint active_para_limits;
+    QPoint active_para_opener;
+    QPoint active_para_closer;
 
     int curr_block_number;
     int screen_top_block_number;
