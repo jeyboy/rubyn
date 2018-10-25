@@ -267,11 +267,11 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     }
 
     if (user_data) {
-//        ////////////////////////////// TEST /////////////////
-//        painter.drawText(
-//            breakpoint_offset_x, paint_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
-//        );
-//        ////////////////////////////// END TEST /////////////////
+        ////////////////////////////// TEST /////////////////
+        painter.drawText(
+            breakpoint_offset_x, paint_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
+        );
+        ////////////////////////////// END TEST /////////////////
 
 
         if (user_data -> hasBreakpoint()) {
@@ -757,8 +757,11 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                             BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
                             udata -> invertBreakpointState();
-
                             invalidation_required = true;
+
+                            QRect r(blockBoundingGeometry(blk).translated(contentOffset()).toRect());
+                            r.setWidth(r.width() + 50);
+                            viewport() -> update(r);
                         } else if (in_number_zone) {
                             cursor.setPosition(blk.position() + blk.length(), QTextCursor::MoveAnchor);
                             cursor.setPosition(blk.position(), QTextCursor::KeepAnchor);
@@ -854,6 +857,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     QAbstractTextDocumentLayout::PaintContext context = getPaintContext();
     const QTextCharFormat & selection_format = HighlightFormatFactory::obj().getFormatFor(hid_selection);
     const QTextCharFormat & folding_scope_line_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_scope_line);
+    const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_line); //
 
     while (block.isValid()) {
         QRectF r = blockBoundingRect(block).translated(offset);
@@ -876,7 +880,8 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
             }
 
             //TODO: implement switcher and draw this only if enabled showing of folding scopes
-            int level = TextDocumentLayout::getBlockLevel(block);
+            BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(block);
+            int level = udata -> level;
 
             if (level > 0) {
                 painter.save();
@@ -961,6 +966,10 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 else
                     cpos -= blpos;
                 layout -> drawCursor(&painter, offset, cpos, cursorWidth());
+            }
+
+            if (udata -> hasBreakpoint()) {
+                painter.fillRect(0, offset.ry(), max_x, r.height(), breakpoint_line_format.background());
             }
         }
 

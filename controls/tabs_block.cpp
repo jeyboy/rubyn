@@ -39,6 +39,9 @@ void TabsBlock::setupLayout() {
     _active_btn -> setFixedHeight(_bar -> height());
     _active_btn -> setStyleSheet("background: qlineargradient(x1:0 y1:0, x2:1 y2:0, stop:0 rgba(0, 255, 255, 255), stop:1 rgba(0, 204, 255, 255)); border-radius: 3px; border: 1px solid black;");
     _active_btn -> hide();
+
+//    connect(_active_btn, SIGNAL(clicked()), this, SLOT(updateEditor()));
+
     row_layout -> addWidget(_active_btn, 0);
 
     row_layout -> addWidget(_bar, 1);
