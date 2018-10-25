@@ -6,12 +6,12 @@
 #include "misc/defines.h"
 
 enum Identifier : LEXEM_TYPE {
-    hid_folding_scope_line = -11,
-    hid_folding_content_overlay = -10,
+    hid_folding_level_line = -11,
+    hid_folding_content_popup = -10,
     hid_chars_limiter_line = -9,
     hid_breakpoint_line = -8,
     hid_breakpoints_range = -7,
-    hid_folding_scope_range = -6,
+    hid_folding_para_range = -6,
     hid_folding_hover_range = -5,
 //    hid_folding_description = -4,
     hid_current_line = -3,

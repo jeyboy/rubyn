@@ -12,17 +12,17 @@ void HighlightFormatFactory::registerCurrentLineFormat() {
     _formats.insert(hid_current_line, format);
 }
 
-void HighlightFormatFactory::registerFoldingScopeLineFormat() {
+void HighlightFormatFactory::registerFoldingLevelLineFormat() {
     QTextCharFormat format;
     format.setForeground(QColor::fromRgb(64, 64, 64, 92));
-    _formats.insert(hid_folding_scope_line, format);
+    _formats.insert(hid_folding_level_line, format);
 }
 
 
-void HighlightFormatFactory::registerFoldingContentOverlayFormat() {
+void HighlightFormatFactory::registerFoldingContentPopupFormat() {
     QTextCharFormat format;
     format.setBackground(QColor::fromRgb(172, 229, 238, 64));
-    _formats.insert(hid_folding_content_overlay, format);
+    _formats.insert(hid_folding_content_popup, format);
 }
 
 void HighlightFormatFactory::registerFoldingHoverRangeFormat() {
@@ -38,10 +38,10 @@ void HighlightFormatFactory::registerCurrentLineExtraFormat() {
     _formats.insert(hid_current_line_extra, format);
 }
 
-void HighlightFormatFactory::registerFoldingScopeRangeFormat() {
+void HighlightFormatFactory::registerFoldingParaRangeFormat() {
     QTextCharFormat format;
     format.setBackground(QColor::fromRgb(145, 196, 247));
-    _formats.insert(hid_folding_scope_range, format);
+    _formats.insert(hid_folding_para_range, format);
 }
 
 void HighlightFormatFactory::registerBreakpointsRangeFormat() {
@@ -216,12 +216,12 @@ void HighlightFormatFactory::registerRegularExpresionBorderFormat() {
 HighlightFormatFactory::HighlightFormatFactory() {
     registerSelectionFormat();
     registerCurrentLineFormat();
-    registerFoldingScopeLineFormat();
-    registerFoldingContentOverlayFormat();
+    registerFoldingLevelLineFormat();
+    registerFoldingContentPopupFormat();
     registerFoldingHoverRangeFormat();
     registerCurrentLineExtraFormat();
     registerScopeVisibilityFormat();
-    registerFoldingScopeRangeFormat();
+    registerFoldingParaRangeFormat();
     registerBreakpointsRangeFormat();
     registerBreakpointLineFormat();
     registerCharsLimiterLineFormat();

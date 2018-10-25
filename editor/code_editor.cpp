@@ -198,8 +198,8 @@ void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const 
 
     int block_height = block_bottom - block_top;
 
-    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_content_overlay);
-    painter.fillRect(0, paint_top, extra_zone_width, block_height + 1, format.background());
+//    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_content_popup);
+//    painter.fillRect(0, paint_top, extra_zone_width, block_height + 1, format.background());
 
     painter.translate(QPoint(1, 0));
     block.layout() -> draw(&painter, QPoint(extra_zone_width + contentOffset().rx(), paint_top));
@@ -299,7 +299,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     }
 
     if (active_para_limits.rx() >= 0 && block_num >= active_para_limits.rx() && block_num <= active_para_limits.ry()) {
-        const QTextCharFormat & scope_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_scope_range);
+        const QTextCharFormat & scope_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_para_range);
         painter.fillRect(folding_scope_offset_x, paint_top, folding_scope_width, block_bottom - block_top, scope_format.background());
     }
 
@@ -457,7 +457,7 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
 
 
     QPixmap pixmap(popup_rect.size());
-    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_content_overlay);
+    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_content_popup);
     pixmap.fill(format.background().color());
 
     {
@@ -868,7 +868,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
     QAbstractTextDocumentLayout::PaintContext context = getPaintContext();
     const QTextCharFormat & selection_format = HighlightFormatFactory::obj().getFormatFor(hid_selection);
-    const QTextCharFormat & folding_scope_line_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_scope_line);
+    const QTextCharFormat & folding_level_line_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_level_line);
     const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_line); //
 
     while (block.isValid()) {
@@ -897,7 +897,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
             if (level > 0) {
                 painter.save();
-                painter.setPen(folding_scope_line_format.foreground().color());
+                painter.setPen(folding_level_line_format.foreground().color());
                 int folding_line_offset = offset.rx() + doc_margin + pseudo_tab_width;
 
                 while(--level > 0) {

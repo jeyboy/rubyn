@@ -14,15 +14,15 @@ protected:
 
     void registerCurrentLineFormat();
 
-    void registerFoldingScopeLineFormat();
+    void registerFoldingLevelLineFormat();
 
-    void registerFoldingContentOverlayFormat();
+    void registerFoldingContentPopupFormat();
 
     void registerFoldingHoverRangeFormat();
 
     void registerCurrentLineExtraFormat();
 
-    void registerFoldingScopeRangeFormat();
+    void registerFoldingParaRangeFormat();
 
     void registerBreakpointsRangeFormat();
 
