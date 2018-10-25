@@ -6,6 +6,7 @@
 #include "misc/defines.h"
 
 enum Identifier : LEXEM_TYPE {
+    hid_search_results_overlay = -12,
     hid_folding_level_line = -11,
     hid_folding_content_popup = -10,
     hid_chars_limiter_line = -9,
@@ -13,7 +14,7 @@ enum Identifier : LEXEM_TYPE {
     hid_breakpoints_range = -7,
     hid_folding_para_range = -6,
     hid_folding_hover_range = -5,
-//    hid_folding_description = -4,
+    hid_folded_overlay = -4,
     hid_current_line = -3,
     hid_current_line_extra = -2,
     hid_selection = -1,

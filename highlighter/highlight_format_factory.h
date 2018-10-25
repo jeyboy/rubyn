@@ -24,6 +24,10 @@ protected:
 
     void registerFoldingParaRangeFormat();
 
+    void registerFoldedOverlayFormat();
+
+    void registerSearchResultsOverlayFormat();
+
     void registerBreakpointsRangeFormat();
 
     void registerBreakpointLineFormat();

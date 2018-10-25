@@ -44,6 +44,20 @@ void HighlightFormatFactory::registerFoldingParaRangeFormat() {
     _formats.insert(hid_folding_para_range, format);
 }
 
+void HighlightFormatFactory::registerFoldedOverlayFormat() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(192, 192, 192, 192));
+    format.setBackground(QColor::fromRgb(224, 224, 224, 128));
+    _formats.insert(hid_folded_overlay, format);
+}
+
+void HighlightFormatFactory::registerSearchResultsOverlayFormat() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(218, 206, 26, 224));
+    format.setBackground(QColor::fromRgb(255, 239, 11, 192));
+    _formats.insert(hid_search_results_overlay, format);
+}
+
 void HighlightFormatFactory::registerBreakpointsRangeFormat() {
     QTextCharFormat format;
     format.setBackground(QColor::fromRgb(255, 0, 0, 16));
@@ -222,6 +236,8 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerCurrentLineExtraFormat();
     registerScopeVisibilityFormat();
     registerFoldingParaRangeFormat();
+    registerFoldedOverlayFormat();
+    registerSearchResultsOverlayFormat();
     registerBreakpointsRangeFormat();
     registerBreakpointLineFormat();
     registerCharsLimiterLineFormat();

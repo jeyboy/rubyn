@@ -405,6 +405,11 @@ void CodeEditor::drawTextOverlay(QPainter & painter, const QTextBlock & block, c
     painter.setCompositionMode(QPainter::CompositionMode_Multiply);
     painter.setRenderHint(QPainter::Antialiasing);
 
+    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_search_results_overlay);
+
+    painter.setPen(format.foreground().color());
+    painter.setBrush(format.background().color());
+
     painter.setPen(QColor::fromRgb(218, 206, 26, 224));
     painter.setBrush(QColor::fromRgb(255, 239, 11, 192));
     painter.drawRoundedRect(textRect(block, pos, length), 3, 3);
@@ -416,8 +421,10 @@ void CodeEditor::drawFoldingOverlay(QPainter & painter, const QRect & fold_rect)
     painter.setCompositionMode(QPainter::CompositionMode_Multiply);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setPen(QColor::fromRgb(192, 192, 192, 192));
-    painter.setBrush(QColor::fromRgb(224, 224, 224, 128));
+    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folded_overlay);
+
+    painter.setPen(format.foreground().color());
+    painter.setBrush(format.background().color());
     painter.drawRoundedRect(fold_rect, 3, 3);
     painter.restore();
 }
