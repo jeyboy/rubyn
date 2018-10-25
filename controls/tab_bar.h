@@ -13,7 +13,7 @@ class TabBar : public QListWidget {
     bool _internal_move;
     QHash<QString, QListWidgetItem *> _tabs_linkages;
 public:
-    TabBar(QWidget * parent = 0);
+    TabBar(QWidget * parent = nullptr);
 
     QListWidgetItem * addTab(const QIcon & ico, const QString & text);
     void removeTab(QListWidgetItem *);

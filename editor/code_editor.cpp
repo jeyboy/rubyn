@@ -929,15 +929,15 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 }
             }
 
-            bool drawCursor = ((editable || (textInteractionFlags() & Qt::TextSelectableByKeyboard))
+            bool draw_cursor = ((editable || (textInteractionFlags() & Qt::TextSelectableByKeyboard))
                                && context.cursorPosition >= blpos
                                && context.cursorPosition < blpos + bllen);
 
-            bool drawCursorAsBlock = drawCursor && overwriteMode() ;
+            bool draw_cursor_as_block = draw_cursor && overwriteMode() ;
 
-            if (drawCursorAsBlock) {
+            if (draw_cursor_as_block) {
                 if (context.cursorPosition == blpos + bllen - 1) {
-                    drawCursorAsBlock = false;
+                    draw_cursor_as_block = false;
                 } else {
                     QTextLayout::FormatRange o;
                     o.start = context.cursorPosition - blpos;
@@ -957,7 +957,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
               layout -> draw(&painter, offset, selections, er);
             }
 
-            if ((drawCursor && !drawCursorAsBlock)
+            if ((draw_cursor && !draw_cursor_as_block)
                 || (editable && context.cursorPosition < -1
                     && !layout -> preeditAreaText().isEmpty())) {
                 int cpos = context.cursorPosition;
