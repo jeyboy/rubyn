@@ -334,7 +334,7 @@ void Highlighter::applyFormatChanges(int from, int chars_removed, int chars_adde
 //}
 
 void Highlighter::cursorPositionChanged(const QTextCursor & /*cursor*/) {
-    qDebug() << "CURSOR POS CHANGED";
+//    qDebug() << "CURSOR POS CHANGED";
 }
 
 //void Highlighter::enterPressed() {
