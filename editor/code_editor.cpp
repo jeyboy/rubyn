@@ -219,7 +219,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     bool is_current = curr_block_number == block_num;
 
     if (is_current) {
-        const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_range);
+        const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_current_line_extra);
         painter.fillRect(0, paint_top, extra_zone_width, block_bottom - block_top, format.background());
     }
 
@@ -282,7 +282,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             block_num >= folding_lines_coverage_level_stoper_min &&
                 (folding_lines_coverage_level_stoper_max < 0 || block_num <= folding_lines_coverage_level_stoper_max)
         ) {
-            const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_description);
+            const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_hover_range);
             painter.setPen(format.foreground().color());
             painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, format.background());
         }

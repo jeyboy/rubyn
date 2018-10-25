@@ -18,9 +18,9 @@ protected:
 
     void registerFoldingContentOverlayFormat();
 
-    void registerFoldingDescriptionFormat();
+    void registerFoldingHoverRangeFormat();
 
-    void registerFoldingRangeFormat();
+    void registerCurrentLineExtraFormat();
 
     void registerFoldingScopeRangeFormat();
 

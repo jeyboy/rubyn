@@ -25,17 +25,17 @@ void HighlightFormatFactory::registerFoldingContentOverlayFormat() {
     _formats.insert(hid_folding_content_overlay, format);
 }
 
-void HighlightFormatFactory::registerFoldingDescriptionFormat() {
+void HighlightFormatFactory::registerFoldingHoverRangeFormat() {
     QTextCharFormat format;
     format.setForeground(QColor::fromRgb(0, 0, 0));
     format.setBackground(QColor::fromRgb(64, 64, 64, 64));
-    _formats.insert(hid_folding_description, format);
+    _formats.insert(hid_folding_hover_range, format);
 }
 
-void HighlightFormatFactory::registerFoldingRangeFormat() {
+void HighlightFormatFactory::registerCurrentLineExtraFormat() {
     QTextCharFormat format;
     format.setBackground(QColor::fromRgb(128, 128, 128, 48));
-    _formats.insert(hid_folding_range, format);
+    _formats.insert(hid_current_line_extra, format);
 }
 
 void HighlightFormatFactory::registerFoldingScopeRangeFormat() {
@@ -218,8 +218,8 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerCurrentLineFormat();
     registerFoldingScopeLineFormat();
     registerFoldingContentOverlayFormat();
-    registerFoldingDescriptionFormat();
-    registerFoldingRangeFormat();
+    registerFoldingHoverRangeFormat();
+    registerCurrentLineExtraFormat();
     registerScopeVisibilityFormat();
     registerFoldingScopeRangeFormat();
     registerBreakpointsRangeFormat();
