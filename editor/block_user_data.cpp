@@ -86,8 +86,6 @@ void BlockUserData::syncLine(TokenCell * stack_sync_token, TokenCell * sync_toke
             setFoldingState(udf_folding_opened);
     }
     else {
-        //TODO: need to expand folding on repaint if flag eql to the udf_folding_dropped and
-        //replace it with udf_none after that
         setFoldingState((foldingState() == udf_has_folding) ? udf_none : udf_folding_dropped);
     }
 

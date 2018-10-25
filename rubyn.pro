@@ -72,7 +72,8 @@ SOURCES += main.cpp\
     editor/block_user_data.cpp \
     lexer/igrammar.cpp \
     editor/text_document_layout.cpp \
-    controls/logger_window.cpp
+    controls/logger_window.cpp \
+    editor/code_editor_cache.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -177,7 +178,8 @@ HEADERS  += ide_window.h \
     misc/_chain.h \
     highlighter/para_type.h \
     editor/text_document_layout.h \
-    controls/logger_window.h
+    controls/logger_window.h \
+    editor/code_editor_cache.h
 
 FORMS    += ide_window.ui
 

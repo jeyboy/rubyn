@@ -105,8 +105,18 @@ void Logger::initiate(const QString & file_name, const bool & create_editor) {
 
 void Logger::startMark() { timer -> start(); }
 
-void Logger::endMark(const QString & initiator, const QString & value) {
-    write(initiator, value, QString::number(timer -> elapsed()) % QLatin1String(" ms (") % Info::paddedNumber(timer -> nsecsElapsed()) % QLatin1String(" ns)"));
+void Logger::endMark(const bool & append_to_average, const QString & initiator, const QString & value) {
+    qint64 elapsed = timer -> nsecsElapsed();
+
+    QString str = QString::number(timer -> elapsed()) % QLatin1String(" ms (") % Info::paddedNumber(elapsed) % QLatin1String(" ns)");
+
+    if (append_to_average) {
+        quint64 average = mark_averages[initiator].appendAndAverage(elapsed);
+
+        str = str % QLatin1String("(~") % Info::paddedNumber(average) % QLatin1String(" ns)");
+    }
+
+    write(initiator, value, str);
 }
 
 QString Logger::path(const QString & file) {

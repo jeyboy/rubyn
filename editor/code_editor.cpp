@@ -12,6 +12,7 @@
 
 #include "project/file.h"
 
+#include "editor/code_editor_cache.h"
 #include "editor/block_user_data.h"
 #include "editor/parts/overlay_info.h"
 #include "editor/parts/extra_area.h"
@@ -47,9 +48,8 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     folding_lines_coverage_level(-1), folding_lines_coverage_level_stoper_min(FOLDING_COVERAGE_LEVEL_STOPER),
     folding_lines_coverage_level_stoper_max(FOLDING_COVERAGE_LEVEL_STOPER)
 {
-    setCharsLimiterLineAt(80);
-
     extra_area = new ExtraArea(this);
+    display_cacher = new CodeEditorCache();
 
     connect(this, &CodeEditor::blockCountChanged, this, &CodeEditor::updateExtraAreaWidth);
     connect(this, &CodeEditor::updateRequest, this, &CodeEditor::updateExtraArea);
@@ -57,6 +57,8 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     connect(this, &CodeEditor::cursorPositionChanged, this, &CodeEditor::cursorMoved);
 
     updateExtraAreaWidth(0);
+
+    setCharsLimiterLineAt(80);
 
 //    setCursorWidth(8);
     setLineWrapMode(NoWrap);
@@ -71,6 +73,8 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
 CodeEditor::~CodeEditor() {
     delete overlay;
     icons.clear();
+
+    delete display_cacher;
 }
 
 void CodeEditor::setCompleter(QCompleter * new_completer) {
@@ -808,6 +812,8 @@ void CodeEditor::extraAreaLeaveEvent(QEvent *) {
 }
 
 void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
+    Logger::obj().startMark();
+
     hideOverlayIfNoNeed();
 //    bool is_caret_redrawing = height() - event -> rect().height() > 8;
 
@@ -837,6 +843,8 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     }
 
     event -> accept();
+
+    Logger::obj().endMark(true, QLatin1Literal("extraAreaPaintEvent"));
 }
 
 
@@ -1043,6 +1051,8 @@ bool CodeEditor::event(QEvent * event) {
 }
 
 void CodeEditor::paintEvent(QPaintEvent * e) {
+    Logger::obj().startMark();
+
     hideOverlayIfNoNeed();
 
     QPainter painter(viewport());
@@ -1140,6 +1150,8 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
     }
 
     drawAdditionalCarets(painter);
+
+    Logger::obj().endMark(true, QLatin1Literal("paintEvent"));
 }
 
 void CodeEditor::resizeEvent(QResizeEvent * e) {

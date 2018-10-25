@@ -19,6 +19,7 @@ class TextDocument;
 class ExtraArea;
 class File;
 class OverlayInfo;
+class CodeEditorCache;
 
 
 // replace text witout undo/redo clearing
@@ -225,6 +226,7 @@ class CodeEditor : public QPlainTextEdit {
         wuco_select_full = wuco_full | wuco_select,
     };
 
+    CodeEditorCache * display_cacher;
     ExtraArea * extra_area;
     QCompleter * completer;
     TextDocument * wrapper;

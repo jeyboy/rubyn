@@ -20,7 +20,7 @@ public:
     static QString toUnits(long long val);
     static long long fromUnits(const QString & val);
 
-    static QString paddedNumber(qint64 time);
+    static QString paddedNumber(quint64 time);
 
     static QString & camelcaseToUnderscore(QString & str);
 };

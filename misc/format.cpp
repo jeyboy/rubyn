@@ -82,7 +82,7 @@ long long Info::fromUnits(const QString & val) {
     return 0;
 }
 
-QString Info::paddedNumber(qint64 time) {
+QString Info::paddedNumber(quint64 time) {
     QString res = QString::number(time);
     int len = res.length();
 

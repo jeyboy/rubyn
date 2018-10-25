@@ -2,6 +2,7 @@
 #define LOGGER
 
 #include <qpointer.h>
+#include <qhash.h>
 
 #include "misc/singleton.h"
 #include "controls/logger_window.h"
@@ -13,8 +14,34 @@ class QTextStream;
 class QFontMetrics;
 class QElapsedTimer;
 
+struct TimeMark {
+    quint64 sum;
+    quint32 quantity;
+
+    TimeMark(const quint64 & part = 0, const quint32 & qty = 0) : sum(part), quantity(qty) {}
+
+    void append(const quint64 & part) {
+        sum += part;
+        ++quantity;
+    }
+
+    quint64 average() {
+        if (sum == 0 || quantity == 0)
+            return 0;
+        else
+            return sum / quantity;
+    }
+
+    quint64 appendAndAverage(const quint64 & part) {
+        append(part);
+        return average();
+    }
+};
+
 class Logger : public QObject, public Singleton<Logger> {
     Q_OBJECT
+
+    QHash<QString, TimeMark> mark_averages;
 public:
     static const char * nl;
 
@@ -38,7 +65,8 @@ public:
     inline QPointer<LoggerWindow> & getEditor() { return m_editor; }
 
     void startMark();
-    void endMark(const QString & initiator, const QString & value = QString());
+    void endMark(const bool & append_to_average = false, const QString & initiator = QLatin1Literal("Time:"), const QString & value = QString());
+    void clearMarks() { mark_averages.clear(); }
 
 private:
     QString path(const QString & file);

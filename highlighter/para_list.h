@@ -19,10 +19,10 @@ struct ParaCell {
     bool is_oneliner;
 
     ParaCell(const ParaType & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0, ParaCell * prev_token = nullptr)
-        : prev(nullptr), next(nullptr), closer(nullptr), para_type(para), pos(start_pos), length(length),
+        : prev(prev_token), next(nullptr), closer(nullptr), para_type(para), pos(start_pos), length(length),
           is_blockator(true), is_opener(true), is_foldable(false), is_oneliner(false)
     {
-        if ((prev = prev_token)) {
+        if (prev) {
             if ((next = prev -> next))
                 next -> prev = this;
 

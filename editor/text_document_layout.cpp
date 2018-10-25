@@ -10,8 +10,6 @@ bool TextDocumentLayout::toggleFolding(const QTextBlock & blk) {
     bool has_folding = user_data && user_data -> hasFolding();
 
     if (has_folding) {
-        Logger::obj().startMark();
-
         user_data -> invertFoldingState();
 
         bool unfolding = !user_data -> folded();
@@ -42,8 +40,6 @@ bool TextDocumentLayout::toggleFolding(const QTextBlock & blk) {
             if (user_data -> level == level)
                 break;
         }
-
-        Logger::obj().endMark("toggleLevelFolding");
 
         ///// TODO: this implementation is a bit slow for huge blocks - need to rewrite _q_adjustScrollbars in CodeEditor and use it
         emitDocumentSizeChanged();

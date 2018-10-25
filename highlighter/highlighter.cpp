@@ -216,11 +216,6 @@ void Highlighter::initBlockUserData(QTextBlock & block, BlockUserData * prev_uda
 void Highlighter::reformatBlocks(int from, int chars_removed, int chars_added) {
 //    rehighlightPending = false;
 
-
-//    if (!rehighlighting && chars_removed) {
-//        // recalc folding queues
-//    }
-
     QTextBlock block = doc -> findBlock(from);
     if (!block.isValid())
         return;
@@ -235,8 +230,6 @@ void Highlighter::reformatBlocks(int from, int chars_removed, int chars_added) {
 
     bool force_next_block_highlight = false;
 
-    Logger::obj().startMark();
-
     while (block.isValid() && (force_next_block_highlight || block.position() < end_position)) {
         const int state_before_highlight = block.userState();
 
@@ -244,12 +237,8 @@ void Highlighter::reformatBlocks(int from, int chars_removed, int chars_added) {
 
         force_next_block_highlight = !rehighlighting && (block.userState() != state_before_highlight);
 
-        Logger::obj().write("reformatBlocks", block.text());
-
         block = block.next();
     }
-
-    Logger::obj().endMark("reformatBlocks");
 
     format_changes.clear();
 }
