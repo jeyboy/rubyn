@@ -5,7 +5,8 @@
 
 #include "misc/defines.h"
 
-enum Identifier : LEXEM_TYPE {
+enum Identifier : UID_TYPE {
+    hid_para_hover_overlay = -13,
     hid_search_results_overlay = -12,
     hid_folding_level_line = -11,
     hid_folding_content_popup = -10,

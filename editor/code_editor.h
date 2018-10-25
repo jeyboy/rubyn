@@ -377,8 +377,8 @@ protected:
     void drawCharsLimiter(QPainter & painter);
     void drawAdditionalCarets(QPainter & painter);
 
-    void drawTextOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
-    void drawFoldingOverlay(QPainter & painter, const QRect & fold_rect);
+    void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
+    void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRect & fold_rect);
 
     void showFoldingContentPopup(const QTextBlock & block);
     void showOverlay(const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid = -1);

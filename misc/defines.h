@@ -11,6 +11,7 @@
 
 #define OVERLAY_POS_TYPE quint8
 
+#define UID_TYPE qint8
 #define LEXEM_MEAN_TYPE quint16
 #define LEXEM_TYPE int
 #define STACK_INT_TYPE uint

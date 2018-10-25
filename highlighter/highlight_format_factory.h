@@ -28,6 +28,8 @@ protected:
 
     void registerSearchResultsOverlayFormat();
 
+    void registerParaHoverOverlayFormat();
+
     void registerBreakpointsRangeFormat();
 
     void registerBreakpointLineFormat();

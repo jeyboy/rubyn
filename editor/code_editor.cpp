@@ -345,7 +345,7 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
                     QRect rect = textRect(block, text_pos, 1);
                     rect.adjust(3, 0, mark.length() * symbol_width + 10, 0);
 
-                    drawFoldingOverlay(painter, rect);
+                    drawTextOverlay(hid_folded_overlay, painter, rect);
 
                     painter.setPen(QColor::fromRgb(0, 0, 0));
                     painter.drawText(rect, Qt::AlignCenter, mark);
@@ -399,32 +399,20 @@ void CodeEditor::drawAdditionalCarets(QPainter & painter) {
 //    layout -> drawCursor(&painter, contentOffset(), cpos, cursorWidth());
 }
 
-
-void CodeEditor::drawTextOverlay(QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
-    painter.save();
-    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_search_results_overlay);
-
-    painter.setPen(format.foreground().color());
-    painter.setBrush(format.background().color());
-
-    painter.setPen(QColor::fromRgb(218, 206, 26, 224));
-    painter.setBrush(QColor::fromRgb(255, 239, 11, 192));
-    painter.drawRoundedRect(textRect(block, pos, length), 3, 3);
-    painter.restore();
+void CodeEditor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+    drawTextOverlay(draw_uid, painter, textRect(block, pos, length));
 }
 
-void CodeEditor::drawFoldingOverlay(QPainter & painter, const QRect & fold_rect) {
+void CodeEditor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRect & fold_rect) {
     painter.save();
     painter.setCompositionMode(QPainter::CompositionMode_Multiply);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folded_overlay);
+    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(static_cast<Identifier>(draw_uid));
 
     painter.setPen(format.foreground().color());
     painter.setBrush(format.background().color());
+
     painter.drawRoundedRect(fold_rect, 3, 3);
     painter.restore();
 }
@@ -1143,11 +1131,11 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     if (active_para_limits.rx() != -1) {
         QTextBlock opener_blk = document() -> findBlockByNumber(active_para_limits.rx());
-        drawTextOverlay(painter, opener_blk, active_para_opener.rx(), active_para_opener.ry());
+        drawTextOverlay(hid_para_hover_overlay, painter, opener_blk, active_para_opener.rx(), active_para_opener.ry());
 
         if (active_para_closer.rx() != -1) {
             QTextBlock closer_blk = active_para_limits.rx() == active_para_limits.ry() ? opener_blk : document() -> findBlockByNumber(active_para_limits.ry());
-            drawTextOverlay(painter, closer_blk, active_para_closer.rx(), active_para_closer.ry());
+            drawTextOverlay(hid_para_hover_overlay, painter, closer_blk, active_para_closer.rx(), active_para_closer.ry());
         }
     }
 
