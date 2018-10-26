@@ -106,11 +106,17 @@ public:
 
     inline void clear() {
         ParaCell * curr;
+        ParaCell * it = last -> prev;
 
-        while(last -> prev != root) {
-            curr = last;
-            last = last -> prev;
+        while(it != root) {
+            curr = it;
+            it = it -> prev;
             delete curr;
+        }
+
+        if (root -> next != last) {
+            last -> prev = root;
+            root -> next = last;
         }
     }
 

@@ -404,6 +404,10 @@ void CodeEditor::drawAdditionalCarets(QPainter & painter) {
 }
 
 void CodeEditor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+    QRect r = textRect(block, pos, length);
+
+    qDebug() << "rect" << r;
+
     drawTextOverlay(draw_uid, painter, textRect(block, pos, length));
 }
 
@@ -589,7 +593,9 @@ QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos
         return QRect();
 
     qreal x_offset = -horizontalScrollBar() -> value();
-    QRectF rect = blockBoundingGeometry(block).translated(contentOffset());
+    CodeEditorCacheCell * cache = display_cacher -> cacheForBlockNumber(block.blockNumber());
+
+    QRectF rect = cache ? cache -> screen_bounding_rect : blockBoundingGeometry(block).translated(contentOffset());
     rect.setLeft(line.cursorToX(pos) + x_offset);
     rect.setRight(line.cursorToX(pos + length) + x_offset);
 
@@ -830,7 +836,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     int rect_bottom = event -> rect().bottom();
 
     const QTextCharFormat & breackpoints_scope_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoints_range);
-    painter.fillRect(breakpoint_offset_x, rect_top, breakpoint_width, rect_bottom - rect_top, breackpoints_scope_format.background());
+    painter.fillRect(breakpoint_offset_x, rect_top, breakpoint_width, viewport()->height()/*rect_bottom - rect_top*/, breackpoints_scope_format.background());
 
     while (block.isValid() && top <= rect_bottom) {
         if (block.isVisible() && bottom >= rect_top)
@@ -852,6 +858,9 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     QRect view_rect = viewport() -> rect();
     QRect er = e -> rect();
 
+    CodeEditorCacheCell * cache_cell = new CodeEditorCacheCell(-1);
+    bool full_redraw = view_rect == er;
+
     bool editable = !isReadOnly();
     bool need_placeholder = !placeholderText().isEmpty() && document() -> isEmpty();
 
@@ -863,9 +872,13 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     // Set a brush origin so that the WaveUnderline knows where the wave started
     painter.setBrushOrigin(offset);
 
+    if (full_redraw) {
+        display_cacher -> clear();
+        cache_cell = display_cacher -> append(block.blockNumber());
+    }
+
     // keep right margin clean from full-width selection
     int max_x = offset.x() + qMax((qreal)view_rect.width(), max_width) - doc_margin;
-    int max_y = er.bottom();
 
     er.setRight(qMin(er.right(), max_x));
     painter.setClipRect(er);
@@ -876,28 +889,34 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_line); //
 
     while (block.isValid()) {
-        QRectF r = blockBoundingRect(block).translated(offset);
+        cache_cell -> screen_bounding_rect = blockBoundingRect(block).translated(offset);
         QTextLayout * layout = block.layout();
 
+        cache_cell -> user_data = TextDocumentLayout::getUserDataForBlock(block);
+
         if (!block.isVisible()) {
-            offset.ry() += r.height();
+            cache_cell -> is_visible = false;
+            offset.ry() += cache_cell -> screen_bounding_rect.height();
             block = block.next();
+
+            if (full_redraw)
+                cache_cell = display_cacher -> append(cache_cell -> block_number + 1);
+
             continue;
         }
 
-        if (r.bottom() >= er.top() && r.top() <= er.bottom()) {
+        if (cache_cell -> screen_bounding_rect.bottom() >= er.top() && cache_cell -> screen_bounding_rect.top() <= er.bottom()) {
             QTextBlockFormat blockFormat = block.blockFormat();
             QBrush bg = blockFormat.background();
 
             if (bg != Qt::NoBrush) {
-                QRectF contentsRect = r;
-                contentsRect.setWidth(qMax(r.width(), max_width));
+                QRectF contentsRect = cache_cell -> screen_bounding_rect;
+                contentsRect.setWidth(qMax(cache_cell -> screen_bounding_rect.width(), max_width));
                 fillBackground(&painter, contentsRect, bg);
             }
 
             //TODO: implement switcher and draw this only if enabled showing of folding scopes
-            BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(block);
-            int level = udata -> level;
+            int level = cache_cell -> user_data -> level;
 
             if (level > 0) {
                 painter.save();
@@ -905,7 +924,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 int folding_line_offset = offset.rx() + doc_margin + pseudo_tab_width;
 
                 while(--level > 0) {
-                    painter.drawLine(folding_line_offset, offset.ry(), folding_line_offset, offset.ry() + r.height());
+                    painter.drawLine(folding_line_offset, offset.ry(), folding_line_offset, offset.ry() + cache_cell -> screen_bounding_rect.height());
 
                     folding_line_offset += pseudo_tab_width;
                 }
@@ -968,7 +987,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
               QColor col = palette().text().color();
               col.setAlpha(128);
               painter.setPen(col);
-              painter.drawText(r.adjusted(doc_margin, 0, 0, 0), Qt::AlignTop | Qt::TextWordWrap, placeholderText());
+              painter.drawText(cache_cell -> screen_bounding_rect.adjusted(doc_margin, 0, 0, 0), Qt::AlignTop | Qt::TextWordWrap, placeholderText());
             } else {
               layout -> draw(&painter, offset, selections, er);
             }
@@ -984,24 +1003,29 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 layout -> drawCursor(&painter, offset, cpos, cursorWidth());
             }
 
-            if (udata -> hasBreakpoint()) {
-                painter.fillRect(0, offset.ry(), max_x, r.height(), breakpoint_line_format.background());
+            if (cache_cell -> user_data -> hasBreakpoint()) {
+                painter.fillRect(0, offset.ry(), max_x, cache_cell -> screen_bounding_rect.height(), breakpoint_line_format.background());
             }
         }
 
-        offset.ry() += r.height();
+        offset.ry() += cache_cell -> screen_bounding_rect.height();
 
-//        if (offset.y() > view_rect.height())
-        if (offset.y() > max_y || offset.y() > view_rect.height())
+        if (offset.y() > view_rect.height())
             break;
 
         block = block.next();
+
+        if (full_redraw)
+            cache_cell = display_cacher -> append(cache_cell -> block_number + 1);
     }
 
     if (backgroundVisible() && !block.isValid() && offset.y() <= er.bottom()
         && (centerOnScroll() || verticalScrollBar() -> maximum() == verticalScrollBar() -> minimum())) {
         painter.fillRect(QRect(QPoint((int)er.left(), (int)offset.y()), er.bottomRight()), palette().background());
     }
+
+    if (!full_redraw)
+        delete cache_cell;
 }
 
 
