@@ -122,6 +122,14 @@ void HighlightFormatFactory::registerScopeVisibilityFormat() {
     _formats.insert(hid_scope_visibility, format);
 }
 
+void HighlightFormatFactory::registerUnclosedParaFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(255, 105, 180, 128));
+
+    _formats.insert(hid_unclosed_para, format);
+}
+
+
 void HighlightFormatFactory::registerUnknownName() {
     QTextCharFormat format;
     format.setFontItalic(true);
@@ -253,6 +261,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerBreakpointLineFormat();
     registerCharsLimiterLineFormat();
 
+    registerUnclosedParaFormat();
     registerLabelFormat();
     registerOperatorFormat();
     registerSpecKeywordFormat();

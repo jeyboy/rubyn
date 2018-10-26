@@ -1321,6 +1321,37 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                 cursor.insertText(str);
             }
         break;}
+
+        case Qt::Key_Right:
+        case Qt::Key_Left: {
+            QTextCursor cursor = textCursor();
+            QTextBlock blk = cursor.block();
+            int pos_in_block = cursor.positionInBlock();
+
+            if (curr_key == Qt::Key_Right && pos_in_block == blk.length() - 1) {
+                BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
+
+                if (udata -> folded()) {
+                    wrapper -> layout -> toggleFolding(blk);
+                }
+            }
+
+            QPlainTextEdit::keyPressEvent(e);
+
+            if (curr_key == Qt::Key_Left && pos_in_block == 0) {
+                QTextBlock tail_blk = blk.previous();
+
+                if (!tail_blk.isVisible()) {
+                    cursor = textCursor();
+                    QTextBlock head_blk = cursor.block().previous();
+
+                    cursor.setPosition(tail_blk.position() + tail_blk.length() - 1);
+                    setTextCursor(cursor);
+                    wrapper -> layout -> toggleFolding(head_blk);
+                }
+            }
+        break;}
+
         default: {
             if (!completer) {
                 QPlainTextEdit::keyPressEvent(e);

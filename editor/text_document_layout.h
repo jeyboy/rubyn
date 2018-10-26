@@ -19,7 +19,8 @@ public:
     TextDocumentLayout(QTextDocument * document);
 
     bool toggleFolding(const QTextBlock & blk);
-//    bool toggleFolding2(QTextBlock & blk);
+
+//    bool reverseToggleFolding(const QTextBlock & blocker_blk, const bool & emit_update = false);
 
     inline void emitDocumentSizeChanged() { emit documentSizeChanged(documentSize()); }
 };

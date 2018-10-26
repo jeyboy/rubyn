@@ -44,6 +44,8 @@ protected:
 
     void registerScopeVisibilityFormat();
 
+    void registerUnclosedParaFormat();
+
     void registerUnknownName();
 
     void registerLabelFormat();

@@ -38,6 +38,7 @@ enum Identifier : UID_TYPE {
     hid_regexp_border,
     hid_commentary,
     hid_scope_visibility,
+    hid_unclosed_para,
 
 //    lex_key = 1 << 19,
 //    lex_block = 1 << 20,

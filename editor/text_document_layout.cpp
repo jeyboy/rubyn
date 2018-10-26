@@ -15,6 +15,7 @@ bool TextDocumentLayout::toggleFolding(const QTextBlock & blk) {
         bool unfolding = !user_data -> folded();
         int level = user_data -> level;
         bool level_blockator = user_data -> para_control -> is_blockator;
+        bool sublevel_blockator = false;
         int sub_level = INT32_MAX;
 
         while(true) {
@@ -25,14 +26,19 @@ bool TextDocumentLayout::toggleFolding(const QTextBlock & blk) {
             if (!user_data || user_data -> level < level || (user_data -> level == level && !level_blockator))
                 break;
 
-            if (user_data -> level == sub_level)
-                sub_level = INT32_MAX;
+            if (user_data -> level == sub_level) {
+                if (sublevel_blockator)
+                    sublevel_blockator = false;
+                else
+                    sub_level = INT32_MAX;
+            }
 
             if (!unfolding || user_data -> level < sub_level) {
                 block.setVisible(unfolding);
                 block.setLineCount(unfolding ? qMax(1, block.layout() -> lineCount()) : 0);
 
                 if (unfolding && user_data -> folded()) {
+                    sublevel_blockator = user_data -> para_control -> is_blockator;
                     sub_level = user_data -> level;
                 }
             }
@@ -51,6 +57,53 @@ bool TextDocumentLayout::toggleFolding(const QTextBlock & blk) {
 
     return false;
 }
+
+//bool TextDocumentLayout::reverseToggleFolding(const QTextBlock & blocker_blk, const bool & emit_update) {
+//    int blocker_level = getBlockLevel(blocker_blk);
+//    QTextBlock block = blocker_blk.previous();
+
+//    int max_level = getBlockLevel(blocker_blk);
+//    bool can_groun = max_level - blocker_level == 0;
+//    max_level += (can_groun ? 1 : 0);
+
+//    bool unfolding = !block.isVisible();
+
+//    while(block.isValid()) {
+//        int blk_level = getBlockLevel(block);
+
+//        if (blk_level <= blocker_level) {
+//            BlockUserData * user_data = getUserDataForBlock(block);
+
+//            if (user_data -> folded()) {
+//                user_data -> invertFoldingState();
+//                break;
+//            }
+//        }
+
+//        if (blk_level <= max_level) {
+//            block.setVisible(unfolding);
+//            block.setLineCount(unfolding ? qMax(1, block.layout() -> lineCount()) : 0);
+
+//            if (blk_level == max_level) {
+//                BlockUserData * user_data = getUserDataForBlock(block);
+
+//                if (user_data -> hasFolding())
+//                    ++max_level;
+//            }
+//        }
+
+//        block = block.previous();
+//    }
+
+//    if (emit_update) {
+//        ///// TODO: this implementation is a bit slow for huge blocks - need to rewrite _q_adjustScrollbars in CodeEditor and use it
+//        emitDocumentSizeChanged();
+//        ////////////////////////////////////////////////////////////
+//        requestUpdate();
+//    }
+
+//     return true;
+//}
 
 //bool TextDocumentLayout::toggleFolding2(const QTextBlock & blk) { //TODO: need to use line indent like mark of folding - right now unfold called from highlighter is not worked
 //    BlockUserData * user_data = getUserDataForBlock(blk);
