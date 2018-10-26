@@ -131,7 +131,7 @@ void CodeEditor::setFont(const QFont & font) {
 
     symbol_width = QFontMetricsF(font).averageCharWidth();
 
-    pseudo_tab_width = symbol_width * wrapper -> tabSpace().size();
+    pseudo_tab_width = static_cast<int>(symbol_width * wrapper -> tabSpace().size());
 
     setCharsLimiterLineAt(chars_limit_line);
 }
@@ -314,6 +314,18 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 }
 
 
+void CodeEditor::drawParaOverlays(QPainter & painter) {
+    if (active_para_limits.rx() != -1) {
+        QTextBlock opener_blk = document() -> findBlockByNumber(active_para_limits.rx());
+        drawTextOverlay(hid_para_hover_overlay, painter, opener_blk, active_para_opener.rx(), active_para_opener.ry());
+
+        if (active_para_closer.rx() != -1) {
+            QTextBlock closer_blk = active_para_limits.rx() == active_para_limits.ry() ? opener_blk : document() -> findBlockByNumber(active_para_limits.ry());
+            drawTextOverlay(hid_para_hover_overlay, painter, closer_blk, active_para_closer.rx(), active_para_closer.ry());
+        }
+    }
+}
+
 void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_rect) {
     //TODO: need to cache blocks info and use it in "extraAreaPaintEvent"
 
@@ -406,8 +418,6 @@ void CodeEditor::drawAdditionalCarets(QPainter & painter) {
 void CodeEditor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
     QRect r = textRect(block, pos, length);
 
-    qDebug() << "rect" << r;
-
     drawTextOverlay(draw_uid, painter, textRect(block, pos, length));
 }
 
@@ -424,7 +434,6 @@ void CodeEditor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, 
     painter.drawRoundedRect(fold_rect, 3, 3);
     painter.restore();
 }
-
 
 void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
     QRect parent_block_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
@@ -874,7 +883,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
     if (full_redraw) {
         display_cacher -> clear();
-        cache_cell = display_cacher -> append(block.blockNumber(), 0);
+        cache_cell = display_cacher -> append(block.blockNumber());
     }
 
     // keep right margin clean from full-width selection
@@ -900,7 +909,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
             block = block.next();
 
             if (full_redraw)
-                cache_cell = display_cacher -> append(cache_cell -> block_number + 1, cache_cell -> offset + layout -> boundingRect().height());
+                cache_cell = display_cacher -> append(cache_cell -> block_number + 1);
 
             continue;
         }
@@ -1016,12 +1025,18 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         block = block.next();
 
         if (full_redraw)
-            cache_cell = display_cacher -> append(cache_cell -> block_number + 1, cache_cell -> offset);
+            cache_cell = display_cacher -> append(cache_cell -> block_number + 1);
     }
 
     if (backgroundVisible() && !block.isValid() && offset.y() <= er.bottom()
         && (centerOnScroll() || verticalScrollBar() -> maximum() == verticalScrollBar() -> minimum())) {
-        painter.fillRect(QRect(QPoint((int)er.left(), (int)offset.y()), er.bottomRight()), palette().background());
+        painter.fillRect(
+            QRect(
+                QPoint(static_cast<int>(er.left()), static_cast<int>(offset.y())),
+                er.bottomRight()
+            ),
+            palette().background()
+        );
     }
 
     if (!full_redraw)
@@ -1165,15 +1180,7 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     drawFoldingOverlays(painter, e -> rect());
 
-    if (active_para_limits.rx() != -1) {
-        QTextBlock opener_blk = document() -> findBlockByNumber(active_para_limits.rx());
-        drawTextOverlay(hid_para_hover_overlay, painter, opener_blk, active_para_opener.rx(), active_para_opener.ry());
-
-        if (active_para_closer.rx() != -1) {
-            QTextBlock closer_blk = active_para_limits.rx() == active_para_limits.ry() ? opener_blk : document() -> findBlockByNumber(active_para_limits.ry());
-            drawTextOverlay(hid_para_hover_overlay, painter, closer_blk, active_para_closer.rx(), active_para_closer.ry());
-        }
-    }
+    drawParaOverlays(painter);
 
     drawAdditionalCarets(painter);
 

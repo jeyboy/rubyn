@@ -375,6 +375,7 @@ protected:
     void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom);
     void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num);
 
+    void drawParaOverlays(QPainter & painter);
     void drawFoldingOverlays(QPainter & painter, const QRect & target_rect);
     void drawCharsLimiter(QPainter & painter);
     void drawAdditionalCarets(QPainter & painter);
