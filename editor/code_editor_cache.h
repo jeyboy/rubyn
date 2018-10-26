@@ -2,24 +2,29 @@
 #define CODE_EDITOR_CACHE_H
 
 #include <qrect.h>
+#include "misc/defines.h"
 
 class BlockUserData;
+class QTextLayout;
 
 struct CodeEditorCacheCell {
     CodeEditorCacheCell * prev;
     CodeEditorCacheCell * next;
 
     int block_number;
+    EDITOR_POS_TYPE block_pos;
+    EDITOR_POS_TYPE block_length;
 
     BlockUserData * user_data;
+    QTextLayout * layout;
 
-    QRectF screen_bounding_rect;
+    QRectF bounding_rect;
 
     bool is_service;
     bool is_visible;
 
     CodeEditorCacheCell(const int & block_number, CodeEditorCacheCell * prev_token = nullptr)
-        : prev(prev_token), next(nullptr), block_number(block_number), user_data(nullptr), is_service(false), is_visible(true)
+        : prev(prev_token), next(nullptr), block_number(block_number), user_data(nullptr), layout(nullptr), is_service(false), is_visible(true)
     {
         if (prev) {
             if ((next = prev -> next))
@@ -41,11 +46,17 @@ struct CodeEditorCacheCell {
 class CodeEditorCache {
     CodeEditorCacheCell * root, * last;
 public:
+    int top_block_number;
+    int bottom_block_number;
+
     CodeEditorCache();
 
     ~CodeEditorCache();
 
     void clear();
+
+    inline CodeEditorCacheCell * begin() { return root -> next; }
+    inline CodeEditorCacheCell * end() { return last -> prev; }
 
     inline CodeEditorCacheCell * append(const int & number) {
         return new CodeEditorCacheCell(number, last -> prev);

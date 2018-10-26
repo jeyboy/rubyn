@@ -20,6 +20,7 @@ class ExtraArea;
 class File;
 class OverlayInfo;
 class CodeEditorCache;
+class CodeEditorCacheCell;
 
 
 // replace text witout undo/redo clearing
@@ -248,8 +249,6 @@ class CodeEditor : public QPlainTextEdit {
     QPoint active_para_closer;
 
     int curr_block_number;
-    int screen_top_block_number;
-    int screen_bottom_block_number;
 
     int extra_zone_width;
 
@@ -392,8 +391,11 @@ protected:
     bool rectOnScreen(const QRect & r);
     bool blockOnScreen(const QTextBlock & block);
 
-//    QString blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length = -1);
+//    QString blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length = -1);   
     QRect textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
+    QRect textRect(CodeEditorCacheCell * cache, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
+    QRect textRect(QRectF & block_rect, const QTextLine & line, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
+
 
     QString wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags = wuco_full);
     void procSelectionIndent(const bool & right = true);
