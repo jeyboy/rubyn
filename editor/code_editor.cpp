@@ -848,13 +848,14 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 }
 
 
-void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
-    QPointF offset(contentOffset());
+void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {   
     QRect view_rect = viewport() -> rect();
+    QRect er = e -> rect();
 
     bool editable = !isReadOnly();
     bool need_placeholder = !placeholderText().isEmpty() && document() -> isEmpty();
 
+    QPointF offset(contentOffset());
     QTextBlock block = firstVisibleBlock();
     qreal max_width = document() -> documentLayout() -> documentSize().width();
     qreal doc_margin = document() -> documentMargin();
@@ -864,8 +865,8 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
     // keep right margin clean from full-width selection
     int max_x = offset.x() + qMax((qreal)view_rect.width(), max_width) - doc_margin;
+    int max_y = er.bottom();
 
-    QRect er = e -> rect();
     er.setRight(qMin(er.right(), max_x));
     painter.setClipRect(er);
 
@@ -990,7 +991,8 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
         offset.ry() += r.height();
 
-        if (offset.y() > view_rect.height())
+//        if (offset.y() > view_rect.height())
+        if (offset.y() > max_y || offset.y() > view_rect.height())
             break;
 
         block = block.next();
