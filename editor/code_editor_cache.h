@@ -19,6 +19,7 @@ struct CodeEditorCacheCell {
     QTextLayout * layout;
 
     QRectF bounding_rect;
+    QString folding_overlay_text;
 
     bool is_service;
     bool is_visible;
@@ -45,6 +46,8 @@ struct CodeEditorCacheCell {
 
 class CodeEditorCache {
     CodeEditorCacheCell * root, * last;
+
+    int length;
 public:
     int top_block_number;
     int bottom_block_number;
@@ -55,10 +58,13 @@ public:
 
     void clear();
 
+    inline int size() { return length; }
+
     inline CodeEditorCacheCell * begin() { return root -> next; }
     inline CodeEditorCacheCell * end() { return last -> prev; }
 
     inline CodeEditorCacheCell * append(const int & number) {
+        ++length;
         return new CodeEditorCacheCell(number, last -> prev);
     }
 

@@ -28,4 +28,6 @@ void CodeEditorCache::clear() {
         last -> prev = root;
         root -> next = last;
     }
+
+    length = 0;
 }
