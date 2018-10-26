@@ -372,6 +372,7 @@ protected:
     inline int lineNumsWidth() { return symbol_width * qMax(1, QString::number(blockCount()).length()); }
 
     void paintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom);
+    void extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * cache);
     void extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num);
 
     void drawParaOverlays(QPainter & painter);
