@@ -10,6 +10,7 @@ struct CodeEditorCacheCell {
     CodeEditorCacheCell * next;
 
     int block_number;
+    int offset;
 
     BlockUserData * user_data;
 
@@ -18,8 +19,8 @@ struct CodeEditorCacheCell {
     bool is_service;
     bool is_visible;
 
-    CodeEditorCacheCell(const int & block_number, CodeEditorCacheCell * prev_token = nullptr)
-        : prev(prev_token), next(nullptr), block_number(block_number), user_data(nullptr), is_service(false), is_visible(true)
+    CodeEditorCacheCell(const int & block_number, const int & offset, CodeEditorCacheCell * prev_token = nullptr)
+        : prev(prev_token), next(nullptr), block_number(block_number), offset(offset), user_data(nullptr), is_service(false), is_visible(true)
     {
         if (prev) {
             if ((next = prev -> next))
@@ -47,8 +48,8 @@ public:
 
     void clear();
 
-    inline CodeEditorCacheCell * append(const int & number) {
-        return new CodeEditorCacheCell(number, last -> prev);
+    inline CodeEditorCacheCell * append(const int & number, const int & offset) {
+        return new CodeEditorCacheCell(number, offset, last -> prev);
     }
 
     CodeEditorCacheCell * cacheForBlockNumber(const int & number) {

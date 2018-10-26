@@ -1,9 +1,9 @@
 #include "code_editor_cache.h"
 
 CodeEditorCache::CodeEditorCache() : root(nullptr), last(nullptr) {
-    root = new CodeEditorCacheCell(-1);
+    root = new CodeEditorCacheCell(-1, 0);
     root -> is_service = true;
-    last = new CodeEditorCacheCell(-1, root);
+    last = new CodeEditorCacheCell(-1, 0, root);
     last -> is_service = true;
 }
 

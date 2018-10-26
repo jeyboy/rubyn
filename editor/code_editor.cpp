@@ -593,9 +593,9 @@ QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos
         return QRect();
 
     qreal x_offset = -horizontalScrollBar() -> value();
-    CodeEditorCacheCell * cache = display_cacher -> cacheForBlockNumber(block.blockNumber());
+//    CodeEditorCacheCell * cache = display_cacher -> cacheForBlockNumber(block.blockNumber());
 
-    QRectF rect = cache ? cache -> screen_bounding_rect : blockBoundingGeometry(block).translated(contentOffset());
+    QRectF rect = blockBoundingGeometry(block).translated(contentOffset()); //cache ? cache -> screen_bounding_rect.translated(0, cache -> offset).translated(contentOffset()) : blockBoundingGeometry(block).translated(contentOffset());
     rect.setLeft(line.cursorToX(pos) + x_offset);
     rect.setRight(line.cursorToX(pos + length) + x_offset);
 
@@ -858,7 +858,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     QRect view_rect = viewport() -> rect();
     QRect er = e -> rect();
 
-    CodeEditorCacheCell * cache_cell = new CodeEditorCacheCell(-1);
+    CodeEditorCacheCell * cache_cell = new CodeEditorCacheCell(-1, 0);
     bool full_redraw = view_rect == er;
 
     bool editable = !isReadOnly();
@@ -874,7 +874,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
     if (full_redraw) {
         display_cacher -> clear();
-        cache_cell = display_cacher -> append(block.blockNumber());
+        cache_cell = display_cacher -> append(block.blockNumber(), 0);
     }
 
     // keep right margin clean from full-width selection
@@ -900,7 +900,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
             block = block.next();
 
             if (full_redraw)
-                cache_cell = display_cacher -> append(cache_cell -> block_number + 1);
+                cache_cell = display_cacher -> append(cache_cell -> block_number + 1, cache_cell -> offset + layout -> boundingRect().height());
 
             continue;
         }
@@ -1016,7 +1016,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         block = block.next();
 
         if (full_redraw)
-            cache_cell = display_cacher -> append(cache_cell -> block_number + 1);
+            cache_cell = display_cacher -> append(cache_cell -> block_number + 1, cache_cell -> offset);
     }
 
     if (backgroundVisible() && !block.isValid() && offset.y() <= er.bottom()
@@ -1044,7 +1044,7 @@ bool CodeEditor::event(QEvent * event) {
 
             BlockUserData * udata = reinterpret_cast<BlockUserData *>(blk.userData());
             if (udata && !udata -> msgs.isEmpty()) {
-                int block_num = blk.firstLineNumber();
+                int block_num = blk.blockNumber();
                 QList<MsgInfo> msgs = udata -> msgs;
 
                 for(QList<MsgInfo>::Iterator msg = msgs.begin(); msg != msgs.end(); msg++) {
@@ -1455,7 +1455,7 @@ void CodeEditor::cursorMoved() {
         QTextBlock blk = cursor.block();
         ParaCell * para = wrapper -> getPara(blk, cursor.positionInBlock());
 
-        int start_pos = blk.firstLineNumber();
+        int start_pos = blk.blockNumber();
         int end_pos = start_pos;
 
         if (para) {
