@@ -461,17 +461,18 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
         QPointF offset(0, 0);
 
         while (!b.isVisible() && potential_height > 0) {
-            b.setVisible(true); // make sure block bounding rect works
+//            b.setVisible(true); // make sure block bounding rect works
 
-            QRectF bl_geometry_rect = blockBoundingRect(b).translated(offset);
+//            QRectF bl_geometry_rect = blockBoundingRect(b).translated(offset);
+            QRectF bl_geometry_rect = b.layout() -> boundingRect().translated(offset);
 
             paintBlock(painter, b, offset.ry(), bl_geometry_rect.top(), bl_geometry_rect.bottom());
 
             offset.ry() += bl_geometry_rect.height();
             potential_height -= bl_geometry_rect.height();
 
-            b.setVisible(false);
-            b.setLineCount(0);
+//            b.setVisible(false);
+//            b.setLineCount(0);
 
             b = b.next();
         }
@@ -827,6 +828,9 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 //    bool is_caret_redrawing = height() - event -> rect().height() > 8;
 
     QPainter painter(extra_area);
+
+
+
     QTextBlock block = firstVisibleBlock();
     int screen_end_block_num = block.blockNumber();
 
