@@ -116,7 +116,7 @@ void HighlightFormatFactory::registerSpellcheckFormat() {
 void HighlightFormatFactory::registerScopeVisibilityFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
-    format.setTextOutline(QPen(QColor::fromRgb(220, 0, 220, 64)));
+    format.setTextOutline(QPen(QColor::fromRgb(220, 0, 220, 48)));
     format.setForeground(QColor::fromRgb(220, 0, 220));
 
     _formats.insert(hid_scope_visibility, format);
@@ -195,6 +195,7 @@ void HighlightFormatFactory::registerConstFormat() {
 void HighlightFormatFactory::registerStringBorderFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
+    format.setTextOutline(QPen(QColor::fromRgb(0, 160, 0, 192)));
     format.setForeground(QColor::fromRgb(0, 160, 0)); // QColor::fromRgb(0, 255, 0, 92)
 //        format.setForeground(Qt::darkGreen);
     _formats.insert(hid_string_border, format);
