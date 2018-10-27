@@ -26,10 +26,12 @@ private:
     QTimer * timer;
     QPoint cursor_pos;
 
-    QRect face;
-    QRect left_eye;
-    QRect right_eye;
-    QRect mouth;
+    qreal eye_apple;
+
+    QRectF face;
+    QRectF left_eye;
+    QRectF right_eye;
+    QRectF mouth;
 private slots:
     void updateData();
 };
