@@ -235,7 +235,6 @@ class CodeEditor : public QPlainTextEdit {
 
     EDITOR_POS_TYPE tooplip_block_num;
     EDITOR_POS_TYPE tooplip_block_pos;
-
     EDITOR_POS_TYPE extra_overlay_block_num;
 
     bool can_show_folding_popup;

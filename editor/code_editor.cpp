@@ -413,6 +413,19 @@ void CodeEditor::drawParaOverlays(QPainter & painter) {
         if (active_para_closer.rx() != -1) {
             QTextBlock closer_blk = active_para_limits.rx() == active_para_limits.ry() ? opener_blk : document() -> findBlockByNumber(active_para_limits.ry());
             drawTextOverlay(hid_para_hover_overlay, painter, closer_blk, active_para_closer.rx(), active_para_closer.ry());
+
+            if (extra_overlay_block_num == active_para_limits.rx()) {
+                if (blockOnScreen(closer_blk))
+                    showOverlay(opener_blk);
+                else
+                    hideOverlay();
+            }
+            else {
+                if (blockOnScreen(opener_blk))
+                    showOverlay(closer_blk);
+                else
+                    hideOverlay();
+            }
         }
     }
 }
@@ -608,8 +621,9 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
     OverlayInfo::OverlayPos overlay_pos =
         textCursor().blockNumber() < block_number ? OverlayInfo::op_bottom : OverlayInfo::op_top;
 
-    if (overlay -> shownFor(false, overlay_pos, block_number))
+    if (overlay -> shownFor(false, overlay_pos, block_number)) {
         return;
+    }
 
     QRect bl_geometry_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
     bl_geometry_rect.setWidth(widthWithoutScroll());
@@ -1566,6 +1580,7 @@ void CodeEditor::highlightCurrentLine() {
 
 void CodeEditor::cursorMoved() {
     bool initiated = false;
+    bool active_para_opener_hovered = true;
 
     //INFO: when a document opened but do not have the focus yet we always have the cursor in pos 0:0 but it's not drawn. We should ignore this case.
     if (hasFocus()) {
@@ -1595,6 +1610,7 @@ void CodeEditor::cursorMoved() {
                         para = para -> next;
                     }
                 } else {
+                    active_para_opener_hovered = false;
                     active_para_opener.rx() = stoper -> pos;
                     active_para_opener.ry() = stoper -> length;
 
@@ -1639,6 +1655,8 @@ void CodeEditor::cursorMoved() {
         }
 
         if (initiated) {
+            extra_overlay_block_num = active_para_opener_hovered ? end_pos : start_pos;
+
             active_para_limits.rx() = start_pos;
             active_para_limits.ry() = end_pos;
 
