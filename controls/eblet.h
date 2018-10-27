@@ -23,14 +23,21 @@ protected:
     void paintEvent(QPaintEvent * e) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent * e) Q_DECL_OVERRIDE;
 private:
+    QRectF calcLeftEyeApple();
+    QRectF calcRightEyeApple();
+
     QPen * face_pen;
+    QPen * eye_pen;
+    QPen * mouth_pen;
 
     State state;
     QTimer * timer;
     QPoint cursor_pos;
-    QPoint face_pos;
+    QPointF left_eye_apple_offset;
+    QPointF right_eye_apple_offset;
 
     qreal eye_apple;
+    qreal eye_apple_possible_offset;
 
     QRectF face;
     QRectF left_eye;
