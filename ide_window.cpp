@@ -29,7 +29,7 @@
 #include "tools/data_preparer/rubydoc_preparer.h"
 #include "tools/data_preparer/rubydoc_parser.h"
 
-IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(nullptr), widgets_list(nullptr), tree(nullptr), run_config(nullptr), pos_status(nullptr) {
+IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(nullptr), widgets_list(nullptr), tree(nullptr), ui_dumper(new Dumper()), run_config(nullptr), pos_status(nullptr) {
     ui -> setupUi(this);
 
     setAcceptDrops(true);
@@ -93,7 +93,10 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 //    Logger::obj().endMark(QLatin1Literal("Rubydoc"), QLatin1Literal("parsing"));
 }
 
-IDEWindow::~IDEWindow() { delete ui; }
+IDEWindow::~IDEWindow() {
+    delete ui;
+    delete ui_dumper;
+}
 
 void IDEWindow::splitterMoved(int /*pos*/, int index) {
     QSplitter * obj = static_cast<QSplitter *>(sender());
@@ -372,10 +375,10 @@ void IDEWindow::setupToolWindows() {
 }
 
 void IDEWindow::loadSettings() {
-    Dumper::load(this);
+    ui_dumper -> load(this);
 }
 void IDEWindow::saveSettings() {
-    Dumper::save(this);
+    ui_dumper -> save(this);
 }
 
 void IDEWindow::dragEnterEvent(QDragEnterEvent * event) {

@@ -32,6 +32,7 @@ class IDEWindow : public QMainWindow {
     QSplitter * widgets_list;
 
     ProjectTree * tree;
+    Dumper * ui_dumper;
 
     RunConfiguration * run_config;
 

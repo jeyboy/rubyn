@@ -18,6 +18,7 @@
 
 #include <qsettings.h>
 #include <qsplitter.h>
+#include <qscrollbar.h>
 
 void Dumper::loadTree(IDEWindow * w, JsonObj & json) {
     JsonArr arr = json.arr(QLatin1Literal("tree"));
@@ -154,9 +155,19 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
 //        showMaximized();
 //    }
 
+    qApp -> processEvents();
+
     QVariant tree_state = settings.value(QLatin1Literal("tree_state"));
     if (tree_state.isValid()) {
         w -> tree -> restoreState(tree_state.toByteArray());
+    }
+
+    QVariant tree_pos = settings.value(QLatin1Literal("tree_pos"));
+    if (tree_pos.isValid()) {
+        QScrollBar * scroll = w -> tree -> verticalScrollBar();
+        scroll -> setProperty("last_pos", tree_pos);
+
+        connect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(treeRangeChanged(int,int)));
     }
 
     QVariant widgets_list_geom = settings.value(QLatin1Literal("widgets_list_geom"));
@@ -188,6 +199,7 @@ void Dumper::save(IDEWindow * w, const QString & settings_filename) {
     settings.setValue(QLatin1Literal("geometry"), w -> saveGeometry());
     settings.setValue(QLatin1Literal("state"), w -> saveState());
     settings.setValue(QLatin1Literal("tree_state"), w -> tree -> saveState());
+    settings.setValue(QLatin1Literal("tree_pos"), w -> tree -> verticalScrollBar() -> value());
 
     settings.setValue(QLatin1Literal("widgets_list_state"), w -> widgets_list -> saveState());
     settings.setValue(QLatin1Literal("widgets_list_geom"), w -> widgets_list -> saveGeometry());
@@ -210,4 +222,16 @@ void Dumper::locationCorrection(IDEWindow * w) {
         top = height - 50;
 
     w -> move(left, top);
+}
+
+void Dumper::treeRangeChanged(int /*min*/, int /*max*/) {
+    QScrollBar * scroll = static_cast<QScrollBar *>(sender());
+    QVariant last_pos = scroll -> property("last_pos");
+
+    if (last_pos.isValid()) {
+        int pos = last_pos.toInt();
+
+        disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(treeRangeChanged(int,int)));
+        scroll -> setValue(pos);
+    }
 }
