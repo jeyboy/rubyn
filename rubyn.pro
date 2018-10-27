@@ -73,7 +73,8 @@ SOURCES += main.cpp\
     lexer/igrammar.cpp \
     editor/text_document_layout.cpp \
     controls/logger_window.cpp \
-    editor/code_editor_cache.cpp
+    editor/code_editor_cache.cpp \
+    controls/eblet.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -179,7 +180,8 @@ HEADERS  += ide_window.h \
     highlighter/para_type.h \
     editor/text_document_layout.h \
     controls/logger_window.h \
-    editor/code_editor_cache.h
+    editor/code_editor_cache.h \
+    controls/eblet.h
 
 FORMS    += ide_window.ui
 

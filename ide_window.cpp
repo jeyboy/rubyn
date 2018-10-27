@@ -14,6 +14,7 @@
 #include "controls/logger.h"
 #include "controls/dumper.h"
 #include "controls/run_configuration.h"
+#include "controls/eblet.h"
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
@@ -334,6 +335,8 @@ void IDEWindow::setupSplitter() {
 void IDEWindow::setupToolWindows() {
     DockWidgets::obj().registerContainer(this);
 
+
+    ///////////////// PROJECT TREE ///////////////////////
     tree = new ProjectTree(this);
     DockWidget * widget =
         DockWidgets::obj().createWidget(
@@ -345,8 +348,30 @@ void IDEWindow::setupToolWindows() {
     widget -> setBehaviour(DockWidget::dwf_movable);
 
     DockWidgets::obj().append(widget);
+    /////////////////////////////////////////////////////
 
 
+
+    ///////////////// EBLET ///////////////////////
+    Eblet * _eblet_btn = new Eblet(this);
+    _eblet_btn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    _eblet_btn -> setMinimumSize(60, 60);
+
+    DockWidget * eblo_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Eblet"),
+            _eblet_btn,
+            (Qt::DockWidgetAreas)(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea)
+        );
+
+    eblo_widget -> setBehaviour(DockWidget::dwf_movable);
+
+    DockWidgets::obj().append(eblo_widget);
+    /////////////////////////////////////////////////////
+
+
+
+    ///////////////////// LOGGER //////////////////////////
     Logger::obj().initiate(QLatin1Literal("loh.txt"), true);
 
     DockWidget * log_widget =
@@ -357,6 +382,7 @@ void IDEWindow::setupToolWindows() {
         );
 
     DockWidgets::obj().append(log_widget, Qt::BottomDockWidgetArea);
+    /////////////////////////////////////////////////////
 
     // TOOLBARS
 
