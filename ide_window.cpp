@@ -143,8 +143,8 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
         return;
     }
 
-    qDebug() << "OPEN";
-    qDebug() << _file -> path();
+//    qDebug() << "OPEN";
+//    qDebug() << _file -> path();
 
     if (!_file -> isOpened()) {
         if (!_file -> open()) {
