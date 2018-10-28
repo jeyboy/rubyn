@@ -155,8 +155,6 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
 //        showMaximized();
 //    }
 
-    qApp -> processEvents();
-
     QVariant tree_state = settings.value(QLatin1Literal("tree_state"));
     if (tree_state.isValid()) {
         w -> tree -> restoreState(tree_state.toByteArray());
@@ -167,6 +165,7 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
         QScrollBar * scroll = w -> tree -> verticalScrollBar();
         scroll -> setProperty("last_pos", tree_pos);
 
+        // I can't set scroll pos until widget will be shown - so this hack save my ass
         connect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(treeRangeChanged(int,int)));
     }
 

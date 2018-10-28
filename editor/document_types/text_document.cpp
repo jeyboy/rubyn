@@ -10,6 +10,9 @@
 
 #include <qelapsedtimer.h>
 
+#include <qjsonobject.h>
+#include <qjsonarray.h>
+
 QLatin1String TextDocument::tab_space = QLatin1Literal("  ");
 
 QHash<QChar, bool> TextDocument::word_boundary = {
@@ -245,6 +248,100 @@ ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE
     BlockUserData * udata = static_cast<BlockUserData *>(block.userData());
 
     return udata -> paraForPos(pos);
+}
+
+bool TextDocument::dump(QVariant & data) {
+    if (_lexer) {
+        QTextBlock blk = _doc -> begin();
+
+        QByteArray res;
+        BlockUserData * udata;
+
+        while(blk.isValid()) {
+            udata = TextDocumentLayout::getUserDataForBlock(blk);
+
+            if (udata && udata -> flags)
+                res.append(QByteArray::number(udata -> flags) % '\n');
+            else
+                res.append('\n');
+
+            blk = blk.next();
+        }
+
+        if (res.isEmpty())
+            return false;
+        else {
+            res.prepend('!' % QByteArray::number(_file -> size()) % '\n');
+            data = QVariant::fromValue(res);
+            return true;
+        }
+    }
+
+    return false;
+}
+bool TextDocument::restore(const QVariant & data) {
+    QTextBlock blk = _doc -> begin();
+
+    if (!blk.isValid())
+        return false;
+
+    if (data.isValid()) {
+        QByteArray res = data.toByteArray();
+
+        QByteArray::Iterator it = res.begin();
+        QByteArray::Iterator it_end = res.end();
+
+        if (*it != '!')
+            return false;
+
+        ++it;
+
+        int num = 0;
+
+        for(; it != it_end; ++it, ++num) {
+            if (*it == '\n')
+                break;
+        }
+
+        if (num == 0)
+            return false;
+        else {
+            QByteArray buff((it - num), num);
+
+            if (buff.toLongLong() != _file -> size())
+                return false;
+        }
+
+
+        DATA_FLAGS_TYPE flags;
+        BlockUserData * udata;
+
+        for(num = 0; it != it_end; ++it, ++num) {
+            switch(*it) {
+                case '\n': {
+                    if (num > 0) {
+                        QByteArray buff((it - num), num);
+                        flags = buff.toUShort() & 0xff;
+
+                        if (flags > 0) {
+                            udata = TextDocumentLayout::getUserDataForBlock(blk);
+
+                            if (!udata)
+                                return false;
+
+                            udata -> flags = static_cast<BlockUserData::UserDataFlags>(flags);
+                        }
+                    }
+
+
+                    blk = blk.next();
+                    num = 0;
+                break;}
+            }
+        }
+    }
+
+    return false;
 }
 
 void TextDocument::readNextBlock() {

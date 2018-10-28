@@ -54,6 +54,7 @@ public:
     inline IDocument * document() { return _doc; }
     inline QIODevice * source() { return _device; }
 
+    inline qint64 size() { return _device -> size(); }
     inline const QString & name() { return _name; }
     inline const QString & path() { return _path; }
     inline const QString & uid() { return _uid; }

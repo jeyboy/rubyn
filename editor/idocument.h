@@ -1,6 +1,8 @@
 #ifndef IDOCUMENT_H
 #define IDOCUMENT_H
 
+#include <qvariant.h>
+
 class IDocument {
     bool fully_readed;
 protected:
@@ -10,6 +12,9 @@ public:
     virtual ~IDocument() {}
 
     inline bool isFullyReaded() const { return fully_readed; }
+
+    virtual bool dump(QVariant & /*data*/) { return false; }
+    virtual bool restore(const QVariant & /*data*/) { return false; }
 };
 
 #endif // IDOCUMENT_H
