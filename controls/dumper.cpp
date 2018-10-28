@@ -83,7 +83,7 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
             }
 
             w -> fileOpenRequired(path, nullptr, new_editor);
-            w -> active_editor -> tabRestoreState(index, state);
+            w -> active_editor -> tabRestoreState(counter, state);
 
             new_editor = false;
         }

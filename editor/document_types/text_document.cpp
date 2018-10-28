@@ -268,6 +268,9 @@ bool TextDocument::dump(QVariant & data) {
             if (!blk.isVisible())
                 item_state |= 2;
 
+            if (udata -> hasBreakpoint())
+                item_state |= 4;
+
             if (item_state > 0) {
                 res.append(QByteArray::number(block_num));
                 res.append('|');
@@ -283,7 +286,8 @@ bool TextDocument::dump(QVariant & data) {
             return false;
         else {
             res.prepend('!' % QByteArray::number(_file -> size()) % '\n');
-            data = QVariant::fromValue(qCompress(res, 9));
+//            res = qCompress(res, 9);
+            data = QVariant::fromValue(res);
             return true;
         }
     }
@@ -298,7 +302,7 @@ bool TextDocument::restore(const QVariant & data) {
 
     if (data.isValid()) {
         QByteArray res = data.toByteArray();
-        res = qUncompress(res);
+//        res = qUncompress(res);
 
         QByteArray::Iterator it = res.begin();
         QByteArray::Iterator it_end = res.end();
@@ -356,19 +360,24 @@ bool TextDocument::restore(const QVariant & data) {
                         }
 
                         if (item_data > 0) {
-                            if (item_data & 1) {
+                            if (item_data & 2) {
+                                blk.setVisible(false);
+                                blk.setLineCount(0);
+                            }
 
+                            if (item_data & 1 || item_data & 4) {
                                 udata = TextDocumentLayout::getUserDataForBlock(blk);
 
                                 if (!udata)
                                     return false;
 
-                                udata -> setFolded(true);
-                            }
+                                if (item_data & 1) {
+                                    udata -> setFolded(true);
+                                }
 
-                            if (item_data & 2) {
-                                blk.setVisible(false);
-                                blk.setLineCount(0);
+                                if (item_data & 4) {
+                                    udata -> setBreakpoint(true);
+                                }
                             }
                         }
                     }
