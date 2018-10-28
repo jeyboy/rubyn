@@ -247,7 +247,7 @@ LEXEM_TYPE TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_T
 ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE & pos) {
     BlockUserData * udata = static_cast<BlockUserData *>(block.userData());
 
-    return udata -> paraForPos(pos);
+    return udata ? udata -> paraForPos(pos) : nullptr;
 }
 
 bool TextDocument::dump(QVariant & data) {
