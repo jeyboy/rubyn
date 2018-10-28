@@ -12,7 +12,7 @@ bool TextDocumentLayout::toggleFolding(const QTextBlock & blk) {
     if (has_folding) {
         user_data -> invertFoldingState();
 
-        bool unfolding = !user_data -> folded();
+        bool unfolding = !user_data -> isFolded();
         int level = user_data -> level;
         bool level_blockator = user_data -> para_control -> is_blockator;
         bool sublevel_blockator = false;
@@ -37,7 +37,7 @@ bool TextDocumentLayout::toggleFolding(const QTextBlock & blk) {
                 block.setVisible(unfolding);
                 block.setLineCount(unfolding ? qMax(1, block.layout() -> lineCount()) : 0);
 
-                if (unfolding && user_data -> folded()) {
+                if (unfolding && user_data -> isFolded()) {
                     sublevel_blockator = user_data -> para_control -> is_blockator;
                     sub_level = user_data -> level;
                 }

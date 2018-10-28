@@ -47,9 +47,12 @@ public:
 
     bool openFile(File * file, const bool & is_external = false);
 
-    uint tabsCount();
-    QString tabFilePath(const uint & index);
+    int tabsCount();
+    QString tabFilePath(const int & index);
     QString currentTabFilePath();
+
+    bool tabDumpState(const int & index, QVariant & data);
+    bool tabRestoreState(const int & index, QVariant & data);
 
 signals:
     void resourceDropped(TabsBlock *, const QUrl &);

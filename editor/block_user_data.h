@@ -12,16 +12,12 @@
 #define DEFAULT_LEVEL 0
 
 struct BlockUserData : public QTextBlockUserData {
-// TODO: refactor me: udf_has_folding not needed - we have para_control for that
     enum UserDataFlags : DATA_FLAGS_TYPE {
         udf_none = 0,
-        udf_has_folding = 1,
-        udf_folding_opened = 2 | udf_has_folding,
-        udf_folding_hovered = 4,
-        udf_folding_dropped = 8,
+        udf_folded = 1,
+        udf_unfolded = 2, // used for choosing of icon
+        udf_folding_hovered = 4, // used for choosing of icon
         udf_has_breakpoint = 16,
-
-        udf_folding_flags = udf_has_folding | udf_folding_opened
     };
 
     UserDataFlags flags;
@@ -50,16 +46,18 @@ struct BlockUserData : public QTextBlockUserData {
 
     void syncLine(TokenCell * stack_sync_token, TokenCell * sync_token, ParaCell * sync_para, ParaCell * control_sync_para);
 
+    inline DATA_FLAGS_TYPE foldingState() {
+        DATA_FLAGS_TYPE res = flags & udf_folded;
+        return res > udf_none ? res : (hasFolding() ? udf_unfolded : udf_none);
+    }
     inline bool hasFolding() { return para_control; }
-    inline bool folded() { return para_control && (foldingState() & udf_folding_opened) != udf_folding_opened; }
+    inline bool isFolded() { return hasFolding() && (flags & udf_folded) == udf_folded; }
+    inline void setFolded(const bool & on) { setFlag(udf_folded, on); }
+    inline void invertFoldingState() { setFolded(!isFolded()); }
 
-    DATA_FLAGS_TYPE foldingState();
-    void setFoldingState(const UserDataFlags & new_state);
-    void invertFoldingState();
-
-    bool hasBreakpoint();
-    void setBreakpoint(const bool & set);
-    void invertBreakpointState();
+    inline bool hasBreakpoint() { return flags & udf_has_breakpoint; }
+    inline void setBreakpoint(const bool & on) { setFlag(udf_has_breakpoint, on); }
+    inline void invertBreakpointState() { setBreakpoint(!hasBreakpoint()); }
 
     void removeTokenSequence(TokenCell * tkn);
     void removeParaSequence(ParaCell * tkn);
@@ -67,6 +65,8 @@ struct BlockUserData : public QTextBlockUserData {
     inline int levelForNextBlock() {
         return level + (para_control && para_control -> is_opener && !para_control -> is_oneliner ? 1 : 0);
     }
+
+    void setFlag(const UserDataFlags & flag, const bool & on);
 };
 
 #endif // BLOCK_USER_DATA_H

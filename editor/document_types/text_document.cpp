@@ -251,31 +251,42 @@ ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE
 }
 
 bool TextDocument::dump(QVariant & data) {
-    if (_lexer) {
-        QTextBlock blk = _doc -> begin();
+//    if (_lexer) {
+//        QTextBlock blk = _doc -> begin();
+//        int block_num = 0;
 
-        QByteArray res;
-        BlockUserData * udata;
+//        QByteArray res;
+//        BlockUserData * udata;
 
-        while(blk.isValid()) {
-            udata = TextDocumentLayout::getUserDataForBlock(blk);
+//        while(blk.isValid()) {
+//            int item_state = 0;
+//            udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-            if (udata && udata -> flags)
-                res.append(QByteArray::number(udata -> flags) % '\n');
-            else
-                res.append('\n');
+//            if (udata -> folded())
+//                item_state |= 1;
 
-            blk = blk.next();
-        }
+//            if (!blk.isVisible())
+//                item_state |= 2;
 
-        if (res.isEmpty())
-            return false;
-        else {
-            res.prepend('!' % QByteArray::number(_file -> size()) % '\n');
-            data = QVariant::fromValue(res);
-            return true;
-        }
-    }
+//            if (item_state > 0) {
+//                res.append(QByteArray::number(block_num));
+//                res.append('|');
+//                res.append(QByteArray::number(item_state));
+//                res.append('\n');
+//            }
+
+//            blk = blk.next();
+//            ++block_num;
+//        }
+
+//        if (res.isEmpty())
+//            return false;
+//        else {
+//            res.prepend('!' % QByteArray::number(_file -> size()) % '\n');
+//            data = QVariant::fromValue(res);
+//            return true;
+//        }
+//    }
 
     return false;
 }
@@ -285,61 +296,87 @@ bool TextDocument::restore(const QVariant & data) {
     if (!blk.isValid())
         return false;
 
-    if (data.isValid()) {
-        QByteArray res = data.toByteArray();
+//    if (data.isValid()) {
+//        QByteArray res = data.toByteArray();
 
-        QByteArray::Iterator it = res.begin();
-        QByteArray::Iterator it_end = res.end();
+//        QByteArray::Iterator it = res.begin();
+//        QByteArray::Iterator it_end = res.end();
 
-        if (*it != '!')
-            return false;
+//        if (*it != '!')
+//            return false;
 
-        ++it;
+//        ++it; // move '!'
 
-        int num = 0;
+//        int num = 0;
 
-        for(; it != it_end; ++it, ++num) {
-            if (*it == '\n')
-                break;
-        }
+//        for(; it != it_end; ++it, ++num) {
+//            if (*it == '\n')
+//                break;
+//        }
 
-        if (num == 0)
-            return false;
-        else {
-            QByteArray buff((it - num), num);
+//        if (num == 0)
+//            return false;
+//        else {
+//            QByteArray buff((it - num), num);
 
-            if (buff.toLongLong() != _file -> size())
-                return false;
-        }
+//            if (buff.toLongLong() != _file -> size())
+//                return false;
+//        }
 
+//        ++it; // move '\n'
 
-        DATA_FLAGS_TYPE flags;
-        BlockUserData * udata;
+//        int item_data;
+//        int block_pos = 0;
+//        int block_num = 0;
+//        int blocks_limit = _doc -> blockCount();
+//        BlockUserData * udata;
 
-        for(num = 0; it != it_end; ++it, ++num) {
-            switch(*it) {
-                case '\n': {
-                    if (num > 0) {
-                        QByteArray buff((it - num), num);
-                        flags = buff.toUShort() & 0xff;
+//        for(num = 0; it != it_end; ++it, ++num) {
+//            switch(*it) {
+//                case '|': {
+//                    QByteArray buff((it - num), num);
 
-                        if (flags > 0) {
-                            udata = TextDocumentLayout::getUserDataForBlock(blk);
+//                    block_pos = buff.toInt();
 
-                            if (!udata)
-                                return false;
+//                    if (block_pos > blocks_limit)
+//                        return false;
 
-                            udata -> flags = static_cast<BlockUserData::UserDataFlags>(flags);
-                        }
-                    }
+//                    num = -1;
+//                break;}
 
+//                case '\n': {
+//                    if (num > 0) {
+//                        QByteArray buff((it - num), num);
+//                        item_data = buff.toInt();
 
-                    blk = blk.next();
-                    num = 0;
-                break;}
-            }
-        }
-    }
+//                        while(block_num < block_pos) {
+//                            blk = blk.next();
+//                            ++block_num;
+//                        }
+
+//                        if (item_data > 0) {
+//                            if (item_data & 1) {
+
+//                                udata = TextDocumentLayout::getUserDataForBlock(blk);
+
+//                                if (!udata)
+//                                    return false;
+
+//                                udata -> setFoldingState(BlockUserData::);
+//                            }
+
+//                            if (item_data & 2) {
+//                                blk.setVisible(false);
+//                                blk.setLineCount(0);
+//                            }
+//                        }
+//                    }
+
+//                    num = -1;
+//                break;}
+//            }
+//        }
+//    }
 
     return false;
 }

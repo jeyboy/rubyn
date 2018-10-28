@@ -73,13 +73,18 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
         int index = 0, counter = 0;
 
         for(JsonArr::Iterator item = items.begin(); item != items.end(); item++, counter++) {
-            QString path = (*item).toString();
+            QJsonObject obj = (*item).toObject();
+
+            QString path = obj.value(QLatin1Literal("path")).toString();
+            QVariant state = obj.value(QLatin1Literal("state")).toVariant();
 
             if (path == curr_path) {
                 index = counter;
             }
 
             w -> fileOpenRequired(path, nullptr, new_editor);
+            w -> active_editor -> tabRestoreState(index, state);
+
             new_editor = false;
         }
 
@@ -96,7 +101,7 @@ void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
         QWidget * widget = w ->  widgets_list -> widget(i);
         TabsBlock * editor = dynamic_cast<TabsBlock *>(widget);
 
-        uint limit = editor -> tabsCount();
+        int limit = editor -> tabsCount();
 
         if (limit == 0)
             continue;
@@ -104,11 +109,19 @@ void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
         QJsonObject widget_obj;
         QJsonArray tabs_arr;
 
-        for(uint j = 0; j < limit; j++) {
+        for(int j = 0; j < limit; j++) {
             QString tab_path = editor -> tabFilePath(j);
 
-            if (!tab_path.isNull())
-                tabs_arr.append(tab_path);
+            if (!tab_path.isNull()) {
+                QJsonObject tab_data;
+                tab_data.insert(QLatin1Literal("path"), tab_path);
+
+                QVariant state;
+                if (editor -> tabDumpState(j, state))
+                    tab_data.insert(QLatin1Literal("state"), QJsonValue::fromVariant(state));
+
+                tabs_arr.append(tab_data);
+            }
         }
 
         QString curr_path = editor -> currentTabFilePath();

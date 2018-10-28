@@ -81,13 +81,10 @@ void BlockUserData::syncLine(TokenCell * stack_sync_token, TokenCell * sync_toke
     stack_token = stack_sync_token;
     para_control = control_sync_para;
 
-    if (control_sync_para) {
-        if (!foldingState())
-            setFoldingState(udf_folding_opened);
-    }
-    else {
-        setFoldingState((foldingState() == udf_has_folding) ? udf_none : udf_folding_dropped);
-    }
+//    if (control_sync_para) {
+//        if (!foldingState())
+//            setFoldingState(udf_unfolded);
+//    }
 
     //////// SYNC TOKENS /////////////
 //    QtConcurrent::run(this, &BlockUserData::removeTokenSequence, sync_token -> next);
@@ -103,34 +100,6 @@ void BlockUserData::syncLine(TokenCell * stack_sync_token, TokenCell * sync_toke
     para_end -> prev = sync_para;
     para_end -> prev -> next = para_end;
 }
-
-DATA_FLAGS_TYPE BlockUserData::foldingState() { return flags & udf_folding_flags; }
-void BlockUserData::setFoldingState(const UserDataFlags & new_state) {
-    flags = static_cast<UserDataFlags>((flags & (~(udf_folding_flags))) | (new_state & udf_folding_flags));
-}
-void BlockUserData::invertFoldingState() {
-    if (flags & udf_folding_flags) {
-        setFoldingState(
-            ((flags & udf_folding_opened) == udf_folding_opened) ?
-                udf_has_folding : udf_folding_opened
-        );
-    }
-}
-
-bool BlockUserData::hasBreakpoint() { return flags & udf_has_breakpoint; }
-void BlockUserData::setBreakpoint(const bool & set) { // not tested
-    bool has_flag = flags & udf_has_breakpoint;
-
-    if ((has_flag && set) || (!has_flag && !set))
-        return;
-
-    if (set) {
-        flags = static_cast<UserDataFlags>(flags | udf_has_breakpoint);
-    } else {
-        flags = static_cast<UserDataFlags>(flags - udf_has_breakpoint);
-    }
-}
-void BlockUserData::invertBreakpointState() { setBreakpoint(!hasBreakpoint()); }
 
 void BlockUserData::removeTokenSequence(TokenCell * tkn) {
     if (tkn) {
@@ -150,5 +119,18 @@ void BlockUserData::removeParaSequence(ParaCell * tkn) {
         }
 
         delete tkn;
+    }
+}
+
+void BlockUserData::setFlag(const UserDataFlags & flag, const bool & on) {
+    bool has_flag = flags & flag;
+
+    if ((has_flag && on) || (!has_flag && !on))
+        return;
+
+    if (on) {
+        flags = static_cast<UserDataFlags>(flags | flag);
+    } else {
+        flags = static_cast<UserDataFlags>(flags - flag);
     }
 }

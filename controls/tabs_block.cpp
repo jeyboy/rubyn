@@ -3,9 +3,12 @@
 #include "completer_factory.h"
 #include "tab_bar.h"
 #include "logger.h"
-#include "editor/code_editor.h"
-#include "project/file.h"
 #include "tab_bar_no_focus_style.h"
+
+#include "project/file.h"
+
+#include "editor/code_editor.h"
+#include "editor/document_types/text_document.h"
 
 #include <qlabel.h>
 #include <qboxlayout.h>
@@ -178,12 +181,10 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
     return true;
 }
 
-uint TabsBlock::tabsCount() { return _bar -> count(); }
+int TabsBlock::tabsCount() { return _bar -> count(); }
 
-QString TabsBlock::tabFilePath(const uint & index) {
-    QListWidgetItem * item = _bar -> item(index);
-
-    File * file = _bar -> tabFile(item);
+QString TabsBlock::tabFilePath(const int & index) {
+    File * file = _bar -> tabFile(index);
 
     return file ? file -> path() : QString();
 }
@@ -191,9 +192,29 @@ QString TabsBlock::tabFilePath(const uint & index) {
 QString TabsBlock::currentTabFilePath() {
     QListWidgetItem * item = _bar -> currentItem();
 
-    File * file = item ? _bar -> tabFile(item) : 0;
+    File * file = item ? _bar -> tabFile(item) : nullptr;
 
     return file ? file -> path() : QString();
+}
+
+bool TabsBlock::tabDumpState(const int & index, QVariant & data) {
+    File * file = _bar -> tabFile(index);
+
+    if (file && file -> isText()) {
+        return file -> asText() -> dump(data);
+    }
+
+    return false;
+}
+
+bool TabsBlock::tabRestoreState(const int & index, QVariant & data) {
+    File * file = _bar -> tabFile(index);
+
+    if (file && file -> isText()) {
+        return file -> asText() -> restore(data);
+    }
+
+    return false;
 }
 
 bool TabsBlock::openFileInEditor(File * file) {

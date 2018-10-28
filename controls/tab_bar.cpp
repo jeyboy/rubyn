@@ -88,6 +88,14 @@ void TabBar::removeTab(QListWidgetItem * tab) {
     delete tab;
 }
 
+File * TabBar::tabFile(const int & index) {
+    if (index < 0) return nullptr;
+
+    QListWidgetItem * itm = item(index);
+
+    return itm ? tabFile(itm) : nullptr;
+}
+
 File * TabBar::tabFile(QListWidgetItem * tab) {
     QVariant tab_data = tab -> data(Qt::UserRole);
 
@@ -95,7 +103,7 @@ File * TabBar::tabFile(QListWidgetItem * tab) {
         return reinterpret_cast<File *>(tab_data.value<quintptr>());
     }
 
-    return 0;
+    return nullptr;
 }
 
 Qt::DropActions TabBar::supportedDropActions() const {

@@ -165,22 +165,22 @@ void CodeEditor::fillBackground(QPainter * p, const QRectF & rect, QBrush brush,
 
 void CodeEditor::prepareIcons(const int & size) {
     icons.insert(
-        BlockUserData::udf_has_folding,
+        BlockUserData::udf_folded,
         PREPARE_PIXMAP(QStringLiteral(":/folding_close"), size)
     );
 
     icons.insert(
-        BlockUserData::udf_has_folding | BlockUserData::udf_folding_hovered,
+        BlockUserData::udf_folded | BlockUserData::udf_folding_hovered,
         PREPARE_PIXMAP(QStringLiteral(":/folding_close_hover"), size)
     );
 
     icons.insert(
-        BlockUserData::udf_folding_opened,
+        BlockUserData::udf_unfolded,
         PREPARE_PIXMAP(QStringLiteral(":/folding_open"), size)
     );
 
     icons.insert(
-        BlockUserData::udf_folding_opened | BlockUserData::udf_folding_hovered,
+        BlockUserData::udf_unfolded | BlockUserData::udf_folding_hovered,
         PREPARE_PIXMAP(QStringLiteral(":/folding_open_hover"), size)
     );
 
@@ -230,9 +230,6 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
         painter.fillRect(0, block_top, extra_zone_width, cache -> bounding_rect.height(), format.background());
     }
 
-    BlockUserData * user_data = cache -> user_data;
-    DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
-
     bool on_block = folding_y != NO_FOLDING && folding_y > block_top && folding_y < block_bottom;
     bool initiated = false;
 
@@ -241,27 +238,30 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
         curr_folding_limits.ry() = block_bottom;
     }
 
+    BlockUserData * user_data = cache -> user_data;
+    DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
+
     if (folding_flags) {
-        if (!user_data -> para_control -> is_oneliner) {
-            bool opened = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
+        if (user_data -> para_control && !user_data -> para_control -> is_oneliner) {
+            bool folded = user_data -> isFolded();
 
             if (on_block) {
                 folding_flags |= BlockUserData::udf_folding_hovered;
 
-                if (opened) {
+                if (folded) {
+                    if (folding_click) {
+                        folding_click = false;
+                    }
+                    else if (can_show_folding_popup)
+                        showFoldingContentPopup(document() -> findBlockByNumber(cache -> block_number));
+                }
+                else {
                     hideOverlay();
 
                     folding_lines_coverage_level = user_data -> level;
                     folding_lines_coverage_level_stoper_min = cache -> block_number;
                     folding_lines_coverage_level_stoper_max = FOLDING_COVERAGE_LEVEL_STOPER - (user_data -> para_control -> is_blockator ? 0 : 1);
                     initiated = true;
-                }
-                else {
-                    if (folding_click) {
-                        folding_click = false;
-                    }
-                    else if (can_show_folding_popup)
-                        showFoldingContentPopup(document() -> findBlockByNumber(cache -> block_number));
                 }
             }
 
@@ -361,7 +361,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 
             painter.drawPixmap(
                 QPoint(folding_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
-                icons[BlockUserData::udf_folding_opened]
+                icons[BlockUserData::udf_unfolded]
             );
         }
     }
@@ -443,7 +443,7 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
             break;
         }
 
-        if (it -> user_data && it -> user_data -> folded()) {
+        if (it -> user_data && it -> user_data -> isFolded()) {
             if (it -> folding_overlay_text.isNull()) {
                 wrapper -> paraOpositionStr(it -> user_data -> para_control -> para_type, it -> folding_overlay_text);
                 it -> folding_overlay_text = QLatin1Literal("...") % it -> folding_overlay_text;
@@ -1345,7 +1345,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             if (curr_key == Qt::Key_Right && pos_in_block == blk.length() - 1) {
                 BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-                if (udata -> folded()) {
+                if (udata -> isFolded()) {
                     wrapper -> layout -> toggleFolding(blk);
                 }
             }

@@ -1312,7 +1312,7 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
     lexicate(&state);
 
     if (udata -> para_control && (!state.control_para || (state.control_para -> para_type != udata -> para_control -> para_type))) {
-        if (udata -> folded()) {
+        if (udata -> isFolded()) {
             override_status = lighter -> toggleFolding(block);
         }
     }

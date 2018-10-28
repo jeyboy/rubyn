@@ -18,6 +18,7 @@ public:
     QListWidgetItem * addTab(const QIcon & ico, const QString & text);
     void removeTab(QListWidgetItem *);
 
+    File * tabFile(const int & index);
     File * tabFile(QListWidgetItem * tab);
 protected:
     Qt::DropActions supportedDropActions() const;
