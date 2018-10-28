@@ -251,42 +251,42 @@ ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE
 }
 
 bool TextDocument::dump(QVariant & data) {
-//    if (_lexer) {
-//        QTextBlock blk = _doc -> begin();
-//        int block_num = 0;
+    if (_lexer) {
+        QTextBlock blk = _doc -> begin();
+        int block_num = 0;
 
-//        QByteArray res;
-//        BlockUserData * udata;
+        QByteArray res;
+        BlockUserData * udata;
 
-//        while(blk.isValid()) {
-//            int item_state = 0;
-//            udata = TextDocumentLayout::getUserDataForBlock(blk);
+        while(blk.isValid()) {
+            int item_state = 0;
+            udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-//            if (udata -> folded())
-//                item_state |= 1;
+            if (udata -> isFolded())
+                item_state |= 1;
 
-//            if (!blk.isVisible())
-//                item_state |= 2;
+            if (!blk.isVisible())
+                item_state |= 2;
 
-//            if (item_state > 0) {
-//                res.append(QByteArray::number(block_num));
-//                res.append('|');
-//                res.append(QByteArray::number(item_state));
-//                res.append('\n');
-//            }
+            if (item_state > 0) {
+                res.append(QByteArray::number(block_num));
+                res.append('|');
+                res.append(QByteArray::number(item_state));
+                res.append('\n');
+            }
 
-//            blk = blk.next();
-//            ++block_num;
-//        }
+            blk = blk.next();
+            ++block_num;
+        }
 
-//        if (res.isEmpty())
-//            return false;
-//        else {
-//            res.prepend('!' % QByteArray::number(_file -> size()) % '\n');
-//            data = QVariant::fromValue(res);
-//            return true;
-//        }
-//    }
+        if (res.isEmpty())
+            return false;
+        else {
+            res.prepend('!' % QByteArray::number(_file -> size()) % '\n');
+            data = QVariant::fromValue(qCompress(res, 9));
+            return true;
+        }
+    }
 
     return false;
 }
@@ -296,87 +296,88 @@ bool TextDocument::restore(const QVariant & data) {
     if (!blk.isValid())
         return false;
 
-//    if (data.isValid()) {
-//        QByteArray res = data.toByteArray();
+    if (data.isValid()) {
+        QByteArray res = data.toByteArray();
+        res = qUncompress(res);
 
-//        QByteArray::Iterator it = res.begin();
-//        QByteArray::Iterator it_end = res.end();
+        QByteArray::Iterator it = res.begin();
+        QByteArray::Iterator it_end = res.end();
 
-//        if (*it != '!')
-//            return false;
+        if (*it != '!')
+            return false;
 
-//        ++it; // move '!'
+        ++it; // move '!'
 
-//        int num = 0;
+        int num = 0;
 
-//        for(; it != it_end; ++it, ++num) {
-//            if (*it == '\n')
-//                break;
-//        }
+        for(; it != it_end; ++it, ++num) {
+            if (*it == '\n')
+                break;
+        }
 
-//        if (num == 0)
-//            return false;
-//        else {
-//            QByteArray buff((it - num), num);
+        if (num == 0)
+            return false;
+        else {
+            QByteArray buff((it - num), num);
 
-//            if (buff.toLongLong() != _file -> size())
-//                return false;
-//        }
+            if (buff.toLongLong() != _file -> size())
+                return false;
+        }
 
-//        ++it; // move '\n'
+        ++it; // move '\n'
 
-//        int item_data;
-//        int block_pos = 0;
-//        int block_num = 0;
-//        int blocks_limit = _doc -> blockCount();
-//        BlockUserData * udata;
+        int item_data;
+        int block_pos = 0;
+        int block_num = 0;
+        int blocks_limit = _doc -> blockCount();
+        BlockUserData * udata;
 
-//        for(num = 0; it != it_end; ++it, ++num) {
-//            switch(*it) {
-//                case '|': {
-//                    QByteArray buff((it - num), num);
+        for(num = 0; it != it_end; ++it, ++num) {
+            switch(*it) {
+                case '|': {
+                    QByteArray buff((it - num), num);
 
-//                    block_pos = buff.toInt();
+                    block_pos = buff.toInt();
 
-//                    if (block_pos > blocks_limit)
-//                        return false;
+                    if (block_pos > blocks_limit)
+                        return false;
 
-//                    num = -1;
-//                break;}
+                    num = -1;
+                break;}
 
-//                case '\n': {
-//                    if (num > 0) {
-//                        QByteArray buff((it - num), num);
-//                        item_data = buff.toInt();
+                case '\n': {
+                    if (num > 0) {
+                        QByteArray buff((it - num), num);
+                        item_data = buff.toInt();
 
-//                        while(block_num < block_pos) {
-//                            blk = blk.next();
-//                            ++block_num;
-//                        }
+                        while(block_num < block_pos) {
+                            blk = blk.next();
+                            ++block_num;
+                        }
 
-//                        if (item_data > 0) {
-//                            if (item_data & 1) {
+                        if (item_data > 0) {
+                            if (item_data & 1) {
 
-//                                udata = TextDocumentLayout::getUserDataForBlock(blk);
+                                udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-//                                if (!udata)
-//                                    return false;
+                                if (!udata)
+                                    return false;
 
-//                                udata -> setFoldingState(BlockUserData::);
-//                            }
+                                udata -> setFolded(true);
+                            }
 
-//                            if (item_data & 2) {
-//                                blk.setVisible(false);
-//                                blk.setLineCount(0);
-//                            }
-//                        }
-//                    }
+                            if (item_data & 2) {
+                                blk.setVisible(false);
+                                blk.setLineCount(0);
+                            }
+                        }
+                    }
 
-//                    num = -1;
-//                break;}
-//            }
-//        }
-//    }
+                    num = -1;
+                break;}
+            }
+        }
+    }
 
     return false;
 }

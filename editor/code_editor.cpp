@@ -1022,7 +1022,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
             }
 
             //TODO: implement switcher and draw this only if enabled showing of folding scopes
-            int level = cache_cell -> user_data -> level;
+            int level = cache_cell -> user_data ? cache_cell -> user_data -> level : DEFAULT_LEVEL;
 
             if (level > 0) {
                 painter.save();
@@ -1109,7 +1109,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 cache_cell -> layout -> drawCursor(&painter, offset, cpos, cursorWidth());
             }
 
-            if (cache_cell -> user_data -> hasBreakpoint()) {
+            if (cache_cell -> user_data && cache_cell -> user_data -> hasBreakpoint()) {
                 painter.fillRect(0, offset.ry(), max_x, cache_cell -> bounding_rect.height(), breakpoint_line_format.background());
             }
         }
