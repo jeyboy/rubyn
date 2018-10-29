@@ -172,7 +172,9 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
             item -> setBackgroundColor(QColor(255, 0, 0, 92));
         }
 
+        _bar -> blockSignals(true);
         _bar -> setCurrentItem(item);
+        _bar -> blockSignals(false);
 
         if (isHidden())
             show();
@@ -304,8 +306,9 @@ void TabsBlock::tabsCountChanged(const int & correction) {
 
 void TabsBlock::currentTabIndexChanged(const int & index) {
     QListWidgetItem * itm = _bar -> item(index);
-    if (_bar -> currentItem() != itm)
-        currentTabChanged(itm);
+
+//    if (_bar -> currentItem() != itm)
+    currentTabChanged(itm);
 }
 
 void TabsBlock::currentTabChanged(QListWidgetItem * tab) {

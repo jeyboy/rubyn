@@ -111,10 +111,9 @@ void CodeEditor::openDocument(File * file) {
         qDebug() << "openDocument" << file -> path() << new_doc_vertical_scroll_pos;
 
         vscroll -> setProperty("last_pos", new_doc_vertical_scroll_pos);
+        vscroll -> setProperty("qty", 2); // QPlaintTextEdit does not change scroll pos on first call
 
         if (new_doc_vertical_scroll_pos > 0) {
-            vscroll -> setProperty("qty", 2); // QPlaintTextEdit does not change scroll pos on first call
-
             connect(vscroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
         }
 
