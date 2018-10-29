@@ -886,7 +886,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                 r.setWidth(r.width() + 50);
                                 viewport() -> update(r);
                             } else if (in_number_zone) {
-                                cursor.setPosition(blk.position() + blk.length(), QTextCursor::MoveAnchor);
+                                cursor.setPosition(blk.position() + blk.length() - 1, QTextCursor::MoveAnchor);
                                 cursor.setPosition(blk.position(), QTextCursor::KeepAnchor);
 
                                 setTextCursor(cursor);
