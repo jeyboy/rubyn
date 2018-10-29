@@ -869,35 +869,40 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
             if (event -> button() == Qt::LeftButton) {
                 if (in_breakpoint_zone || in_number_zone || in_folding_zone) {
                     QTextCursor cursor = cursorForPosition(QPoint(1, pos.ry()));
-                    QTextBlock blk = cursor.block();
 
-                    if (blk.isValid()) {
-                        if (in_breakpoint_zone) {
-                            BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
+                    // fix for paded click
+                    QRect cursor_rect = cursorRect(cursor);
+                    if (cursor_rect.bottom() >= pos.ry()) {
+                        QTextBlock blk = cursor.block();
 
-                            udata -> invertBreakpointState();
-                            invalidation_required = true;
+                        if (blk.isValid()) {
+                            if (in_breakpoint_zone) {
+                                BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-                            QRect r(blockBoundingGeometry(blk).translated(contentOffset()).toRect());
-                            r.setWidth(r.width() + 50);
-                            viewport() -> update(r);
-                        } else if (in_number_zone) {
-                            cursor.setPosition(blk.position() + blk.length(), QTextCursor::MoveAnchor);
-                            cursor.setPosition(blk.position(), QTextCursor::KeepAnchor);
+                                udata -> invertBreakpointState();
+                                invalidation_required = true;
 
-                            setTextCursor(cursor);
-                        } else {
-                            if (wrapper -> layout -> toggleFolding(blk)) {
-                                folding_click = true;
-                                can_show_folding_popup = false;
-                                invalidation_required = false;
+                                QRect r(blockBoundingGeometry(blk).translated(contentOffset()).toRect());
+                                r.setWidth(r.width() + 50);
+                                viewport() -> update(r);
+                            } else if (in_number_zone) {
+                                cursor.setPosition(blk.position() + blk.length(), QTextCursor::MoveAnchor);
+                                cursor.setPosition(blk.position(), QTextCursor::KeepAnchor);
 
-                                //INFO: move the cursor out from folded block
-                                QTextCursor current_cursor = textCursor();
+                                setTextCursor(cursor);
+                            } else {
+                                if (wrapper -> layout -> toggleFolding(blk)) {
+                                    folding_click = true;
+                                    can_show_folding_popup = false;
+                                    invalidation_required = false;
 
-                                if (!current_cursor.block().isVisible()) {
-                                    current_cursor.setPosition(blk.position());
-                                    setTextCursor(current_cursor);
+                                    //INFO: move the cursor out from folded block
+                                    QTextCursor current_cursor = textCursor();
+
+                                    if (!current_cursor.block().isVisible()) {
+                                        current_cursor.setPosition(blk.position());
+                                        setTextCursor(current_cursor);
+                                    }
                                 }
                             }
                         }
