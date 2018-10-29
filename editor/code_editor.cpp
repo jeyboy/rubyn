@@ -99,7 +99,22 @@ void CodeEditor::openDocument(File * file) {
         new_font.setLetterSpacing(QFont::AbsoluteSpacing, cursorWidth() - 1);
 //        new_font.setStretch(90);
 
+        QScrollBar * vscroll = verticalScrollBar();
+
+        if (wrapper)
+            wrapper -> setVerticalScrollPos(vscroll -> value());
+
         wrapper = file -> asText();
+
+        int new_doc_vertical_scroll_pos = wrapper -> verticalScrollPos();
+
+        if (new_doc_vertical_scroll_pos > 0) {
+            vscroll -> setProperty("last_pos", new_doc_vertical_scroll_pos);
+            vscroll -> setProperty("qty", 2); // QPlaintTextEdit does not change scroll pos on first call
+
+            connect(vscroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
+        }
+
         QTextDocument * text_doc = wrapper -> toQDoc();
 
 //        text_doc -> setUseDesignMetrics(true);
@@ -1720,14 +1735,22 @@ void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
         updateExtraAreaWidth(0);
 }
 
-//void CodeEditor::scrollRangeChanged(int /*min*/, int /*max*/) {
-//    QScrollBar * scroll = static_cast<QScrollBar *>(sender());
-//    QVariant last_pos = scroll -> property("last_pos");
+void CodeEditor::scrollRangeChanged(int /*min*/, int /*max*/) {
+    QScrollBar * scroll = static_cast<QScrollBar *>(sender());
+    QVariant last_pos = scroll -> property("last_pos");
 
-//    if (last_pos.isValid()) {
-//        int pos = last_pos.toInt();
+    if (last_pos.isValid()) {
+        QVariant qty = scroll -> property("qty");
+        int pos = last_pos.toInt();
+        int qty_val = qty.toInt() - 1;
 
-//        disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
-//        scroll -> setValue(pos);
-//    }
-//}
+        if (qty_val == 0) {
+            disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
+            scroll -> setProperty("last_pos", QVariant());
+            scroll -> setProperty("qty", QVariant());
+        }
+        else scroll -> setProperty("qty", qty_val);
+
+        scroll -> setValue(pos);
+    }
+}

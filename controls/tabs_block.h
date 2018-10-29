@@ -55,7 +55,7 @@ public:
     bool tabDumpState(const int & index, QVariant & data);
     bool tabRestoreState(const int & index, QVariant & data);
 
-    QScrollBar * editorVerticalScrollBar();
+    inline CodeEditor * editor() { return _editor; }
 
 signals:
     void resourceDropped(TabsBlock *, const QUrl &);

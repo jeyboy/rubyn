@@ -15,6 +15,7 @@
 #include "controls/tabs_block.h"
 
 #include "project/ifolder.h"
+#include "editor/code_editor.h"
 
 #include <qsettings.h>
 #include <qsplitter.h>
@@ -92,11 +93,12 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
         w -> active_editor -> currentTabIndexChanged(index);
 
         if (scroll_y != 0) {
-            QScrollBar * scroll =  w -> active_editor -> editorVerticalScrollBar();
+            CodeEditor * editor = w -> active_editor -> editor();
+            QScrollBar * scroll =  editor -> verticalScrollBar();
             scroll -> setProperty("last_pos", scroll_y);
             scroll -> setProperty("qty", 2); // QPlaintTextEdit does not change scroll pos on first call
 
-            connect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
+            connect(scroll, SIGNAL(rangeChanged(int,int)), editor, SLOT(scrollRangeChanged(int,int)));
         }
     }
 }
@@ -140,7 +142,7 @@ void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
 
         widget_obj.insert(QLatin1Literal("tabs"), tabs_arr);
 
-        QScrollBar * scroll = editor -> editorVerticalScrollBar();
+        QScrollBar * scroll = editor -> editor() -> verticalScrollBar();
 
         if (scroll -> value() != 0)
             widget_obj.insert(QLatin1Literal("scroll_y"), scroll -> value());
@@ -253,17 +255,17 @@ void Dumper::locationCorrection(IDEWindow * w) {
 void Dumper::scrollRangeChanged(int /*min*/, int /*max*/) {
     QScrollBar * scroll = static_cast<QScrollBar *>(sender());
     QVariant last_pos = scroll -> property("last_pos");
-    QVariant qty = scroll -> property("qty");
 
     if (last_pos.isValid()) {
+//        QVariant qty = scroll -> property("qty");
         int pos = last_pos.toInt();
-        int qty_val = qty.toInt() - 1;
+//        int qty_val = qty.toInt() - 1;
 
-        if (qty_val == 0) {
+//        if (qty_val == 0) {
             disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
             scroll -> setProperty("last_pos", QVariant());
-        }
-        else scroll -> setProperty("qty", qty_val);
+//        }
+//        else scroll -> setProperty("qty", qty_val);
 
         scroll -> setValue(pos);
     }

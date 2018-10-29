@@ -217,8 +217,6 @@ bool TabsBlock::tabRestoreState(const int & index, QVariant & data) {
     return false;
 }
 
-QScrollBar * TabsBlock::editorVerticalScrollBar() { return _editor -> verticalScrollBar(); }
-
 bool TabsBlock::openFileInEditor(File * file) {
     switch(file -> baseFormatType()) {
         case ft_text: {

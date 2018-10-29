@@ -9,7 +9,7 @@
 #include "editor/idocument.h"
 #include "editor/text_document_layout.h"
 
-#define READ_LIMIT (qint64)(512000) // ~512 kb
+#define READ_LIMIT 512000LL // ~512 kb
 
 class Project;
 class File;
@@ -22,7 +22,7 @@ class TextDocument : public QObject, public IDocument {
     static QLatin1String tab_space;
     static QHash<QChar, bool> word_boundary;
 
-//    int start_scroll_pos;
+    int scroll_pos_y;
 //    int pos, removed, added;
 protected:
     QPointer<QTextDocument> _doc;
@@ -60,12 +60,12 @@ public:
     bool dump(QVariant & data);
     bool restore(const QVariant & data);
 
-//    inline void setStartScrollPos(const int & pos) { start_scroll_pos = pos; }
-//    inline int startScrollPos() {
-//        int res = start_scroll_pos;
-//        start_scroll_pos = 0;
-//        return res;
-//    }
+    inline void setVerticalScrollPos(const int & pos) { scroll_pos_y = pos; }
+    inline int verticalScrollPos() {
+        int res = scroll_pos_y;
+        scroll_pos_y = 0;
+        return res;
+    }
 protected slots:
 //    void changesInContent(int position, int removed_count, int added_count);
 };

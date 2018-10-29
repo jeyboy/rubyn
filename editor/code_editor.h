@@ -447,7 +447,7 @@ private slots:
     void updateExtraAreaWidth(int newBlockCount);
     void updateExtraArea(const QRect &, int);
 
-//    void scrollRangeChanged(int /*min*/, int /*max*/);
+    void scrollRangeChanged(int /*min*/, int /*max*/);
 };
 
 #endif // CODE_EDITOR
