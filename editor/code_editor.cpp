@@ -843,10 +843,17 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
     switch(event -> type()) {
         case QEvent::MouseMove: {
             invalidation_required =
-                (
-                    in_folding_zone && (folding_y <= curr_folding_limits.rx() || folding_y >= curr_folding_limits.ry())
-                )
-                    || ((folding_y != NO_FOLDING) == (prev_folding_y == NO_FOLDING));
+                    //TODO: possible refactor required?
+                (folding_y >= 0 && folding_y <= display_cacher -> fill_bottom) && // cancel invalidation if blocks do not fully cover screen height and mouse pointer below the last block
+                    (
+                        (
+                            in_folding_zone && (folding_y <= curr_folding_limits.rx() || folding_y >= curr_folding_limits.ry())
+                        )
+                        ||
+                        (
+                            (folding_y != NO_FOLDING) == (prev_folding_y == NO_FOLDING)
+                        )
+                    );
 
             if (invalidation_required) {
                 can_show_folding_popup = true;
