@@ -868,11 +868,10 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
         case QEvent::MouseButtonRelease: {
             if (event -> button() == Qt::LeftButton) {
                 if (in_breakpoint_zone || in_number_zone || in_folding_zone) {
-                    QTextCursor cursor = cursorForPosition(QPoint(1, pos.ry()));
-
                     // fix for paded click
-                    QRect cursor_rect = cursorRect(cursor);
-                    if (cursor_rect.bottom() >= pos.ry()) {
+                    if (display_cacher -> fill_bottom >= pos.ry()) {
+                        QTextCursor cursor = cursorForPosition(QPoint(1, pos.ry()));
+
                         QTextBlock blk = cursor.block();
 
                         if (blk.isValid()) {
@@ -1128,8 +1127,10 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
         if (block.isValid())
             cache_cell = display_cacher -> append(cache_cell -> block_number + 1);
-        else
+        else {
+            display_cacher -> partialy_filled = true;
             break;
+        }
     }
 
     if (backgroundVisible() && !block.isValid() && offset.y() <= er.bottom()
@@ -1143,6 +1144,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         );
     }
 
+    display_cacher -> fill_bottom = offset.ry();
     display_cacher -> bottom_block_number = cache_cell -> block_number;
 }
 

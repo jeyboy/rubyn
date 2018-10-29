@@ -51,6 +51,8 @@ class CodeEditorCache {
 public:
     int top_block_number;
     int bottom_block_number;
+    int fill_bottom;
+    bool partialy_filled;
 
     CodeEditorCache();
 

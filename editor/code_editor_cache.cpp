@@ -1,6 +1,6 @@
 #include "code_editor_cache.h"
 
-CodeEditorCache::CodeEditorCache() : root(nullptr), last(nullptr), top_block_number(-1), bottom_block_number(-1) {
+CodeEditorCache::CodeEditorCache() : root(nullptr), last(nullptr), top_block_number(-1), bottom_block_number(-1), partialy_filled(false) {
     root = new CodeEditorCacheCell(-1);
     root -> is_service = true;
     last = new CodeEditorCacheCell(-1, root);
@@ -15,6 +15,8 @@ CodeEditorCache::~CodeEditorCache() {
 }
 
 void CodeEditorCache::clear() {
+    partialy_filled = false;
+
     CodeEditorCacheCell * curr;
     CodeEditorCacheCell * it = last -> prev;
 
