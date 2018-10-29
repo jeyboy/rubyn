@@ -79,6 +79,7 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
 
             QString path = obj.value(QLatin1Literal("path")).toString();
             QVariant state = obj.value(QLatin1Literal("state")).toVariant();
+            int tab_scroll_y = obj.value(QLatin1Literal("scroll_y")).toInt();
 
             if (path == curr_path) {
                 index = counter;
@@ -86,6 +87,7 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
 
             w -> fileOpenRequired(path, nullptr, new_editor);
             w -> active_editor -> tabRestoreState(counter, state);
+            w -> active_editor -> SetTabVerticalScrollPos(counter, tab_scroll_y);
 
             new_editor = false;
         }
@@ -130,6 +132,8 @@ void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
                 QVariant state;
                 if (editor -> tabDumpState(j, state))
                     tab_data.insert(QLatin1Literal("state"), QJsonValue::fromVariant(state));
+
+                tab_data.insert(QLatin1Literal("scroll_y"), editor -> tabVerticalScrollPos(j));
 
                 tabs_arr.append(tab_data);
             }

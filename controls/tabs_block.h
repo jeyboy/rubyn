@@ -55,6 +55,9 @@ public:
     bool tabDumpState(const int & index, QVariant & data);
     bool tabRestoreState(const int & index, QVariant & data);
 
+    int tabVerticalScrollPos(const int & index);
+    void SetTabVerticalScrollPos(const int & index, const int & pos);
+
     inline CodeEditor * editor() { return _editor; }
 
 signals:

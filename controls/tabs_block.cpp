@@ -217,6 +217,24 @@ bool TabsBlock::tabRestoreState(const int & index, QVariant & data) {
     return false;
 }
 
+int TabsBlock::tabVerticalScrollPos(const int & index) {
+    File * file = _bar -> tabFile(index);
+
+    if (file && file -> isText()) {
+        return file -> asText() -> verticalScrollPos(false);
+    }
+
+    return 0;
+}
+void TabsBlock::SetTabVerticalScrollPos(const int & index, const int & pos) {
+    File * file = _bar -> tabFile(index);
+
+    if (file && file -> isText()) {
+        file -> asText() -> setVerticalScrollPos(pos);
+        //TODO: need additional update for current doc
+    }
+}
+
 bool TabsBlock::openFileInEditor(File * file) {
     switch(file -> baseFormatType()) {
         case ft_text: {
@@ -285,7 +303,9 @@ void TabsBlock::tabsCountChanged(const int & correction) {
 }
 
 void TabsBlock::currentTabIndexChanged(const int & index) {
-    currentTabChanged(_bar -> item(index));
+    QListWidgetItem * itm = _bar -> item(index);
+    if (_bar -> currentItem() != itm)
+        currentTabChanged(itm);
 }
 
 void TabsBlock::currentTabChanged(QListWidgetItem * tab) {

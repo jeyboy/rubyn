@@ -61,9 +61,10 @@ public:
     bool restore(const QVariant & data);
 
     inline void setVerticalScrollPos(const int & pos) { scroll_pos_y = pos; }
-    inline int verticalScrollPos() {
+    inline int verticalScrollPos(const bool & drop = true) {
         int res = scroll_pos_y;
-        scroll_pos_y = 0;
+        if (drop)
+            scroll_pos_y = 0;
         return res;
     }
 protected slots:
