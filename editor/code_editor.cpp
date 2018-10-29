@@ -945,7 +945,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
             continue;
         }
 
-        if (it -> bounding_rect.top() > target_bottom) {
+        if (it -> bounding_rect.top() > target_bottom || it -> is_service) {
             break;
         }
 
@@ -992,7 +992,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     const QTextCharFormat & folding_level_line_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_level_line);
     const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_line); //
 
-    while (block.isValid()) {
+    forever {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
 
@@ -1121,7 +1121,10 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
         block = block.next();
 
-        cache_cell = display_cacher -> append(cache_cell -> block_number + 1);
+        if (block.isValid())
+            cache_cell = display_cacher -> append(cache_cell -> block_number + 1);
+        else
+            break;
     }
 
     if (backgroundVisible() && !block.isValid() && offset.y() <= er.bottom()
