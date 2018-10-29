@@ -94,6 +94,7 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
         if (scroll_y != 0) {
             QScrollBar * scroll =  w -> active_editor -> editorVerticalScrollBar();
             scroll -> setProperty("last_pos", scroll_y);
+            scroll -> setProperty("qty", 2); // QPlaintTextEdit does not change scroll pos on first call
 
             connect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
         }
@@ -190,8 +191,8 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
     if (tree_pos.isValid()) {
         QScrollBar * scroll = w -> tree -> verticalScrollBar();
         scroll -> setProperty("last_pos", tree_pos);
+        scroll -> setProperty("qty", 1);
 
-        // I can't set scroll pos until widget will be shown - so this hack save my ass
         connect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
     }
 
@@ -256,9 +257,9 @@ void Dumper::scrollRangeChanged(int /*min*/, int /*max*/) {
 
     if (last_pos.isValid()) {
         int pos = last_pos.toInt();
-        int qty_val = qty.toInt() + 1;
+        int qty_val = qty.toInt() - 1;
 
-        if (qty_val > 1) { // QPlaintTextEdit does not change scroll pos on first call
+        if (qty_val == 0) {
             disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
             scroll -> setProperty("last_pos", QVariant());
         }

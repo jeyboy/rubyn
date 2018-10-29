@@ -1554,7 +1554,7 @@ void CodeEditor::highlightCurrentLine() {
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
         selection.cursor = cursor;
         selection.cursor.clearSelection();
-//        extra_selections.append(selection);
+        extra_selections.append(selection);
 
         if (wordWrapMode() != QTextOption::NoWrap) {
             int offset = 0;
