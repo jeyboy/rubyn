@@ -68,6 +68,7 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
         new_editor = tab != tabs.begin();
 
         QString curr_path = widget_obj.string(QLatin1Literal("current"));
+        int scroll_y = widget_obj.integer(QLatin1Literal("scroll_y"));
 
         JsonArr items = widget_obj.arr(QLatin1Literal("tabs"));
         int index = 0, counter = 0;
@@ -89,6 +90,13 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
         }
 
         w -> active_editor -> currentTabIndexChanged(index);
+
+        if (scroll_y != 0) {
+            QScrollBar * scroll =  w -> active_editor -> editorVerticalScrollBar();
+            scroll -> setProperty("last_pos", scroll_y);
+
+            connect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
+        }
     }
 }
 
@@ -130,6 +138,11 @@ void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
             widget_obj.insert(QLatin1Literal("current"), curr_path);
 
         widget_obj.insert(QLatin1Literal("tabs"), tabs_arr);
+
+        QScrollBar * scroll = editor -> editorVerticalScrollBar();
+
+        if (scroll -> value() != 0)
+            widget_obj.insert(QLatin1Literal("scroll_y"), scroll -> value());
 
         arr << widget_obj;
     }
@@ -179,7 +192,7 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
         scroll -> setProperty("last_pos", tree_pos);
 
         // I can't set scroll pos until widget will be shown - so this hack save my ass
-        connect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(treeRangeChanged(int,int)));
+        connect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
     }
 
     QVariant widgets_list_geom = settings.value(QLatin1Literal("widgets_list_geom"));
@@ -236,14 +249,21 @@ void Dumper::locationCorrection(IDEWindow * w) {
     w -> move(left, top);
 }
 
-void Dumper::treeRangeChanged(int /*min*/, int /*max*/) {
+void Dumper::scrollRangeChanged(int /*min*/, int /*max*/) {
     QScrollBar * scroll = static_cast<QScrollBar *>(sender());
     QVariant last_pos = scroll -> property("last_pos");
+    QVariant qty = scroll -> property("qty");
 
     if (last_pos.isValid()) {
         int pos = last_pos.toInt();
+        int qty_val = qty.toInt() + 1;
 
-        disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(treeRangeChanged(int,int)));
+        if (qty_val > 1) { // QPlaintTextEdit does not change scroll pos on first call
+            disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
+            scroll -> setProperty("last_pos", QVariant());
+        }
+        else scroll -> setProperty("qty", qty_val);
+
         scroll -> setValue(pos);
     }
 }

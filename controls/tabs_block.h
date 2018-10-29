@@ -17,6 +17,7 @@ class QFocusEvent;
 class QMenu;
 class QListWidgetItem;
 class Completer;
+class QScrollBar;
 
 class TabsBlock : public QWidget {
     Q_OBJECT
@@ -53,6 +54,8 @@ public:
 
     bool tabDumpState(const int & index, QVariant & data);
     bool tabRestoreState(const int & index, QVariant & data);
+
+    QScrollBar * editorVerticalScrollBar();
 
 signals:
     void resourceDropped(TabsBlock *, const QUrl &);

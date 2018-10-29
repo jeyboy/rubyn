@@ -123,7 +123,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
     if (folder) {
         IFolder * _folder = reinterpret_cast<IFolder *>(folder);
 
-        if (_folder == 0) {
+        if (_folder == nullptr) {
             Logger::obj().write(QStringLiteral("IDE"), QStringLiteral("Cant find folder for file: '") % name % '\'', Logger::log_error);
             return;
         }

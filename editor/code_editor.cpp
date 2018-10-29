@@ -844,7 +844,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
         case QEvent::MouseMove: {
             invalidation_required =
                     //TODO: possible refactor required?
-                (folding_y >= 0 && folding_y <= display_cacher -> fill_bottom) && // cancel invalidation if blocks do not fully cover screen height and mouse pointer below the last block
+                (folding_y == NO_FOLDING || (folding_y >= 0 && folding_y <= display_cacher -> fill_bottom)) && // cancel invalidation if blocks do not fully cover screen height and mouse pointer below the last block
                     (
                         (
                             in_folding_zone && (folding_y <= curr_folding_limits.rx() || folding_y >= curr_folding_limits.ry())
@@ -1719,3 +1719,15 @@ void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
     if (rect.contains(viewport() -> rect()))
         updateExtraAreaWidth(0);
 }
+
+//void CodeEditor::scrollRangeChanged(int /*min*/, int /*max*/) {
+//    QScrollBar * scroll = static_cast<QScrollBar *>(sender());
+//    QVariant last_pos = scroll -> property("last_pos");
+
+//    if (last_pos.isValid()) {
+//        int pos = last_pos.toInt();
+
+//        disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
+//        scroll -> setValue(pos);
+//    }
+//}

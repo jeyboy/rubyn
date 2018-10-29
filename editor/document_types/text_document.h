@@ -22,6 +22,7 @@ class TextDocument : public QObject, public IDocument {
     static QLatin1String tab_space;
     static QHash<QChar, bool> word_boundary;
 
+//    int start_scroll_pos;
 //    int pos, removed, added;
 protected:
     QPointer<QTextDocument> _doc;
@@ -59,6 +60,12 @@ public:
     bool dump(QVariant & data);
     bool restore(const QVariant & data);
 
+//    inline void setStartScrollPos(const int & pos) { start_scroll_pos = pos; }
+//    inline int startScrollPos() {
+//        int res = start_scroll_pos;
+//        start_scroll_pos = 0;
+//        return res;
+//    }
 protected slots:
 //    void changesInContent(int position, int removed_count, int added_count);
 };

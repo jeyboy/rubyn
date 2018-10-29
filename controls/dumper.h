@@ -20,7 +20,7 @@ public:
     void save(IDEWindow * w, const QString & settings_filename = QString("fsettings"));
     void locationCorrection(IDEWindow * w);
 private slots:
-    void treeRangeChanged(int min, int max);
+    void scrollRangeChanged(int min, int max);
 };
 
 #endif // DUMPER_H
