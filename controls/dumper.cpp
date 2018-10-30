@@ -95,13 +95,6 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
             new_editor = false;
         }
 
-        w -> active_editor -> currentTabIndexChanged(index);
-
-        QList<int>::Iterator it = scroll_positions.begin();
-        for(int i = 0; it != scroll_positions.end(); it++, i++) {
-            w -> active_editor -> setTabVerticalScrollPos(i, *it);
-        }
-
         if (scroll_y != 0) {
             CodeEditor * editor = w -> active_editor -> editor();
             QScrollBar * scroll =  editor -> verticalScrollBar();
@@ -109,6 +102,13 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
 //            scroll -> setProperty("qty", 2); // QPlaintTextEdit does not change scroll pos on first call
 
             connect(scroll, SIGNAL(rangeChanged(int,int)), editor, SLOT(scrollRangeChanged(int,int)));
+        }
+
+        w -> active_editor -> currentTabIndexChanged(index);
+
+        QList<int>::Iterator it = scroll_positions.begin();
+        for(int i = 0; it != scroll_positions.end(); it++, i++) {
+            w -> active_editor -> setTabVerticalScrollPos(i, index != i ? *it : scroll_y);
         }
     }
 }

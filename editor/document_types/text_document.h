@@ -62,7 +62,9 @@ public:
     bool dump(QVariant & data);
     bool restore(const QVariant & data);
 
-    inline void setVerticalScrollPos(const int & pos) { scroll_pos_y = pos; }
+    inline void setVerticalScrollPos(const int & pos) {
+        qDebug() << "setVerticalScrollPos" << pos;
+        scroll_pos_y = pos; }
     inline int verticalScrollPos(const bool & drop = true) {
         int res = scroll_pos_y;
         if (drop)
