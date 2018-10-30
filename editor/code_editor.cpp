@@ -111,7 +111,6 @@ void CodeEditor::openDocument(File * file) {
         qDebug() << "openDocument" << file -> path() << new_doc_vertical_scroll_pos;
 
         vscroll -> setProperty("last_pos", new_doc_vertical_scroll_pos);
-        vscroll -> setProperty("qty", 2); // QPlaintTextEdit does not change scroll pos on first call
 
         if (new_doc_vertical_scroll_pos > 0) {
             connect(vscroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
@@ -1745,20 +1744,12 @@ void CodeEditor::scrollRangeChanged(int /*min*/, int /*max*/) {
     QScrollBar * scroll = static_cast<QScrollBar *>(sender());
     QVariant last_pos = scroll -> property("last_pos");
 
-//    qDebug() << "scrollRangeChanged" << last_pos;
-
     if (last_pos.isValid()) {
-//        QVariant qty = scroll -> property("qty");
         int pos = last_pos.toInt();
-//        int qty_val = qty.toInt() - 1;
 
-//        if (qty_val == 0) {
-            disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
-            scroll -> setProperty("last_pos", QVariant());
-            scroll -> setProperty("qty", QVariant());
-//        }
-//        else scroll -> setProperty("qty", qty_val);
+        disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
 
+        scroll -> setProperty("last_pos", QVariant());
         scroll -> setValue(pos);
     }
 }
