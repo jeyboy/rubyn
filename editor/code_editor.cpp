@@ -136,6 +136,10 @@ void CodeEditor::openDocument(File * file) {
     // else inform user about fail
 }
 
+const QString & CodeEditor::documentUid() {
+    return wrapper -> documentUid();
+}
+
 void CodeEditor::setFont(const QFont & font) {
     curr_line_font = QFont(font.family(), font.pointSize());
     curr_line_font.setUnderline(true);
@@ -1741,19 +1745,19 @@ void CodeEditor::scrollRangeChanged(int /*min*/, int /*max*/) {
     QScrollBar * scroll = static_cast<QScrollBar *>(sender());
     QVariant last_pos = scroll -> property("last_pos");
 
-    qDebug() << "scrollRangeChanged" << last_pos;
+//    qDebug() << "scrollRangeChanged" << last_pos;
 
     if (last_pos.isValid()) {
-        QVariant qty = scroll -> property("qty");
+//        QVariant qty = scroll -> property("qty");
         int pos = last_pos.toInt();
-        int qty_val = qty.toInt() - 1;
+//        int qty_val = qty.toInt() - 1;
 
-        if (qty_val == 0) {
+//        if (qty_val == 0) {
             disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
             scroll -> setProperty("last_pos", QVariant());
             scroll -> setProperty("qty", QVariant());
-        }
-        else scroll -> setProperty("qty", qty_val);
+//        }
+//        else scroll -> setProperty("qty", qty_val);
 
         scroll -> setValue(pos);
     }

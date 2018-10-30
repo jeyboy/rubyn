@@ -154,12 +154,14 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
 
         return true;
     } else {
+        //TODO: this block ruin normal logic: we should call openFileInEditor after _bar -> setCurrentItem
         if (!openFileInEditor(file)) {
             if (is_external)
                 delete file;
 
             return false;
         }
+        /////////////////
 
 
         QListWidgetItem * item = _bar -> addTab(file -> ico(), file -> name());
@@ -228,7 +230,7 @@ int TabsBlock::tabVerticalScrollPos(const int & index) {
 
     return 0;
 }
-void TabsBlock::SetTabVerticalScrollPos(const int & index, const int & pos) {
+void TabsBlock::setTabVerticalScrollPos(const int & index, const int & pos) {
     File * file = _bar -> tabFile(index);
 
     if (file && file -> isText()) {
@@ -305,10 +307,10 @@ void TabsBlock::tabsCountChanged(const int & correction) {
 }
 
 void TabsBlock::currentTabIndexChanged(const int & index) {
-    QListWidgetItem * itm = _bar -> item(index);
+    QListWidgetItem * tab = _bar -> item(index);
 
-//    if (_bar -> currentItem() != itm)
-    currentTabChanged(itm);
+    if (tab)
+       currentTabChanged(tab);
 }
 
 void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
@@ -316,12 +318,20 @@ void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
 
     File * file = _bar -> tabFile(tab);
 
-    if (!file || (file && !openFileInEditor(file))) {
-        Logger::obj().write(QLatin1Literal("Editor"), QLatin1Literal("Cant open file: ") % file -> name());
+    if (!file) {
+        Logger::obj().write(QLatin1Literal("Editor"), QLatin1Literal("INternal error: can't find file: ") % file -> name());
         return;
     }
 
-    _bar -> setCurrentItem(tab);
+    if (_editor -> documentUid() != file -> uid()) {
+        if (!openFileInEditor(file)) {
+            Logger::obj().write(QLatin1Literal("Editor"), QLatin1Literal("Can't open file: ") % file -> name());
+            return;
+        }
+    }
+
+    if (_bar -> currentItem() != tab)
+        _bar -> setCurrentItem(tab);
 }
 
 void TabsBlock::tabRemoved(QListWidgetItem * tab) {

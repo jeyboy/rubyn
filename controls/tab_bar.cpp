@@ -112,8 +112,8 @@ Qt::DropActions TabBar::supportedDropActions() const {
 
 void TabBar::dropEvent(QDropEvent * event) {
     TabBar * copy_parent = this;
-    QListWidgetItem * copy_source = 0;
-    QListWidgetItem * target_item = 0;
+    QListWidgetItem * copy_source = nullptr;
+    QListWidgetItem * target_item = nullptr;
 
     if ((_internal_move = event -> source() == this)) {
         copy_source = currentItem();
@@ -135,12 +135,15 @@ void TabBar::dropEvent(QDropEvent * event) {
         QListWidget::dropEvent(event);
     }
 
-    if (_internal_move)
-        delete copy_source;
-    else
-        emit copy_parent -> tabCloseRequested(copy_source);
+    if (_internal_move) {
+        File * file = tabFile(copy_source);
 
-    _internal_move = false;
+        if (file)
+            _tabs_linkages.insert(file -> uid(), currentItem());
+
+        delete copy_source;
+    }
+    else emit copy_parent -> tabCloseRequested(copy_source);
 }
 
 //QMimeData * TabBar::mimeData(const QList<QListWidgetItem *> items) const {

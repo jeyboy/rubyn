@@ -46,6 +46,8 @@ public:
 
     QTextDocument * toQDoc() { return _doc; }
 
+    const QString & documentUid();
+
     void readNextBlock();
 
     void lexicate(const QString & text, Highlighter * highlighter);

@@ -104,6 +104,8 @@ TextDocument::~TextDocument() {
     delete _doc;
 }
 
+const QString & TextDocument::documentUid() { return _file -> uid(); }
+
 void TextDocument::lexicate(const QString & text, Highlighter * highlighter) {
     if (_lexer)
         _lexer -> handle(text, highlighter);

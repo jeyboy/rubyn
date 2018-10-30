@@ -286,6 +286,7 @@ public:
     void setCompleter(QCompleter * new_completer);
 
     void openDocument(File * file);
+    const QString & documentUid();
 
     void setFont(const QFont & font);
 
