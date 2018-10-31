@@ -71,7 +71,6 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
         QString curr_path = widget_obj.string(QLatin1Literal("current"));
         int scroll_y = widget_obj.integer(QLatin1Literal("scroll_y"));
 
-        QList<int> scroll_positions;
         JsonArr items = widget_obj.arr(QLatin1Literal("tabs"));
         int index = 0, counter = 0;
 
@@ -82,34 +81,19 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
             QVariant state = obj.value(QLatin1Literal("state")).toVariant();
             int tab_scroll_y = obj.value(QLatin1Literal("scroll_y")).toInt();
 
-            scroll_positions.append(tab_scroll_y);
-
             if (path == curr_path) {
                 index = counter;
-                scroll_positions[counter] = scroll_y;
+                tab_scroll_y = scroll_y;
             }
 
-            w -> fileOpenRequired(path, nullptr, new_editor);
+            w -> fileOpenRequired(path, nullptr, new_editor, tab_scroll_y);
+//            w -> active_editor -> setTabVerticalScrollPos(index, tab_scroll_y);
             w -> active_editor -> tabRestoreState(counter, state);
 
             new_editor = false;
         }
 
-        if (scroll_y != 0) {
-            CodeEditor * editor = w -> active_editor -> editor();
-            QScrollBar * scroll =  editor -> verticalScrollBar();
-            scroll -> setProperty("last_pos", scroll_y);
-//            scroll -> setProperty("qty", 2); // QPlaintTextEdit does not change scroll pos on first call
-
-            connect(scroll, SIGNAL(rangeChanged(int,int)), editor, SLOT(scrollRangeChanged(int,int)));
-        }
-
         w -> active_editor -> currentTabIndexChanged(index);
-
-        QList<int>::Iterator it = scroll_positions.begin();
-        for(int i = 0; it != scroll_positions.end(); it++, i++) {
-            w -> active_editor -> setTabVerticalScrollPos(i, index != i ? *it : scroll_y);
-        }
     }
 }
 

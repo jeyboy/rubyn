@@ -237,6 +237,7 @@ class CodeEditor : public QPlainTextEdit {
     EDITOR_POS_TYPE tooplip_block_pos;
     EDITOR_POS_TYPE extra_overlay_block_num;
 
+    bool change_scroll_pos_required;
     bool can_show_folding_popup;
     bool folding_click;
     int folding_y;
@@ -447,8 +448,6 @@ private slots:
 
     void updateExtraAreaWidth(int newBlockCount);
     void updateExtraArea(const QRect &, int);
-
-    void scrollRangeChanged(int /*min*/, int /*max*/);
 };
 
 #endif // CODE_EDITOR

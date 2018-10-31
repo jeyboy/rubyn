@@ -101,20 +101,12 @@ void CodeEditor::openDocument(File * file) {
 
         QScrollBar * vscroll = verticalScrollBar();
 
-        if (wrapper)
+        if (wrapper && display_cacher -> size() > 0)
             wrapper -> setVerticalScrollPos(vscroll -> value());
 
         wrapper = file -> asText();
 
-        int new_doc_vertical_scroll_pos = wrapper -> verticalScrollPos();
-
-        qDebug() << "openDocument" << file -> path() << new_doc_vertical_scroll_pos;
-
-        vscroll -> setProperty("last_pos", new_doc_vertical_scroll_pos);
-
-        if (new_doc_vertical_scroll_pos > 0) {
-            connect(vscroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
-        }
+        change_scroll_pos_required = wrapper -> verticalScrollPos(false) > 0;
 
         QTextDocument * text_doc = wrapper -> toQDoc();
 
@@ -1173,6 +1165,11 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
     display_cacher -> fill_bottom = offset.ry();
     display_cacher -> bottom_block_number = cache_cell -> block_number;
+
+    if (change_scroll_pos_required) {
+         verticalScrollBar() -> setValue(wrapper -> verticalScrollPos(false));
+         change_scroll_pos_required = false;
+    }
 }
 
 
@@ -1738,18 +1735,4 @@ void CodeEditor::updateExtraArea(const QRect & rect, int dy) {
 
     if (rect.contains(viewport() -> rect()))
         updateExtraAreaWidth(0);
-}
-
-void CodeEditor::scrollRangeChanged(int /*min*/, int /*max*/) {
-    QScrollBar * scroll = static_cast<QScrollBar *>(sender());
-    QVariant last_pos = scroll -> property("last_pos");
-
-    if (last_pos.isValid()) {
-        int pos = last_pos.toInt();
-
-        disconnect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
-
-        scroll -> setProperty("last_pos", QVariant());
-        scroll -> setValue(pos);
-    }
 }

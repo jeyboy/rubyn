@@ -1,6 +1,8 @@
 #include "ide_window.h"
 #include "ui_ide_window.h"
 
+#include "editor/document_types/text_document.h"
+
 #include "project/projects.h"
 #include "project/project.h"
 #include "project/file.h"
@@ -116,7 +118,7 @@ void IDEWindow::splitterMoved(int /*pos*/, int index) {
     }
 }
 
-void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool & in_new) {
+void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool & in_new, const int & scroll_pos_y) {
     File * _file = nullptr;
     bool is_external = false;
 
@@ -159,6 +161,9 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
             return;
         }
     }
+
+    if (_file -> isText())
+        _file -> asText() -> setVerticalScrollPos(scroll_pos_y);
 
     if (!active_editor || in_new)
         newEditorRequired(_file, is_external);
@@ -248,7 +253,7 @@ void IDEWindow::openFile(const QUrl & url) {
     }
 
     if (!file_url.isEmpty())
-        fileOpenRequired(url.toLocalFile(), 0);
+        fileOpenRequired(url.toLocalFile(), nullptr);
 //        Projects::obj().defaultProject() -> addFile(file_url);
 }
 
