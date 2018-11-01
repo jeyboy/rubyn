@@ -58,6 +58,12 @@ void HighlightFormatFactory::registerSearchResultsOverlayFormat() {
     _formats.insert(hid_search_results_overlay, format);
 }
 
+void HighlightFormatFactory::registerParaHoverLineFormat() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(50, 205, 50, 224));
+    _formats.insert(hid_para_hover_line, format);
+}
+
 void HighlightFormatFactory::registerParaHoverOverlayFormat() {
     QTextCharFormat format;
     format.setForeground(QColor::fromRgb(180, 238, 180, 192));
@@ -260,6 +266,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerScopeVisibilityFormat();
     registerFoldingParaRangeFormat();
     registerParaContentPopupFormat();
+    registerParaHoverLineFormat();
     registerFoldedOverlayFormat();
     registerSearchResultsOverlayFormat();
     registerParaHoverOverlayFormat();

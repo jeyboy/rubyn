@@ -3,8 +3,6 @@
 
 #include "misc/defines.h"
 
-#define NO_INFO -1
-
 struct ActiveParaInfo {
     EDITOR_POS_TYPE opener_pos;
     EDITOR_POS_TYPE opener_length;
@@ -15,7 +13,11 @@ struct ActiveParaInfo {
     EDITOR_POS_TYPE start_block_num;
     EDITOR_POS_TYPE end_block_num;
 
+    EDITOR_POS_TYPE level;
+
     ActiveParaInfo() { clear(); }
+
+    inline bool isValid() { return start_block_num != NO_INFO; }
 
     inline void setOpener(const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length = 0) {
         opener_pos = pos;
@@ -32,6 +34,7 @@ struct ActiveParaInfo {
     }
 
     void clear() {
+        level = NO_INFO;
         opener_pos = NO_INFO;
         opener_length = 0;
         closer_pos = NO_INFO;

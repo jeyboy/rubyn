@@ -5,6 +5,8 @@
 #include <qobject.h>
 #include <qstringbuilder.h>
 
+#define NO_INFO -1
+
 #define PROJECT_FORMAT_TYPE quint8
 
 #define PARA_TYPE quint32

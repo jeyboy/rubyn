@@ -28,6 +28,8 @@ protected:
 
     void registerSearchResultsOverlayFormat();
 
+    void registerParaHoverLineFormat();
+
     void registerParaHoverOverlayFormat();
 
     void registerParaContentPopupFormat();

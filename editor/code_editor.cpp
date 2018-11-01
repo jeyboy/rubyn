@@ -419,7 +419,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
 
 
 void CodeEditor::drawParaOverlays(QPainter & painter) {
-    if (para_info.start_block_num != NO_INFO) {
+    if (para_info.isValid()) {
         QTextBlock opener_blk = document() -> findBlockByNumber(para_info.start_block_num);
         drawTextOverlay(hid_para_hover_overlay, painter, opener_blk, para_info.opener_pos, para_info.opener_length);
 
@@ -991,6 +991,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
     bool editable = !isReadOnly();
     bool need_placeholder = !placeholderText().isEmpty() && document() -> isEmpty();
+    bool has_active_para = para_info.isValid();
 
     QPointF offset(contentOffset());
     QTextBlock block = firstVisibleBlock();
@@ -1016,6 +1017,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     const QTextCharFormat & selection_format = HighlightFormatFactory::obj().getFormatFor(hid_selection);
     const QTextCharFormat & folding_level_line_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_level_line);
     const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_line); //
+    const QTextCharFormat & active_para_line_format = HighlightFormatFactory::obj().getFormatFor(hid_para_hover_line); //
 
     forever {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
@@ -1053,9 +1055,22 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 painter.save();
                 painter.setPen(folding_level_line_format.foreground().color());
                 int folding_line_offset = offset.rx() + doc_margin + pseudo_tab_width;
+                int line_height = cache_cell -> bounding_rect.height();
+                int it = 0;
 
-                while(--level > 0) {
-                    painter.drawLine(folding_line_offset, offset.ry(), folding_line_offset, offset.ry() + cache_cell -> bounding_rect.height());
+                while(++it < level) {
+                    QLine line(folding_line_offset, offset.ry(), folding_line_offset, offset.ry() + line_height);
+
+                    if (has_active_para && it == para_info.level && para_info.containsBlockNumber(cache_cell -> block_number)) {
+
+                        painter.save();
+
+                        painter.setPen(active_para_line_format.foreground().color());
+                        painter.drawLine(line);
+
+                        painter.restore();
+                    }
+                    else painter.drawLine(line);
 
                     folding_line_offset += pseudo_tab_width;
                 }
@@ -1627,6 +1642,7 @@ void CodeEditor::cursorMoved() {
 
         int start_pos = blk.blockNumber();
         int end_pos = start_pos;
+        para_info.level = TextDocumentLayout::getBlockLevel(blk);
 
         if (para) {
             if (para -> is_blockator) {
@@ -1699,8 +1715,6 @@ void CodeEditor::cursorMoved() {
                     qDebug() << "PARA WITHOUT CLOSER";
                 }
             } else {
-                int level = TextDocumentLayout::getBlockLevel(blk);
-
                 para_info.setOpener(para -> pos, para -> length);
                 para_info.setCloser(-1);
 
@@ -1708,7 +1722,7 @@ void CodeEditor::cursorMoved() {
                     if (para -> para_type == pt_max) {
                         blk = blk.next();
 
-                        if (TextDocumentLayout::getBlockLevel(blk) <= level)
+                        if (TextDocumentLayout::getBlockLevel(blk) <= para_info.level)
                             break;
                         else
                             ++end_pos;
@@ -1732,7 +1746,7 @@ void CodeEditor::cursorMoved() {
         }
     }
 
-    if (!initiated && para_info.start_block_num != -1) {
+    if (!initiated && para_info.isValid()) {
         para_info.clear();
 
         viewport() -> update(); // update editor marks
