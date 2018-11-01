@@ -101,8 +101,10 @@ void CodeEditor::openDocument(File * file) {
 
         QScrollBar * vscroll = verticalScrollBar();
 
-        if (wrapper && display_cacher -> size() > 0)
+        if (wrapper && display_cacher -> size() > 0) {
             wrapper -> setVerticalScrollPos(vscroll -> value());
+            hideOverlay();
+        }
 
         wrapper = file -> asText();
 
