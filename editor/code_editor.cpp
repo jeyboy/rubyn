@@ -1554,10 +1554,19 @@ void CodeEditor::applyCompletion(const QString & completion) {
 }
 
 void CodeEditor::highlightCurrentLine() {
-    QTextCursor cursor = textCursor();
-    curr_block_number = cursor.blockNumber();
+    curr_block_number = -1;
+    int pos_in_block = 0;
 
-    emit cursorPosChanged(QStringLiteral("Line: %1, Col: %2").arg(curr_block_number + 1).arg(cursor.positionInBlock()));
+
+    if (hasFocus()) {
+        QTextCursor cursor = textCursor();
+        curr_block_number = cursor.blockNumber();
+        pos_in_block = cursor.positionInBlock();
+    }
+
+    emit cursorPosChanged(
+        QLatin1Literal("Line: ") % QString::number(curr_block_number + 1) % QLatin1Literal(", Col: ") % QString::number(pos_in_block)
+    );
 
     if (display_cacher -> size() > 0)
         viewport() -> update();
