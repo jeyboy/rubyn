@@ -2,7 +2,7 @@
 
 void HighlightFormatFactory::registerSelectionFormat() {
     QTextCharFormat format;
-    format.setBackground(QColor::fromRgb(51, 153, 255, 32));
+    format.setBackground(QColor::fromRgb(51, 153, 255, 64));
     _formats.insert(hid_selection, format);
 }
 

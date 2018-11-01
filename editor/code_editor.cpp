@@ -41,9 +41,9 @@
 //p_textEdit->mergeCurrentCharFormat(fmt);
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
-    overlay(new OverlayInfo()), tooplip_block_num(-1), tooplip_block_pos(-1), extra_overlay_block_num(-1),
+    overlay(new OverlayInfo()), tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO), extra_overlay_block_num(NO_INFO),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
-    curr_block_number(-1),  folding_lines_coverage_level(-1), folding_lines_coverage_level_stoper_min(FOLDING_COVERAGE_LEVEL_STOPER),
+    curr_block_number(NO_INFO),  folding_lines_coverage_level(NO_INFO), folding_lines_coverage_level_stoper_min(FOLDING_COVERAGE_LEVEL_STOPER),
     folding_lines_coverage_level_stoper_max(FOLDING_COVERAGE_LEVEL_STOPER)
 {
     extra_area = new ExtraArea(this);
@@ -1018,6 +1018,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     const QTextCharFormat & folding_level_line_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_level_line);
     const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_line); //
     const QTextCharFormat & active_para_line_format = HighlightFormatFactory::obj().getFormatFor(hid_para_hover_line); //
+    const QTextCharFormat & current_line_format = HighlightFormatFactory::obj().getFormatFor(hid_current_line);
 
     forever {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
@@ -1091,7 +1092,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                     QTextLayout::FormatRange o;
                     o.start = selStart;
                     o.length = selEnd - selStart;
-                    o.format = range.format; //selection_format; //
+                    o.format = selection_format; //range.format; //selection_format; //
                     selections.append(o);
                 } else if (!range.cursor.hasSelection() && range.format.hasProperty(QTextFormat::FullWidthSelection)
                            && block.contains(range.cursor.position())) {
@@ -1105,7 +1106,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                     if (o.start + o.length == bllen - 1)
                         ++o.length; // include newline
 
-                    o.format = range.format; // selection_format
+                    o.format = selection_format; //range.format; // selection_format
                     selections.append(o);
                 }
             }
@@ -1151,6 +1152,10 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
             if (cache_cell -> user_data && cache_cell -> user_data -> hasBreakpoint()) {
                 painter.fillRect(0, offset.ry(), max_x, cache_cell -> bounding_rect.height(), breakpoint_line_format.background());
+            }
+
+            if (cache_cell -> block_number == curr_block_number) {
+                painter.fillRect(0, offset.ry(), max_x, cache_cell -> bounding_rect.height(), current_line_format.background());
             }
         }
 
@@ -1308,21 +1313,6 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 //        }
 //    }
 //////////////////////////////////////////////////////////////////
-
-//////////////// DRAW OVERLAYS
-//    if (!d->m_findScopeStart.isNull() && d->m_findScopeVerticalBlockSelectionFirstColumn < 0) {
-
-//        TextEditorOverlay *overlay = new TextEditorOverlay(this);
-//        overlay->addOverlaySelection(d->m_findScopeStart.position(),
-//                                     d->m_findScopeEnd.position(),
-//                                     searchScopeFormat.foreground().color(),
-//                                     searchScopeFormat.background().color(),
-//                                     TextEditorOverlay::ExpandBegin);
-//        overlay->setAlpha(false);
-//        overlay->paint(&painter, e->rect());
-//        delete overlay;
-//    }
-/// //////////////////////////////////
 
     drawFoldingOverlays(painter, e -> rect());
 
@@ -1564,69 +1554,13 @@ void CodeEditor::applyCompletion(const QString & completion) {
 }
 
 void CodeEditor::highlightCurrentLine() {
-    // need to show overlay for foldings in folding start/end not on the screen right now
-    //                showOverlay(document() -> findBlockByNumber(60));
-
-
-    QList<QTextEdit::ExtraSelection> extra_selections;
-
     QTextCursor cursor = textCursor();
     curr_block_number = cursor.blockNumber();
-    cursor.clearSelection();
 
     emit cursorPosChanged(QStringLiteral("Line: %1, Col: %2").arg(curr_block_number + 1).arg(cursor.positionInBlock()));
 
-    if (!isReadOnly()) { //
-        QTextEdit::ExtraSelection selection;
-
-        const QTextCharFormat & selection_format = HighlightFormatFactory::obj().getFormatFor(hid_current_line);
-        QColor lineColor = selection_format.background().color();
-
-        QTextBlock origin_block = cursor.block();
-
-        selection.format.setBackground(lineColor);
-        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-        selection.cursor = cursor;
-        selection.cursor.clearSelection();
-        extra_selections.append(selection);
-
-        if (wordWrapMode() != QTextOption::NoWrap) {
-            int offset = 0;
-
-            while(true) {
-                if (cursor.movePosition(QTextCursor::Down) && origin_block == cursor.block()) {
-                    ++offset;
-                    selection.cursor = cursor;
-                    extra_selections.append(selection);
-                }
-                else break;
-            }
-
-            if (offset != 0)
-                cursor.movePosition(QTextCursor::Up, QTextCursor::MoveAnchor, offset);
-
-            while(true) {
-                if (cursor.movePosition(QTextCursor::Up) && origin_block == cursor.block()) {
-                    selection.cursor = cursor;
-                    extra_selections.append(selection);
-                }
-                else break;
-            }
-        }
-
-        selection.format.setProperty(QTextFormat::UserProperty, true);
-
-        for(QTextBlock::iterator it = origin_block.begin(); it != origin_block.end(); it++) {
-            QTextFragment fragment = it.fragment();
-
-            selection.cursor.setPosition(fragment.position());
-            selection.cursor.setPosition(fragment.position() + fragment.length(), QTextCursor::KeepAnchor);
-            selection.format = fragment.charFormat();
-            extra_selections.append(selection);
-        }
-    }
-
-    setExtraSelections(extra_selections);
+    if (display_cacher -> size() > 0)
+        viewport() -> update();
 }
 
 void CodeEditor::cursorMoved() {
