@@ -7,6 +7,7 @@
 #include <qmimedata.h>
 
 #include "misc/defines.h"
+#include "editor/active_para_info.h"
 
 class QPaintEvent;
 class QResizeEvent;
@@ -244,9 +245,7 @@ class CodeEditor : public QPlainTextEdit {
     int folding_overlay_y;
 
     QPoint curr_folding_limits;
-    QPoint active_para_limits;
-    QPoint active_para_opener;
-    QPoint active_para_closer;
+    ActiveParaInfo para_info;
 
     int curr_block_number;
 
