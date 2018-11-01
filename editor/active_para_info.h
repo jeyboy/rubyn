@@ -3,6 +3,8 @@
 
 #include "misc/defines.h"
 
+class ParaCell;
+
 struct ActiveParaInfo {
     EDITOR_POS_TYPE opener_pos;
     EDITOR_POS_TYPE opener_length;
@@ -33,15 +35,9 @@ struct ActiveParaInfo {
         return start_block_num > NO_INFO && block_num >= start_block_num && block_num <= end_block_num;
     }
 
-    void clear() {
-        level = NO_INFO;
-        opener_pos = NO_INFO;
-        opener_length = 0;
-        closer_pos = NO_INFO;
-        closer_length = 0;
-        start_block_num = NO_INFO;
-        end_block_num = NO_INFO;
-    }
+    void clear();
+
+    ParaCell * findOpositePara(ParaCell *& para);
 };
 
 #endif // ACTIVE_PARA_INFO_H

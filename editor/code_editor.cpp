@@ -1649,40 +1649,7 @@ void CodeEditor::cursorMoved() {
                 ParaCell * stoper = para -> closer;
 
                 if (!stoper) {
-                    if (para -> is_opener) {
-                        stoper = para -> next;
-
-                        while(stoper && (stoper -> para_type == pt_max || stoper -> para_type == pt_none || !stoper -> is_opener || !stoper -> is_blockator))
-                            stoper = stoper -> next;
-
-                        if (stoper && stoper -> closer) {
-                            stoper = stoper -> closer -> next;
-
-                            while(stoper && (stoper -> para_type == pt_max || stoper -> para_type == pt_none || stoper -> is_opener || !stoper -> is_blockator))
-                                stoper = stoper -> next;
-                        } else {
-                            qDebug() << "NEED PARA EXTRA CHECK";
-                        }
-                    } else {
-                        stoper = para -> prev;
-
-                        while(stoper && (stoper -> para_type == pt_max || stoper -> para_type == pt_none || stoper -> is_opener || !stoper -> is_blockator))
-                            stoper = stoper -> prev;
-
-                        if (stoper && stoper -> closer) {
-                            stoper = stoper -> closer -> prev;
-
-                            while(stoper && (stoper -> para_type == pt_max || stoper -> para_type == pt_none || !stoper -> is_opener || !stoper -> is_blockator))
-                                stoper = stoper -> prev;
-                        } else {
-                            qDebug() << "NEED PARA EXTRA CHECK";
-                        }
-                    }
-
-                    if (stoper) {
-                        para -> closer = stoper;
-                        stoper -> closer = para;
-                    }
+                    stoper = para_info.findOpositePara(para);
                 }
 
                 if (stoper) {

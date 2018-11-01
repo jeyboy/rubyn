@@ -73,7 +73,8 @@ SOURCES += main.cpp\
     lexer/igrammar.cpp \
     editor/text_document_layout.cpp \
     controls/logger_window.cpp \
-    editor/code_editor_cache.cpp
+    editor/code_editor_cache.cpp \
+    editor/active_para_info.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
