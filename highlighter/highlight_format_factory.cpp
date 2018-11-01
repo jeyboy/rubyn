@@ -51,6 +51,13 @@ void HighlightFormatFactory::registerFoldedOverlayFormat() {
     _formats.insert(hid_folded_overlay, format);
 }
 
+void HighlightFormatFactory::registerFoldedSelectedOverlayFormat() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(192, 192, 192, 192));
+    format.setBackground(QColor::fromRgb(51, 153, 255, 64));
+    _formats.insert(hid_folded_selected_overlay, format);
+}
+
 void HighlightFormatFactory::registerSearchResultsOverlayFormat() {
     QTextCharFormat format;
     format.setForeground(QColor::fromRgb(218, 206, 26, 224));
@@ -273,6 +280,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerBreakpointsRangeFormat();
     registerBreakpointLineFormat();
     registerCharsLimiterLineFormat();
+    registerFoldedSelectedOverlayFormat();
 
     registerUnclosedParaFormat();
     registerLabelFormat();

@@ -466,7 +466,7 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
             QRect rect = textRect(it, text_pos, 1);
             rect.adjust(3, 0, it -> folding_overlay_text.length() * symbol_width + 10, 0);
 
-            drawTextOverlay(hid_folded_overlay, painter, rect);
+            drawTextOverlay(it -> is_folding_selected ? hid_folded_selected_overlay : hid_folded_overlay, painter, rect);
 
             painter.setPen(QColor::fromRgb(0, 0, 0));
             painter.drawText(rect, Qt::AlignCenter, it -> folding_overlay_text);
@@ -1088,6 +1088,8 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 const int selStart = range.cursor.selectionStart() - blpos;
                 const int selEnd = range.cursor.selectionEnd() - blpos;
 
+                cache_cell -> is_folding_selected = selEnd > bllen;
+
                 if (selStart < bllen && selEnd > 0 && selEnd > selStart) {
                     QTextLayout::FormatRange o;
                     o.start = selStart;
@@ -1556,7 +1558,6 @@ void CodeEditor::applyCompletion(const QString & completion) {
 void CodeEditor::highlightCurrentLine() {
     curr_block_number = -1;
     int pos_in_block = 0;
-
 
     if (hasFocus()) {
         QTextCursor cursor = textCursor();

@@ -23,9 +23,10 @@ struct CodeEditorCacheCell {
 
     bool is_service;
     bool is_visible;
+    bool is_folding_selected;
 
     CodeEditorCacheCell(const int & block_number, CodeEditorCacheCell * prev_token = nullptr)
-        : prev(prev_token), next(nullptr), block_number(block_number), user_data(nullptr), layout(nullptr), is_service(false), is_visible(true)
+        : prev(prev_token), next(nullptr), block_number(block_number), user_data(nullptr), layout(nullptr), is_service(false), is_visible(true), is_folding_selected(false)
     {
         if (prev) {
             if ((next = prev -> next))

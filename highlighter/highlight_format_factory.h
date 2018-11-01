@@ -24,6 +24,8 @@ protected:
 
     void registerFoldingParaRangeFormat();
 
+    void registerFoldedSelectedOverlayFormat();
+
     void registerFoldedOverlayFormat();
 
     void registerSearchResultsOverlayFormat();
