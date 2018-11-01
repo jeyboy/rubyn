@@ -65,6 +65,11 @@ void HighlightFormatFactory::registerParaHoverOverlayFormat() {
     _formats.insert(hid_para_hover_overlay, format);
 }
 
+void HighlightFormatFactory::registerParaContentPopupFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(172, 229, 238, 64));
+    _formats.insert(hid_para_content_popup, format);
+}
 
 
 void HighlightFormatFactory::registerBreakpointsRangeFormat() {
@@ -254,6 +259,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerCurrentLineExtraFormat();
     registerScopeVisibilityFormat();
     registerFoldingParaRangeFormat();
+    registerParaContentPopupFormat();
     registerFoldedOverlayFormat();
     registerSearchResultsOverlayFormat();
     registerParaHoverOverlayFormat();

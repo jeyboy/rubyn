@@ -428,13 +428,13 @@ void CodeEditor::drawParaOverlays(QPainter & painter) {
 
             if (extra_overlay_block_num == active_para_limits.rx()) {
                 if (blockOnScreen(closer_blk))
-                    showOverlay(opener_blk);
+                    showOverlay(hid_para_content_popup, opener_blk);
                 else
                     hideOverlay();
             }
             else {
                 if (blockOnScreen(opener_blk))
-                    showOverlay(closer_blk);
+                    showOverlay(hid_para_content_popup, closer_blk);
                 else
                     hideOverlay();
             }
@@ -622,7 +622,7 @@ void CodeEditor::showOverlay(const QRect & rect, const QPixmap & overlay_img, co
     overlay -> showInfo(rect, overlay_img);
 }
 
-void CodeEditor::showOverlay(const QTextBlock & block) {
+void CodeEditor::showOverlay(const UID_TYPE & draw_uid, const QTextBlock & block) {
     if (blockOnScreen(block)) {
         hideOverlay();
         return;
@@ -649,7 +649,8 @@ void CodeEditor::showOverlay(const QTextBlock & block) {
     }
 
     QPixmap pixmap(bl_geometry_rect.size());
-    pixmap.fill(palette().base().color());
+    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(static_cast<Identifier>(draw_uid));
+    pixmap.fill(format.background().color());
 
     QPainter painter(&pixmap);
 
@@ -1627,64 +1628,103 @@ void CodeEditor::cursorMoved() {
         int end_pos = start_pos;
 
         if (para) {
-            if (para -> closer) {
+            if (para -> is_blockator) {
                 ParaCell * stoper = para -> closer;
 
-                if (para -> is_opener) {
-                    active_para_opener.rx() = para -> pos;
-                    active_para_opener.ry() = para -> length;
+                if (!stoper) {
+                    if (para -> is_opener) {
+                        stoper = para -> next;
 
-                    active_para_closer.rx() = stoper -> pos;
-                    active_para_closer.ry() = stoper -> length;
+                        while(stoper && (stoper -> para_type == pt_max || stoper -> para_type == pt_none || !stoper -> is_opener || !stoper -> is_blockator))
+                            stoper = stoper -> next;
 
-                    while(para && para != stoper) {
-                        if (para -> para_type == pt_max)
-                            ++end_pos;
+                        if (stoper && stoper -> closer) {
+                            stoper = stoper -> closer -> next;
 
-                        para = para -> next;
+                            while(stoper && (stoper -> para_type == pt_max || stoper -> para_type == pt_none || stoper -> is_opener || !stoper -> is_blockator))
+                                stoper = stoper -> next;
+                        } else {
+                            qDebug() << "NEED PARA EXTRA CHECK";
+                        }
+                    } else {
+                        stoper = para -> prev;
+
+                        while(stoper && (stoper -> para_type == pt_max || stoper -> para_type == pt_none || stoper -> is_opener || !stoper -> is_blockator))
+                            stoper = stoper -> prev;
+
+                        if (stoper && stoper -> closer) {
+                            stoper = stoper -> closer -> prev;
+
+                            while(stoper && (stoper -> para_type == pt_max || stoper -> para_type == pt_none || !stoper -> is_opener || !stoper -> is_blockator))
+                                stoper = stoper -> prev;
+                        } else {
+                            qDebug() << "NEED PARA EXTRA CHECK";
+                        }
                     }
-                } else {
-                    active_para_opener_hovered = false;
-                    active_para_opener.rx() = stoper -> pos;
-                    active_para_opener.ry() = stoper -> length;
 
-                    active_para_closer.rx() = para -> pos;
-                    active_para_closer.ry() = para -> length;
-
-                    while(para && para != stoper) {
-                        if (para -> para_type == pt_max)
-                            --start_pos;
-
-                        para = para -> prev;
+                    if (stoper) {
+                        para -> closer = stoper;
+                        stoper -> closer = para;
                     }
+
                 }
 
-                initiated = true;
-            } else {
-                if (!para -> is_blockator) {
-                    int level = TextDocumentLayout::getBlockLevel(blk);
+                if (stoper) {
+                    if (para -> is_opener) {
+                        active_para_opener.rx() = para -> pos;
+                        active_para_opener.ry() = para -> length;
 
-                    active_para_opener.rx() = para -> pos;
-                    active_para_opener.ry() = para -> length;
+                        active_para_closer.rx() = stoper -> pos;
+                        active_para_closer.ry() = stoper -> length;
 
-                    active_para_closer.rx() = -1;
-
-                    while(para -> next) {
-                        if (para -> para_type == pt_max) {
-                            blk = blk.next();
-
-                            if (TextDocumentLayout::getBlockLevel(blk) <= level)
-                                break;
-                            else
+                        while(para && para != stoper) {
+                            if (para -> para_type == pt_max)
                                 ++end_pos;
-                        }
 
-                        para = para -> next;
+                            para = para -> next;
+                        }
+                    } else {
+                        active_para_opener_hovered = false;
+                        active_para_opener.rx() = stoper -> pos;
+                        active_para_opener.ry() = stoper -> length;
+
+                        active_para_closer.rx() = para -> pos;
+                        active_para_closer.ry() = para -> length;
+
+                        while(para && para != stoper) {
+                            if (para -> para_type == pt_max)
+                                --start_pos;
+
+                            para = para -> prev;
+                        }
                     }
 
                     initiated = true;
+                } else {
+                    qDebug() << "PARA WITHOUT CLOSER";
                 }
-                else qDebug() << "PARA WITHOUT CLOSER";
+            } else {
+                int level = TextDocumentLayout::getBlockLevel(blk);
+
+                active_para_opener.rx() = para -> pos;
+                active_para_opener.ry() = para -> length;
+
+                active_para_closer.rx() = -1;
+
+                while(para -> next) {
+                    if (para -> para_type == pt_max) {
+                        blk = blk.next();
+
+                        if (TextDocumentLayout::getBlockLevel(blk) <= level)
+                            break;
+                        else
+                            ++end_pos;
+                    }
+
+                    para = para -> next;
+                }
+
+                initiated = true;
             }
         }
 

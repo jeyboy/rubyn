@@ -386,7 +386,7 @@ protected:
 
     void showFoldingContentPopup(const QTextBlock & block);
     void showOverlay(const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid = -1);
-    void showOverlay(const QTextBlock & block);
+    void showOverlay(const UID_TYPE & draw_uid, const QTextBlock & block);
     void hideOverlay();
     void hideOverlayIfNoNeed();
 

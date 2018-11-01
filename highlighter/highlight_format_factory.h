@@ -30,6 +30,8 @@ protected:
 
     void registerParaHoverOverlayFormat();
 
+    void registerParaContentPopupFormat();
+
     void registerBreakpointsRangeFormat();
 
     void registerBreakpointLineFormat();
