@@ -657,7 +657,7 @@ void CodeEditor::showOverlay(const UID_TYPE & draw_uid, const QTextBlock & block
     paintBlock(painter, block, 0, bl_geometry_rect.top(), bl_geometry_rect.bottom());
 
     overlay -> registerShowing(false, overlay_pos, block_number);
-    overlay -> showInfo(this, pixmap, overlay_pos);
+    overlay -> showInfo(this, pixmap, overlay_pos, (horizontalScrollBar() -> isVisible() ? -horizontalScrollBar() -> height() : 0));
 }
 
 void CodeEditor::hideOverlay() {

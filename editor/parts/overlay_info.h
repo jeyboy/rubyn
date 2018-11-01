@@ -53,21 +53,21 @@ public:
         return isVisible() && property("by_rect").toBool() == by_rect;
     }
 
-    void showInfo(QWidget * widget, const QRect & rect, const OverlayPos & pos = op_top) {
+    void showInfo(QWidget * widget, const QRect & rect, const OverlayPos & pos = op_top, const int & bottom_offset = 0) {
         QPixmap pixmap(rect.size());
         widget -> render(&pixmap, QPoint(), QRegion(rect));
 
-        showInfo(widget, pixmap, pos);
+        showInfo(widget, pixmap, pos, bottom_offset);
     }
 
-    void showInfo(QWidget * widget, const QPixmap & pixmap, const OverlayPos & pos = op_top) {
+    void showInfo(QWidget * widget, const QPixmap & pixmap, const OverlayPos & pos = op_top, const int & bottom_offset = 0) {
         setPixmap(pixmap);
 
         QPoint new_pos =
             pos == op_top ?
-                widget -> mapToGlobal(widget -> rect().topLeft()) - QPoint(0, pixmap.height() + 2)
+                widget -> mapToGlobal(widget -> rect().topLeft()) - QPoint(0, pixmap.height())
                       :
-                widget -> mapToGlobal(widget -> rect().bottomLeft()) + QPoint(0, 2);
+                widget -> mapToGlobal(widget -> rect().bottomLeft()) + QPoint(0, 2 + bottom_offset);
 
         move(new_pos);
         resize(pixmap.width(), pixmap.height());
