@@ -11,6 +11,7 @@ struct CodeEditorCacheCell {
     CodeEditorCacheCell * prev;
     CodeEditorCacheCell * next;
 
+    int level_offset;
     int block_number;
     EDITOR_POS_TYPE block_pos;
     EDITOR_POS_TYPE block_length;
@@ -24,11 +25,15 @@ struct CodeEditorCacheCell {
     bool is_service;
     bool is_visible;
     bool is_folding_selected;
+    bool is_folding_partial;
 
     CodeEditorCacheCell(const int & block_number, CodeEditorCacheCell * prev_token = nullptr)
-        : prev(prev_token), next(nullptr), block_number(block_number), user_data(nullptr), layout(nullptr), is_service(false), is_visible(true), is_folding_selected(false)
+        : prev(prev_token), next(nullptr), level_offset(0), block_number(block_number), user_data(nullptr), layout(nullptr), is_service(false), is_visible(true), is_folding_selected(false), is_folding_partial(false)
     {
         if (prev) {
+            level_offset = prev -> level_offset;
+            is_folding_partial = prev -> is_folding_partial;
+
             if ((next = prev -> next))
                 next -> prev = this;
 
@@ -43,6 +48,8 @@ struct CodeEditorCacheCell {
 //        if (next)
 //            next -> prev = prev;
     }
+
+    void setUserData(BlockUserData * udata);
 };
 
 class CodeEditorCache {

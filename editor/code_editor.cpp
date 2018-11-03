@@ -1005,6 +1005,11 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     display_cacher -> clear();
     display_cacher -> top_block_number = block.blockNumber();
     cache_cell = display_cacher -> append(display_cacher -> top_block_number);
+    cache_cell -> user_data = TextDocumentLayout::getUserDataForBlock(block);
+    cache_cell -> is_folding_partial = cache_cell -> user_data ? cache_cell -> user_data -> inPartialBlock()  : false;
+
+    if (cache_cell -> is_folding_partial)
+        cache_cell -> level_offset = -1;
     /////////////////////
 
     // keep right margin clean from full-width selection
@@ -1024,7 +1029,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
 
-        cache_cell -> user_data = TextDocumentLayout::getUserDataForBlock(block);
+        cache_cell -> setUserData(TextDocumentLayout::getUserDataForBlock(block));
 
         if (!block.isVisible()) {
             cache_cell -> is_visible = false;
@@ -1051,6 +1056,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
             //TODO: implement switcher and draw this only if enabled showing of folding scopes
             int level = cache_cell -> user_data ? cache_cell -> user_data -> level : DEFAULT_LEVEL;
+            level += cache_cell -> level_offset;
 
             if (level > 0) {
                 painter.save();
@@ -1152,12 +1158,18 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 cache_cell -> layout -> drawCursor(&painter, offset, cpos, cursorWidth());
             }
 
-            if (cache_cell -> user_data && cache_cell -> user_data -> hasBreakpoint()) {
-                painter.fillRect(0, offset.ry(), max_x, cache_cell -> bounding_rect.height(), breakpoint_line_format.background());
-            }
+            bool is_breakpoint_line = cache_cell -> user_data && cache_cell -> user_data -> hasBreakpoint();
+            bool is_current_line = cache_cell -> block_number == curr_block_number;
 
-            if (cache_cell -> block_number == curr_block_number) {
-                painter.fillRect(0, offset.ry(), max_x, cache_cell -> bounding_rect.height(), current_line_format.background());
+            if (is_current_line || is_breakpoint_line) {
+                QRect r(0, offset.ry(), max_x, cache_cell -> bounding_rect.height());
+
+                if (is_breakpoint_line)
+                    painter.fillRect(r, breakpoint_line_format.background());
+
+                if (is_current_line) {
+                    painter.fillRect(r, current_line_format.background());
+                }
             }
         }
 
@@ -1168,9 +1180,9 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
         block = block.next();
 
-        if (block.isValid())
+        if (block.isValid()) {
             cache_cell = display_cacher -> append(cache_cell -> block_number + 1);
-        else {
+        } else {
             display_cacher -> partialy_filled = true;
             break;
         }

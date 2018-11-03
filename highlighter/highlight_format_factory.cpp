@@ -53,7 +53,7 @@ void HighlightFormatFactory::registerFoldedOverlayFormat() {
 
 void HighlightFormatFactory::registerFoldedSelectedOverlayFormat() {
     QTextCharFormat format;
-    format.setForeground(QColor::fromRgb(192, 192, 192, 192));
+    format.setForeground(QColor::fromRgb(0, 0, 0, 128));
     format.setBackground(QColor::fromRgb(51, 153, 255, 64));
     _formats.insert(hid_folded_selected_overlay, format);
 }
