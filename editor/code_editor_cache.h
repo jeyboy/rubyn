@@ -2,16 +2,30 @@
 #define CODE_EDITOR_CACHE_H
 
 #include <qrect.h>
+#include <qvector.h>
 #include "misc/defines.h"
 
 class BlockUserData;
 class QTextLayout;
 
+//enum CodeEditorCacheCellFlag : quint8 {
+//    cecf_none = 0,
+//    cecf_service = 1,
+//    cecf_folding_selected = 2,
+//    cecf_folding_partial_opener = 4,
+//    cecf_folding_partial = 8,
+//    cecf_visible = 16
+//};
+
+class CodeEditorCache;
+class QTextBlock;
+
 struct CodeEditorCacheCell {
+    CodeEditorCache * parent;
+
     CodeEditorCacheCell * prev;
     CodeEditorCacheCell * next;
 
-    int level_offset;
     int block_number;
     EDITOR_POS_TYPE block_pos;
     EDITOR_POS_TYPE block_length;
@@ -25,15 +39,12 @@ struct CodeEditorCacheCell {
     bool is_service;
     bool is_visible;
     bool is_folding_selected;
-    bool is_folding_partial;
+    bool is_folding_opener;
 
-    CodeEditorCacheCell(const int & block_number, CodeEditorCacheCell * prev_token = nullptr)
-        : prev(prev_token), next(nullptr), level_offset(0), block_number(block_number), user_data(nullptr), layout(nullptr), is_service(false), is_visible(true), is_folding_selected(false), is_folding_partial(false)
+    CodeEditorCacheCell(CodeEditorCache * parent, const int & block_number, CodeEditorCacheCell * prev_token = nullptr)
+        : parent(parent), prev(prev_token), next(nullptr), block_number(block_number), user_data(nullptr), layout(nullptr), is_service(false), is_visible(true), is_folding_selected(false), is_folding_opener(false)
     {
         if (prev) {
-            level_offset = prev -> level_offset;
-            is_folding_partial = prev -> is_folding_partial;
-
             if ((next = prev -> next))
                 next -> prev = this;
 
@@ -50,13 +61,20 @@ struct CodeEditorCacheCell {
     }
 
     void setUserData(BlockUserData * udata);
+
+    void initLevels(const QTextBlock & block);
 };
 
 class CodeEditorCache {
     CodeEditorCacheCell * root, * last;
+    QVector<qint16> block_offsets;
 
+    qreal symbol_width;
+    int tab_length;
     int length;
-public:
+
+    friend struct CodeEditorCacheCell;
+public:   
     int top_block_number;
     int bottom_block_number;
     int fill_bottom;
@@ -68,14 +86,21 @@ public:
 
     void clear();
 
+    void setTab(const QLatin1String & tab_str, const qreal & def_symbol_width) {
+        tab_length = tab_str.size();
+        symbol_width = def_symbol_width;
+    }
+
     inline int size() { return length; }
+    inline int levelIndent(const int & level) { return level >= block_offsets.size() ? 0 : block_offsets[level]; }
+    inline bool hasLevels() { return block_offsets.size() > 0; }
 
     inline CodeEditorCacheCell * begin() { return root -> next; }
     inline CodeEditorCacheCell * end() { return last -> prev; }
 
     inline CodeEditorCacheCell * append(const int & number) {
         ++length;
-        return new CodeEditorCacheCell(number, last -> prev);
+        return new CodeEditorCacheCell(this, number, last -> prev);
     }
 
     CodeEditorCacheCell * cacheForBlockNumber(const int & number) {

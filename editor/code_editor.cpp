@@ -1002,14 +1002,20 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     painter.setBrushOrigin(offset);
 
     ///// CACHING ///////
+    display_cacher -> setTab(wrapper -> tabSpace(), symbol_width);
     display_cacher -> clear();
     display_cacher -> top_block_number = block.blockNumber();
     cache_cell = display_cacher -> append(display_cacher -> top_block_number);
-    cache_cell -> user_data = TextDocumentLayout::getUserDataForBlock(block);
-    cache_cell -> is_folding_partial = cache_cell -> user_data ? cache_cell -> user_data -> inPartialBlock()  : false;
+    //TODO: implement switcher and draw this only if enabled showing of folding scopes
 
-    if (cache_cell -> is_folding_partial)
-        cache_cell -> level_offset = -1;
+    cache_cell -> initLevels(block);
+
+//        cache_cell -> is_folding_partial = cache_cell -> user_data ? cache_cell -> user_data -> inPartialBlock()  : false;
+
+//        if (cache_cell -> is_folding_partial)
+//            cache_cell -> level_offset = -1;
+
+    //
     /////////////////////
 
     // keep right margin clean from full-width selection
@@ -1029,7 +1035,12 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
 
+        //TODO: implement switcher and draw this only if enabled showing of folding scopes
         cache_cell -> setUserData(TextDocumentLayout::getUserDataForBlock(block));
+        // else
+        // cache_cell -> user_data = TextDocumentLayout::getUserDataForBlock(block);
+
+        qDebug() << "TEXT" << block.text();
 
         if (!block.isVisible()) {
             cache_cell -> is_visible = false;
@@ -1055,17 +1066,22 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
             }
 
             //TODO: implement switcher and draw this only if enabled showing of folding scopes
-            int level = cache_cell -> user_data ? cache_cell -> user_data -> level : DEFAULT_LEVEL;
-            level += cache_cell -> level_offset;
-
-            if (level > 0) {
+            if (display_cacher -> hasLevels()) {
                 painter.save();
                 painter.setPen(folding_level_line_format.foreground().color());
-                int folding_line_offset = offset.rx() + doc_margin + pseudo_tab_width;
-                int line_height = cache_cell -> bounding_rect.height();
-                int it = 0;
 
-                while(++it < level) {
+                int level = cache_cell -> user_data ? cache_cell -> user_data -> level - (cache_cell -> is_folding_opener ? 1 : 0) : DEFAULT_LEVEL;
+                int def_line_offset = offset.rx() + doc_margin;
+                int line_height = cache_cell -> bounding_rect.height();
+                int it = -1;
+
+                while(++it <= level) {
+                    int folding_line_offset = display_cacher -> levelIndent(it);
+
+                    if (folding_line_offset == 0) continue;
+
+                    folding_line_offset += def_line_offset;
+
                     QLine line(folding_line_offset, offset.ry(), folding_line_offset, offset.ry() + line_height);
 
                     if (has_active_para && it == para_info.level && para_info.containsBlockNumber(cache_cell -> block_number)) {
@@ -1078,8 +1094,6 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                         painter.restore();
                     }
                     else painter.drawLine(line);
-
-                    folding_line_offset += pseudo_tab_width;
                 }
                 painter.restore();
             }

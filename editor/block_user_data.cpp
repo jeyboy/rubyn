@@ -14,17 +14,17 @@ BlockUserData::~BlockUserData() {
     ParaList::removeLine(para_begin, para_end);
 }
 
-bool BlockUserData::inPartialBlock() {
+ParaCell * BlockUserData::parentPara() {
     ParaCell * it = para_begin;
 
     while(it) {
         if (it -> para_type != pt_max && it -> para_type != pt_none && it -> is_foldable && it -> is_opener)
-            return !it -> is_blockator;
+            return it;
 
         it = it -> prev;
     }
 
-    return false;
+    return nullptr;
 }
 
 TokenCell * BlockUserData::tokenForPos(const EDITOR_POS_TYPE & pos) {

@@ -37,7 +37,7 @@ struct BlockUserData : public QTextBlockUserData {
 
     ~BlockUserData();
 
-    bool inPartialBlock();
+    ParaCell * parentPara();
 
     TokenCell * tokenForPos(const EDITOR_POS_TYPE & pos);
     ParaCell * paraForPos(const EDITOR_POS_TYPE & pos);
@@ -66,6 +66,20 @@ struct BlockUserData : public QTextBlockUserData {
 
     inline int levelForNextBlock() {
         return level + (para_control && para_control -> is_opener && !para_control -> is_oneliner ? 1 : 0);
+    }
+
+    inline int indentSize() {
+        TokenCell * it = token_begin -> next;
+
+        switch(it -> lexem) {
+            case lex_blanks:
+            case lex_tabs: return it -> length;
+
+            case lex_tab:
+            case lex_blank: return 1;
+
+            default: return 0;
+        }
     }
 
     void setFlag(const UserDataFlags & flag, const bool & on);
