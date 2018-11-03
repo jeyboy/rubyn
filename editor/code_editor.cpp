@@ -986,6 +986,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {   
     QRect view_rect = viewport() -> rect();
     QRect er = e -> rect();
+    QHash<int, bool> folding_scopes;
 
     CodeEditorCacheCell * cache_cell = nullptr;
 
@@ -1040,7 +1041,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         // else
         // cache_cell -> user_data = TextDocumentLayout::getUserDataForBlock(block);
 
-        qDebug() << "TEXT" << block.text();
+        qDebug() << block.text();
 
         if (!block.isVisible()) {
             cache_cell -> is_visible = false;
@@ -1067,6 +1068,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
             //TODO: implement switcher and draw this only if enabled showing of folding scopes
             if (display_cacher -> hasLevels()) {
+                folding_scopes.clear();
                 painter.save();
                 painter.setPen(folding_level_line_format.foreground().color());
 
@@ -1074,18 +1076,19 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 int def_line_offset = offset.rx() + doc_margin;
                 int line_height = cache_cell -> bounding_rect.height();
                 int it = -1;
+                bool has_active = has_active_para && para_info.containsBlockNumber(cache_cell -> block_number);
 
                 while(++it <= level) {
                     int folding_line_offset = display_cacher -> levelIndent(it);
 
-                    if (folding_line_offset == 0) continue;
+                    if (folding_line_offset == 0 || (folding_scopes.contains(folding_line_offset) && (!has_active || (has_active && para_info.level < it)))) continue;
 
+                    folding_scopes[folding_line_offset] = true;
                     folding_line_offset += def_line_offset;
 
                     QLine line(folding_line_offset, offset.ry(), folding_line_offset, offset.ry() + line_height);
 
-                    if (has_active_para && it == para_info.level && para_info.containsBlockNumber(cache_cell -> block_number)) {
-
+                    if (has_active && it == para_info.level) {
                         painter.save();
 
                         painter.setPen(active_para_line_format.foreground().color());

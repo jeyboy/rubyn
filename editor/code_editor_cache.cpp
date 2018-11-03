@@ -11,7 +11,7 @@ void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
     if (user_data && user_data -> para_control) {
         if (!user_data -> para_control -> is_opener) {
             parent -> block_offsets.resize(user_data -> level);
-        } else {
+        } else if (!user_data -> para_control -> is_oneliner) {
             is_folding_opener = true;
             int indent_len = user_data -> indentSize();
 
