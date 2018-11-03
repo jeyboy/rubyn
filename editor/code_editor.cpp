@@ -1041,8 +1041,6 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         // else
         // cache_cell -> user_data = TextDocumentLayout::getUserDataForBlock(block);
 
-        qDebug() << block.text();
-
         if (!block.isVisible()) {
             cache_cell -> is_visible = false;
             offset.ry() += cache_cell -> bounding_rect.height();
@@ -1081,7 +1079,12 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 while(++it <= level) {
                     int folding_line_offset = display_cacher -> levelIndent(it);
 
-                    if (folding_line_offset == 0 || (folding_scopes.contains(folding_line_offset) && (!has_active || (has_active && para_info.level < it)))) continue;
+                    if (
+                        folding_line_offset == 0 || (
+                            folding_scopes.contains(folding_line_offset) &&
+                                (!has_active || (has_active && para_info.level != it))
+                        )
+                    ) continue;
 
                     folding_scopes[folding_line_offset] = true;
                     folding_line_offset += def_line_offset;
