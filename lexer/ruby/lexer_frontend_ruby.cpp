@@ -774,20 +774,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
 //        However, if Ruby encounters operators, such as +, −, or backslash at the end of a line,
 //        they indicate the continuation of a statement.
 
-    //    case ' ': {
-    //        StateLexem status = lex_blank;
-
-    //        if (ECHAR1 == ' ') {
-    //            status = lex_blanks;
-    //            int iter = 1;
-
-    //            do { ++state -> next_offset; }
-    //            while(*(state -> buffer + ++iter) == ' ');
-    //        }
-
-    //        if(!cutWord(state, status)) goto exit;
-    //    break;}
-
     if (state -> bufferIsEmpty())
         goto exit;
 
@@ -924,7 +910,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 else if (ECHAR1 == '=') {// ==
                     ++state -> next_offset;
 
-                    if (ECHAR1 == '=') // ===
+                    if (ECHAR2 == '=') // ===
                         ++state -> next_offset;
                 }
                 else if (ECHAR1 == 'b') { // =begin
