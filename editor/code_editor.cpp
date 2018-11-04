@@ -901,12 +901,14 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                             if (in_breakpoint_zone) {
                                 BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-                                udata -> invertBreakpointState();
-                                invalidation_required = true;
+                                if (udata) {
+                                    udata -> invertBreakpointState();
+                                    invalidation_required = true;
 
-                                QRect r(blockBoundingGeometry(blk).translated(contentOffset()).toRect());
-                                r.setWidth(r.width() + 50);
-                                viewport() -> update(r);
+                                    QRect r(blockBoundingGeometry(blk).translated(contentOffset()).toRect());
+                                    r.setWidth(r.width() + 50);
+                                    viewport() -> update(r);
+                                }
                             } else if (in_number_zone) {
                                 cursor.setPosition(blk.position() + blk.length() - 1, QTextCursor::MoveAnchor);
                                 cursor.setPosition(blk.position(), QTextCursor::KeepAnchor);
