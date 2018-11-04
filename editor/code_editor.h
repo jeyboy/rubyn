@@ -489,7 +489,13 @@ protected:
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
     void focusInEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
+//    virtual void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
     void mouseDoubleClickEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
+//    virtual void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+//    virtual void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+//    virtual void mouseDoubleClickEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+//    virtual bool focusNextPrevChild(bool next) Q_DECL_OVERRIDE;
 
     bool canInsertFromMimeData(const QMimeData * source) const Q_DECL_OVERRIDE {
         return source -> hasUrls() || QPlainTextEdit::canInsertFromMimeData(source);

@@ -87,7 +87,6 @@ void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
             }
 
             w -> fileOpenRequired(path, nullptr, new_editor, tab_scroll_y);
-//            w -> active_editor -> setTabVerticalScrollPos(index, tab_scroll_y);
             w -> active_editor -> tabRestoreState(counter, state);
 
             new_editor = false;

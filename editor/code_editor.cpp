@@ -43,7 +43,7 @@
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
     overlay(new OverlayInfo()), tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO), extra_overlay_block_num(NO_INFO),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
-    curr_block_number(NO_INFO),  folding_lines_coverage_level(NO_INFO), folding_lines_coverage_level_stoper_min(FOLDING_COVERAGE_LEVEL_STOPER),
+    curr_block_number(NO_INFO), folding_lines_coverage_level(NO_INFO), folding_lines_coverage_level_stoper_min(FOLDING_COVERAGE_LEVEL_STOPER),
     folding_lines_coverage_level_stoper_max(FOLDING_COVERAGE_LEVEL_STOPER),
     show_folding_scope_lines(false)
 {
@@ -1504,6 +1504,16 @@ void CodeEditor::mouseDoubleClickEvent(QMouseEvent * e) {
     e -> accept();
 }
 
+void CodeEditor::mousePressEvent(QMouseEvent * e) {
+    QPlainTextEdit::mousePressEvent(e);
+
+    // monkey patch for mouse click in pos(0, 0) after a doc opened
+    if (curr_block_number == NO_INFO) {
+        highlightCurrentLine();
+        cursorMoved();
+    }
+}
+
 
 void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup, const bool & has_modifiers) {
     QTextBlock block = tc.block();
@@ -1592,8 +1602,8 @@ void CodeEditor::applyCompletion(const QString & completion) {
 }
 
 void CodeEditor::highlightCurrentLine() {
-    curr_block_number = -1;
     int pos_in_block = 0;
+    curr_block_number = NO_INFO;
 
     if (hasFocus()) {
         QTextCursor cursor = textCursor();
