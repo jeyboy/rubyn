@@ -45,7 +45,7 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
     curr_block_number(NO_INFO),  folding_lines_coverage_level(NO_INFO), folding_lines_coverage_level_stoper_min(FOLDING_COVERAGE_LEVEL_STOPER),
     folding_lines_coverage_level_stoper_max(FOLDING_COVERAGE_LEVEL_STOPER),
-    show_folding_scope_lines(true)
+    show_folding_scope_lines(false)
 {
     extra_area = new ExtraArea(this);
     display_cacher = new CodeEditorCache();
@@ -122,6 +122,7 @@ void CodeEditor::openDocument(File * file) {
 
         updateExtraAreaWidth(0);
         setShowSpacesAndTabs(true);
+        setShowFoldingScopeLines(true);
 
         if (!file -> isFullyReaded()) {
             //    verticalScrollBar()
@@ -1032,6 +1033,9 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
 
+        if (!cache_cell -> layout) // TODO: monkey patch
+            break;
+
         if (show_folding_scope_lines)
             cache_cell -> setUserData(TextDocumentLayout::getUserDataForBlock(block));
         else
@@ -1280,7 +1284,6 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     painter.save();
 
-//    QPlainTextEdit::paintEvent(e);
     customPaintEvent(painter, e);
 
     painter.restore();
@@ -1348,6 +1351,8 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
     drawParaOverlays(painter);
 
     drawAdditionalCarets(painter);
+
+    e -> accept();
 
     Logger::obj().endMark(true, QLatin1Literal("paintEvent"));
 }
@@ -1457,6 +1462,8 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             procCompleterForCursor(tc, is_shortcut, has_modifiers);
         }
     }
+
+    e -> accept();
 }
 
 void CodeEditor::wheelEvent(QWheelEvent * e) {
@@ -1493,6 +1500,8 @@ void CodeEditor::mouseDoubleClickEvent(QMouseEvent * e) {
     else {
         wordUnderCursor(tc, wuco_select_full);
     }
+
+    e -> accept();
 }
 
 

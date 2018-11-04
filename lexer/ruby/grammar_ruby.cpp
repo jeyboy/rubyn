@@ -266,11 +266,16 @@ void Grammar::initParas() {
     para_tokens[lex_estring_end] = pt_close_estring;
     para_tokens[lex_regexp_start] = pt_regexp;
     para_tokens[lex_regexp_end] = pt_close_regexp;
+
+    para_tokens[lex_commentary_start] = pt_foldable_comment;
+    para_tokens[lex_commentary_end] = pt_close_foldable_comment;
 }
 
 void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const StateLexem & last_non_blank_lex) {
     switch(lex) {
-        case lex_end: { flags = slf_unstack_word; break;}
+        case lex_end:
+        case lex_commentary_end:
+            { flags = slf_unstack_word; break;}
 
         case lex_if:
         case lex_unless: {
@@ -331,6 +336,7 @@ void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const St
         case lex_while:
         case lex_module_def:
         case lex_class_def:
+        case lex_commentary_start:
             { flags = slf_stack_word; break;}
 
         case lex_when:
@@ -412,6 +418,9 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
 
         case lex_when:
             return input == lex_end || input == lex_when || input == lex_else;
+
+        case lex_commentary_start:
+            return input == lex_commentary_end;
 
         default: return false;
     }
@@ -603,7 +612,9 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
             return hid_name_call;
 
         case lex_inline_commentary_content:
+        case lex_commentary_start:
         case lex_commentary_end:
+        case lex_commentary_content:
             return hid_commentary;
 
 

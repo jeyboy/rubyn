@@ -76,7 +76,12 @@ enum ParaType : PARA_TYPE {
 
     pt_close_struct = 1 << 27 | pt_close | pt_foldable,
 
-    pt_max = 1 << 28,
+    pt_comment = 1 << 28,
+    pt_close_comment = pt_comment | pt_close,
+    pt_foldable_comment = pt_comment | pt_foldable,
+    pt_close_foldable_comment = pt_comment | pt_close| pt_foldable,
+
+    pt_max = 1 << 29,
     pt_max_end = pt_max | pt_close
 };
 

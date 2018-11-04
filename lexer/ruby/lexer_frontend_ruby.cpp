@@ -918,9 +918,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
                         ECHAR4 == 'i' && ECHAR5 == 'n')
                    {
                         state -> buffer += 6;
+                        state -> next_offset = 0;
 
-                        state -> attachToken(lex_commentary_start);
-                        // state -> stack -> push(lex_commentary_start);
+                        if (!cutWord(state)) goto exit;
 
                         parseComment(state);
                         goto exit;
@@ -1355,6 +1355,11 @@ void LexerFrontend::paraOpositionStr(const PARA_TYPE & para, QString & res) {
         case pt_open_while: { res = QLatin1Literal("end"); break;}
         case pt_open_until: { res = QLatin1Literal("end"); break;}
         case pt_open_for: { res = QLatin1Literal("end"); break;}
+
+        case pt_comment:
+        case pt_foldable_comment: { res = QLatin1Literal("=end"); break;}
+        case pt_close_comment:
+        case pt_close_foldable_comment: { res = QLatin1Literal("=begin"); break;}
 
         default: ILexer::paraOpositionStr(para, res);
     }
