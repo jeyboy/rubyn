@@ -179,6 +179,13 @@ void CodeEditor::fillBackground(QPainter * p, const QRectF & rect, QBrush brush,
     p -> restore();
 }
 
+void CodeEditor::imitateClick() {
+    qDebug() << "imitateClick";
+
+    highlightCurrentLine();
+    cursorMoved();
+}
+
 void CodeEditor::prepareIcons(const int & size) {
     icons.insert(
         BlockUserData::udf_folded,
@@ -927,6 +934,12 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                     if (!current_cursor.block().isVisible()) {
                                         current_cursor.setPosition(blk.position());
                                         setTextCursor(current_cursor);
+
+                                        //INFO: monkey patch for folding in first line if doc opened but not edited yet
+                                    }
+
+                                    if (curr_block_number == NO_INFO) {
+                                        imitateClick();
                                     }
                                 }
                             }
@@ -1507,10 +1520,9 @@ void CodeEditor::mouseDoubleClickEvent(QMouseEvent * e) {
 void CodeEditor::mousePressEvent(QMouseEvent * e) {
     QPlainTextEdit::mousePressEvent(e);
 
-    // monkey patch for mouse click in pos(0, 0) after a doc opened
+    //INFO: monkey patch for mouse click in pos(0, 0) after a doc opened
     if (curr_block_number == NO_INFO) {
-        highlightCurrentLine();
-        cursorMoved();
+        imitateClick();
     }
 }
 

@@ -441,6 +441,7 @@ protected:
 
     static void fillBackground(QPainter * p, const QRectF & rect, QBrush brush, const QRectF & gradientRect = QRectF());
 
+    void imitateClick();
     void prepareIcons(const int & size = ICO_WIDTH);
 
     int widthWithoutScroll();
