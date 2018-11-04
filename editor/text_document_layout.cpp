@@ -18,7 +18,7 @@ bool TextDocumentLayout::toggleFolding(const QTextBlock & blk) {
         bool sublevel_blockator = false;
         int sub_level = INT32_MAX;
 
-        while(true) {
+        while(block.isValid()) {
             block = block.next();
 
             user_data = getUserDataForBlock(block);
@@ -45,6 +45,12 @@ bool TextDocumentLayout::toggleFolding(const QTextBlock & blk) {
 
             if (user_data -> level == level)
                 break;
+        }
+
+        if(!block.isValid() || !block.next().isValid()) {
+            QTextCursor cursor = QTextCursor(document());
+            cursor.movePosition(QTextCursor::End);
+            cursor.insertBlock();
         }
 
         ///// TODO: this implementation is a bit slow for huge blocks - need to rewrite _q_adjustScrollbars in CodeEditor and use it

@@ -180,8 +180,6 @@ void CodeEditor::fillBackground(QPainter * p, const QRectF & rect, QBrush brush,
 }
 
 void CodeEditor::imitateClick() {
-    qDebug() << "imitateClick";
-
     highlightCurrentLine();
     cursorMoved();
 }
@@ -1046,8 +1044,8 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
 
-        if (!cache_cell -> layout) // TODO: monkey patch
-            break;
+//        if (!cache_cell -> layout) // TODO: monkey patch
+//            break;
 
         if (show_folding_scope_lines)
             cache_cell -> setUserData(TextDocumentLayout::getUserDataForBlock(block));
@@ -1723,7 +1721,7 @@ void CodeEditor::cursorMoved() {
     }
 }
 
-void CodeEditor::updateExtraAreaWidth(int /* newBlockCount */) {
+void CodeEditor::updateExtraAreaWidth(int /*newBlockCount*/) {
     breakpoint_offset_x = 2;
     breakpoint_width = ICO_WIDTH + HPADDING;
 
