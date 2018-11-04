@@ -79,13 +79,15 @@ TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1
     layout -> setCursorWidth(1);
     _doc -> setDocumentLayout(layout);
 
-    QTextOption option = _doc -> defaultTextOption();
-    option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
-//    else
-//        option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
-    option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
+//    QTextOption option = _doc -> defaultTextOption();
+//    option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
+////    else
+////        option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
 
-    _doc -> setDefaultTextOption(option);
+//    option.setFlags(option.flags() | QTextOption::ShowLineAndParagraphSeparators);
+//    option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
+
+//    _doc -> setDefaultTextOption(option);
 
 
 //        _device -> close(); // this closed already in IDocument

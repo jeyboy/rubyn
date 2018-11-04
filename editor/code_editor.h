@@ -278,6 +278,10 @@ class CodeEditor : public QPlainTextEdit {
 
     QHash<DATA_FLAGS_TYPE, QPixmap> icons;
 
+    ////////// SETTINGS ////////////
+    bool show_folding_scope_lines;
+    ////////// END SETTINGS ////////////
+
     friend class ExtraArea;
 public:
     CodeEditor(QWidget * parent = nullptr);
@@ -285,12 +289,84 @@ public:
 
     void setCompleter(QCompleter * new_completer);
 
+    inline bool hasDocument() { return document() != nullptr; }
     void openDocument(File * file);
     const QString & documentUid();
 
+
+//    inline const QFont & font() const { return QPlainTextEdit::font(); }
     void setFont(const QFont & font);
 
+    inline uint charsLimiterLineAt() { return chars_limit_line; }
     void setCharsLimiterLineAt(const uint & char_pos);
+
+    inline bool showFoldingScopeLines() { return show_folding_scope_lines; }
+    inline void setShowFoldingScopeLines(const bool & show) {
+        show_folding_scope_lines = show;
+        viewport() -> update();
+    }
+
+    bool showSpacesAndTabs() {
+        QTextDocument * doc = document();
+
+        if (doc) {
+            QTextOption option = doc -> defaultTextOption();
+
+            return option.flags() & QTextOption::ShowTabsAndSpaces;
+        }
+
+        return false;
+    }
+    void setShowSpacesAndTabs(const bool & show) {
+        QTextDocument * doc = document();
+
+        if (doc) {
+            QTextOption option = doc -> defaultTextOption();
+
+            if ((option.flags() & QTextOption::ShowTabsAndSpaces) == show)
+                return;
+
+            if (show)
+                option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
+            else
+                option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
+
+            doc -> setDefaultTextOption(option);
+
+            viewport() -> update();
+        }
+    }
+
+    bool showLineAndParagraphSeparators() {
+        QTextDocument * doc = document();
+
+        if (doc) {
+            QTextOption option = doc -> defaultTextOption();
+
+            return option.flags() & QTextOption::ShowLineAndParagraphSeparators;
+        }
+
+        return false;
+    }
+    void setShowLineAndParagraphSeparators(const bool & show) {
+        QTextDocument * doc = document();
+
+        if (doc) {
+            QTextOption option = doc -> defaultTextOption();
+
+            if (show) {
+                option.setFlags(option.flags() | QTextOption::ShowLineAndParagraphSeparators);
+                option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
+            } else {
+                option.setFlags(option.flags() & ~QTextOption::ShowLineAndParagraphSeparators);
+                option.setFlags(option.flags() & ~QTextOption::AddSpaceForLineAndParagraphSeparators);
+            }
+
+            doc -> setDefaultTextOption(option);
+
+            viewport() -> update();
+        }
+    }
 protected:
 //    void _q_adjustScrollbars() {
 //        QTextDocument * doc = document();

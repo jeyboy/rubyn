@@ -44,7 +44,8 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     overlay(new OverlayInfo()), tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO), extra_overlay_block_num(NO_INFO),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
     curr_block_number(NO_INFO),  folding_lines_coverage_level(NO_INFO), folding_lines_coverage_level_stoper_min(FOLDING_COVERAGE_LEVEL_STOPER),
-    folding_lines_coverage_level_stoper_max(FOLDING_COVERAGE_LEVEL_STOPER)
+    folding_lines_coverage_level_stoper_max(FOLDING_COVERAGE_LEVEL_STOPER),
+    show_folding_scope_lines(true)
 {
     extra_area = new ExtraArea(this);
     display_cacher = new CodeEditorCache();
@@ -120,6 +121,7 @@ void CodeEditor::openDocument(File * file) {
         setDocument(text_doc);
 
         updateExtraAreaWidth(0);
+        setShowSpacesAndTabs(true);
 
         if (!file -> isFullyReaded()) {
             //    verticalScrollBar()
@@ -1007,17 +1009,9 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     display_cacher -> clear();
     display_cacher -> top_block_number = block.blockNumber();
     cache_cell = display_cacher -> append(display_cacher -> top_block_number);
-    //TODO: implement switcher and draw this only if enabled showing of folding scopes
 
-    cache_cell -> initLevels(block);
-
-//        cache_cell -> is_folding_partial = cache_cell -> user_data ? cache_cell -> user_data -> inPartialBlock()  : false;
-
-//        if (cache_cell -> is_folding_partial)
-//            cache_cell -> level_offset = -1;
-
-    //
-    /////////////////////
+    if (show_folding_scope_lines)
+        cache_cell -> initLevels(block);
 
     // keep right margin clean from full-width selection
     int max_x = offset.x() + qMax(static_cast<qreal>(view_rect.width()), max_width) - doc_margin;
@@ -1036,10 +1030,10 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
 
-        //TODO: implement switcher and draw this only if enabled showing of folding scopes
-        cache_cell -> setUserData(TextDocumentLayout::getUserDataForBlock(block));
-        // else
-        // cache_cell -> user_data = TextDocumentLayout::getUserDataForBlock(block);
+        if (show_folding_scope_lines)
+            cache_cell -> setUserData(TextDocumentLayout::getUserDataForBlock(block));
+        else
+            cache_cell -> user_data = TextDocumentLayout::getUserDataForBlock(block);
 
         if (!block.isVisible()) {
             cache_cell -> is_visible = false;
@@ -1064,9 +1058,9 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 fillBackground(&painter, contents_rect, bg);
             }
 
-            //TODO: implement switcher and draw this only if enabled showing of folding scopes
-            if (display_cacher -> hasLevels()) {
+            if (show_folding_scope_lines && display_cacher -> hasLevels()) {
                 folding_scopes.clear();
+
                 painter.save();
                 painter.setPen(folding_level_line_format.foreground().color());
 
@@ -1103,7 +1097,6 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 }
                 painter.restore();
             }
-            /////////
 
             QVector<QTextLayout::FormatRange> selections;
             int blpos = cache_cell -> block_pos;
