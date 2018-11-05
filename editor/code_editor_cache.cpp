@@ -12,17 +12,20 @@ void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
         if (!user_data -> para_control -> is_opener) {
             if (user_data -> level >= 0)
                 parent -> block_offsets.resize(user_data -> level);
-        } else if (!user_data -> para_control -> is_oneliner) {
-            is_folding_opener = true;
+        } else {
+            if (!user_data -> para_control -> is_oneliner) {
+                is_folding_opener = true;
 
-            if (user_data -> level >= 0) {
-                int indent_len = user_data -> indentSize();
+                if (user_data -> level >= 0) {
+                    int indent_len = user_data -> indentSize();
 
-                if (indent_len > 0) {
-                    parent -> block_offsets.resize(user_data -> level + 1);
-                    parent -> block_offsets[user_data -> level] = indent_len * parent -> symbol_width;
+                    if (indent_len > 0) {
+                        parent -> block_offsets.resize(user_data -> level + 1);
+                        parent -> block_offsets[user_data -> level] = indent_len * parent -> symbol_width;
+                    }
                 }
             }
+            else parent -> block_offsets.resize(user_data -> level);
         }
     }
 }
