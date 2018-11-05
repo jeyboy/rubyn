@@ -995,7 +995,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
     event -> accept();
 
-    Logger::obj().endMark(true, QLatin1Literal("extraAreaPaintEvent"));
+    Logger::obj().endMark(false, QLatin1Literal("extraAreaPaintEvent"));
 }
 
 
@@ -1362,7 +1362,7 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     e -> accept();
 
-    Logger::obj().endMark(true, QLatin1Literal("paintEvent"));
+    Logger::obj().endMark(false, QLatin1Literal("paintEvent"));
 }
 
 void CodeEditor::resizeEvent(QResizeEvent * e) {
