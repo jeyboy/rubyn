@@ -61,6 +61,19 @@ void Highlighter::highlightBlock(const QString & text) {
     _doc_wrapper -> lexicate(text, this);
 }
 
+void Highlighter::procFlagsForLastHighlightedBlock(const QTextBlock & block) {
+    BlockUserData * prev_udata = TextDocumentLayout::getUserDataForBlock(block.previous());
+
+    if (prev_udata && prev_udata -> hasFolding()) {
+        if (block.isValid()) {
+            BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(block);
+
+            prev_udata -> para_control -> is_oneliner = !udata || (udata && udata -> level <= prev_udata -> level);
+        }
+        else prev_udata -> para_control -> is_oneliner = true;
+    }
+}
+
 void Highlighter::rehighlight() {
     if (!doc)
         return;
@@ -239,6 +252,8 @@ void Highlighter::reformatBlocks(int from, int chars_removed, int chars_added) {
 
         block = block.next();
     }
+
+    procFlagsForLastHighlightedBlock(block);
 
     format_changes.clear();
 }

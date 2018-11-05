@@ -20,6 +20,7 @@ class Highlighter : public QObject {
 //    Scope * _scope;
 protected:
     void highlightBlock(const QString & text);
+    void procFlagsForLastHighlightedBlock(const QTextBlock & block);
 
     TextDocument * _doc_wrapper;
     QPointer<QTextDocument> doc;
