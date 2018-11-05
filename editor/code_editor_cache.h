@@ -92,7 +92,7 @@ public:
     }
 
     inline int size() { return length; }
-    inline int levelIndent(const int & level) { return level >= block_offsets.size() ? 0 : block_offsets[level]; }
+    inline int levelIndent(const int & level) { return level >= block_offsets.size() || level < 0 ? 0 : block_offsets[level]; }
     inline bool hasLevels() { return block_offsets.size() > 0; }
 
     inline CodeEditorCacheCell * begin() { return root -> next; }

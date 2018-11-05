@@ -156,7 +156,8 @@ struct LexerControl {
 
                 if (!it -> is_opener && it -> closer) {
                     it = it -> closer;
-                    lines_between += (it -> closer -> is_oneliner ? 0 : 1);
+                    // this broke foldable curly brackets
+//                    lines_between += (it -> closer -> is_oneliner && it -> closer -> is_foldable ? 0 : 1);
                 }
 
                 it = it -> prev;
