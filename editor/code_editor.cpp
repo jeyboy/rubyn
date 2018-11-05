@@ -1391,6 +1391,11 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
     }
 
     switch (curr_key) {
+        case Qt::Key_Delete: {
+            para_info.clear();
+            QPlainTextEdit::keyPressEvent(e);
+        break;}
+
         case Qt::Key_Tab: { procSelectionIndent(); break;}
         case Qt::Key_Backtab: { procSelectionIndent(false); break; }
 
@@ -1472,6 +1477,16 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
     }
 
     e -> accept();
+}
+
+void CodeEditor::keyReleaseEvent(QKeyEvent * e) {
+    int curr_key = e -> key();
+
+    switch (curr_key) {
+        case Qt::Key_Delete: { cursorMoved(); break;}
+    }
+
+    QPlainTextEdit::keyReleaseEvent(e);
 }
 
 void CodeEditor::wheelEvent(QWheelEvent * e) {

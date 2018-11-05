@@ -5,6 +5,8 @@
 #include "highlighter/para_list.h"
 
 void ActiveParaInfo::clear() {
+    if (!isValid()) return;
+
     level = NO_INFO;
     opener_pos = NO_INFO;
     opener_length = 0;

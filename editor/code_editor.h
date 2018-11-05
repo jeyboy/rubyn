@@ -488,6 +488,7 @@ protected:
     void paintEvent(QPaintEvent * e) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent * e) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
+    void keyReleaseEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
     void focusInEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
 //    virtual void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
