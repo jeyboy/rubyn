@@ -138,7 +138,7 @@ public:
             ParaCell * curr = left;
             left = left -> next;
 
-//            //TODO: need to check: spped up this removing of sequence or not
+//            //TODO: need to check: speed up this removing of sequence or not
 //            curr -> next = nullptr;
 //            curr -> prev = nullptr;
 //            ////////////

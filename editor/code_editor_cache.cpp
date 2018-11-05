@@ -25,7 +25,9 @@ void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
                     }
                 }
             }
-            else parent -> block_offsets.resize(user_data -> level);
+            else if (user_data -> level >= 0) {
+                parent -> block_offsets.resize(user_data -> level);
+            }
         }
     }
 }

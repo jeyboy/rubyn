@@ -154,8 +154,10 @@ struct LexerControl {
                         return it;
                 }
 
-                if (!it -> is_opener && it -> closer)
+                if (!it -> is_opener && it -> closer) {
                     it = it -> closer;
+                    lines_between += (it -> closer -> is_oneliner ? 0 : 1);
+                }
 
                 it = it -> prev;
             }

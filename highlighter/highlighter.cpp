@@ -157,8 +157,7 @@ void Highlighter::initBlockUserData(QTextBlock & block, BlockUserData * prev_uda
         block.setUserData(udata);
     }
 
-    if (prev_udata)
-        udata -> level = prev_udata -> levelForNextBlock();
+    udata -> level = prev_udata ? prev_udata -> levelForNextBlock() : DEFAULT_LEVEL;
 }
 
 //void Highlighter::setCurrentBlockUserData(QTextBlockUserData * data) {
