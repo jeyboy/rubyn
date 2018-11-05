@@ -10,7 +10,7 @@ void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
 
     if (user_data && user_data -> para_control) {
         if (!user_data -> para_control -> is_opener) {
-            if (user_data -> level > 0)
+            if (user_data -> level >= 0)
                 parent -> block_offsets.resize(user_data -> level);
         } else if (!user_data -> para_control -> is_oneliner) {
             is_folding_opener = true;

@@ -1044,9 +1044,6 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
 
-//        if (!cache_cell -> layout) // TODO: monkey patch
-//            break;
-
         if (show_folding_scope_lines)
             cache_cell -> setUserData(TextDocumentLayout::getUserDataForBlock(block));
         else
