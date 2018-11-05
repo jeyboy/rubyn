@@ -104,6 +104,8 @@ public:
         delete last;
     }
 
+    inline ParaCell * rootToken() { return root; }
+
     inline void clear() {
         ParaCell * curr;
         ParaCell * it = last -> prev;

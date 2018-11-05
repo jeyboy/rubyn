@@ -72,6 +72,8 @@ public:
         delete last;
     }
 
+    inline TokenCell * rootToken() { return root; }
+
     inline void clear() {
         TokenCell * curr;
         TokenCell * it = last -> prev;

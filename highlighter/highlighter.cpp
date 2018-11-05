@@ -156,6 +156,10 @@ void Highlighter::initBlockUserData(QTextBlock & block, BlockUserData * prev_uda
         );
         block.setUserData(udata);
     }
+    else {
+        udata -> para_begin -> prev = prev_udata ? prev_udata -> para_end : _paras -> rootToken();
+        udata -> token_begin -> prev = prev_udata ? prev_udata -> token_end : _tokens -> rootToken();
+    }
 
     udata -> level = prev_udata ? prev_udata -> levelForNextBlock() : DEFAULT_LEVEL;
 }
