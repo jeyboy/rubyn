@@ -8,6 +8,7 @@
 
 #include "misc/defines.h"
 #include "editor/active_para_info.h"
+#include "editor/active_folding_info.h"
 
 class QPaintEvent;
 class QResizeEvent;
@@ -163,7 +164,6 @@ class CodeEditorCacheCell;
 #define ICO_WIDTH 12
 #define FOLDING_SCOPE_WIDTH 3
 #define NO_FOLDING -100
-#define FOLDING_COVERAGE_LEVEL_STOPER -1
 
 #define PREPARE_PIXMAP(name, size) QPixmap(name).scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation)
 
@@ -232,7 +232,10 @@ class CodeEditor : public QPlainTextEdit {
     ExtraArea * extra_area;
     QCompleter * completer;
     TextDocument * wrapper;
-    OverlayInfo * overlay;
+
+    OverlayInfo * screen_top_overlay;
+    OverlayInfo * screen_bottom_overlay;
+    OverlayInfo * hover_overlay;
 
     EDITOR_POS_TYPE tooplip_block_num;
     EDITOR_POS_TYPE tooplip_block_pos;
@@ -245,7 +248,9 @@ class CodeEditor : public QPlainTextEdit {
     int folding_overlay_y;
 
     QPoint curr_folding_limits;
+
     ActiveParaInfo para_info;
+    ActiveFoldingInfo active_folding;
 
     int curr_block_number;
 
@@ -259,10 +264,6 @@ class CodeEditor : public QPlainTextEdit {
 
     int folding_offset_x;
     int folding_width;
-
-    EDITOR_POS_TYPE folding_lines_coverage_level;
-    EDITOR_POS_TYPE folding_lines_coverage_level_stoper_min;
-    EDITOR_POS_TYPE folding_lines_coverage_level_stoper_max;
 
     qreal symbol_width;
     uint chars_limit_line;
@@ -280,6 +281,7 @@ class CodeEditor : public QPlainTextEdit {
 
     ////////// SETTINGS ////////////
     bool show_folding_scope_lines;
+    bool show_folding_content_on_hover_overlay;
     ////////// END SETTINGS ////////////
 
     friend class ExtraArea;
@@ -303,6 +305,12 @@ public:
     inline bool showFoldingScopeLines() { return show_folding_scope_lines; }
     inline void setShowFoldingScopeLines(const bool & show) {
         show_folding_scope_lines = show;
+        viewport() -> update();
+    }
+
+    inline bool showFoldingContentOnHoverOverlay() { return show_folding_content_on_hover_overlay; }
+    inline void setShowFoldingContentOnHoverOverlay(const bool & show) {
+        show_folding_content_on_hover_overlay = show;
         viewport() -> update();
     }
 
@@ -494,7 +502,7 @@ protected:
 //    virtual void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
     void mouseDoubleClickEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
-//    virtual void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
 //    virtual void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
 //    virtual void mouseDoubleClickEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
 //    virtual bool focusNextPrevChild(bool next) Q_DECL_OVERRIDE;

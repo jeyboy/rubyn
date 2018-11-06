@@ -34,6 +34,7 @@ struct CodeEditorCacheCell {
     QTextLayout * layout;
 
     QRectF bounding_rect;
+    QRect folding_description_rect;
     QString folding_overlay_text;
 
     bool is_service;

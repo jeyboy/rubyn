@@ -41,12 +41,16 @@
 //p_textEdit->mergeCurrentCharFormat(fmt);
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
-    overlay(new OverlayInfo()), tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO), extra_overlay_block_num(NO_INFO),
+    tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO), extra_overlay_block_num(NO_INFO),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
-    curr_block_number(NO_INFO), folding_lines_coverage_level(NO_INFO), folding_lines_coverage_level_stoper_min(FOLDING_COVERAGE_LEVEL_STOPER),
-    folding_lines_coverage_level_stoper_max(FOLDING_COVERAGE_LEVEL_STOPER),
-    show_folding_scope_lines(false)
+    curr_block_number(NO_INFO), folding_lines_coverage_level(NO_INFO), folding_lines_coverage_level_stoper_min(NO_INFO),
+    folding_lines_coverage_level_stoper_max(NO_INFO),
+    show_folding_scope_lines(false), show_folding_content_on_hover_overlay(false)
 {
+    screen_top_overlay = new OverlayInfo();
+    screen_bottom_overlay = new OverlayInfo();
+    hover_overlay = new OverlayInfo();
+
     extra_area = new ExtraArea(this);
     display_cacher = new CodeEditorCache();
 
@@ -70,7 +74,10 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
 }
 
 CodeEditor::~CodeEditor() {
-    delete overlay;
+    delete screen_top_overlay;
+    delete screen_bottom_overlay;
+    delete hover_overlay;
+
     icons.clear();
 
     delete display_cacher;
@@ -123,6 +130,7 @@ void CodeEditor::openDocument(File * file) {
         updateExtraAreaWidth(0);
         setShowSpacesAndTabs(true);
         setShowFoldingScopeLines(true);
+        setShowFoldingContentOnHoverOverlay(true);
 
         if (!file -> isFullyReaded()) {
             //    verticalScrollBar()
@@ -277,11 +285,9 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
                         showFoldingContentPopup(document() -> findBlockByNumber(cache -> block_number));
                 }
                 else {
-                    hideOverlay();
-
                     folding_lines_coverage_level = user_data -> level;
                     folding_lines_coverage_level_stoper_min = cache -> block_number;
-                    folding_lines_coverage_level_stoper_max = FOLDING_COVERAGE_LEVEL_STOPER - (user_data -> para_control -> is_blockator ? 0 : 1);
+                    folding_lines_coverage_level_stoper_max = NO_INFO - (user_data -> para_control -> is_blockator ? 0 : 1);
                     initiated = true;
                 }
             }
@@ -291,9 +297,6 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
                 icons[folding_flags]
             );
         }
-    }
-    else if (on_block) {
-        hideOverlay();
     }
 
     if (user_data) {
@@ -306,7 +309,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
         if (!initiated && folding_lines_coverage_level_stoper_max < 0 && user_data -> level <= folding_lines_coverage_level)
             folding_lines_coverage_level_stoper_max = cache -> block_number + folding_lines_coverage_level_stoper_max + 1;
 
-        if (folding_lines_coverage_level_stoper_min >= 0 &&
+        if (folding_lines_coverage_level_stoper_min > NO_INFO &&
             cache -> block_number >= folding_lines_coverage_level_stoper_min &&
                 (folding_lines_coverage_level_stoper_max < 0 || cache -> block_number <= folding_lines_coverage_level_stoper_max)
         ) {
@@ -435,18 +438,18 @@ void CodeEditor::drawParaOverlays(QPainter & painter) {
             QTextBlock closer_blk = para_info.start_block_num == para_info.end_block_num ? opener_blk : document() -> findBlockByNumber(para_info.end_block_num);
             drawTextOverlay(hid_para_hover_overlay, painter, closer_blk, para_info.closer_pos, para_info.closer_length);
 
-            if (extra_overlay_block_num == para_info.start_block_num) {
-                if (blockOnScreen(closer_blk))
-                    showOverlay(hid_para_content_popup, opener_blk);
-                else
-                    hideOverlay();
-            }
-            else {
-                if (blockOnScreen(opener_blk))
-                    showOverlay(hid_para_content_popup, closer_blk);
-                else
-                    hideOverlay();
-            }
+//            if (extra_overlay_block_num == para_info.start_block_num) {
+//                if (blockOnScreen(closer_blk))
+//                    showOverlay(hid_para_content_popup, opener_blk);
+//                else
+//                    hideOverlay();
+//            }
+//            else {
+//                if (blockOnScreen(opener_blk))
+//                    showOverlay(hid_para_content_popup, closer_blk);
+//                else
+//                    hideOverlay();
+//            }
         }
     }
 }
@@ -471,13 +474,13 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
             }
 
             EDITOR_POS_TYPE text_pos = it -> block_length - 1;
-            QRect rect = textRect(it, text_pos, 1);
-            rect.adjust(3, 0, it -> folding_overlay_text.length() * symbol_width + 10, 0);
+            it -> folding_description_rect = textRect(it, text_pos, 1);
+            it -> folding_description_rect.adjust(3, 0, it -> folding_overlay_text.length() * symbol_width + 10, 0);
 
-            drawTextOverlay(it -> is_folding_selected ? hid_folded_selected_overlay : hid_folded_overlay, painter, rect);
+            drawTextOverlay(it -> is_folding_selected ? hid_folded_selected_overlay : hid_folded_overlay, painter, it -> folding_description_rect);
 
             painter.setPen(QColor::fromRgb(0, 0, 0));
-            painter.drawText(rect, Qt::AlignCenter, it -> folding_overlay_text);
+            painter.drawText(it -> folding_description_rect, Qt::AlignCenter, it -> folding_overlay_text);
         }
     }
 }
@@ -548,8 +551,9 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
 
     EDITOR_POS_TYPE uid = block.blockNumber();
 
-    if (overlay -> shownFor(true, 0, uid))
+    if (overlay -> shownFor(true, 0, uid)) {
         return;
+    }
 
     QRect popup_rect(parent_block_rect.topLeft(), size());
 
@@ -674,7 +678,7 @@ void CodeEditor::hideOverlay() {
 }
 
 void CodeEditor::hideOverlayIfNoNeed() {
-    if (extra_overlay_block_num == -1 && (folding_y == NO_FOLDING || curr_folding_limits.ry() == NO_FOLDING) && folding_overlay_y == NO_FOLDING)
+    if (extra_overlay_block_num == NO_INFO && (folding_y == NO_FOLDING || curr_folding_limits.ry() == NO_FOLDING) && folding_overlay_y == NO_FOLDING)
         hideOverlay();
 }
 
@@ -855,9 +859,9 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
     bool in_folding_zone = !in_number_zone && (pos.rx() >= folding_offset_x && pos.rx() <= folding_offset_x + folding_width);
 
     if (!in_folding_zone) {
-        folding_lines_coverage_level = -1;
-        folding_lines_coverage_level_stoper_min = FOLDING_COVERAGE_LEVEL_STOPER;
-        folding_lines_coverage_level_stoper_max = FOLDING_COVERAGE_LEVEL_STOPER;
+        folding_lines_coverage_level = NO_INFO;
+        folding_lines_coverage_level_stoper_min = NO_INFO;
+        folding_lines_coverage_level_stoper_max = NO_INFO;
         folding_y = NO_FOLDING;
     }
     else folding_y = pos.ry();
@@ -884,9 +888,9 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                     folding_click = false;
 
                 curr_folding_limits.ry() = NO_FOLDING;
-                folding_lines_coverage_level = -1;
-                folding_lines_coverage_level_stoper_min = FOLDING_COVERAGE_LEVEL_STOPER;
-                folding_lines_coverage_level_stoper_max = FOLDING_COVERAGE_LEVEL_STOPER;
+                folding_lines_coverage_level = NO_INFO;
+                folding_lines_coverage_level_stoper_min = NO_INFO;
+                folding_lines_coverage_level_stoper_max = NO_INFO;
             }
         break;}
 
@@ -971,7 +975,7 @@ void CodeEditor::extraAreaLeaveEvent(QEvent *) {
 void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
     Logger::obj().startMark();
 
-    hideOverlayIfNoNeed();
+//    hideOverlayIfNoNeed();
 
     int target_top = event -> rect().top();
     int target_bottom = event -> rect().bottom();
@@ -1275,7 +1279,7 @@ bool CodeEditor::event(QEvent * event) {
         }
 
         QToolTip::hideText();
-        tooplip_block_num = -1;
+        tooplip_block_num = NO_INFO;
         event -> ignore();
         return true;
     }
@@ -1286,7 +1290,7 @@ bool CodeEditor::event(QEvent * event) {
 void CodeEditor::paintEvent(QPaintEvent * e) {
     Logger::obj().startMark();
 
-    hideOverlayIfNoNeed();
+//    hideOverlayIfNoNeed();
 
     QPainter painter(viewport());
 
@@ -1536,6 +1540,35 @@ void CodeEditor::mousePressEvent(QMouseEvent * e) {
     }
 }
 
+void CodeEditor::mouseMoveEvent(QMouseEvent * e) {
+    QPlainTextEdit::mouseMoveEvent(e);
+
+//    if (!show_folding_content_on_hover_overlay) return;
+
+//    QPoint point = e -> localPos().toPoint();
+//    int y = point.y();
+
+//    for (CodeEditorCacheCell * it = display_cacher -> begin(); !it -> is_service; it = it -> next) {
+//        if (it -> folding_description_rect.width() == 0 || it -> folding_description_rect.bottom() < y) {
+//            continue;
+//        }
+
+//        if (it -> folding_description_rect.top() > y) {
+//            break;
+//        }
+
+//        if (it -> folding_description_rect.contains(point)) {
+//            if (!overlay -> shownFor(true, 0, it -> block_number)) {
+////                QApplication::setOverrideCursor(QCursor(Qt::PointingHandCursor));
+//                showFoldingContentPopup(document() -> findBlockByNumber(it -> block_number));
+//            }
+//            return;
+//        }
+//    }
+
+////    QApplication::restoreOverrideCursor();
+//    hideOverlay();
+}
 
 void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup, const bool & has_modifiers) {
     QTextBlock block = tc.block();
@@ -1695,7 +1728,7 @@ void CodeEditor::cursorMoved() {
                 }
             } else {
                 para_info.setOpener(para -> pos, para -> length);
-                para_info.setCloser(-1);
+                para_info.setCloser(NO_INFO);
 
                 while(para -> next) {
                     if (para -> para_type == pt_max) {

@@ -181,7 +181,8 @@ HEADERS  += ide_window.h \
     editor/text_document_layout.h \
     controls/logger_window.h \
     editor/code_editor_cache.h \
-    editor/active_para_info.h
+    editor/active_para_info.h \
+    editor/active_folding_info.h
 
 FORMS    += ide_window.ui
 

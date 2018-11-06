@@ -86,6 +86,11 @@ public:
 
         show();
     }
+
+protected:
+    void mouseMoveEvent(QMouseEvent * e) Q_DECL_OVERRIDE {
+        hide();
+    }
 };
 
 #endif // OVERLAY_INFO_H
