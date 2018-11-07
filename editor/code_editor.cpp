@@ -627,17 +627,11 @@ void CodeEditor::hideOverlay(const OVERLAY_POS_TYPE & overlay_type) {
 }
 
 void CodeEditor::hideOverlays() {
-    qDebug() << "hideOverlays";
     display_cacher -> clearOverlaysState();
 
     for(QHash<OVERLAY_POS_TYPE, OverlayInfo *>::Iterator it = overlays.begin(); it != overlays.end(); it++)
         it.value() -> hide();
 }
-
-//void CodeEditor::hideOverlayIfNoNeed() {
-//    if (extra_overlay_block_num == NO_INFO && (folding_y == NO_FOLDING || curr_folding_limits.ry() == NO_FOLDING) && folding_overlay_y == NO_FOLDING)
-//        hideOverlay();
-//}
 
 
 bool CodeEditor::rectOnScreen(const QRect & r) {
@@ -998,6 +992,8 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     const QTextCharFormat & active_para_line_format = HighlightFormatFactory::obj().getFormatFor(hid_para_hover_line); //
     const QTextCharFormat & current_line_format = HighlightFormatFactory::obj().getFormatFor(hid_current_line);
 
+    qDebug() << "---------------";
+
     forever {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
@@ -1079,7 +1075,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 const int selStart = range.cursor.selectionStart() - blpos;
                 const int selEnd = range.cursor.selectionEnd() - blpos;
 
-                cache_cell -> is_folding_selected = selEnd > bllen;
+                cache_cell -> is_folding_selected = selStart < bllen && selEnd > 0;
 
                 if (selStart < bllen && selEnd > 0 && selEnd > selStart) {
                     QTextLayout::FormatRange o;

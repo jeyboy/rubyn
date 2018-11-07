@@ -472,7 +472,6 @@ protected:
     void showOverlay(const OVERLAY_POS_TYPE & overlay_type, const UID_TYPE & draw_uid, const QTextBlock & block);
     void hideOverlay(const OVERLAY_POS_TYPE & overlay_type);
     void hideOverlays();
-//    void hideOverlayIfNoNeed();
 
     bool rectOnScreen(const QRect & r);
     inline bool blockOnScreen(const QTextBlock & block) { return rectOnScreen(blockRect(block).toRect()); }
