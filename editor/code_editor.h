@@ -235,7 +235,6 @@ class CodeEditor : public QPlainTextEdit {
 
     EDITOR_POS_TYPE tooplip_block_num;
     EDITOR_POS_TYPE tooplip_block_pos;
-    EDITOR_POS_TYPE extra_overlay_block_num;
 
     bool change_scroll_pos_required;
     bool can_show_folding_popup;
@@ -507,7 +506,6 @@ protected:
     void mouseMoveEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
 //    virtual void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
 //    virtual void mouseDoubleClickEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
-//    virtual bool focusNextPrevChild(bool next) Q_DECL_OVERRIDE;
 
     bool canInsertFromMimeData(const QMimeData * source) const Q_DECL_OVERRIDE {
         return source -> hasUrls() || QPlainTextEdit::canInsertFromMimeData(source);
@@ -533,6 +531,7 @@ signals:
     void cursorPosChanged(const QString & pos_coords);
 
 private slots:
+    void overlayHidden(const OVERLAY_POS_TYPE & uid);
     void applyCompletion(const QString & completion);
 
     void highlightCurrentLine();

@@ -8,11 +8,14 @@
 
 class OverlayInfo : public QLabel {
     Q_OBJECT
+
+    OVERLAY_POS_TYPE location;
 public:
     enum OverlayLocation : OVERLAY_POS_TYPE {
-        ol_top = 0,
-        ol_bottom,
-        ol_hover
+        ol_none = 0,
+        ol_top = 1,
+        ol_bottom = 2,
+        ol_hover = 4
     };
 
     OverlayInfo() {
@@ -79,9 +82,16 @@ public:
         show();
     }
 
+signals:
+    void hidden(const OVERLAY_POS_TYPE & uid);
+
 protected:
     void mouseMoveEvent(QMouseEvent * e) Q_DECL_OVERRIDE {
+        QLabel::mouseMoveEvent(e);
+
         hide();
+
+        emit hidden(location);
     }
 };
 

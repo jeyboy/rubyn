@@ -74,6 +74,8 @@ class CodeEditorCache {
     int tab_length;
     int length;
 
+    OVERLAY_POS_TYPE show_overlays;
+
     friend struct CodeEditorCacheCell;
 public:   
     int top_block_number;
@@ -84,6 +86,15 @@ public:
     CodeEditorCache();
 
     ~CodeEditorCache();
+
+    void mapOverlayState(const OVERLAY_POS_TYPE & overlay_pos, const bool & show) {
+        if (show)
+            show_overlays = show_overlays | overlay_pos;
+        else
+            show_overlays = show_overlays & ~overlay_pos;
+    }
+    void clearOverlaysState() { show_overlays = 0; }
+    bool isShowOverlay() { return show_overlays; }
 
     void clear();
 

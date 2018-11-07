@@ -41,13 +41,17 @@
 //p_textEdit->mergeCurrentCharFormat(fmt);
 
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
-    tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO), extra_overlay_block_num(NO_INFO),
+    tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
     curr_block_number(NO_INFO), show_folding_scope_lines(false), show_folding_content_on_hover_overlay(false)
 {
     overlays.insert(OverlayInfo::ol_bottom, new OverlayInfo());
     overlays.insert(OverlayInfo::ol_top, new OverlayInfo());
     overlays.insert(OverlayInfo::ol_hover, new OverlayInfo());
+
+    connect(overlays[OverlayInfo::ol_bottom], &OverlayInfo::hidden, this, &CodeEditor::overlayHidden);
+    connect(overlays[OverlayInfo::ol_top], &OverlayInfo::hidden, this, &CodeEditor::overlayHidden);
+    connect(overlays[OverlayInfo::ol_hover], &OverlayInfo::hidden, this, &CodeEditor::overlayHidden);
 
     extra_area = new ExtraArea(this);
     display_cacher = new CodeEditorCache();
@@ -105,7 +109,8 @@ void CodeEditor::openDocument(File * file) {
 
         if (wrapper && display_cacher -> size() > 0) {
             wrapper -> setVerticalScrollPos(vscroll -> value());
-            hideOverlays();
+            if (display_cacher -> isShowOverlay())
+                hideOverlays();
         }
 
         wrapper = file -> asText();
@@ -384,19 +389,6 @@ void CodeEditor::drawParaOverlays(QPainter & painter) {
         if (para_info.closer_pos != NO_INFO) {
             QTextBlock closer_blk = para_info.start_block_num == para_info.end_block_num ? opener_blk : document() -> findBlockByNumber(para_info.end_block_num);
             drawTextOverlay(hid_para_hover_overlay, painter, closer_blk, para_info.closer_pos, para_info.closer_length);
-
-//            if (extra_overlay_block_num == para_info.start_block_num) {
-//                if (blockOnScreen(closer_blk))
-//                    showOverlay(hid_para_content_popup, opener_blk);
-//                else
-//                    hideOverlay();
-//            }
-//            else {
-//                if (blockOnScreen(opener_blk))
-//                    showOverlay(hid_para_content_popup, closer_blk);
-//                else
-//                    hideOverlay();
-//            }
         }
     }
 }
@@ -585,16 +577,16 @@ bool CodeEditor::isShowOverlayForBlock(const OVERLAY_POS_TYPE & overlay_type, co
 }
 
 
-
 void CodeEditor::showOverlay(const OVERLAY_POS_TYPE & overlay_type, const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid) {
+    display_cacher -> mapOverlayState(overlay_type, true);
     overlays[overlay_type] -> showInfo(subuid, rect, overlay_img);
 }
 
 void CodeEditor::showOverlay(const OVERLAY_POS_TYPE & overlay_type, const UID_TYPE & draw_uid, const QTextBlock & block) {
-    if (blockOnScreen(block)) {
-        hideOverlay(overlay_type);
-        return;
-    }
+//    if (blockOnScreen(block)) {
+//        hideOverlay(overlay_type);
+//        return;
+//    }
 
     EDITOR_POS_TYPE block_number = block.blockNumber();
 
@@ -625,13 +617,19 @@ void CodeEditor::showOverlay(const OVERLAY_POS_TYPE & overlay_type, const UID_TY
     paintBlock(painter, block, 0, bl_geometry_rect.top(), bl_geometry_rect.bottom());
 
     overlays[overlay_type] -> showInfo(block_number, this, pixmap, overlay_type, (horizontalScrollBar() -> isVisible() ? -horizontalScrollBar() -> height() : 0));
+    display_cacher -> mapOverlayState(overlay_type, true);
 }
 
 void CodeEditor::hideOverlay(const OVERLAY_POS_TYPE & overlay_type) {
+    display_cacher -> mapOverlayState(overlay_type, false);
+
     overlays[overlay_type] -> hide();
 }
 
 void CodeEditor::hideOverlays() {
+    qDebug() << "hideOverlays";
+    display_cacher -> clearOverlaysState();
+
     for(QHash<OVERLAY_POS_TYPE, OverlayInfo *>::Iterator it = overlays.begin(); it != overlays.end(); it++)
         it.value() -> hide();
 }
@@ -834,6 +832,8 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                     );
 
             if (invalidation_required) {
+                hideOverlay(OverlayInfo::ol_hover);
+
                 can_show_folding_popup = true;
 
                 if (folding_click)
@@ -876,6 +876,8 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                 setTextCursor(cursor);
                             } else {
                                 if (wrapper -> layout -> toggleFolding(blk)) {
+                                    hideOverlay(OverlayInfo::ol_hover);
+
                                     folding_click = true;
                                     can_show_folding_popup = false;
                                     invalidation_required = false;
@@ -1329,6 +1331,9 @@ void CodeEditor::resizeEvent(QResizeEvent * e) {
 void CodeEditor::keyPressEvent(QKeyEvent * e) {
 //    qDebug() << "KEY PRESSED:" << ((Qt::Key)e -> key());
 
+    if (display_cacher -> isShowOverlay())
+        hideOverlays();
+
     int curr_key = e -> key();
 
     if (completer && completer -> popup() -> isVisible()) {
@@ -1444,6 +1449,9 @@ void CodeEditor::keyReleaseEvent(QKeyEvent * e) {
 }
 
 void CodeEditor::wheelEvent(QWheelEvent * e) {
+    if (display_cacher -> isShowOverlay())
+        hideOverlays();
+
     if (e -> modifiers() & Qt::ControlModifier) {
         const float delta = e -> angleDelta().y();
 
@@ -1461,6 +1469,9 @@ void CodeEditor::wheelEvent(QWheelEvent * e) {
 }
 
 void CodeEditor::focusInEvent(QFocusEvent * e) {
+    if (display_cacher -> isShowOverlay())
+        hideOverlays();
+
     if (completer)
         completer -> setWidget(this);
 
@@ -1482,6 +1493,9 @@ void CodeEditor::mouseDoubleClickEvent(QMouseEvent * e) {
 }
 
 void CodeEditor::mousePressEvent(QMouseEvent * e) {
+    if (display_cacher -> isShowOverlay())
+        hideOverlays();
+
     QPlainTextEdit::mousePressEvent(e);
 
     //INFO: monkey patch for mouse click in pos(0, 0) after a doc opened
@@ -1582,6 +1596,10 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
 
         completer -> complete(cr);
     }
+}
+
+void CodeEditor::overlayHidden(const OVERLAY_POS_TYPE & uid) {
+    display_cacher -> mapOverlayState(uid, false);
 }
 
 void CodeEditor::applyCompletion(const QString & completion) {
@@ -1698,10 +1716,14 @@ void CodeEditor::cursorMoved() {
         }
 
         if (initiated) {
-            extra_overlay_block_num = active_para_opener_hovered ? end_pos : start_pos;
-
             para_info.start_block_num = start_pos;
             para_info.end_block_num = end_pos;
+
+            if (start_pos < display_cacher -> top_block_number)
+                showOverlay(OverlayInfo::ol_top, hid_para_content_popup, document() -> findBlockByNumber(start_pos));
+
+            if (end_pos > display_cacher -> bottom_block_number)
+                showOverlay(OverlayInfo::ol_bottom, hid_para_content_popup, document() -> findBlockByNumber(end_pos));
 
             viewport() -> update(); // update editor marks
             update(); // update folding scope on extra area
