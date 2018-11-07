@@ -43,13 +43,11 @@
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
     tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO), extra_overlay_block_num(NO_INFO),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
-    curr_block_number(NO_INFO), folding_lines_coverage_level(NO_INFO), folding_lines_coverage_level_stoper_min(NO_INFO),
-    folding_lines_coverage_level_stoper_max(NO_INFO),
-    show_folding_scope_lines(false), show_folding_content_on_hover_overlay(false)
+    curr_block_number(NO_INFO), show_folding_scope_lines(false), show_folding_content_on_hover_overlay(false)
 {
-    screen_top_overlay = new OverlayInfo();
-    screen_bottom_overlay = new OverlayInfo();
-    hover_overlay = new OverlayInfo();
+    overlays.insert(OverlayInfo::ol_bottom, new OverlayInfo());
+    overlays.insert(OverlayInfo::ol_top, new OverlayInfo());
+    overlays.insert(OverlayInfo::ol_hover, new OverlayInfo());
 
     extra_area = new ExtraArea(this);
     display_cacher = new CodeEditorCache();
@@ -74,13 +72,10 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
 }
 
 CodeEditor::~CodeEditor() {
-    delete screen_top_overlay;
-    delete screen_bottom_overlay;
-    delete hover_overlay;
-
     icons.clear();
 
     delete display_cacher;
+    qDeleteAll(overlays);
 }
 
 void CodeEditor::setCompleter(QCompleter * new_completer) {
@@ -110,7 +105,7 @@ void CodeEditor::openDocument(File * file) {
 
         if (wrapper && display_cacher -> size() > 0) {
             wrapper -> setVerticalScrollPos(vscroll -> value());
-            hideOverlay();
+            hideOverlays();
         }
 
         wrapper = file -> asText();
@@ -285,9 +280,9 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
                         showFoldingContentPopup(document() -> findBlockByNumber(cache -> block_number));
                 }
                 else {
-                    folding_lines_coverage_level = user_data -> level;
-                    folding_lines_coverage_level_stoper_min = cache -> block_number;
-                    folding_lines_coverage_level_stoper_max = NO_INFO - (user_data -> para_control -> is_blockator ? 0 : 1);
+                    active_folding.level = user_data -> level;
+                    active_folding.start_block_num = cache -> block_number;
+                    active_folding.end_block_num = NO_INFO - (user_data -> para_control -> is_blockator ? 0 : 1);
                     initiated = true;
                 }
             }
@@ -306,13 +301,10 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
         );
         ////////////////////////////// END TEST /////////////////
 
-        if (!initiated && folding_lines_coverage_level_stoper_max < 0 && user_data -> level <= folding_lines_coverage_level)
-            folding_lines_coverage_level_stoper_max = cache -> block_number + folding_lines_coverage_level_stoper_max + 1;
+        if (!initiated && active_folding.end_block_num < 0 && user_data -> level <= active_folding.level)
+            active_folding.end_block_num += cache -> block_number + 1;
 
-        if (folding_lines_coverage_level_stoper_min > NO_INFO &&
-            cache -> block_number >= folding_lines_coverage_level_stoper_min &&
-                (folding_lines_coverage_level_stoper_max < 0 || cache -> block_number <= folding_lines_coverage_level_stoper_max)
-        ) {
+        if (active_folding.containsBlockNumber(cache -> block_number)) {
             const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_hover_range);
             painter.setPen(format.foreground().color());
             painter.fillRect(folding_offset_x, block_top, folding_width, block_bottom - block_top, format.background());
@@ -341,47 +333,11 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
 }
 
 void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num) {
-//    bool is_current = curr_block_number == block_num;
-
-//    if (is_current) {
-//        const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_current_line_extra);
-//        painter.fillRect(0, paint_top, extra_zone_width, block_bottom - block_top, format.background());
-//    }
-
     BlockUserData * user_data = TextDocumentLayout::getUserDataForBlock(block);
     DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
-//    bool on_block = folding_y != NO_FOLDING && folding_y > block_top && folding_y < block_bottom;
-    bool initiated = false;
-
-//    if (on_block) {
-//        curr_folding_limits.rx() = block_top;
-//        curr_folding_limits.ry() = block_bottom;
-//    }
-
     if (folding_flags) {
         if (!user_data -> para_control -> is_oneliner) {
-//            bool opened = (folding_flags & BlockUserData::udf_folding_opened) == BlockUserData::udf_folding_opened;
-
-//            if (on_block) {
-//                folding_flags |= BlockUserData::udf_folding_hovered;
-
-//                if (opened) {
-//                    hideOverlay();
-
-//                    folding_lines_coverage_level = user_data -> level;
-//                    folding_lines_coverage_level_stoper_min = block_num;
-//                    folding_lines_coverage_level_stoper_max = FOLDING_COVERAGE_LEVEL_STOPER - (user_data -> para_control -> is_blockator ? 0 : 1);
-//                    initiated = true;
-//                }
-//                else {
-//                    if (folding_click) {
-//                        folding_click = false;
-//                    }
-//                    else if (can_show_folding_popup)
-//                        showFoldingContentPopup(block);
-//                }
-//            }
 
             painter.drawPixmap(
                 QPoint(folding_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
@@ -389,18 +345,9 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
             );
         }
     }
-//    else if (on_block) {
-//        hideOverlay();
-//    }
 
     if (user_data) {
-        if (!initiated && folding_lines_coverage_level_stoper_max < 0 && user_data -> level <= folding_lines_coverage_level)
-            folding_lines_coverage_level_stoper_max = block_num + folding_lines_coverage_level_stoper_max + 1;
-
-        if (folding_lines_coverage_level_stoper_min >= 0 &&
-            block_num >= folding_lines_coverage_level_stoper_min &&
-                (folding_lines_coverage_level_stoper_max < 0 || block_num <= folding_lines_coverage_level_stoper_max)
-        ) {
+        if (active_folding.containsBlockNumber(block_num)) {
             const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_hover_range);
             painter.setPen(format.foreground().color());
             painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, format.background());
@@ -422,7 +369,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         painter.fillRect(folding_scope_offset_x, paint_top, folding_scope_width, block_bottom - block_top, scope_format.background());
     }
 
-    painter.setFont(/*is_current ? curr_line_font : */font());
+    painter.setFont(font());
     painter.drawText(
         line_number_offset_x, paint_top, line_number_width, line_number_height, Qt::AlignRight, QString::number(block_num + 1)
     );
@@ -543,7 +490,8 @@ void CodeEditor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, 
 }
 
 void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
-    QRect parent_block_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
+    OverlayInfo::OverlayLocation olocation = OverlayInfo::ol_hover;
+    QRect parent_block_rect = blockRect(block).toRect();
 
     if (!rectOnScreen(parent_block_rect)) {
         return;
@@ -551,7 +499,7 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
 
     EDITOR_POS_TYPE uid = block.blockNumber();
 
-    if (overlay -> shownFor(true, 0, uid)) {
+    if (overlays[olocation] -> shownFor(uid)) {
         return;
     }
 
@@ -627,39 +575,46 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
         pixmap = pixmap.copy(0, 0, pixmap.width(), popup_rect.height());
     }
 
-    showOverlay(popup_rect, pixmap, uid);
+    showOverlay(olocation, popup_rect, pixmap, uid);
 }
 
-void CodeEditor::showOverlay(const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid) {
-    overlay -> registerShowing(true, 0, subuid);
-    overlay -> showInfo(rect, overlay_img);
+
+
+bool CodeEditor::isShowOverlayForBlock(const OVERLAY_POS_TYPE & overlay_type, const EDITOR_POS_TYPE & subuid) {
+    return overlays[overlay_type] -> shownFor(subuid);
 }
 
-void CodeEditor::showOverlay(const UID_TYPE & draw_uid, const QTextBlock & block) {
+
+
+void CodeEditor::showOverlay(const OVERLAY_POS_TYPE & overlay_type, const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid) {
+    overlays[overlay_type] -> showInfo(subuid, rect, overlay_img);
+}
+
+void CodeEditor::showOverlay(const OVERLAY_POS_TYPE & overlay_type, const UID_TYPE & draw_uid, const QTextBlock & block) {
     if (blockOnScreen(block)) {
-        hideOverlay();
+        hideOverlay(overlay_type);
         return;
     }
 
     EDITOR_POS_TYPE block_number = block.blockNumber();
 
-    OverlayInfo::OverlayPos overlay_pos =
-        textCursor().blockNumber() < block_number ? OverlayInfo::op_bottom : OverlayInfo::op_top;
+//    OverlayInfo::OverlayLocation overlay_pos =
+//        textCursor().blockNumber() < block_number ? OverlayInfo::op_bottom : OverlayInfo::op_top;
 
-    if (overlay -> shownFor(false, overlay_pos, block_number)) {
+    if (overlays[overlay_type] -> shownFor(block_number)) {
         return;
     }
 
-    QRect bl_geometry_rect = blockBoundingGeometry(block).translated(contentOffset()).toRect();
+    QRect bl_geometry_rect = blockRect(block).toRect();
     bl_geometry_rect.setWidth(widthWithoutScroll());
 
-    if (overlay_pos == OverlayInfo::op_top) {
-        int height_limit = line_number_height * 3 + 3;
+//    if (overlay_pos == OverlayInfo::op_top) {
+//        int height_limit = line_number_height * 3 + 3;
 
-        if (bl_geometry_rect.height() > height_limit) {
-            bl_geometry_rect.setHeight(height_limit);
-        }
-    }
+//        if (bl_geometry_rect.height() > height_limit) {
+//            bl_geometry_rect.setHeight(height_limit);
+//        }
+//    }
 
     QPixmap pixmap(bl_geometry_rect.size());
     const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(static_cast<Identifier>(draw_uid));
@@ -669,18 +624,22 @@ void CodeEditor::showOverlay(const UID_TYPE & draw_uid, const QTextBlock & block
 
     paintBlock(painter, block, 0, bl_geometry_rect.top(), bl_geometry_rect.bottom());
 
-    overlay -> registerShowing(false, overlay_pos, block_number);
-    overlay -> showInfo(this, pixmap, overlay_pos, (horizontalScrollBar() -> isVisible() ? -horizontalScrollBar() -> height() : 0));
+    overlays[overlay_type] -> showInfo(block_number, this, pixmap, overlay_type, (horizontalScrollBar() -> isVisible() ? -horizontalScrollBar() -> height() : 0));
 }
 
-void CodeEditor::hideOverlay() {
-    if (overlay) overlay -> hide();
+void CodeEditor::hideOverlay(const OVERLAY_POS_TYPE & overlay_type) {
+    overlays[overlay_type] -> hide();
 }
 
-void CodeEditor::hideOverlayIfNoNeed() {
-    if (extra_overlay_block_num == NO_INFO && (folding_y == NO_FOLDING || curr_folding_limits.ry() == NO_FOLDING) && folding_overlay_y == NO_FOLDING)
-        hideOverlay();
+void CodeEditor::hideOverlays() {
+    for(QHash<OVERLAY_POS_TYPE, OverlayInfo *>::Iterator it = overlays.begin(); it != overlays.end(); it++)
+        it.value() -> hide();
 }
+
+//void CodeEditor::hideOverlayIfNoNeed() {
+//    if (extra_overlay_block_num == NO_INFO && (folding_y == NO_FOLDING || curr_folding_limits.ry() == NO_FOLDING) && folding_overlay_y == NO_FOLDING)
+//        hideOverlay();
+//}
 
 
 bool CodeEditor::rectOnScreen(const QRect & r) {
@@ -688,11 +647,6 @@ bool CodeEditor::rectOnScreen(const QRect & r) {
     int rel_pos = view_height - r.top();
     return (rel_pos > line_number_height / 2) && (rel_pos <= view_height);
 }
-
-bool CodeEditor::blockOnScreen(const QTextBlock & block) {
-    return rectOnScreen(blockBoundingGeometry(block).translated(contentOffset()).toRect());
-}
-
 
 //QString CodeEditor::blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length) {
 //    QTextBlock block = document() -> findBlockByNumber(block_num);
@@ -712,7 +666,7 @@ QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos
     if (!line.isValid())
         return QRect();
 
-    QRectF rect = blockBoundingGeometry(block).translated(contentOffset());
+    QRectF rect = blockRect(block);
 
     return textRect(rect, line, pos, length);
 }
@@ -859,9 +813,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
     bool in_folding_zone = !in_number_zone && (pos.rx() >= folding_offset_x && pos.rx() <= folding_offset_x + folding_width);
 
     if (!in_folding_zone) {
-        folding_lines_coverage_level = NO_INFO;
-        folding_lines_coverage_level_stoper_min = NO_INFO;
-        folding_lines_coverage_level_stoper_max = NO_INFO;
+        active_folding.clear();
         folding_y = NO_FOLDING;
     }
     else folding_y = pos.ry();
@@ -888,9 +840,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                     folding_click = false;
 
                 curr_folding_limits.ry() = NO_FOLDING;
-                folding_lines_coverage_level = NO_INFO;
-                folding_lines_coverage_level_stoper_min = NO_INFO;
-                folding_lines_coverage_level_stoper_max = NO_INFO;
+                active_folding.clear();
             }
         break;}
 
@@ -915,7 +865,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                     udata -> invertBreakpointState();
                                     invalidation_required = true;
 
-                                    QRect r(blockBoundingGeometry(blk).translated(contentOffset()).toRect());
+                                    QRect r(blockRect(blk).toRect());
                                     r.setWidth(r.width() + 50);
                                     viewport() -> update(r);
                                 }

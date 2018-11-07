@@ -20,9 +20,11 @@ struct ActiveFoldingInfo {
         end_block_num = NO_INFO;
     }
 
-//    inline bool containsBlockNumber(const EDITOR_POS_TYPE & block_num) {
-//        return start_block_num > NO_INFO && block_num >= start_block_num && block_num <= end_block_num;
-//    }
+    inline bool containsBlockNumber(const EDITOR_POS_TYPE & block_num) {
+        return start_block_num > NO_INFO &&
+                    block_num >= start_block_num &&
+                        (end_block_num < 0 || block_num <= end_block_num);
+    }
 };
 
 #endif // ACTIVE_FOLDING_INFO_H

@@ -233,10 +233,6 @@ class CodeEditor : public QPlainTextEdit {
     QCompleter * completer;
     TextDocument * wrapper;
 
-    OverlayInfo * screen_top_overlay;
-    OverlayInfo * screen_bottom_overlay;
-    OverlayInfo * hover_overlay;
-
     EDITOR_POS_TYPE tooplip_block_num;
     EDITOR_POS_TYPE tooplip_block_pos;
     EDITOR_POS_TYPE extra_overlay_block_num;
@@ -278,6 +274,7 @@ class CodeEditor : public QPlainTextEdit {
     QFont curr_line_font;
 
     QHash<DATA_FLAGS_TYPE, QPixmap> icons;
+    QHash<OVERLAY_POS_TYPE, OverlayInfo *> overlays;
 
     ////////// SETTINGS ////////////
     bool show_folding_scope_lines;
@@ -469,13 +466,18 @@ protected:
     void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRect & fold_rect);
 
     void showFoldingContentPopup(const QTextBlock & block);
-    void showOverlay(const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid = -1);
-    void showOverlay(const UID_TYPE & draw_uid, const QTextBlock & block);
-    void hideOverlay();
-    void hideOverlayIfNoNeed();
+
+    bool isShowOverlayForBlock(const OVERLAY_POS_TYPE & overlay_type, const EDITOR_POS_TYPE & subuid);
+
+    void showOverlay(const OVERLAY_POS_TYPE & overlay_type, const QRect & rect, const QPixmap & overlay_img, const qint32 & subuid = -1);
+    void showOverlay(const OVERLAY_POS_TYPE & overlay_type, const UID_TYPE & draw_uid, const QTextBlock & block);
+    void hideOverlay(const OVERLAY_POS_TYPE & overlay_type);
+    void hideOverlays();
+//    void hideOverlayIfNoNeed();
 
     bool rectOnScreen(const QRect & r);
-    bool blockOnScreen(const QTextBlock & block);
+    inline bool blockOnScreen(const QTextBlock & block) { return rectOnScreen(blockRect(block).toRect()); }
+    inline QRectF blockRect(const QTextBlock & block) { return blockBoundingGeometry(block).translated(contentOffset());  }
 
 //    QString blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length = -1);   
     QRect textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);

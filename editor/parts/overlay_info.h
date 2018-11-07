@@ -6,14 +6,13 @@
 
 #include "misc/defines.h"
 
-#define GENERATE_UID(by_rect, pos, sub_uid) QStringLiteral("%1%2%3").arg(by_rect).arg(pos).arg(sub_uid)
-
 class OverlayInfo : public QLabel {
     Q_OBJECT
 public:
-    enum OverlayPos : OVERLAY_POS_TYPE {
-        op_top = 0,
-        op_bottom
+    enum OverlayLocation : OVERLAY_POS_TYPE {
+        ol_top = 0,
+        ol_bottom,
+        ol_hover
     };
 
     OverlayInfo() {
@@ -34,37 +33,30 @@ public:
 
 
         setAttribute(Qt::WA_ShowWithoutActivating);
-        setAttribute(Qt::WA_TransparentForMouseEvents);
+//        setAttribute(Qt::WA_TransparentForMouseEvents);
         setParent(nullptr);
         setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         setFocusPolicy(Qt::NoFocus);
+
+        setMouseTracking(true);
     }
 
-    void registerShowing(const bool & by_rect, const OVERLAY_POS_TYPE & pos, const qint32 & uid) {
-        setProperty("by_rect", by_rect);
-        setProperty("uid", GENERATE_UID(by_rect, pos, uid));
+    bool shownFor(const EDITOR_POS_TYPE & uid) {
+        return isVisible() && property("uid").toLongLong() == uid;
     }
 
-    bool shownFor(const bool & by_rect, const OVERLAY_POS_TYPE & pos, const qint32 & uid) {
-        return isVisible() && property("uid").toString() == GENERATE_UID(by_rect, pos, uid);
-    }
-
-    bool shownFor(const bool & by_rect) {
-        return isVisible() && property("by_rect").toBool() == by_rect;
-    }
-
-    void showInfo(QWidget * widget, const QRect & rect, const OverlayPos & pos = op_top, const int & bottom_offset = 0) {
+    void showInfo(const EDITOR_POS_TYPE & uid, QWidget * widget, const QRect & rect, const OVERLAY_POS_TYPE & pos = ol_top, const int & bottom_offset = 0) {
         QPixmap pixmap(rect.size());
         widget -> render(&pixmap, QPoint(), QRegion(rect));
 
-        showInfo(widget, pixmap, pos, bottom_offset);
+        showInfo(uid, widget, pixmap, pos, bottom_offset);
     }
-
-    void showInfo(QWidget * widget, const QPixmap & pixmap, const OverlayPos & pos = op_top, const int & bottom_offset = 0) {
+    void showInfo(const EDITOR_POS_TYPE & uid, QWidget * widget, const QPixmap & pixmap, const OVERLAY_POS_TYPE & pos = ol_top, const int & bottom_offset = 0) {
+        setProperty("uid", uid);
         setPixmap(pixmap);
 
         QPoint new_pos =
-            pos == op_top ?
+            pos == ol_top ?
                 widget -> mapToGlobal(widget -> rect().topLeft()) - QPoint(0, pixmap.height())
                       :
                 widget -> mapToGlobal(widget -> rect().bottomLeft()) + QPoint(0, 2 + bottom_offset);
@@ -74,8 +66,8 @@ public:
 
         show();
     }
-
-    void showInfo(const QRect & rect, const QPixmap & pixmap) {
+    void showInfo(const EDITOR_POS_TYPE & uid, const QRect & rect, const QPixmap & pixmap) {
+        setProperty("uid", uid);
         setPixmap(pixmap);
 
         move(rect.topLeft());
