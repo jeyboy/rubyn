@@ -131,6 +131,8 @@ public:
         return nullptr;
     }
 
+    inline bool isBlockOnScreen(const EDITOR_POS_TYPE & block_number) { return block_number >= top_block_number && block_number <= bottom_block_number; }
+
 //    inline static CodeEditorCacheCell * insert(CodeEditorCacheCell * left) {
 //        return new CodeEditorCacheCell(left);
 //    }

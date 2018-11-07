@@ -18,7 +18,7 @@ public:
         ol_hover = 4
     };
 
-    OverlayInfo() {
+    OverlayInfo(const OVERLAY_POS_TYPE & overlay_location) : location(overlay_location) {
 //        QPalette palette = palette();
 //        palette.setBrush(QPalette::Base, Qt::transparent);
 

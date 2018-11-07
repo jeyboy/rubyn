@@ -45,9 +45,9 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
     curr_block_number(NO_INFO), show_folding_scope_lines(false), show_folding_content_on_hover_overlay(false)
 {
-    overlays.insert(OverlayInfo::ol_bottom, new OverlayInfo());
-    overlays.insert(OverlayInfo::ol_top, new OverlayInfo());
-    overlays.insert(OverlayInfo::ol_hover, new OverlayInfo());
+    overlays.insert(OverlayInfo::ol_bottom, new OverlayInfo(OverlayInfo::ol_bottom));
+    overlays.insert(OverlayInfo::ol_top, new OverlayInfo(OverlayInfo::ol_top));
+    overlays.insert(OverlayInfo::ol_hover, new OverlayInfo(OverlayInfo::ol_hover));
 
     connect(overlays[OverlayInfo::ol_bottom], &OverlayInfo::hidden, this, &CodeEditor::overlayHidden);
     connect(overlays[OverlayInfo::ol_top], &OverlayInfo::hidden, this, &CodeEditor::overlayHidden);
@@ -876,7 +876,8 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                 setTextCursor(cursor);
                             } else {
                                 if (wrapper -> layout -> toggleFolding(blk)) {
-                                    hideOverlay(OverlayInfo::ol_hover);
+                                    if (display_cacher -> isShowOverlay())
+                                        hideOverlays();
 
                                     folding_click = true;
                                     can_show_folding_popup = false;
@@ -885,13 +886,14 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                     //INFO: move the cursor out from folded block
                                     QTextCursor current_cursor = textCursor();
 
-                                    if (!current_cursor.block().isVisible()) {
+                                    QTextBlock cursor_blk = current_cursor.block();
+
+                                    if (!cursor_blk.isVisible() || !display_cacher -> isBlockOnScreen(cursor_blk.blockNumber())) {
                                         current_cursor.setPosition(blk.position());
                                         setTextCursor(current_cursor);
-
-                                        //INFO: monkey patch for folding in first line if doc opened but not edited yet
                                     }
 
+                                    //INFO: monkey patch for folding in first line if doc opened but not edited yet
                                     if (curr_block_number == NO_INFO) {
                                         imitateClick();
                                     }
