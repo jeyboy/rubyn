@@ -627,6 +627,7 @@ void CodeEditor::hideOverlay(const OVERLAY_POS_TYPE & overlay_type) {
 }
 
 void CodeEditor::hideOverlays() {
+    qDebug() << "hideOverlays";
     display_cacher -> clearOverlaysState();
 
     for(QHash<OVERLAY_POS_TYPE, OverlayInfo *>::Iterator it = overlays.begin(); it != overlays.end(); it++)
@@ -992,8 +993,6 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     const QTextCharFormat & active_para_line_format = HighlightFormatFactory::obj().getFormatFor(hid_para_hover_line); //
     const QTextCharFormat & current_line_format = HighlightFormatFactory::obj().getFormatFor(hid_current_line);
 
-    qDebug() << "---------------";
-
     forever {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
@@ -1072,15 +1071,15 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
             for (int i = 0; i < context.selections.size(); ++i) {
                 const QAbstractTextDocumentLayout::Selection & range = context.selections.at(i);
-                const int selStart = range.cursor.selectionStart() - blpos;
-                const int selEnd = range.cursor.selectionEnd() - blpos;
+                const int sel_start = range.cursor.selectionStart() - blpos;
+                const int sel_end = range.cursor.selectionEnd() - blpos;
 
-                cache_cell -> is_folding_selected = selStart < bllen && selEnd > 0;
+                cache_cell -> is_folding_selected = sel_start < bllen && sel_end > bllen;
 
-                if (selStart < bllen && selEnd > 0 && selEnd > selStart) {
+                if (sel_start < bllen && sel_end > 0 && sel_end > sel_start) {
                     QTextLayout::FormatRange o;
-                    o.start = selStart;
-                    o.length = selEnd - selStart;
+                    o.start = sel_start;
+                    o.length = sel_end - sel_start;
                     o.format = selection_format; //range.format; //selection_format; //
                     selections.append(o);
                 } else if (!range.cursor.hasSelection() && range.format.hasProperty(QTextFormat::FullWidthSelection)
