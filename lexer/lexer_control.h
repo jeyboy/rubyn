@@ -386,6 +386,9 @@ struct LexerControl {
             if (para -> next) {
                 para = para -> next;
 
+                if (!para -> is_opener)
+                    para -> closer = nullptr;
+
                 para -> para_type = ptype;
                 para -> pos = cached_str_pos;
                 para -> length = static_cast<quint8>(cached_length); // 8 bits should be enough for any type of para
@@ -434,6 +437,7 @@ struct LexerControl {
                     para -> closer = parent;
                 }
             }
+            else para -> closer = nullptr;
         }
 
         if ((!control_para || !control_para -> is_opener) && para -> is_foldable) {
