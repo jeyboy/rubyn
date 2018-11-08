@@ -398,11 +398,11 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
     int target_bottom = target_rect.bottom();
 
     for (CodeEditorCacheCell * it = display_cacher -> begin(); !it -> is_service; it = it -> next) {
-        if (!it -> is_visible || it -> bounding_rect.bottom() < target_top) {
+        if (!it -> is_visible || (!show_folding_content_on_hover_overlay && it -> bounding_rect.bottom() < target_top)) {
             continue;
         }
 
-        if (it -> bounding_rect.top() > target_bottom) {
+        if (!show_folding_content_on_hover_overlay && it -> bounding_rect.top() > target_bottom) {
             break;
         }
 
@@ -482,19 +482,19 @@ void CodeEditor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, 
 }
 
 void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
-    OverlayInfo::OverlayLocation olocation = OverlayInfo::ol_hover;
-    QRect parent_block_rect = blockRect(block).toRect();
+    EDITOR_POS_TYPE uid = block.blockNumber();
 
-    if (!rectOnScreen(parent_block_rect)) {
+    if (!display_cacher -> isBlockOnScreen(uid)) {
         return;
     }
 
-    EDITOR_POS_TYPE uid = block.blockNumber();
+    OverlayInfo::OverlayLocation olocation = OverlayInfo::ol_hover;
 
     if (overlays[olocation] -> shownFor(uid)) {
         return;
     }
 
+    QRect parent_block_rect = blockRect(block).toRect();
     QRect popup_rect(parent_block_rect.topLeft(), size());
 
     int view_height = height();
@@ -1504,31 +1504,31 @@ void CodeEditor::mousePressEvent(QMouseEvent * e) {
 void CodeEditor::mouseMoveEvent(QMouseEvent * e) {
     QPlainTextEdit::mouseMoveEvent(e);
 
-//    if (!show_folding_content_on_hover_overlay) return;
+    if (!show_folding_content_on_hover_overlay) return;
 
-//    QPoint point = e -> localPos().toPoint();
-//    int y = point.y();
+    QPoint point = e -> localPos().toPoint();
+    int y = point.y();
 
-//    for (CodeEditorCacheCell * it = display_cacher -> begin(); !it -> is_service; it = it -> next) {
-//        if (it -> folding_description_rect.width() == 0 || it -> folding_description_rect.bottom() < y) {
-//            continue;
-//        }
+    for (CodeEditorCacheCell * it = display_cacher -> begin(); !it -> is_service; it = it -> next) {
+        if (it -> folding_description_rect.width() == 0 || it -> folding_description_rect.bottom() < y) {
+            continue;
+        }
 
-//        if (it -> folding_description_rect.top() > y) {
-//            break;
-//        }
+        if (it -> folding_description_rect.top() > y) {
+            break;
+        }
 
-//        if (it -> folding_description_rect.contains(point)) {
-//            if (!overlay -> shownFor(true, 0, it -> block_number)) {
-////                QApplication::setOverrideCursor(QCursor(Qt::PointingHandCursor));
-//                showFoldingContentPopup(document() -> findBlockByNumber(it -> block_number));
-//            }
-//            return;
-//        }
-//    }
+        if (it -> folding_description_rect.contains(point)) {
+            viewport() -> setCursor(QCursor(Qt::PointingHandCursor));
+            showFoldingContentPopup(document() -> findBlockByNumber(it -> block_number));
+            return;
+        }
+    }
 
-////    QApplication::restoreOverrideCursor();
-//    hideOverlay();
+    if (overlays[OverlayInfo::ol_hover] -> isVisible()) {
+        viewport() -> setCursor(QCursor(Qt::IBeamCursor));
+        hideOverlay(OverlayInfo::ol_hover);
+    }
 }
 
 void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup, const bool & has_modifiers) {

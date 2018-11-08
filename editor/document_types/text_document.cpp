@@ -76,7 +76,7 @@ TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1
 //    connect(_doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
 
     layout = new TextDocumentLayout(_doc);
-    layout -> setCursorWidth(1);
+    layout -> setCursorWidth(2);
     _doc -> setDocumentLayout(layout);
 
 //    QTextOption option = _doc -> defaultTextOption();
