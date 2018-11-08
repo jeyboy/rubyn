@@ -43,7 +43,7 @@
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
     tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
-    curr_block_number(NO_INFO), show_folding_scope_lines(false), show_folding_content_on_hover_overlay(false)
+    curr_block_number(NO_INFO), show_folding_scope_lines(false), show_folding_content_on_hover_overlay(false), unfold_on_click_overlay(false)
 {
     overlays.insert(OverlayInfo::ol_bottom, new OverlayInfo(OverlayInfo::ol_bottom));
     overlays.insert(OverlayInfo::ol_top, new OverlayInfo(OverlayInfo::ol_top));
@@ -131,6 +131,7 @@ void CodeEditor::openDocument(File * file) {
         setShowSpacesAndTabs(true);
         setShowFoldingScopeLines(true);
         setShowFoldingContentOnHoverOverlay(true);
+        setUnfoldOnClickOverlay(true);
 
         if (!file -> isFullyReaded()) {
             //    verticalScrollBar()
@@ -1493,7 +1494,42 @@ void CodeEditor::mousePressEvent(QMouseEvent * e) {
     if (display_cacher -> isShowOverlay())
         hideOverlays();
 
-    QPlainTextEdit::mousePressEvent(e);
+    if (unfold_on_click_overlay) {
+        QPoint point = e -> localPos().toPoint();
+        int y = point.y();
+
+        for (CodeEditorCacheCell * it = display_cacher -> begin(); !it -> is_service; it = it -> next) {
+            if (it -> folding_description_rect.width() == 0 || it -> folding_description_rect.bottom() < y) {
+                continue;
+            }
+
+            if (it -> folding_description_rect.top() > y) {
+                break;
+            }
+
+            if (it -> folding_description_rect.contains(point)) {
+                QTextBlock blk = document() -> findBlockByNumber(it -> block_number);
+
+                if (wrapper -> layout -> toggleFolding(blk)) {
+                    restoreDefaultMouseCursor();
+
+                    if (display_cacher -> isShowOverlay())
+                        hideOverlays();
+
+                    QTextCursor current_cursor = textCursor();
+                    QTextBlock cursor_blk = current_cursor.block();
+
+                    if (!display_cacher -> isBlockOnScreen(cursor_blk.blockNumber())) {
+                        current_cursor.setPosition(blk.position());
+                        setTextCursor(current_cursor);
+                    }
+                }
+            }
+        }
+
+        QPlainTextEdit::mousePressEvent(e);
+    }
+    else QPlainTextEdit::mousePressEvent(e);
 
     //INFO: monkey patch for mouse click in pos(0, 0) after a doc opened
     if (curr_block_number == NO_INFO) {
@@ -1519,14 +1555,17 @@ void CodeEditor::mouseMoveEvent(QMouseEvent * e) {
         }
 
         if (it -> folding_description_rect.contains(point)) {
-            viewport() -> setCursor(QCursor(Qt::PointingHandCursor));
-            showFoldingContentPopup(document() -> findBlockByNumber(it -> block_number));
+            if (!overlays[OverlayInfo::ol_hover] -> shownFor(it -> block_number)) {
+                setMouseCursor(Qt::PointingHandCursor);
+                showFoldingContentPopup(document() -> findBlockByNumber(it -> block_number));
+            }
+
             return;
         }
     }
 
     if (overlays[OverlayInfo::ol_hover] -> isVisible()) {
-        viewport() -> setCursor(QCursor(Qt::IBeamCursor));
+        restoreDefaultMouseCursor();
         hideOverlay(OverlayInfo::ol_hover);
     }
 }

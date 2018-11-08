@@ -278,6 +278,7 @@ class CodeEditor : public QPlainTextEdit {
     ////////// SETTINGS ////////////
     bool show_folding_scope_lines;
     bool show_folding_content_on_hover_overlay;
+    bool unfold_on_click_overlay;
     ////////// END SETTINGS ////////////
 
     friend class ExtraArea;
@@ -307,6 +308,12 @@ public:
     inline bool showFoldingContentOnHoverOverlay() { return show_folding_content_on_hover_overlay; }
     inline void setShowFoldingContentOnHoverOverlay(const bool & show) {
         show_folding_content_on_hover_overlay = show;
+        viewport() -> update();
+    }
+
+    inline bool unfoldOnClickOverlay() { return unfold_on_click_overlay; }
+    inline void setUnfoldOnClickOverlay(const bool & show) {
+        unfold_on_click_overlay = show;
         viewport() -> update();
     }
 
@@ -444,6 +451,9 @@ protected:
 //    }
 
     static void fillBackground(QPainter * p, const QRectF & rect, QBrush brush, const QRectF & gradientRect = QRectF());
+
+    inline void setMouseCursor(const Qt::CursorShape & shape) { viewport() -> setCursor(QCursor(shape)); }
+    inline void restoreDefaultMouseCursor() { setMouseCursor(Qt::IBeamCursor); }
 
     void imitateClick();
     void prepareIcons(const int & size = ICO_WIDTH);
