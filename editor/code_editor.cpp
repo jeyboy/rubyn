@@ -102,7 +102,7 @@ void CodeEditor::openDocument(File * file) {
     if (file && file -> isText()) {
         QFont new_font(font().family(), 11);
         new_font.setKerning(true);
-        new_font.setLetterSpacing(QFont::AbsoluteSpacing, cursorWidth() - 1);
+//        new_font.setLetterSpacing(QFont::AbsoluteSpacing, cursorWidth() - 1);
 //        new_font.setStretch(90);
 
         QScrollBar * vscroll = verticalScrollBar();
