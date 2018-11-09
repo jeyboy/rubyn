@@ -1695,7 +1695,7 @@ void CodeEditor::cursorMoved() {
         if (show_folding_scope_lines) {
             CodeEditorCacheCell * cache = display_cacher -> cacheForBlockNumber(start_pos);
 
-            if (cache -> scope_offsets.size() > pos_in_block) {
+            if (cache && cache -> scope_offsets.size() > pos_in_block) {
                 CacheScopeOffset & scope_offset = cache -> scope_offsets[pos_in_block];
 
                 if (!scope_offset.isNull()) {
