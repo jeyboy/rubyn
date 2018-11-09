@@ -8,10 +8,21 @@
 void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
     user_data = udata;
 
+    if (!prev -> is_service)
+        scope_offsets = prev -> scope_offsets;
+
     if (user_data && user_data -> para_control) {
         if (!user_data -> para_control -> is_opener) {
-            if (user_data -> level >= 0)
+            if (user_data -> level >= 0) {
                 parent -> block_offsets.resize(user_data -> level);
+
+                if (scope_offsets.length() > 0 && user_data -> level == scope_offsets.last().level) {
+                    if (scope_offsets.length() > 1)
+                        scope_offsets.resize(scope_offsets.last().prev_offset + 1);
+                    else
+                        scope_offsets.clear();
+                }
+            }
         } else {
             if (!user_data -> para_control -> is_oneliner) {
                 is_folding_opener = true;
@@ -40,7 +51,11 @@ void CodeEditorCacheCell::initLevels(const QTextBlock & block) {
     if (it) {
         if (user_data -> level > 0) {
             int curr_level = user_data -> level;
+            int prev_indent = NO_INFO;
+
+            EDITOR_POS_TYPE blk_num = block_number - 1;
             parent -> block_offsets.fill(0, curr_level + 1);
+
             QTextBlock blk = block.previous();
 
             while(blk.isValid()) {
@@ -48,13 +63,24 @@ void CodeEditorCacheCell::initLevels(const QTextBlock & block) {
 
                 if (udata -> level < curr_level) {
                     curr_level = udata -> level;
-                    parent -> block_offsets[curr_level] = udata -> indentSize() * parent -> symbol_width;
+                    int indent = udata -> indentSize();
+
+                    if (scope_offsets.size() <= indent)
+                        scope_offsets.resize(indent + 1);
+
+                    if (prev_indent != NO_INFO)
+                        scope_offsets[prev_indent].prev_offset = indent;
+
+                    scope_offsets[indent] = CacheScopeOffset(curr_level, indent, blk_num);
+                    prev_indent = indent;
+                    parent -> block_offsets[curr_level] = indent * parent -> symbol_width;
 
                     if (curr_level <= 0)
                         break;
                 }
 
                 blk = blk.previous();
+                --blk_num;
             }
         }
     }

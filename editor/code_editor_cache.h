@@ -20,13 +20,26 @@ class QTextLayout;
 class CodeEditorCache;
 class QTextBlock;
 
+struct CacheScopeOffset {
+    EDITOR_POS_TYPE level;
+    EDITOR_POS_TYPE prev_offset;
+    EDITOR_POS_TYPE start_block_number;
+
+    CacheScopeOffset(const EDITOR_POS_TYPE & sc_level = NO_INFO, const EDITOR_POS_TYPE & offset = NO_INFO, const EDITOR_POS_TYPE & block_num = NO_INFO)
+        : level(sc_level), prev_offset(offset), start_block_number(block_num) {}
+
+    inline bool isNull() { return start_block_number == NO_INFO; }
+};
+
 struct CodeEditorCacheCell {
     CodeEditorCache * parent;
 
     CodeEditorCacheCell * prev;
     CodeEditorCacheCell * next;
 
-    int block_number;
+    QVector<CacheScopeOffset> scope_offsets;
+
+    EDITOR_POS_TYPE block_number;
     EDITOR_POS_TYPE block_pos;
     EDITOR_POS_TYPE block_length;
 
@@ -54,6 +67,8 @@ struct CodeEditorCacheCell {
     }
 
     ~CodeEditorCacheCell() {
+        scope_offsets.clear();
+
 //        if (prev)
 //            prev -> next = next;
 
@@ -69,6 +84,7 @@ struct CodeEditorCacheCell {
 class CodeEditorCache {
     CodeEditorCacheCell * root, * last;
     QVector<qint16> block_offsets;
+//    QHash<EDITOR_POS_TYPE, > scope_offsets;
 
     qreal symbol_width;
     int tab_length;

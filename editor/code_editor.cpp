@@ -1684,12 +1684,31 @@ void CodeEditor::cursorMoved() {
 
     //INFO: when a document opened but do not have the focus yet we always have the cursor in pos 0:0 but it's not drawn. We should ignore this case.
     if (hasFocus()) {
+        ParaCell * para = nullptr;
+
         QTextCursor cursor = textCursor();
 
         QTextBlock blk = cursor.block();
-        ParaCell * para = wrapper -> getPara(blk, cursor.positionInBlock());
-
         int start_pos = blk.blockNumber();
+        int pos_in_block = cursor.positionInBlock();
+
+        if (show_folding_scope_lines) {
+            CodeEditorCacheCell * cache = display_cacher -> cacheForBlockNumber(start_pos);
+
+            if (cache -> scope_offsets.size() > pos_in_block) {
+                CacheScopeOffset & scope_offset = cache -> scope_offsets[pos_in_block];
+
+                if (!scope_offset.isNull()) {
+                    start_pos = scope_offset.start_block_number;
+                    blk = document() -> findBlockByNumber(start_pos);
+                    para = wrapper -> getPara(blk, pos_in_block);
+                }
+            }
+        }
+
+        if (!para)
+            para = wrapper -> getPara(blk, pos_in_block);
+
         int end_pos = start_pos;
         para_info.level = TextDocumentLayout::getBlockLevel(blk);
 
