@@ -59,7 +59,7 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
 
     if (!color) {
         color = identifyColor(ico_type);
-        color_clearing_required = color != 0;
+        color_clearing_required = color != nullptr;
     }
 
     if (color) {

@@ -15,6 +15,8 @@ FormatType IFolder::icoType(const QString & name, const uint & level) {
             return FormatType::ft_folder_public;
         } else if (name == QLatin1Literal("db")) {
             return FormatType::ft_folder_db;
+        } else if (name == QLatin1Literal("config")) {
+            return FormatType::ft_folder_config;
         }
     }
 
@@ -23,17 +25,19 @@ FormatType IFolder::icoType(const QString & name, const uint & level) {
 
 QColor * IFolder::identifyColor(const FormatType & ico_type) {
     switch(ico_type) {
-        case ft_folder_public: return new QColor(0, 255, 255, 16);
-        case ft_folder_log: return new QColor(255, 39, 220, 16);
-        case ft_folder_temp: return new QColor(255, 215, 0, 16);
-        case ft_folder_test: return new QColor(75, 255, 0, 16);
+        case ft_folder_public: return new QColor(0, 255, 255, 32);
+        case ft_folder_log: return new QColor(255, 39, 220, 32);
+        case ft_folder_temp: return new QColor(255, 215, 0, 32);
+        case ft_folder_test: return new QColor(75, 255, 0, 32);
 //        case ft_folder_db: return new QColor(255, 0, 0, 16);
         case ft_folder_db: return new QColor(220, 220, 220, 108);
-        default: return 0;
+        case ft_folder_config: return new QColor(0, 191, 165, 64);
+
+        default: return nullptr;
     }
 }
 
-IFolder::IFolder(const QString & path, const bool & create) : _valid(true), _parent(0), _name(path) {
+IFolder::IFolder(const QString & path, const bool & create) : _valid(true), _parent(nullptr), _name(path) {
     if (create) {
         _valid = Dir::createPath(path, _name);
     }
