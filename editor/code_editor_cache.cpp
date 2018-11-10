@@ -31,6 +31,13 @@ void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
                     int indent_len = user_data -> indentSize();
 
                     if (indent_len > 0) {
+                        int prev_indent = scope_offsets.size();
+
+                        if (scope_offsets.size() <= indent_len)
+                            scope_offsets.resize(indent_len + 1);
+
+                        scope_offsets[indent_len] = CacheScopeOffset(user_data -> level, prev_indent, block_number);
+
                         parent -> block_offsets.resize(user_data -> level + 1);
                         parent -> block_offsets[user_data -> level] = indent_len * parent -> symbol_width;
                     }
