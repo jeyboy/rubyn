@@ -37,12 +37,12 @@ void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
                             scope_offsets.resize(indent_len + 1);
                         }
 
-                        if (indent_len > 0) {
-                            scope_offsets[indent_len].level = user_data -> level;
-                            scope_offsets[indent_len].start_block_number = block_number;
-                            if (scope_offsets[indent_len].prev_offset == NO_INFO)
-                                scope_offsets[indent_len].prev_offset = prev_indent;
+                        scope_offsets[indent_len].level = user_data -> level;
+                        scope_offsets[indent_len].start_block_number = block_number;
+                        if (scope_offsets[indent_len].prev_offset == NO_INFO)
+                            scope_offsets[indent_len].prev_offset = prev_indent;
 
+                        if (indent_len > 0) {
                             parent -> block_offsets.resize(user_data -> level + 1);
                             parent -> block_offsets[user_data -> level] = indent_len * parent -> symbol_width;
                         }

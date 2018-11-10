@@ -1701,8 +1701,12 @@ void CodeEditor::cursorMoved() {
                 if (!scope_offset.isNull()) {
                     start_pos = scope_offset.start_block_number;
                     blk = document() -> findBlockByNumber(start_pos);
-                    para = wrapper -> getPara(blk, pos_in_block);
-//                   para = cache -> user_data -> para_control -> closer;
+//                    para = wrapper -> getPara(blk, pos_in_block);
+
+                    BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
+
+                    if (udata)
+                        para = udata -> para_control;
                 }
             }
         }
