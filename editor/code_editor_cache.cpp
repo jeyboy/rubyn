@@ -16,7 +16,7 @@ void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
             if (user_data -> level >= 0) {
                 parent -> block_offsets.resize(user_data -> level);
 
-                if (scope_offsets.length() > 0 && user_data -> level == scope_offsets.last().level) {
+                if (scope_offsets.length() > 0 && user_data -> level <= scope_offsets.last().level) {
                     if (scope_offsets.length() > 1)
                         scope_offsets.resize(scope_offsets.last().prev_offset + 1);
                     else
@@ -30,16 +30,22 @@ void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
                 if (user_data -> level >= 0) {
                     int indent_len = user_data -> indentSize();
 
-                    if (indent_len > 0) {
-                        int prev_indent = scope_offsets.size();
+                    if (indent_len >= 0) {
+                        int prev_indent = scope_offsets.size() - 1;
 
-                        if (scope_offsets.size() <= indent_len)
+                        if (scope_offsets.size() <= indent_len) {
                             scope_offsets.resize(indent_len + 1);
+                        }
 
-                        scope_offsets[indent_len] = CacheScopeOffset(user_data -> level, prev_indent, block_number);
+                        if (indent_len > 0) {
+                            scope_offsets[indent_len].level = user_data -> level;
+                            scope_offsets[indent_len].start_block_number = block_number;
+                            if (scope_offsets[indent_len].prev_offset == NO_INFO)
+                                scope_offsets[indent_len].prev_offset = prev_indent;
 
-                        parent -> block_offsets.resize(user_data -> level + 1);
-                        parent -> block_offsets[user_data -> level] = indent_len * parent -> symbol_width;
+                            parent -> block_offsets.resize(user_data -> level + 1);
+                            parent -> block_offsets[user_data -> level] = indent_len * parent -> symbol_width;
+                        }
                     }
                 }
             }

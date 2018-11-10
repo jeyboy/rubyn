@@ -1702,6 +1702,7 @@ void CodeEditor::cursorMoved() {
                     start_pos = scope_offset.start_block_number;
                     blk = document() -> findBlockByNumber(start_pos);
                     para = wrapper -> getPara(blk, pos_in_block);
+//                   para = cache -> user_data -> para_control -> closer;
                 }
             }
         }
