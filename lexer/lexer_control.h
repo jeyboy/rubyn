@@ -440,7 +440,7 @@ struct LexerControl {
             else para -> closer = nullptr;
         }
 
-        if ((!control_para || !control_para -> is_opener) && para -> is_foldable) {
+        if (para -> is_foldable) {
             control_para = para;
         }
     }
