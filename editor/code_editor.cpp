@@ -1328,10 +1328,6 @@ void CodeEditor::resizeEvent(QResizeEvent * e) {
 
 void CodeEditor::keyPressEvent(QKeyEvent * e) {
 //    qDebug() << "KEY PRESSED:" << ((Qt::Key)e -> key());
-
-    if (display_cacher -> isShowOverlay())
-        hideOverlays();
-
     int curr_key = e -> key();
 
     if (completer && completer -> popup() -> isVisible()) {
@@ -1792,6 +1788,9 @@ void CodeEditor::cursorMoved() {
 
     if (!initiated && para_info.isValid()) {
         para_info.clear();
+
+        if (display_cacher -> isShowOverlay())
+            hideOverlays();
 
         viewport() -> update(); // update editor marks
         update(); // update folding scope on extra area
