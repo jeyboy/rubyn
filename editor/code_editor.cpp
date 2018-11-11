@@ -872,9 +872,6 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                 setTextCursor(cursor);
                             } else {
                                 if (wrapper -> layout -> toggleFolding(blk)) {
-                                    if (display_cacher -> isShowOverlay())
-                                        hideOverlays();
-
                                     folding_click = true;
                                     can_show_folding_popup = false;
                                     invalidation_required = false;
@@ -893,6 +890,9 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                     if (curr_block_number == NO_INFO) {
                                         imitateClick();
                                     }
+
+                                    if (display_cacher -> isShowOverlay())
+                                        hideOverlays();
                                 }
                             }
                         }
@@ -1676,7 +1676,6 @@ void CodeEditor::highlightCurrentLine() {
 
 void CodeEditor::cursorMoved() {
     bool initiated = false;
-    bool active_para_opener_hovered = true;
 
     //INFO: when a document opened but do not have the focus yet we always have the cursor in pos 0:0 but it's not drawn. We should ignore this case.
     if (hasFocus()) {
@@ -1733,8 +1732,6 @@ void CodeEditor::cursorMoved() {
                             para = para -> next;
                         }
                     } else {
-                        active_para_opener_hovered = false;
-
                         para_info.setOpener(stoper -> pos, stoper -> length);
                         para_info.setCloser(para -> pos, para -> length);
 
