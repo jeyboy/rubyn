@@ -10,6 +10,8 @@
 class HighlightFormatFactory : public Singleton<HighlightFormatFactory> {
     QHash<Identifier, QTextCharFormat> _formats;
 protected:
+    void registerExtraIconsRangeFormat();
+
     void registerSelectionFormat();
 
     void registerCurrentLineFormat();

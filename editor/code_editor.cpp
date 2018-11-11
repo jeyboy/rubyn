@@ -43,7 +43,8 @@
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
     tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
-    curr_block_number(NO_INFO), show_folding_scope_lines(false), show_folding_content_on_hover_overlay(false), unfold_on_click_overlay(false)
+    curr_block_number(NO_INFO), show_folding_scope_lines(false), show_folding_content_on_hover_overlay(false),
+    unfold_on_click_overlay(false), show_foldings_panel(false), show_breakpoints_panel(false), show_extra_icons(false)
 {
     overlays.insert(OverlayInfo::ol_bottom, new OverlayInfo(OverlayInfo::ol_bottom));
     overlays.insert(OverlayInfo::ol_top, new OverlayInfo(OverlayInfo::ol_top));
@@ -126,6 +127,12 @@ void CodeEditor::openDocument(File * file) {
 
         setDocumentTitle(file -> name());
         setDocument(text_doc);
+
+        /// TODO: need to hide this panels for some types of doc
+        show_foldings_panel = true;
+        show_breakpoints_panel = true;
+        show_extra_icons = false;
+        ///////////////
 
         updateExtraAreaWidth(0);
         setShowSpacesAndTabs(true);
@@ -269,54 +276,59 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
     }
 
     BlockUserData * user_data = cache -> user_data;
-    DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
-    if (folding_flags) {
-        if (user_data -> para_control && !user_data -> para_control -> is_oneliner) {
-            bool folded = user_data -> isFolded();
+    if (show_foldings_panel) {
+        DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
-            if (on_block) {
-                folding_flags |= BlockUserData::udf_folding_hovered;
+        if (folding_flags) {
+            if (user_data -> para_control && !user_data -> para_control -> is_oneliner) {
+                bool folded = user_data -> isFolded();
 
-                if (folded) {
-                    if (folding_click) {
-                        folding_click = false;
+                if (on_block) {
+                    folding_flags |= BlockUserData::udf_folding_hovered;
+
+                    if (folded) {
+                        if (folding_click) {
+                            folding_click = false;
+                        }
+                        else if (can_show_folding_popup)
+                            showFoldingContentPopup(document() -> findBlockByNumber(cache -> block_number));
                     }
-                    else if (can_show_folding_popup)
-                        showFoldingContentPopup(document() -> findBlockByNumber(cache -> block_number));
+                    else {
+                        active_folding.level = user_data -> level;
+                        active_folding.start_block_num = cache -> block_number;
+                        active_folding.end_block_num = NO_INFO - (user_data -> para_control -> is_blockator ? 0 : 1);
+                        initiated = true;
+                    }
                 }
-                else {
-                    active_folding.level = user_data -> level;
-                    active_folding.start_block_num = cache -> block_number;
-                    active_folding.end_block_num = NO_INFO - (user_data -> para_control -> is_blockator ? 0 : 1);
-                    initiated = true;
-                }
-            }
 
-            painter.drawPixmap(
-                QPoint(folding_offset_x, block_top + (line_number_height - ICO_WIDTH) / 2),
-                icons[folding_flags]
-            );
+                painter.drawPixmap(
+                    QPoint(folding_offset_x, block_top + (line_number_height - ICO_WIDTH) / 2),
+                    icons[folding_flags]
+                );
+            }
         }
     }
 
     if (user_data) {
-        ////////////////////////////// TEST /////////////////
-        painter.drawText(
-            breakpoint_offset_x, block_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
-        );
-        ////////////////////////////// END TEST /////////////////
+//        ////////////////////////////// TEST /////////////////
+//        painter.drawText(
+//            breakpoint_offset_x, block_top, breakpoint_width, line_number_height, Qt::AlignRight, QString::number(user_data -> level)
+//        );
+//        ////////////////////////////// END TEST /////////////////
 
-        if (!initiated && active_folding.end_block_num < 0 && user_data -> level <= active_folding.level)
-            active_folding.end_block_num += cache -> block_number + 1;
+        if (show_foldings_panel) {
+            if (!initiated && active_folding.end_block_num < 0 && user_data -> level <= active_folding.level)
+                active_folding.end_block_num += cache -> block_number + 1;
 
-        if (active_folding.containsBlockNumber(cache -> block_number)) {
-            const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_hover_range);
-            painter.setPen(format.foreground().color());
-            painter.fillRect(folding_offset_x, block_top, folding_width, block_bottom - block_top, format.background());
+            if (active_folding.containsBlockNumber(cache -> block_number)) {
+                const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_hover_range);
+                painter.setPen(format.foreground().color());
+                painter.fillRect(folding_offset_x, block_top, folding_width, block_bottom - block_top, format.background());
+            }
         }
 
-        if (user_data -> hasBreakpoint()) {
+        if (show_breakpoints_panel && user_data -> hasBreakpoint()) {
             painter.drawPixmap(
                 QPoint(breakpoint_offset_x, block_top + (line_number_height - ICO_WIDTH) / 2),
                 icons[BlockUserData::udf_has_breakpoint]
@@ -327,7 +339,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
         }
     }
 
-    if (para_info.containsBlockNumber(cache -> block_number)) {
+    if (show_foldings_panel && para_info.containsBlockNumber(cache -> block_number)) {
         const QTextCharFormat & scope_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_para_range);
         painter.fillRect(folding_scope_offset_x, block_top, folding_scope_width, block_bottom - block_top, scope_format.background());
     }
@@ -340,26 +352,29 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
 
 void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & block, const int & paint_top, const int & block_top, const int & block_bottom, const EDITOR_POS_TYPE & block_num) {
     BlockUserData * user_data = TextDocumentLayout::getUserDataForBlock(block);
-    DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
-    if (folding_flags) {
-        if (!user_data -> para_control -> is_oneliner) {
+    if (show_foldings_panel) {
+        DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
-            painter.drawPixmap(
-                QPoint(folding_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
-                icons[BlockUserData::udf_unfolded]
-            );
+        if (folding_flags) {
+            if (!user_data -> para_control -> is_oneliner) {
+
+                painter.drawPixmap(
+                    QPoint(folding_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
+                    icons[BlockUserData::udf_unfolded]
+                );
+            }
         }
     }
 
     if (user_data) {
-        if (active_folding.containsBlockNumber(block_num)) {
+        if (show_foldings_panel && active_folding.containsBlockNumber(block_num)) {
             const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_hover_range);
             painter.setPen(format.foreground().color());
             painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, format.background());
         }
 
-        if (user_data -> hasBreakpoint()) {
+        if (show_breakpoints_panel && user_data -> hasBreakpoint()) {
             painter.drawPixmap(
                 QPoint(breakpoint_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
                 icons[BlockUserData::udf_has_breakpoint]
@@ -370,7 +385,7 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
         }
     }
 
-    if (para_info.containsBlockNumber(block_num)) {
+    if (show_foldings_panel && para_info.containsBlockNumber(block_num)) {
         const QTextCharFormat & scope_format = HighlightFormatFactory::obj().getFormatFor(hid_folding_para_range);
         painter.fillRect(folding_scope_offset_x, paint_top, folding_scope_width, block_bottom - block_top, scope_format.background());
     }
@@ -931,8 +946,15 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
     QPainter painter(extra_area);
 
-    const QTextCharFormat & breackpoints_scope_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoints_range);
-    painter.fillRect(breakpoint_offset_x, target_top, breakpoint_width, rect().height(), breackpoints_scope_format.background());
+    if (show_breakpoints_panel) {
+        const QTextCharFormat & breackpoints_scope_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoints_range);
+        painter.fillRect(breakpoint_offset_x, target_top, breakpoint_width, rect().height(), breackpoints_scope_format.background());
+    }
+
+    if (show_extra_icons) {
+        const QTextCharFormat & extra_icons_scope_format = HighlightFormatFactory::obj().getFormatFor(hid_extra_icons_range);
+        painter.fillRect(extra_ico_offset_x, target_top, extra_ico_width, rect().height(), extra_icons_scope_format.background());
+    }
 
     for (CodeEditorCacheCell * it = display_cacher -> begin(); !it -> is_service; it = it -> next) {
         if (!it -> is_visible || it -> bounding_rect.bottom() < target_top) {
@@ -1794,22 +1816,28 @@ void CodeEditor::cursorMoved() {
     }
 }
 
-void CodeEditor::updateExtraAreaWidth(int /*newBlockCount*/) {
+void CodeEditor::updateExtraAreaWidth(int /*newBlockCount*/) {    
     breakpoint_offset_x = 2;
-    breakpoint_width = ICO_WIDTH + HPADDING;
+    breakpoint_width = show_breakpoints_panel ? (ICO_WIDTH + HPADDING) : 0;
 
-    line_number_offset_x = breakpoint_offset_x + breakpoint_width + 1;
+    line_number_offset_x = breakpoint_offset_x + breakpoint_width + (show_breakpoints_panel ? 1 : 0);
     line_number_width = lineNumsWidth();
 
-    folding_offset_x = line_number_offset_x + line_number_width + HPADDING;
-    folding_width = ICO_WIDTH;
+    extra_ico_offset_x = line_number_offset_x + line_number_width + HPADDING;
+    extra_ico_width = show_extra_icons ? (ICO_WIDTH + HPADDING) : 0;
 
-    folding_scope_offset_x = folding_offset_x + folding_width + 1;
-    folding_scope_width = FOLDING_SCOPE_WIDTH + 1;
+    if (show_foldings_panel) {
+        folding_offset_x = extra_ico_offset_x + extra_ico_width + 1;
+        folding_width = ICO_WIDTH;
 
-    extra_zone_width = folding_scope_offset_x + folding_scope_width + 2;
+        folding_scope_offset_x = folding_offset_x + folding_width + 1;
+        folding_scope_width = FOLDING_SCOPE_WIDTH + 1;
 
-    setViewportMargins(extra_zone_width, 0, 0, 0);
+        extra_zone_width = folding_scope_offset_x + folding_scope_width;
+    }
+    else extra_zone_width = extra_ico_offset_x + extra_ico_width;
+
+    setViewportMargins(extra_zone_width += 2, 0, 0, 0);
 }
 
 void CodeEditor::updateExtraArea(const QRect & rect, int dy) {

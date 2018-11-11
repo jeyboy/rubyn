@@ -1,5 +1,11 @@
 #include "highlight_format_factory.h"
 
+void HighlightFormatFactory::registerExtraIconsRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(92, 157, 192, 64));
+    _formats.insert(hid_extra_icons_range, format);
+}
+
 void HighlightFormatFactory::registerSelectionFormat() {
     QTextCharFormat format;
     format.setBackground(QColor::fromRgb(51, 153, 255, 64));
@@ -264,6 +270,7 @@ void HighlightFormatFactory::registerRegularExpresionBorderFormat() {
 
 
 HighlightFormatFactory::HighlightFormatFactory() {
+    registerExtraIconsRangeFormat();
     registerSelectionFormat();
     registerCurrentLineFormat();
     registerFoldingLevelLineFormat();

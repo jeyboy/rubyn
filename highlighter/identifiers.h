@@ -6,6 +6,7 @@
 #include "misc/defines.h"
 
 enum Identifier : UID_TYPE {
+    hid_extra_icons_range = -17,
     hid_para_hover_line = -16,
     hid_para_content_popup = -15,
     hid_para_hover_overlay = -14,

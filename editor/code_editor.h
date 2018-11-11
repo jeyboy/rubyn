@@ -251,6 +251,9 @@ class CodeEditor : public QPlainTextEdit {
 
     int extra_zone_width;
 
+    int extra_ico_offset_x;
+    int extra_ico_width;
+
     int breakpoint_offset_x;
     int breakpoint_width;
 
@@ -279,6 +282,9 @@ class CodeEditor : public QPlainTextEdit {
     bool show_folding_scope_lines;
     bool show_folding_content_on_hover_overlay;
     bool unfold_on_click_overlay;
+    bool show_foldings_panel;
+    bool show_breakpoints_panel;
+    bool show_extra_icons;
     ////////// END SETTINGS ////////////
 
     friend class ExtraArea;
