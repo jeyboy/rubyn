@@ -2,8 +2,9 @@
 
 #include <qtoolbar.h>
 #include <qcombobox.h>
+#include <qtoolbutton.h>
 
-RunConfiguration::RunConfiguration(QObject * parent) : QObject(parent), _config_list(0), _run(0), _debbug(0) {
+RunConfiguration::RunConfiguration(QObject * parent) : QObject(parent), _config_list(nullptr), _run(nullptr), _debbug(nullptr) {
 
 }
 
@@ -22,6 +23,18 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
 
     _debbug = bar -> addAction(QIcon(QLatin1Literal(":/tools/debug")), QLatin1Literal());
     _debbug -> setDisabled(true);
+
+    bar -> addSeparator();
+
+    _console_btn = new QToolButton(bar);
+    _console_btn -> setIcon(QIcon(QLatin1Literal(":/tools/console")));
+    _console_btn -> setPopupMode(QToolButton::InstantPopup);
+
+    QAction * console_btn_cfg = new QAction(QIcon(QLatin1Literal(":/tools/run_config")), "Configure", bar);
+
+    _console_btn -> addAction(console_btn_cfg);
+
+    bar -> addWidget(_console_btn);
 }
 
 void RunConfiguration::configSelectionChanged(int index) {

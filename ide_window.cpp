@@ -22,6 +22,7 @@
 #include <qsplitter.h>
 #include <qlabel.h>
 #include <qplaintextedit.h>
+#include <qaction.h>
 
 #include <qevent.h>
 #include <qmimedata.h>
@@ -241,6 +242,15 @@ void IDEWindow::openResource(TabsBlock * target_editor, const QUrl & url) {
     }
 }
 
+void IDEWindow::selectCurrentFileInTree() {
+    if (active_editor) {
+        QString path = active_editor -> currentTabFilePath();
+
+        if (!path.isNull())
+            tree -> selectItem(path);
+    }
+}
+
 void IDEWindow::openFile(const QUrl & url) {
     QUrl file_url = url;
 
@@ -355,6 +365,8 @@ void IDEWindow::setupToolWindows() {
     widget -> setBehaviour(DockWidget::dwf_movable);
 
     DockWidgets::obj().append(widget);
+    widget -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 1);
+
 
 
     Logger::obj().initiate(QLatin1Literal("loh.txt"), true);
@@ -377,6 +389,15 @@ void IDEWindow::setupToolWindows() {
     QToolBar * control_bar = Toolbars::obj().createWidget(QLatin1Literal("Controls"));
 
     run_config -> buildPanel(control_bar);
+
+    control_bar -> addSeparator();
+
+    QAction * _color_picker = control_bar -> addAction(QIcon(QLatin1Literal(":/tools/color_picker")), QLatin1Literal());
+
+    control_bar -> addSeparator();
+
+    QAction * _save_doc = control_bar -> addAction(QIcon(QLatin1Literal(":/tools/save")), QLatin1Literal());
+    _save_doc -> setDisabled(true);
 
     Toolbars::obj().append(control_bar, Qt::TopToolBarArea);
 }

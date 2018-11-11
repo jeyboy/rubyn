@@ -5,9 +5,6 @@
 
 #include <qdebug.h>
 
-//widget()->setMaximumHeight(value);
-//widget()->setMinimumHeight(value);
-
 //// Recursively update all the layouts, starting from the main window
 //forceUpdate(mainW);
 
@@ -15,9 +12,13 @@
 //widget()->setMinimumHeight(QWIDGETSIZE_MAX);
 //widget()->setMaximumHeight(QWIDGETSIZE_MAX);
 
+class HeaderDockWidget;
+class QToolButton;
 
 class DockWidget : public QDockWidget {
     Q_OBJECT
+
+    HeaderDockWidget * header;
 public:
     enum Features {
         dwf_none        = 0,
@@ -39,18 +40,17 @@ public:
         setFeatures((DockWidgetFeatures)(int)(params & (dwf_destroyable - 1)));
     }
 
-//    DockBar(const QString & title, QWidget * parent = 0, bool closable = true, Qt::WindowFlags flags = 0, const QString & objName = QString());
+    void setWindowTitle(const QString & new_title);
 
-//    inline void setWindowTitle(const QString & newTitle) {
-//        titleWidget -> setText(newTitle);
-//        QDockWidget::setWindowTitle(newTitle);
-//    }
+    QToolButton * insertHeaderButton(const QIcon & ico, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
 
 //    inline void initiateSearch() { titleWidget -> initiateSearch(mainWidget(), SLOT(startInnerSearch(QString)), SLOT(endInnerSearch()), SIGNAL(searchFinished())); }
 signals:
     void closing();
+    void searchRequired(const QString & pattern);
+
 public slots:
-//    inline void showSearch() { titleWidget -> showSearch(); }
+    void showSearch(const bool & show = true);
 
 //    inline void onSetDefaultIco(const QImage & ico) { titleWidget -> setIco(ico); }
 //    inline void floatingChanged(bool floating) { if (!floating) setTabBarSettings(); }

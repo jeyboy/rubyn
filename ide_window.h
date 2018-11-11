@@ -67,6 +67,7 @@ protected slots:
     void setActiveEditor(TabsBlock *);
     void editorIsEmpty(TabsBlock *);
     void openResource(TabsBlock * target_editor, const QUrl & url);
+    void selectCurrentFileInTree();
 
 public slots:
     void about();

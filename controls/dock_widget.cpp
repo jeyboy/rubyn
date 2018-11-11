@@ -1,17 +1,34 @@
 #include "dock_widget.h"
 
-#include <qdebug.h>
 #include <qevent.h>
-
 //#include <qdatetime.h>
+
+#include "header_dock_widget.h"
 
 //LayoutRequest
 //UpdateRequest
 
 DockWidget::DockWidget(const QString & title, QWidget * parent, const Qt::DockWidgetAreas & areas) : QDockWidget(title, parent, Qt::WindowCloseButtonHint) {
+    header = new HeaderDockWidget(this, title);
+
+    setTitleBarWidget(header);
+
     setObjectName(title);
     setAllowedAreas(areas);
     setFeatures(QDockWidget::NoDockWidgetFeatures);
+}
+
+void DockWidget::setWindowTitle(const QString & new_title) {
+    header -> setTitle(new_title);
+    QDockWidget::setWindowTitle(new_title);
+}
+
+void DockWidget::showSearch(const bool & show) {
+    header -> showSearch(show);
+}
+
+QToolButton * DockWidget::insertHeaderButton(const QIcon & ico, QObject * target, const char * slot, const int pos, const Qt::Alignment & alignment) {
+    return header -> insertButton(ico, target, slot, pos, alignment);
 }
 
 void DockWidget::closeEvent(QCloseEvent * e) {

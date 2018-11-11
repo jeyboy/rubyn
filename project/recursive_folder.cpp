@@ -52,6 +52,7 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
     QTreeWidgetItem * view_item = new QTreeWidgetItem(QStringList() << obj_name);
     view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
     view_item -> setData(0, Qt::UserRole + 1, 0);
+    view_item -> setData(0, Qt::UserRole + 2, path);
     view_item -> setIcon(0, Projects::obj().getIco(ico_type));
     view_item -> setToolTip(0, obj_name);
 

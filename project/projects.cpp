@@ -1,6 +1,5 @@
 #include "projects.h"
 #include "project.h"
-#include "project_format.h"
 
 #include <qpixmap.h>
 #include <qdebug.h>
@@ -44,8 +43,6 @@ Projects::~Projects() {
 }
 
 bool Projects::open(const QUrl & uri) {   
-    PROJECT_FORMAT_TYPE format_type = ProjectIdentificator::proc(uri.toLocalFile());
-
     Project * project = new Project(uri);
 
    _projects.insert(uri, project);
@@ -67,5 +64,5 @@ File * Projects::findFile(const QUrl & uri) {
         }
     }
 
-    return 0;
+    return nullptr;
 }

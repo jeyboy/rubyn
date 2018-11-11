@@ -6,6 +6,7 @@
 class QToolBar;
 class QComboBox;
 class QAction;
+class QToolButton;
 
 class RunConfiguration : public QObject {
     Q_OBJECT
@@ -13,10 +14,8 @@ class RunConfiguration : public QObject {
     QComboBox * _config_list;
 
     QAction * _run;
-    QAction * _disabled_run;
-
     QAction * _debbug;
-    QAction * _disabled_debbug;
+    QToolButton * _console_btn;
 public:
     RunConfiguration(QObject * parent = 0);
 

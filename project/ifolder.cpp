@@ -91,5 +91,5 @@ File * IFolder::findFile(QStringList & path_parts) {
         }
     }
 
-    return 0;
+    return nullptr;
 }

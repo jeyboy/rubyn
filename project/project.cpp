@@ -2,8 +2,11 @@
 
 #include "projects.h"
 #include "recursive_folder.h"
+#include "project_format.h"
 
 Project::Project(const QUrl & uri) {
+    _project_format = ProjectIdentificator::proc(uri.toLocalFile());
+
     root = new RecursiveFolder(uri.toLocalFile());
 }
 

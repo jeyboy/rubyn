@@ -76,6 +76,39 @@ void ProjectTree::restoreState(const QByteArray & state) {
     setUpdatesEnabled(true);
 }
 
+void ProjectTree::selectItem(const QString & path) {
+    int items_count = topLevelItemCount();
+
+    for(int i = 0; i < items_count; i++) {
+        QTreeWidgetItem * item = topLevelItem(i);
+
+        QString project_path = item -> data(0, Qt::UserRole + 2).toString();
+
+        if (path.startsWith(project_path, Qt::CaseInsensitive)) {
+            QString inner_path = path.mid(project_path.length());
+
+            QStringList parts = path.split('/', QString::SkipEmptyParts);
+            bool satisfy = true;
+
+            while(satisfy && !parts.isEmpty()) {
+                QString part = parts.takeFirst();
+
+                int child_count = item -> childCount();
+                satisfy = false;
+
+                for(int y = 0; y < child_count; y++) {
+                    if (item -> child(y) -> text(0) == part) {
+                        satisfy = true;
+                        break;
+                    }
+                }
+            }
+
+            break;
+        }
+    }
+}
+
 void ProjectTree::branchAdded(QTreeWidgetItem * item) {
     addTopLevelItem(item);
     item -> setExpanded(true);
