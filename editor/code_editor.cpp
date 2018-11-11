@@ -628,7 +628,6 @@ void CodeEditor::hideOverlay(const OVERLAY_POS_TYPE & overlay_type) {
 }
 
 void CodeEditor::hideOverlays() {
-    qDebug() << "hideOverlays";
     display_cacher -> clearOverlaysState();
 
     for(QHash<OVERLAY_POS_TYPE, OverlayInfo *>::Iterator it = overlays.begin(); it != overlays.end(); it++)
@@ -1632,6 +1631,7 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
 
 void CodeEditor::overlayHidden(const OVERLAY_POS_TYPE & uid) {
     display_cacher -> mapOverlayState(uid, false);
+    restoreDefaultMouseCursor();
 }
 
 void CodeEditor::applyCompletion(const QString & completion) {
