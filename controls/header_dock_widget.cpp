@@ -5,6 +5,8 @@
 #include <qlineedit.h>
 #include <qtoolbutton.h>
 
+#include <qdebug.h>
+
 HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QWidget(parent) {
     setAttribute(Qt::WA_StyledBackground, true);
     setMaximumHeight(40);
@@ -28,6 +30,8 @@ HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QW
     _layout -> insertStretch(2);
 
     search_widget = new QLineEdit(this);
+    connect(search_widget, SIGNAL(editingFinished()), this, SLOT(toggleSearch()));
+//    connect(search_widget, SIGNAL(textEdited(const QString &)), , SLOT());
 
     _layout -> addWidget(search_widget, 2, Qt::AlignLeft);
 

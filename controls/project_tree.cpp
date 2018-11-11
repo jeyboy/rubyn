@@ -77,7 +77,7 @@ void ProjectTree::restoreState(const QByteArray & state) {
     setUpdatesEnabled(true);
 }
 
-void ProjectTree::selectItem(const QString & path) {
+void ProjectTree::selectItem(const QString & path, const bool & ensure_visible) {
     int items_count = topLevelItemCount();
 
     for(int i = 0; i < items_count; i++) {
@@ -108,7 +108,9 @@ void ProjectTree::selectItem(const QString & path) {
 
             if (satisfy && item) {
                 setCurrentItem(item);
-                scrollToItem(item, PositionAtCenter);
+
+                if (ensure_visible)
+                    scrollToItem(item, PositionAtCenter);
             }
 
             break;

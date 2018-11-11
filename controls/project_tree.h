@@ -23,7 +23,7 @@ public:
 
     QByteArray saveState();
     void restoreState(const QByteArray & state);
-    void selectItem(const QString & path);
+    void selectItem(const QString & path, const bool & ensure_visible = true);
 signals:
     void fileActivated(const QString & name, void * folder);
 //    void fileDeleted(void * folder, const QString & name);
