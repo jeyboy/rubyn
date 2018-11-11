@@ -393,6 +393,7 @@ void IDEWindow::setupToolWindows() {
     control_bar -> addSeparator();
 
     QAction * _color_picker = control_bar -> addAction(QIcon(QLatin1Literal(":/tools/color_picker")), QLatin1Literal());
+    _color_picker -> setDisabled(true);
 
     control_bar -> addSeparator();
 

@@ -34,7 +34,8 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
 
     _console_btn -> addAction(console_btn_cfg);
 
-    bar -> addWidget(_console_btn);
+    QAction * bla = bar -> addWidget(_console_btn);
+    bla -> setDisabled(true);
 }
 
 void RunConfiguration::configSelectionChanged(int index) {

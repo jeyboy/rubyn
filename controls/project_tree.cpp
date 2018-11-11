@@ -6,6 +6,7 @@
 
 ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setHeaderHidden(true);
+    setAutoScroll(false);
 
     QFont f(font());
     f.setPointSize(11);
@@ -87,7 +88,7 @@ void ProjectTree::selectItem(const QString & path) {
         if (path.startsWith(project_path, Qt::CaseInsensitive)) {
             QString inner_path = path.mid(project_path.length());
 
-            QStringList parts = path.split('/', QString::SkipEmptyParts);
+            QStringList parts = inner_path.split('/', QString::SkipEmptyParts);
             bool satisfy = true;
 
             while(satisfy && !parts.isEmpty()) {
@@ -98,10 +99,16 @@ void ProjectTree::selectItem(const QString & path) {
 
                 for(int y = 0; y < child_count; y++) {
                     if (item -> child(y) -> text(0) == part) {
+                        item = item -> child(y);
                         satisfy = true;
                         break;
                     }
                 }
+            }
+
+            if (satisfy && item) {
+                setCurrentItem(item);
+                scrollToItem(item, PositionAtCenter);
             }
 
             break;
