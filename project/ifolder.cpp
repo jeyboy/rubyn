@@ -17,6 +17,8 @@ FormatType IFolder::icoType(const QString & name, const uint & level) {
             return FormatType::ft_folder_db;
         } else if (name == QLatin1Literal("config")) {
             return FormatType::ft_folder_config;
+        } else if (name == QLatin1Literal("app")) {
+            return FormatType::ft_folder_app;
         }
     }
 
@@ -32,6 +34,8 @@ QColor * IFolder::identifyColor(const FormatType & ico_type) {
 //        case ft_folder_db: return new QColor(255, 0, 0, 16);
         case ft_folder_db: return new QColor(220, 220, 220, 108);
         case ft_folder_config: return new QColor(74, 90, 185, 24);
+        case ft_folder_app: return new QColor(192, 127, 92, 24);
+
 
         default: return nullptr;
     }

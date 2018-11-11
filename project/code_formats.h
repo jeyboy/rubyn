@@ -66,6 +66,7 @@ enum FormatType : quint32 {
     ft_file_log =           100 | ft_text | ft_level_one,
 
 
+    ft_folder_app =         193 | ft_folder,
     ft_folder_config =      194 | ft_folder,
     ft_folder_db =          195 | ft_folder,
     ft_folder_public =      196 | ft_folder,

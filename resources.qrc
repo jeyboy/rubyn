@@ -44,6 +44,7 @@
         <file alias="file_datum">icons/file_datum.png</file>
         <file alias="file_broken">icons/file_broken.png</file>
         <file alias="folder_config">icons/folder_config.png</file>
+        <file alias="folder_app">icons/folder_app.png</file>
     </qresource>
     <qresource prefix="/tools">
         <file alias="console">icons/console.png</file>

@@ -108,6 +108,7 @@ QString CodeFormats::formatIcoPath(const FormatType & ft) {
         case ft_folder_temp: return res %  QLatin1Literal("folder_temp");
         case ft_folder_test: return res %  QLatin1Literal("folder_test");
         case ft_folder_config: return res %  QLatin1Literal("folder_config");
+        case ft_folder_app: return res %  QLatin1Literal("folder_app");
 
         default: return res %  QLatin1Literal("file_unknown");
     }
