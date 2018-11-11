@@ -79,6 +79,13 @@ struct CodeEditorCacheCell {
     void setUserData(BlockUserData * udata);
 
     void initLevels(const QTextBlock & block);
+
+    inline void popScopeOffset() {
+        if (scope_offsets.length() > 1)
+            scope_offsets.resize(scope_offsets.last().prev_offset + 1);
+        else
+            scope_offsets.clear();
+    }
 };
 
 class CodeEditorCache {

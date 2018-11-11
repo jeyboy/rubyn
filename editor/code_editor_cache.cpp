@@ -8,8 +8,13 @@
 void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
     user_data = udata;
 
-    if (!prev -> is_service)
+    if (!prev -> is_service) {
         scope_offsets = prev -> scope_offsets;
+
+        if (prev -> is_folding_opener) {
+            prev -> popScopeOffset();
+        }
+    }
 
     if (user_data && user_data -> para_control) {
         if (!user_data -> para_control -> is_opener) {
@@ -17,10 +22,7 @@ void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
                 parent -> block_offsets.resize(user_data -> level);
 
                 if (scope_offsets.length() > 0 && user_data -> level <= scope_offsets.last().level) {
-                    if (scope_offsets.length() > 1)
-                        scope_offsets.resize(scope_offsets.last().prev_offset + 1);
-                    else
-                        scope_offsets.clear();
+                    popScopeOffset();
                 }
             }
         } else {
