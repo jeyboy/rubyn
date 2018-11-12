@@ -43,19 +43,6 @@ void HeaderDockWidget::setTitle(const QString & title) {
     title_widget -> setText(title);
 }
 
-void HeaderDockWidget::showSearch(const bool & show) {
-    blockSignals(true);
-
-    if (search_widget -> isVisible() != show)
-        search_widget -> setText(QLatin1String());
-
-    if (!show) //INFO: monkey patch: focus out call toggleSearch second time. We shoul remove focus manually and block signal
-        parentWidget() -> setFocus();
-
-    search_widget -> setVisible(show);
-    blockSignals(false);
-}
-
 QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target, const char * slot, const int pos, const Qt::Alignment & alignment) {
     QToolButton * btn = new QToolButton(this);
     btn -> setIcon(ico);
@@ -70,10 +57,39 @@ QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target
     return btn;
 }
 
-void HeaderDockWidget::registerSearchCallbacks(QObject * target, const char * search_request_slot, const char * search_close_slot) {
+void HeaderDockWidget::registerSearchCallbacks(QObject * target, const char * search_show_signal, const char * search_hide_signal, const char * search_request_slot, const char * search_close_slot) {
     search_btn -> setVisible(true);
-    connect(search_widget, SIGNAL(textEdited(const QString &)), target, search_request_slot);
+
+    connect(target, search_show_signal, this, SLOT(initiateSearch(const QString &)));
+    connect(target, search_hide_signal, this, SLOT(hideSearch()));
+    connect(search_widget, SIGNAL(textChanged(const QString &)), target, search_request_slot);
     connect(search_widget, SIGNAL(hidden()), target, search_close_slot);
+}
+
+
+void HeaderDockWidget::showSearch(const bool & show) {
+    blockSignals(true);
+
+    if (search_widget -> isVisible() != show)
+        search_widget -> setText(QLatin1String());
+
+    if (!show) //INFO: monkey patch: focus out call toggleSearch second time. We shoul remove focus manually and block signal
+        parentWidget() -> setFocus();
+
+    search_widget -> setVisible(show);
+    blockSignals(false);
+
+    if (show && !search_widget -> hasFocus())
+        search_widget -> setFocus();
+}
+
+void HeaderDockWidget::initiateSearch(const QString & pattern) {
+    showSearch();
+    search_widget -> setText(pattern);
+}
+
+void HeaderDockWidget::hideSearch() {
+    showSearch(false);
 }
 
 void HeaderDockWidget::toggleSearch() {

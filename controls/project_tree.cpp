@@ -1,6 +1,8 @@
 #include "project_tree.h"
 
+#include <qevent.h>
 #include <qjsonobject.h>
+
 #include "tools/json/json.h"
 #include "tools/json/json_obj.h"
 #include "project_tree_item_delegate.h"
@@ -186,6 +188,19 @@ void ProjectTree::clearSearch(QTreeWidgetItem * item) {
     }
 }
 
+void ProjectTree::keyPressEvent(QKeyEvent * e) {
+    if (e -> key() == Qt::Key_Escape)
+        emit closeSearch();
+    else {
+        QChar ch(e -> key());
+
+        if (ch.isLetterOrNumber() || ch.isPunct()) {
+            emit searchRequired(e -> text());
+        }
+        else QTreeWidget::keyPressEvent(e);
+    }
+}
+
 
 void ProjectTree::branchAdded(QTreeWidgetItem * item) {
     addTopLevelItem(item);
@@ -234,4 +249,10 @@ bool ProjectTree::search(const QString & pattern) {
     }
 
     return has_item;
+}
+
+void ProjectTree::clearSearch() {
+    setProperty("in_search", false);
+    setProperty("search_len", QVariant());
+    clearSearch(invisibleRootItem());
 }

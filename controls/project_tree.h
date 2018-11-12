@@ -23,7 +23,7 @@ class ProjectTree : public QTreeWidget {
     void loadStateHelper(QTreeWidgetItem * item, JsonObj & obj);
 public:
     explicit ProjectTree(QWidget * parent = nullptr);
-    ~ProjectTree();
+    ~ProjectTree() Q_DECL_OVERRIDE;
 
     QByteArray saveState();
     void restoreState(const QByteArray & state);
@@ -32,7 +32,11 @@ protected:
     bool search(const QString & pattern, QTreeWidgetItem * item);
     void clearSearch(QTreeWidgetItem * item);
 
+    void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
 signals:
+    void searchRequired(const QString &);
+    void closeSearch();
+
     void fileActivated(const QString & name, void * folder);
 //    void fileDeleted(void * folder, const QString & name);
 
@@ -44,11 +48,7 @@ public slots:
     void itemDoubleClicked(QTreeWidgetItem * item, int /*column*/);
 
     bool search(const QString & pattern);
-    void clearSearch() {
-        setProperty("in_search", false);
-        setProperty("search_len", QVariant());
-        clearSearch(invisibleRootItem());
-    }
+    void clearSearch();
 };
 
 #endif // PROJECT_TREE_H

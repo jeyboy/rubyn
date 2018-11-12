@@ -31,8 +31,8 @@ QToolButton * DockWidget::insertHeaderButton(const QIcon & ico, QObject * target
     return header -> insertButton(ico, target, slot, pos, alignment);
 }
 
-void DockWidget::registerSearchCallbacks(QObject * target, const char * search_request_slot, const char * search_close_slot) {
-    header -> registerSearchCallbacks(target, search_request_slot, search_close_slot);
+void DockWidget::registerSearchCallbacks(QObject * target, const char * search_show_signal, const char * search_hide_signal, const char * search_request_slot, const char * search_close_slot) {
+    header -> registerSearchCallbacks(target, search_show_signal, search_hide_signal, search_request_slot, search_close_slot);
 }
 
 void DockWidget::closeEvent(QCloseEvent * e) {
