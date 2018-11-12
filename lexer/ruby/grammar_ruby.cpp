@@ -236,6 +236,7 @@ void Grammar::initParas() {
     para_tokens[lex_epercent_presentation_interception] = pt_interpolation;
     para_tokens[lex_heredoc_interception] = pt_interpolation;
     para_tokens[lex_regexp_interception] = pt_interpolation;
+    para_tokens[lex_interception_close] = pt_close_interpolation;
     para_tokens[lex_open_square_bracket] = pt_square_bracket;
     para_tokens[lex_close_square_bracket] = pt_close_square_bracket;
     para_tokens[lex_wrap_open] = pt_round_bracket;
