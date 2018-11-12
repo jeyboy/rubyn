@@ -12,6 +12,7 @@ protected:
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void hideEvent(QHideEvent * e) Q_DECL_OVERRIDE;
 
+    QSize sizeHint() const Q_DECL_OVERRIDE;
 signals:
     void hidden();
 };

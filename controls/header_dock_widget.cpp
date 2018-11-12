@@ -11,12 +11,12 @@
 HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QWidget(parent) {
     setAttribute(Qt::WA_StyledBackground, true);
     setMinimumHeight(26);
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setStyleSheet("HeaderDockWidget { background-color: rgba(0, 0, 0, .6); }");
 
     _layout = new QHBoxLayout(this);
     _layout -> setContentsMargins(5, 0, 5, 0);
     _layout -> setSpacing(2);
+//    _layout -> setSizeConstraint(QLayout::SetDefaultConstraint);
 
     title_widget = new QLabel(title, this);
     title_widget -> setMinimumHeight(26);
@@ -28,8 +28,8 @@ HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QW
     title_widget -> setStyleSheet("color: white;");
 
     _layout -> addWidget(title_widget, 0, Qt::AlignLeft);
-    _layout -> addWidget(new QLabel(QLatin1Literal("  "), this), 0, Qt::AlignLeft);
-    _layout -> insertStretch(2);
+    _layout -> addWidget(new QLabel(QLatin1Literal(" "), this), 0, Qt::AlignLeft);
+    _layout -> addStretch(0);
 
     search_btn = insertButton(QIcon(QLatin1Literal(":/tools/search")), this, SLOT(toggleSearch()), 0);
     search_btn -> setVisible(false);
@@ -37,7 +37,7 @@ HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QW
     search_widget = new SearchBox(this);
     connect(search_widget, SIGNAL(returnPressed()), this, SLOT(toggleSearch()));
 
-    _layout -> addWidget(search_widget, 2, Qt::AlignLeft | Qt::AlignAbsolute);
+    _layout -> addWidget(search_widget, 10, Qt::AlignLeft);
 
     search_widget -> setVisible(false);
 }
