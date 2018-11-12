@@ -142,13 +142,16 @@ bool ProjectTree::search(const QString & pattern, QTreeWidgetItem * item) {
             int pos = -1;
             valid = search(pattern, child);
 
+            if (valid && !child -> isExpanded())
+                child -> setExpanded(true);
+
             if (!empty) {
                 QString child_text = child -> text(0);
 
                 pos = child_text.indexOf(pattern, 0, Qt::CaseInsensitive);
 
                 if (pos != -1)
-                    child -> setData(0, Qt::UserRole + 10, fontMetrics().boundingRect(child_text.mid(0, pos)).width() + 1);
+                    child -> setData(0, Qt::UserRole + 10, pos);
             }
 
             has_item |= empty || valid || pos != -1;
@@ -161,7 +164,7 @@ bool ProjectTree::search(const QString & pattern, QTreeWidgetItem * item) {
             has_item |= empty || valid;
 
             if (valid)
-                child -> setData(0, Qt::UserRole + 10, fontMetrics().boundingRect(child_text.mid(0, pos)).width() + 1);
+                child -> setData(0, Qt::UserRole + 10, pos);
         }
 
         child -> setHidden(!(valid || empty));
@@ -215,7 +218,7 @@ void ProjectTree::itemDoubleClicked(QTreeWidgetItem * item, int /*column*/) {
 
 bool ProjectTree::search(const QString & pattern) {
     setProperty("in_search", !pattern.isEmpty());
-    setProperty("search_len", fontMetrics().boundingRect(pattern).width());
+    setProperty("search_len", pattern.length());
 
     //        return search(pattern, invisibleRootItem());
 

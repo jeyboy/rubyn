@@ -15,14 +15,21 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
         if (substr_start.isValid()) {
             //    QRect r = QApplication::style() -> subElementRect(QStyle::SE_ItemViewItemDecoration, &option);
 
-            int text_height = option.fontMetrics.height();
-            int voffset = qMax((option.rect.height() - text_height - 4) / 2, 0);
+            QString item_text = index.data(Qt::DisplayRole).toString();
+            int start_pos = substr_start.toInt();
+            int highlight_len = option.widget -> property("search_len").toInt();
 
-            QRect r = QRect(
-                option.rect.left() + substr_start.toInt() + 10 + option.decorationSize.width(),
+            int highlight_offset = option.fontMetrics.boundingRect(item_text.mid(0, start_pos)).width();
+            int highlight_width = option.fontMetrics.boundingRect(item_text.mid(start_pos, highlight_len)).width();
+
+            int text_height = option.fontMetrics.height();
+            int voffset = qMax((option.rect.height() - text_height) / 2, 0);
+
+            QRectF r = QRectF(
+                option.rect.left() + highlight_offset + 10 + option.decorationSize.width() + .5,
                 option.rect.top() + voffset,
-                option.widget -> property("search_len").toInt(),
-                text_height + 2
+                highlight_width,
+                text_height
             );
 
             painter -> save();
@@ -30,7 +37,7 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
             painter -> setRenderHint(QPainter::Antialiasing);
 
             painter -> setPen(QColor(128, 128, 128, 128));
-            painter -> setBrush(QColor(255, 0, 0, 32));
+            painter -> setBrush(QColor(0, 255, 0, 48));
 
             painter -> drawRoundedRect(r, 3, 3);
             painter -> restore();
