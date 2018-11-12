@@ -366,6 +366,7 @@ void IDEWindow::setupToolWindows() {
 
     DockWidgets::obj().append(widget);
     widget -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 1);
+//    widget -> registerSearchCallbacks(this);
 
 
 

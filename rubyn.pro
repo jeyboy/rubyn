@@ -75,7 +75,8 @@ SOURCES += main.cpp\
     controls/logger_window.cpp \
     editor/code_editor_cache.cpp \
     editor/active_para_info.cpp \
-    controls/header_dock_widget.cpp
+    controls/header_dock_widget.cpp \
+    controls/search_box.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -184,7 +185,8 @@ HEADERS  += ide_window.h \
     editor/code_editor_cache.h \
     editor/active_para_info.h \
     editor/active_folding_info.h \
-    controls/header_dock_widget.h
+    controls/header_dock_widget.h \
+    controls/search_box.h
 
 FORMS    += ide_window.ui
 

@@ -24,6 +24,10 @@ public:
     QByteArray saveState();
     void restoreState(const QByteArray & state);
     void selectItem(const QString & path, const bool & ensure_visible = true);
+protected:
+    bool search(const QString & pattern, QTreeWidgetItem * item);
+    void clearSearch(QTreeWidgetItem * item);
+
 signals:
     void fileActivated(const QString & name, void * folder);
 //    void fileDeleted(void * folder, const QString & name);
@@ -34,6 +38,9 @@ public slots:
     void fileAdded(const QString & name, void *);
 
     void itemDoubleClicked(QTreeWidgetItem * item, int /*column*/);
+
+    bool search(const QString & pattern) { search(pattern, invisibleRootItem()); }
+    void clearSearch() { clearSearch(invisibleRootItem()); }
 };
 
 #endif // PROJECT_TREE_H

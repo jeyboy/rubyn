@@ -118,6 +118,36 @@ void ProjectTree::selectItem(const QString & path, const bool & ensure_visible) 
     }
 }
 
+
+bool ProjectTree::search(const QString & pattern, QTreeWidgetItem * item) {
+    int items_count = item -> childCount();
+    bool result = false;
+
+    for(int i = 0; i < items_count; i++) {
+        QTreeWidgetItem * child = item -> child(i);
+
+        if (child -> childCount() > 0)
+            result = result || search(pattern, child);
+        else
+            result = result || child -> text(0).contains(pattern, Qt::CaseInsensitive);
+
+        if (!result)
+            child -> setHidden(true);
+    }
+}
+
+void ProjectTree::clearSearch(QTreeWidgetItem * item) {
+    int items_count = item -> childCount();
+
+    for(int i = 0; i < items_count; i++) {
+        QTreeWidgetItem * child = item -> child(i);
+
+        clearSearch(child);
+        child -> setHidden(false);
+    }
+}
+
+
 void ProjectTree::branchAdded(QTreeWidgetItem * item) {
     addTopLevelItem(item);
     item -> setExpanded(true);
