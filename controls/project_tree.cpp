@@ -189,16 +189,23 @@ void ProjectTree::clearSearch(QTreeWidgetItem * item) {
 }
 
 void ProjectTree::keyPressEvent(QKeyEvent * e) {
-    if (e -> key() == Qt::Key_Escape)
+    if (e -> key() == Qt::Key_Escape) {
         emit closeSearch();
-    else {
-        QChar ch(e -> key());
+        e -> accept();
+        return;
+    } else {
+        if (e -> modifiers() == Qt::NoModifier || e -> modifiers() == Qt::ShiftModifier) {
+            QChar ch(e -> key());
 
-        if (ch.isLetterOrNumber() || ch.isPunct()) {
-            emit searchRequired(e -> text());
+            if (ch.isLetterOrNumber() || ch.isPunct()) {
+                emit searchRequired(e -> text());
+                e -> accept();
+                return;
+            }
         }
-        else QTreeWidget::keyPressEvent(e);
     }
+
+    QTreeWidget::keyPressEvent(e);
 }
 
 

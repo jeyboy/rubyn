@@ -365,7 +365,7 @@ void IDEWindow::setupToolWindows() {
     widget -> setBehaviour(DockWidget::dwf_movable);
 
     DockWidgets::obj().append(widget);
-    widget -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 1);
+    widget -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 0);
     widget -> registerSearchCallbacks(tree, SIGNAL(searchRequired(const QString &)), SIGNAL(closeSearch()), SLOT(search(const QString &)), SLOT(clearSearch()));
 
 
