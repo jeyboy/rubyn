@@ -6,8 +6,6 @@
 #include <qlabel.h>
 #include <qtoolbutton.h>
 
-#include <qdebug.h>
-
 HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QWidget(parent) {
     setAttribute(Qt::WA_StyledBackground, true);
     setMinimumHeight(26);

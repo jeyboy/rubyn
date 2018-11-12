@@ -379,9 +379,6 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
                 QPoint(breakpoint_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
                 icons[BlockUserData::udf_has_breakpoint]
             );
-
-            const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_line);
-            painter.fillRect(breakpoint_offset_x, paint_top, extra_zone_width, block_bottom - block_top, breakpoint_line_format.background());
         }
     }
 
