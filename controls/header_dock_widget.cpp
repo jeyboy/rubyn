@@ -32,7 +32,7 @@ HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QW
     search_btn -> setVisible(false);
 
     search_widget = new SearchBox(this);
-    connect(search_widget, SIGNAL(editingFinished()), this, SLOT(toggleSearch()));
+    connect(search_widget, SIGNAL(returnPressed()), this, SLOT(toggleSearch()));
 
     _layout -> addWidget(search_widget, 2, Qt::AlignLeft);
 

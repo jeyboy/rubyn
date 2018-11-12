@@ -8,7 +8,7 @@ SearchBox::SearchBox(QWidget * parent) : QLineEdit(parent) {
 
 void SearchBox::keyPressEvent(QKeyEvent * e) {
     switch(e -> key()) {
-        case Qt::Key_Escape: { emit editingFinished(); break;}
+        case Qt::Key_Escape: { emit returnPressed(); break;}
 
         default: QLineEdit::keyPressEvent(e);
     }

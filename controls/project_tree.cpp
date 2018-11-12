@@ -120,20 +120,32 @@ void ProjectTree::selectItem(const QString & path, const bool & ensure_visible) 
 
 
 bool ProjectTree::search(const QString & pattern, QTreeWidgetItem * item) {
+    bool empty = pattern.isEmpty();
+    bool has_item = false;
     int items_count = item -> childCount();
-    bool result = false;
 
     for(int i = 0; i < items_count; i++) {
         QTreeWidgetItem * child = item -> child(i);
 
-        if (child -> childCount() > 0)
-            result = result || search(pattern, child);
-        else
-            result = result || child -> text(0).contains(pattern, Qt::CaseInsensitive);
+        if (child -> childCount() > 0) {
+            bool has_items = search(pattern, child);
 
-        if (!result)
-            child -> setHidden(true);
+            if (!has_items)
+                has_items = child -> text(0).contains(pattern, Qt::CaseInsensitive);
+
+            has_item |= has_items;
+
+            child -> setHidden(!has_items);
+
+        } else {
+            bool valid = empty || child -> text(0).contains(pattern, Qt::CaseInsensitive);
+            has_item |= valid;
+
+            child -> setHidden(!valid);
+        }
     }
+
+    return has_item;
 }
 
 void ProjectTree::clearSearch(QTreeWidgetItem * item) {
