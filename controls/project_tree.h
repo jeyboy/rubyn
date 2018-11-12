@@ -12,14 +12,18 @@
 // http://doc.qt.io/qt-5/qtwidgets-widgets-tooltips-example.html
 
 class JsonObj;
+class ProjectTreeItemDelegate;
 
 class ProjectTree : public QTreeWidget {
     Q_OBJECT
+
+    ProjectTreeItemDelegate * item_delegate;
 
     void saveStateHelper(QTreeWidgetItem * item, QJsonObject & obj);
     void loadStateHelper(QTreeWidgetItem * item, JsonObj & obj);
 public:
     explicit ProjectTree(QWidget * parent = nullptr);
+    ~ProjectTree();
 
     QByteArray saveState();
     void restoreState(const QByteArray & state);
@@ -39,8 +43,14 @@ public slots:
 
     void itemDoubleClicked(QTreeWidgetItem * item, int /*column*/);
 
-    bool search(const QString & pattern) { search(pattern, invisibleRootItem()); }
-    void clearSearch() { clearSearch(invisibleRootItem()); }
+    bool search(const QString & pattern) {
+        setProperty("in_search", true);
+        search(pattern, invisibleRootItem());
+    }
+    void clearSearch() {
+        setProperty("in_search", false);
+        clearSearch(invisibleRootItem());
+    }
 };
 
 #endif // PROJECT_TREE_H

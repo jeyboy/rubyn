@@ -3,6 +3,7 @@
 #include <qjsonobject.h>
 #include "tools/json/json.h"
 #include "tools/json/json_obj.h"
+#include "project_tree_item_delegate.h"
 
 ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setHeaderHidden(true);
@@ -19,6 +20,13 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
 
 //    setSortingEnabled(true);
 //    sortByColumn(0, Qt::AscendingOrder);
+
+    item_delegate = new ProjectTreeItemDelegate();
+    setItemDelegate(item_delegate);
+}
+
+ProjectTree::~ProjectTree() {
+    delete item_delegate;
 }
 
 void ProjectTree::saveStateHelper(QTreeWidgetItem * item, QJsonObject & obj) {
@@ -126,23 +134,28 @@ bool ProjectTree::search(const QString & pattern, QTreeWidgetItem * item) {
 
     for(int i = 0; i < items_count; i++) {
         QTreeWidgetItem * child = item -> child(i);
+        bool valid = false;
 
         if (child -> childCount() > 0) {
-            bool has_items = search(pattern, child);
+            valid = search(pattern, child);
 
-            if (!has_items)
-                has_items = child -> text(0).contains(pattern, Qt::CaseInsensitive);
+            int pos = empty ? -1 : child -> text(0).indexOf(pattern, 0, Qt::CaseInsensitive);
 
-            has_item |= has_items;
+            if (pos != -1)
+                child -> setData(0, Qt::UserRole + 10, pos);
 
-            child -> setHidden(!has_items);
-
+            has_item |= valid || pos != -1;
         } else {
-            bool valid = empty || child -> text(0).contains(pattern, Qt::CaseInsensitive);
+            int pos = empty ? -1 : child -> text(0).indexOf(pattern, 0, Qt::CaseInsensitive);
+
+            valid = pos != -1;
             has_item |= valid;
 
-            child -> setHidden(!valid);
+            if (valid)
+                child -> setData(0, Qt::UserRole + 10, pos);
         }
+
+        child -> setHidden(!valid);
     }
 
     return has_item;
@@ -153,6 +166,8 @@ void ProjectTree::clearSearch(QTreeWidgetItem * item) {
 
     for(int i = 0; i < items_count; i++) {
         QTreeWidgetItem * child = item -> child(i);
+
+//        child -> setData(0, Qt::UserRole + 10, -1);
 
         clearSearch(child);
         child -> setHidden(false);
