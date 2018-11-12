@@ -136,26 +136,35 @@ bool ProjectTree::search(const QString & pattern, QTreeWidgetItem * item) {
         QTreeWidgetItem * child = item -> child(i);
         bool valid = false;
 
+        child -> setData(0, Qt::UserRole + 10, QVariant(QVariant::Invalid));
+
         if (child -> childCount() > 0) {
+            int pos = -1;
             valid = search(pattern, child);
 
-            int pos = empty ? -1 : child -> text(0).indexOf(pattern, 0, Qt::CaseInsensitive);
+            if (!empty) {
+                QString child_text = child -> text(0);
 
-            if (pos != -1)
-                child -> setData(0, Qt::UserRole + 10, pos);
+                pos = child_text.indexOf(pattern, 0, Qt::CaseInsensitive);
 
-            has_item |= valid || pos != -1;
+                if (pos != -1)
+                    child -> setData(0, Qt::UserRole + 10, fontMetrics().boundingRect(child_text.mid(0, pos)).width() + 1);
+            }
+
+            has_item |= empty || valid || pos != -1;
         } else {
-            int pos = empty ? -1 : child -> text(0).indexOf(pattern, 0, Qt::CaseInsensitive);
+            QString child_text = child -> text(0);
+
+            int pos = empty ? -1 : child_text.indexOf(pattern, 0, Qt::CaseInsensitive);
 
             valid = pos != -1;
-            has_item |= valid;
+            has_item |= empty || valid;
 
             if (valid)
-                child -> setData(0, Qt::UserRole + 10, pos);
+                child -> setData(0, Qt::UserRole + 10, fontMetrics().boundingRect(child_text.mid(0, pos)).width() + 1);
         }
 
-        child -> setHidden(!valid);
+        child -> setHidden(!(valid || empty));
     }
 
     return has_item;
@@ -167,7 +176,7 @@ void ProjectTree::clearSearch(QTreeWidgetItem * item) {
     for(int i = 0; i < items_count; i++) {
         QTreeWidgetItem * child = item -> child(i);
 
-//        child -> setData(0, Qt::UserRole + 10, -1);
+//        child -> setData(0, Qt::UserRole + 10, QVariant(QVariant::Invalid));
 
         clearSearch(child);
         child -> setHidden(false);
@@ -202,4 +211,24 @@ void ProjectTree::itemDoubleClicked(QTreeWidgetItem * item, int /*column*/) {
     } else {
         // edit folder name
     }
+}
+
+bool ProjectTree::search(const QString & pattern) {
+    setProperty("in_search", !pattern.isEmpty());
+    setProperty("search_len", fontMetrics().boundingRect(pattern).width());
+
+    //        return search(pattern, invisibleRootItem());
+
+    bool has_item = false;
+    int items_count = topLevelItemCount();
+
+    for(int i = 0; i < items_count; i++) {
+        QTreeWidgetItem * child = topLevelItem(i);
+
+        if (child -> childCount() > 0) {
+            has_item |= search(pattern, child);
+        }
+    }
+
+    return has_item;
 }

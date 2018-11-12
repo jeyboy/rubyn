@@ -43,12 +43,10 @@ public slots:
 
     void itemDoubleClicked(QTreeWidgetItem * item, int /*column*/);
 
-    bool search(const QString & pattern) {
-        setProperty("in_search", true);
-        search(pattern, invisibleRootItem());
-    }
+    bool search(const QString & pattern);
     void clearSearch() {
         setProperty("in_search", false);
+        setProperty("search_len", QVariant());
         clearSearch(invisibleRootItem());
     }
 };

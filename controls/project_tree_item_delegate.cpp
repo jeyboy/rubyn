@@ -12,14 +12,18 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
     if (option.widget -> property("in_search").toBool()) {
         QVariant substr_start = index.data(Qt::UserRole + 10);
 
-        if (!substr_start.isNull()) {
+        if (substr_start.isValid()) {
             //    QRect r = QApplication::style() -> subElementRect(QStyle::SE_ItemViewItemDecoration, &option);
-            QRect r = option.rect;
-            r.moveLeft(r.left() + 8 + option.decorationSize.width());
-            int char_width = option.fontMetrics.averageCharWidth();
 
-            int overlay_left = r.left() + substr_start.toInt() * char_width;
-            int overlay_width = char_width;
+            int text_height = option.fontMetrics.height();
+            int voffset = qMax((option.rect.height() - text_height - 4) / 2, 0);
+
+            QRect r = QRect(
+                option.rect.left() + substr_start.toInt() + 10 + option.decorationSize.width(),
+                option.rect.top() + voffset,
+                option.widget -> property("search_len").toInt(),
+                text_height + 2
+            );
 
             painter -> save();
             painter -> setCompositionMode(QPainter::CompositionMode_Multiply);
@@ -28,7 +32,7 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
             painter -> setPen(QColor(128, 128, 128, 128));
             painter -> setBrush(QColor(255, 0, 0, 32));
 
-            painter -> drawRoundedRect(QRect(overlay_left, r.top(), overlay_width, r.height()), 3, 3);
+            painter -> drawRoundedRect(r, 3, 3);
             painter -> restore();
 
 
