@@ -16,6 +16,7 @@
 #include "controls/logger.h"
 #include "controls/dumper.h"
 #include "controls/run_configuration.h"
+#include "controls/color_picker.h"
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
@@ -33,7 +34,9 @@
 #include "tools/data_preparer/rubydoc_preparer.h"
 #include "tools/data_preparer/rubydoc_parser.h"
 
-IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(nullptr), widgets_list(nullptr), tree(nullptr), ui_dumper(new Dumper()), run_config(nullptr), pos_status(nullptr) {
+IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(nullptr), widgets_list(nullptr),
+    tree(nullptr), color_picker(nullptr), ui_dumper(new Dumper()), run_config(nullptr), pos_status(nullptr)
+{
     ui -> setupUi(this);
 
     setAcceptDrops(true);
@@ -370,6 +373,20 @@ void IDEWindow::setupToolWindows() {
     search_target_btn -> setToolTip(QLatin1Literal("Scroll to current active document"));
 
     widget -> registerSearchCallbacks(tree, SIGNAL(searchRequired(const QString &)), SIGNAL(closeSearch()), SLOT(search(const QString &)), SLOT(clearSearch()));
+
+
+
+    color_picker = new ColorPicker(this);
+    widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Color"),
+            color_picker,
+            (Qt::DockWidgetAreas)(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea)
+        );
+
+    widget -> setBehaviour(DockWidget::dwf_movable);
+
+    DockWidgets::obj().append(widget);
 
 
 

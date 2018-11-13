@@ -77,7 +77,9 @@ SOURCES += main.cpp\
     editor/active_para_info.cpp \
     controls/header_dock_widget.cpp \
     controls/search_box.cpp \
-    controls/project_tree_item_delegate.cpp
+    controls/project_tree_item_delegate.cpp \
+    controls/color_picker.cpp \
+    controls/color_grabber.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -188,7 +190,9 @@ HEADERS  += ide_window.h \
     editor/active_folding_info.h \
     controls/header_dock_widget.h \
     controls/search_box.h \
-    controls/project_tree_item_delegate.h
+    controls/project_tree_item_delegate.h \
+    controls/color_picker.h \
+    controls/color_grabber.h
 
 FORMS    += ide_window.ui
 

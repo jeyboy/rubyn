@@ -13,6 +13,8 @@
 class QSplitter;
 class ProjectTree;
 class TabsBlock;
+class ColorPicker;
+
 class QLabel;
 class QDragEnterEvent;
 class QDragMoveEvent;
@@ -32,6 +34,7 @@ class IDEWindow : public QMainWindow {
     QSplitter * widgets_list;
 
     ProjectTree * tree;
+    ColorPicker * color_picker;
     Dumper * ui_dumper;
 
     RunConfiguration * run_config;
