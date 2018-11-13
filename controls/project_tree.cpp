@@ -138,37 +138,30 @@ bool ProjectTree::search(const QString & pattern, QTreeWidgetItem * item) {
         QTreeWidgetItem * child = item -> child(i);
         bool valid = false;
 
-        child -> setData(0, Qt::UserRole + 10, QVariant(QVariant::Invalid));
+        child -> setData(0, Qt::UserRole + 10, property_dropper);
 
         if (child -> childCount() > 0) {
-            int pos = -1;
+            if (child -> data(0, Qt::UserRole + 11).isNull())
+                child -> setData(0, Qt::UserRole + 11, child -> isExpanded());
+
             valid = search(pattern, child);
 
             if (valid && !child -> isExpanded())
                 child -> setExpanded(true);
-
-            if (!empty) {
-                QString child_text = child -> text(0);
-
-                pos = child_text.indexOf(pattern, 0, Qt::CaseInsensitive);
-
-                if (pos != -1)
-                    child -> setData(0, Qt::UserRole + 10, pos);
-            }
-
-            has_item |= empty || valid || pos != -1;
-        } else {
-            QString child_text = child -> text(0);
-
-            int pos = empty ? -1 : child_text.indexOf(pattern, 0, Qt::CaseInsensitive);
-
-            valid = pos != -1;
-            has_item |= empty || valid;
-
-            if (valid)
-                child -> setData(0, Qt::UserRole + 10, pos);
         }
 
+        if (!empty) {
+            QString child_text = child -> text(0);
+
+            int pos = child_text.indexOf(pattern, 0, Qt::CaseInsensitive);
+
+            if (pos != -1) {
+                valid = true;
+                child -> setData(0, Qt::UserRole + 10, pos);
+            }
+        }
+
+        has_item |= empty || valid;
         child -> setHidden(!(valid || empty));
     }
 
@@ -183,24 +176,48 @@ void ProjectTree::clearSearch(QTreeWidgetItem * item) {
 
 //        child -> setData(0, Qt::UserRole + 10, QVariant(QVariant::Invalid));
 
-        clearSearch(child);
+        if (child -> childCount() > 0)
+            clearSearch(child);
+
         child -> setHidden(false);
+
+        QVariant expand_val = child -> data(0, Qt::UserRole + 11);
+        if (!expand_val.isNull()) {
+            child -> setExpanded(expand_val.toBool());
+            child -> setData(0, Qt::UserRole + 11, property_dropper);
+        }
     }
 }
 
 void ProjectTree::keyPressEvent(QKeyEvent * e) {
-    if (e -> key() == Qt::Key_Escape) {
+    int key_code = e -> key();
+
+    if (key_code == Qt::Key_Escape) {
         emit closeSearch();
         e -> accept();
         return;
     } else {
         if (e -> modifiers() == Qt::NoModifier || e -> modifiers() == Qt::ShiftModifier) {
-            QChar ch(e -> key());
+            QChar ch(key_code);
 
             if (ch.isLetterOrNumber() || ch.isPunct()) {
                 emit searchRequired(e -> text());
                 e -> accept();
                 return;
+            }
+        }
+        else {
+            if (e -> modifiers() == Qt::ControlModifier && key_code == Qt::Key_F) {
+                emit searchRequired(QLatin1Literal());
+                e -> accept();
+                return;
+            }
+
+            if (e -> modifiers() == (Qt::ControlModifier | Qt::ShiftModifier) && key_code == Qt::Key_F) {
+                //TODO: need to start search in files
+//                emit searchRequired(QLatin1Literal());
+//                e -> accept();
+//                return;
             }
         }
     }
@@ -262,4 +279,6 @@ void ProjectTree::clearSearch() {
     setProperty("in_search", false);
     setProperty("search_len", QVariant());
     clearSearch(invisibleRootItem());
+
+    scrollToItem(currentItem(), PositionAtCenter);
 }

@@ -18,6 +18,7 @@ class ProjectTree : public QTreeWidget {
     Q_OBJECT
 
     ProjectTreeItemDelegate * item_delegate;
+    const QVariant property_dropper = QVariant(QVariant::Invalid);
 
     void saveStateHelper(QTreeWidgetItem * item, QJsonObject & obj);
     void loadStateHelper(QTreeWidgetItem * item, JsonObj & obj);
