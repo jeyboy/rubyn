@@ -30,6 +30,7 @@ HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QW
     _layout -> addStretch(0);
 
     search_btn = insertButton(QIcon(QLatin1Literal(":/tools/search")), this, SLOT(toggleSearch()), 0);
+    search_btn -> setToolTip(QLatin1Literal("Find files and folders <br/><b>Ctrl + F</b>")); // "Find files and folders <br/><font color='#22aaff'>Ctrl + F</font>"
     search_btn -> setVisible(false);
 
     search_widget = new SearchBox(this);

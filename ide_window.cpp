@@ -24,6 +24,7 @@
 #include <qplaintextedit.h>
 #include <qaction.h>
 
+#include <qtoolbutton.h>
 #include <qevent.h>
 #include <qmimedata.h>
 
@@ -365,7 +366,9 @@ void IDEWindow::setupToolWindows() {
     widget -> setBehaviour(DockWidget::dwf_movable);
 
     DockWidgets::obj().append(widget);
-    widget -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 0);
+    QToolButton * search_target_btn = widget -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 0);
+    search_target_btn -> setToolTip(QLatin1Literal("Scroll to current active document"));
+
     widget -> registerSearchCallbacks(tree, SIGNAL(searchRequired(const QString &)), SIGNAL(closeSearch()), SLOT(search(const QString &)), SLOT(clearSearch()));
 
 
