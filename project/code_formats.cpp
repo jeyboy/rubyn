@@ -36,6 +36,7 @@ QHash<QString, FormatType> CodeFormats::_formats = {
 
     { QLatin1Literal("rb"),     ft_file_rb }, // script will open up a console window
     { QLatin1Literal("rbw"),    ft_file_rb }, // script will run, but with no console window
+    { QLatin1Literal("rake"),   ft_file_rake },
     { QLatin1Literal("sql"),    ft_file_sql },
     { QLatin1Literal("html"),   ft_file_html },
     { QLatin1Literal("css"),    ft_file_css },
@@ -78,6 +79,7 @@ QString CodeFormats::formatIcoPath(const FormatType & ft) {
         case ft_file_bin: return res %  QLatin1Literal("file_bin");
 
         case ft_file_rb: return res %  QLatin1Literal("file_ruby");
+        case ft_file_rake: return res %  QLatin1Literal("file_rake");
         case ft_file_sql: return res %  QLatin1Literal("file_sql");
         case ft_file_html: return res %  QLatin1Literal("file_html");
 

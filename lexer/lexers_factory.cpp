@@ -6,6 +6,7 @@
 LexersFactory::LexersFactory() {
     _lexers.insert(ft_file_rb, new Ruby::LexerFrontend());
     _lexers.insert(ft_file_gemfile, new Ruby::LexerFrontend());
+    _lexers.insert(ft_file_rake, new Ruby::LexerFrontend());
 }
 
 LexersFactory::~LexersFactory() {
