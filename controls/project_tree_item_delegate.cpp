@@ -25,8 +25,11 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
             int text_height = option.fontMetrics.height();
             int voffset = qMax((option.rect.height() - text_height) / 2, 0);
 
+            qreal xoffset = option.rect.left() + highlight_offset + 10 + option.decorationSize.width() + .5;
+            xoffset = qMin(option.rect.right() - 16.0, xoffset);
+
             QRectF r = QRectF(
-                option.rect.left() + highlight_offset + 10 + option.decorationSize.width() + .5,
+                xoffset,
                 option.rect.top() + voffset,
                 highlight_width,
                 text_height
@@ -41,33 +44,19 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
 
             painter -> drawRoundedRect(r, 3, 3);
             painter -> restore();
-
-
-    //    QStyleOptionViewItem optionV4 = option;
-    //    initStyleOption(&optionV4, index);
-
-    //    QStyle *style = optionV4.widget? optionV4.widget->style() : QApplication::style();
-
-    //    QTextDocument doc;
-    //    doc.setHtml(optionV4.text);
-
-    //    /// Painting item without text
-    //    optionV4.text = QString();
-    //    style->drawControl(QStyle::CE_ItemViewItem, &optionV4, painter);
-
-    //    QAbstractTextDocumentLayout::PaintContext ctx;
-
-    //    // Highlighting text if item is selected
-    //    if (optionV4.state & QStyle::State_Selected)
-    //        ctx.palette.setColor(QPalette::Text, optionV4.palette.color(QPalette::Active, QPalette::HighlightedText));
-
-    //    QRect textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &optionV4);
-    //    painter->save();
-    //    painter->translate(textRect.topLeft());
-    //    painter->setClipRect(textRect.translated(-textRect.topLeft()));
-    //    doc.documentLayout()->draw(painter, ctx);
-    //    painter->restore();
         }
+    }
+
+    if (option.state & QStyle::State_Selected) {
+        painter -> save();
+        painter -> setCompositionMode(QPainter::CompositionMode_Multiply);
+        painter -> setRenderHint(QPainter::Antialiasing);
+
+        painter -> setPen(QColor(0, 0, 0, 128));
+        painter -> setBrush(QColor(0, 0, 255, 8));
+
+        painter -> drawRoundedRect(option.rect.adjusted(1, 1, -1, -1), 3, 3);
+        painter -> restore();
     }
 }
 
