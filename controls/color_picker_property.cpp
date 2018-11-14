@@ -26,7 +26,7 @@ ColorPickerProperty::ColorPickerProperty(QWidget * parent) : QWidget(parent) {
     connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(sliderValChanged(int)));
 }
 
-void ColorPickerProperty::change(const ColorComponent & new_comp, const int & new_max) {
+void ColorPickerProperty::change(const ColorComponent & new_comp, const int & new_max, const bool & with_precision) {
     comp = new_comp;
 
     switch(comp) {
@@ -48,7 +48,7 @@ void ColorPickerProperty::change(const ColorComponent & new_comp, const int & ne
     };
 
     spin -> setMaximum(new_max);
-    slider -> setMaximum(new_max);
+    slider -> setMaximum(new_max * 100);
 }
 
 void ColorPickerProperty::setVal(const qreal & new_val) {

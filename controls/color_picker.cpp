@@ -28,7 +28,12 @@ void ColorPicker::setuplayout() {
     l -> setContentsMargins(1, 1, 1, 1);
 
     QLabel * hex_label = new QLabel(QLatin1Literal("Hex"), this);
-    l -> addWidget(hex_label, 0, 0, Qt::AlignRight | Qt::AlignVCenter);
+    QFont f = hex_label -> font();
+    f.setBold(true);
+    f.setKerning(true);
+    f.setPixelSize(12);
+    hex_label -> setFont(f);
+    l -> addWidget(hex_label, 0, 0, Qt::AlignCenter);
 
     QComboBox * hex_name = new QComboBox(this);
     hex_name -> setEditable(true);
@@ -61,26 +66,26 @@ void ColorPicker::setuplayout() {
     connect(btn_group, SIGNAL(buttonClicked(int)), this, SLOT(colorSpaceChanged(int)));
 
     row1 = new ColorPickerProperty(this);
-    row1 -> change(ColorPickerProperty::cc_r, 255);
+    row1 -> change(ColorPickerProperty::cc_r, 255, false);
     vl -> addWidget(row1);
 
     row2 = new ColorPickerProperty(this);
-    row2 -> change(ColorPickerProperty::cc_g, 255);
+    row2 -> change(ColorPickerProperty::cc_g, 255, false);
     vl -> addWidget(row2);
 
     row3 = new ColorPickerProperty(this);
-    row3 -> change(ColorPickerProperty::cc_b, 255);
+    row3 -> change(ColorPickerProperty::cc_b, 255, false);
     vl -> addWidget(row3);
 
     row4 = new ColorPickerProperty(this);
-    row4 -> change(ColorPickerProperty::cc_k, 255);
+    row4 -> change(ColorPickerProperty::cc_k, 255, false);
     vl -> addWidget(row4);
     row4 -> setVisible(false);
 
     l -> addLayout(vl, 1, 1, 4, 4);
 
     row_alpha = new ColorPickerProperty(this);
-    row_alpha -> change(ColorPickerProperty::cc_a, 255);
+    row_alpha -> change(ColorPickerProperty::cc_a, 255, false);
     l -> addWidget(row_alpha, 5, 1, 1, 4);
 
 
@@ -184,42 +189,42 @@ void ColorPicker::colorSpaceChanged(const int & new_namespace) {
 
     switch(new_namespace) {
         case cn_rgb: {
-            row1 -> change(ColorPickerProperty::cc_r, 255);
-            row2 -> change(ColorPickerProperty::cc_g, 255);
-            row3 -> change(ColorPickerProperty::cc_b, 255);
+            row1 -> change(ColorPickerProperty::cc_r, 255, false);
+            row2 -> change(ColorPickerProperty::cc_g, 255, false);
+            row3 -> change(ColorPickerProperty::cc_b, 255, false);
 
             row4 -> setVisible(false);
         break;}
 
         case cn_hsv: {
-            row1 -> change(ColorPickerProperty::cc_h, 359);
-            row2 -> change(ColorPickerProperty::cc_s, 255);
-            row3 -> change(ColorPickerProperty::cc_v, 255);
+            row1 -> change(ColorPickerProperty::cc_h, 359, false);
+            row2 -> change(ColorPickerProperty::cc_s, 255, false);
+            row3 -> change(ColorPickerProperty::cc_v, 255, false);
 
             row4 -> setVisible(false);
         break;}
 
         case cn_hsl: {
-            row1 -> change(ColorPickerProperty::cc_h, 359);
-            row2 -> change(ColorPickerProperty::cc_s, 255);
-            row3 -> change(ColorPickerProperty::cc_l, 255);
+            row1 -> change(ColorPickerProperty::cc_h, 359, false);
+            row2 -> change(ColorPickerProperty::cc_s, 255, false);
+            row3 -> change(ColorPickerProperty::cc_l, 255, false);
 
             row4 -> setVisible(false);
         break;}
 
         case cn_cmyk: {
-            row1 -> change(ColorPickerProperty::cc_c, 255);
-            row2 -> change(ColorPickerProperty::cc_m, 255);
-            row3 -> change(ColorPickerProperty::cc_y, 255);
-            row4 -> change(ColorPickerProperty::cc_k, 255);
+            row1 -> change(ColorPickerProperty::cc_c, 255, false);
+            row2 -> change(ColorPickerProperty::cc_m, 255, false);
+            row3 -> change(ColorPickerProperty::cc_y, 255, false);
+            row4 -> change(ColorPickerProperty::cc_k, 255, false);
 
             row4 -> setVisible(true);
         break;}
 
         case cn_hvb: {
-            row1 -> change(ColorPickerProperty::cc_h, 255);
-            row2 -> change(ColorPickerProperty::cc_v, 255);
-            row3 -> change(ColorPickerProperty::cc_b, 255);
+            row1 -> change(ColorPickerProperty::cc_h, 255, false);
+            row2 -> change(ColorPickerProperty::cc_v, 255, false);
+            row3 -> change(ColorPickerProperty::cc_b, 255, false);
 
             row4 -> setVisible(false);
         break;}

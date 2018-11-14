@@ -31,7 +31,7 @@ public:
 
     ColorPickerProperty(QWidget * parent);
 
-    void change(const ColorComponent & new_comp, const int & new_max);
+    void change(const ColorComponent & new_comp, const int & new_max, const bool & with_precision);
     void setVal(const qreal & new_val);
 signals:
     void changed(const int & component, const qreal & new_val);
