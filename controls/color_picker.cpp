@@ -3,99 +3,62 @@
 #include <qlayout.h>
 #include <qtoolbutton.h>
 #include <qcombobox.h>
+#include <qbuttongroup.h>
 
+#include "controls/logger.h"
 #include "color_picker_property.h"
 
 ColorPicker::ColorPicker(QWidget * parent) : QWidget(parent) {
     setuplayout();
 }
 
+void ColorPicker::setColor(const QColor & color) {
+
+}
+
+//TODO: add color picker button to header
+// add curr_color_item to header
+
 void ColorPicker::setuplayout() {
+    QButtonGroup * btn_group = new QButtonGroup(this);
+
     QGridLayout * l = new QGridLayout(this);
     QVBoxLayout * vl = new QVBoxLayout();
 
     l -> setContentsMargins(1, 1, 1, 1);
 
-//    colors_space = new QLabel(this);
-//    colors_space -> setMinimumSize(200, 200);
-//    colors_space -> setStyleSheet("background-color: rgba(255,0,0, .2)");
-//    l -> addWidget(colors_space, 0, 0, 9, 10);
-////    colors_space -> setVisible(false);
-
-//    QToolButton * left_toggle_btn = new QToolButton(this);
-//    left_toggle_btn -> setFixedWidth(12);
-////    left_toggle_btn -> setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-//    left_toggle_btn -> setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-//    left_toggle_btn -> setText(QLatin1Literal("<"));
-//    left_toggle_btn -> setStyleSheet("background-color: rgba(0,255,0, .2)");
-//    l -> addWidget(left_toggle_btn, 0, 10, 9, 1);
-////    left_toggle_btn -> setVisible(false);
-
-
     QLabel * hex_label = new QLabel(QLatin1Literal("Hex"), this);
-    l -> addWidget(hex_label, 0, 11, Qt::AlignRight | Qt::AlignVCenter);
+    l -> addWidget(hex_label, 0, 0, Qt::AlignRight | Qt::AlignVCenter);
 
     QComboBox * hex_name = new QComboBox(this);
     hex_name -> setEditable(true);
-    l -> addWidget(hex_name, 0, 12, 1, 4);
+    l -> addWidget(hex_name, 0, 1, 1, 4);
 
+//    curr_color_item = new QLabel(this);
+//    curr_color_item -> setStyleSheet("background-color: #00ff00");
+//    l -> addWidget(curr_color_item, 1, 11);
 
+    QList<QPair<ColorNamespace, QLatin1String> > names = {
+        QPair<ColorNamespace, QLatin1String>(cn_rgb, QLatin1Literal("RGB")),
+        QPair<ColorNamespace, QLatin1String>(cn_hsv, QLatin1Literal("HSV")),
+        QPair<ColorNamespace, QLatin1String>(cn_hsl, QLatin1Literal("HSL")),
+        QPair<ColorNamespace, QLatin1String>(cn_cmyk, QLatin1Literal("CMYK")),
+        QPair<ColorNamespace, QLatin1String>(cn_hvb, QLatin1Literal("HVB")),
+    };
+    QList<QPair<ColorNamespace, QLatin1String> >::Iterator it = names.begin();
 
-    curr_color_item = new QLabel(this);
-    curr_color_item -> setStyleSheet("background-color: #00ff00");
-    l -> addWidget(curr_color_item, 1, 11);
+    for(int pos = 1; it != names.end(); it++, pos++) {
+        QToolButton * btn = new QToolButton(this);
+        btn_group -> addButton(btn, (*it).first);
+        btn -> setCheckable(true);
+        btn -> setFixedWidth(40);
+        btn -> setText((*it).second);
+        btn -> setContentsMargins(2, 2, 2, 2);
+        btn -> setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        l -> addWidget(btn, pos, 0);
+    }
 
-    QToolButton * color_picker_btn = new QToolButton(this);
-    color_picker_btn -> setCheckable(true);
-    color_picker_btn -> setText(QLatin1Literal("Pick"));
-    l -> addWidget(color_picker_btn, 1, 15);
-
-    rgb_toggle_btn = new QToolButton(this);
-    rgb_toggle_btn -> setProperty("space", cn_rgb);
-    rgb_toggle_btn -> setCheckable(true);
-    rgb_toggle_btn -> setText(QLatin1Literal("RGB"));
-    rgb_toggle_btn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    l -> addWidget(rgb_toggle_btn, 1, 12, 1, 3);
-
-    hsv_toggle_btn = new QToolButton(this);
-    hsv_toggle_btn -> setProperty("space", cn_hsv);
-    hsv_toggle_btn -> setCheckable(true);
-    hsv_toggle_btn -> setText(QLatin1Literal("H\nS\nV"));
-    hsv_toggle_btn -> setFixedWidth(20);
-    hsv_toggle_btn -> setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    l -> addWidget(hsv_toggle_btn, 2, 11, 2, 1);
-
-    hsl_toggle_btn = new QToolButton(this);
-    hsl_toggle_btn -> setProperty("space", cn_hsl);
-    hsl_toggle_btn -> setCheckable(true);
-    hsl_toggle_btn -> setText(QLatin1Literal("H\nS\nL"));
-    hsl_toggle_btn -> setFixedWidth(20);
-    hsl_toggle_btn -> setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    l -> addWidget(hsl_toggle_btn, 4, 11, 2, 1);
-
-    cmyk_toggle_btn = new QToolButton(this);
-    cmyk_toggle_btn -> setProperty("space", cn_cmyk);
-    cmyk_toggle_btn -> setCheckable(true);
-    cmyk_toggle_btn -> setText(QLatin1Literal("CMYK"));
-    cmyk_toggle_btn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    l -> addWidget(cmyk_toggle_btn, 6, 12, 1, 3);
-
-    hvb_toggle_btn = new QToolButton(this);
-    hvb_toggle_btn -> setProperty("space", cn_hvb);
-    hvb_toggle_btn -> setCheckable(true);
-    hvb_toggle_btn -> setText(QLatin1Literal("H\nV\nB"));
-    hvb_toggle_btn -> setFixedWidth(20);
-    hvb_toggle_btn -> setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    l -> addWidget(hvb_toggle_btn, 2, 15, 4, 1);
-
-
-    connect(rgb_toggle_btn, SIGNAL(clicked()), this, SLOT(colorSpaceChanged()));
-    connect(hsv_toggle_btn, SIGNAL(clicked()), this, SLOT(colorSpaceChanged()));
-    connect(hsl_toggle_btn, SIGNAL(clicked()), this, SLOT(colorSpaceChanged()));
-    connect(cmyk_toggle_btn, SIGNAL(clicked()), this, SLOT(colorSpaceChanged()));
-    connect(hvb_toggle_btn, SIGNAL(clicked()), this, SLOT(colorSpaceChanged()));
-
-
+    connect(btn_group, SIGNAL(buttonClicked(int)), this, SLOT(colorSpaceChanged(int)));
 
     row1 = new ColorPickerProperty(this);
     row1 -> change(ColorPickerProperty::cc_r, 255);
@@ -114,39 +77,153 @@ void ColorPicker::setuplayout() {
     vl -> addWidget(row4);
     row4 -> setVisible(false);
 
-    l -> addLayout(vl, 2, 12, 4, 3);
+    l -> addLayout(vl, 1, 1, 4, 4);
 
-    ColorPickerProperty * row_alpha = new ColorPickerProperty(this);
-    row_alpha -> label -> setText(QLatin1Literal("A"));
-    l -> addWidget(row_alpha, 7, 12, 1, 3);
+    row_alpha = new ColorPickerProperty(this);
+    row_alpha -> change(ColorPickerProperty::cc_a, 255);
+    l -> addWidget(row_alpha, 5, 1, 1, 4);
 
 
-    QToolButton * down_toggle_btn = new QToolButton(this);
-    down_toggle_btn -> setFixedHeight(12);
-    down_toggle_btn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    down_toggle_btn -> setText(QLatin1Literal("\\/"));
-    down_toggle_btn -> setStyleSheet("background-color: rgba(0,255,0, .2)");
-    l -> addWidget(down_toggle_btn, 8, 11, 1, 5);
+//    QToolButton * down_toggle_btn = new QToolButton(this);
+//    down_toggle_btn -> setFixedHeight(12);
+//    down_toggle_btn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+//    down_toggle_btn -> setText(QLatin1Literal("\\/"));
+//    down_toggle_btn -> setStyleSheet("background-color: rgba(0,255,0, .2)");
+//    l -> addWidget(down_toggle_btn, 8, 11, 1, 5);
 
-    down_toggle_btn -> setVisible(false);
+//    down_toggle_btn -> setVisible(false);
 
 //    QComboBox * colors_sets = new QComboBox(this);
 //    QLabel * colors_set = new QLabel(this);
-////    Rgb, Hsv, Cmyk, Hsl
 
-    rgb_toggle_btn -> setChecked(true);
+    //    colors_space = new QLabel(this);
+    //    colors_space -> setMinimumSize(200, 200);
+    //    colors_space -> setStyleSheet("background-color: rgba(255,0,0, .2)");
+    //    l -> addWidget(colors_space, 0, 0, 9, 10);
+    ////    colors_space -> setVisible(false);
+
+    //    QToolButton * left_toggle_btn = new QToolButton(this);
+    //    left_toggle_btn -> setFixedWidth(12);
+    ////    left_toggle_btn -> setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+    //    left_toggle_btn -> setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    //    left_toggle_btn -> setText(QLatin1Literal("<"));
+    //    left_toggle_btn -> setStyleSheet("background-color: rgba(0,255,0, .2)");
+    //    l -> addWidget(left_toggle_btn, 0, 10, 9, 1);
+    ////    left_toggle_btn -> setVisible(false);
+
+    btn_group -> buttons().first() -> setChecked(true);
 }
 
-void ColorPicker::colorSpaceChanged() {
-    QObject * obj = sender();
-    int space = obj -> property("space").toInt();
+void ColorPicker::componentChanged() {
 
-    switch(space) {
-        case cn_rgb:
-        case cn_hsv:
-        case cn_hsl:
-        case cn_cmyk:
-        case cn_hvb:
-        default:;
+}
+
+void ColorPicker::changeColorOutputs(QColor color) {
+    qreal a = 255;
+
+    switch(curr_color_namespace) {
+        case cn_rgb: {
+            row1 -> setVal(color.redF());
+            row2 -> setVal(color.greenF());
+            row3 -> setVal(color.blueF());
+        break;}
+
+        case cn_hsv: {
+            qreal h, s, v;
+
+            color.getHsvF(&h, &s, &v, &a);
+
+            row1 -> setVal(h);
+            row2 -> setVal(s);
+            row3 -> setVal(v);
+        break;}
+
+        case cn_hsl: {
+            qreal h, s, l;
+
+            color.getHslF(&h, &s, &l, &a);
+
+            row1 -> setVal(h);
+            row2 -> setVal(s);
+            row3 -> setVal(l);
+        break;}
+
+        case cn_cmyk: {
+            qreal c, m, y, k;
+
+            color.getCmykF(&c, &m, &y, &k, &a);
+
+
+            row1 -> setVal(color.cyan());
+            row2 -> setVal(color.magenta());
+            row3 -> setVal(color.yellow());
+            row4 -> setVal(color.black());
+        break;}
+
+        case cn_hvb: {
+            qreal h, s, v, w, b;
+
+            color.getHsvF(&h, &s, &v, &a);
+
+            w = (1.0 - s) * v;
+            b = 1.0 - v;
+
+            row1 -> setVal(h);
+            row2 -> setVal(w);
+            row3 -> setVal(b);
+        break;}
+
+        default: Logger::obj().write(QLatin1Literal("ColorPicker"), QLatin1Literal("colorSpaceChanged: unknown namespace"), Logger::log_error);
+    };
+
+    row_alpha -> setVal(a);
+}
+
+void ColorPicker::colorSpaceChanged(const int & new_namespace) {
+    curr_color_namespace = static_cast<ColorNamespace>(new_namespace);
+
+    switch(new_namespace) {
+        case cn_rgb: {
+            row1 -> change(ColorPickerProperty::cc_r, 255);
+            row2 -> change(ColorPickerProperty::cc_g, 255);
+            row3 -> change(ColorPickerProperty::cc_b, 255);
+
+            row4 -> setVisible(false);
+        break;}
+
+        case cn_hsv: {
+            row1 -> change(ColorPickerProperty::cc_h, 359);
+            row2 -> change(ColorPickerProperty::cc_s, 255);
+            row3 -> change(ColorPickerProperty::cc_v, 255);
+
+            row4 -> setVisible(false);
+        break;}
+
+        case cn_hsl: {
+            row1 -> change(ColorPickerProperty::cc_h, 359);
+            row2 -> change(ColorPickerProperty::cc_s, 255);
+            row3 -> change(ColorPickerProperty::cc_l, 255);
+
+            row4 -> setVisible(false);
+        break;}
+
+        case cn_cmyk: {
+            row1 -> change(ColorPickerProperty::cc_c, 255);
+            row2 -> change(ColorPickerProperty::cc_m, 255);
+            row3 -> change(ColorPickerProperty::cc_y, 255);
+            row4 -> change(ColorPickerProperty::cc_k, 255);
+
+            row4 -> setVisible(true);
+        break;}
+
+        case cn_hvb: {
+            row1 -> change(ColorPickerProperty::cc_h, 255);
+            row2 -> change(ColorPickerProperty::cc_v, 255);
+            row3 -> change(ColorPickerProperty::cc_b, 255);
+
+            row4 -> setVisible(false);
+        break;}
+
+        default: Logger::obj().write(QLatin1Literal("ColorPicker"), QLatin1Literal("colorSpaceChanged: unknown namespace"), Logger::log_error);
     };
 }

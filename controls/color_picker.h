@@ -23,24 +23,31 @@ class ColorPicker : public QWidget {
     ColorNamespace curr_color_namespace;
 //    QLabel * colors_space;
 
-    QToolButton * rgb_toggle_btn;
-    QToolButton * hsv_toggle_btn;
-    QToolButton * hsl_toggle_btn;
-    QToolButton * cmyk_toggle_btn;
-    QToolButton * hvb_toggle_btn;
-
     ColorPickerProperty * row1;
     ColorPickerProperty * row2;
     ColorPickerProperty * row3;
     ColorPickerProperty * row4;
+    ColorPickerProperty * row_alpha;
 
     QColor current_color;
 
     void setuplayout();
 public:
     ColorPicker(QWidget * parent = nullptr);
+    void setColor(const QColor & color);
+
+protected:
+    void componentChanged();
+    void changeColorOutputs(QColor color);
+
+    void hwbToHsv(const qreal & h, const qreal & w, const qreal & b, qreal & s, qreal & v) {
+        s = 1.0 - (w / (1.0 - b));
+        v = 1.0 - b;
+    }
+
 private slots:
-    void colorSpaceChanged();
+    void colorSpaceChanged(const int & new_namespace);
+
 };
 
 #endif // COLOR_PICKER_H

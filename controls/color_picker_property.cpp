@@ -12,17 +12,18 @@ ColorPickerProperty::ColorPickerProperty(QWidget * parent) : QWidget(parent) {
 
     slider = new QSlider(this);
     slider -> setMinimum(0);
-    slider -> setMinimumWidth(50);
+    slider -> setMinimumWidth(80);
     slider -> setOrientation(Qt::Horizontal);
     l -> addWidget(slider, 1);
 
-    spin = new QSpinBox(this);
+    spin = new QDoubleSpinBox(this);
+    spin -> setDecimals(2);
     spin -> setMinimum(0);
-    spin -> setFixedWidth(spin -> fontMetrics().width(QLatin1Literal("222")) + 25);
+    spin -> setFixedWidth(spin -> fontMetrics().width(QLatin1Literal("222.00")) + 25);
     l -> addWidget(spin);
 
-    connect(spin, SIGNAL(valueChanged(int)), this, SLOT(valChanged(int)));
-    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(valChanged(int)));
+    connect(spin, SIGNAL(valueChanged(qreal)), this, SLOT(spinValChanged(qreal)));
+    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(sliderValChanged(int)));
 }
 
 void ColorPickerProperty::change(const ColorComponent & new_comp, const int & new_max) {
@@ -30,6 +31,7 @@ void ColorPickerProperty::change(const ColorComponent & new_comp, const int & ne
 
     switch(comp) {
         case cc_none: { label -> setText(QLatin1Literal("None")); break;}
+        case cc_a: { label -> setText(QLatin1Literal("A")); break;}
         case cc_r: { label -> setText(QLatin1Literal("R")); break;}
         case cc_g: { label -> setText(QLatin1Literal("G")); break;}
         case cc_b: { label -> setText(QLatin1Literal("B")); break;}
@@ -49,16 +51,23 @@ void ColorPickerProperty::change(const ColorComponent & new_comp, const int & ne
     slider -> setMaximum(new_max);
 }
 
-void ColorPickerProperty::valChanged(int new_val) {
-    if (sender() == slider) {
-        spin -> blockSignals(true);
-        spin -> setValue(new_val);
-        spin -> blockSignals(false);
-    } else {
-        slider -> blockSignals(true);
-        slider -> setValue(new_val);
-        slider -> blockSignals(false);
-    }
+void ColorPickerProperty::setVal(const qreal & new_val) {
+//    slider -> setValue(new_val);
+    spin -> setValue(new_val);
+}
+
+void ColorPickerProperty::sliderValChanged(int new_val) {
+    spin -> blockSignals(true);
+    spin -> setValue(new_val / 100.0);
+    spin -> blockSignals(false);
+
+    emit changed(comp, spin -> value());
+}
+
+void ColorPickerProperty::spinValChanged(qreal new_val) {
+    slider -> blockSignals(true);
+    slider -> setValue(static_cast<int>(new_val * 100));
+    slider -> blockSignals(false);
 
     emit changed(comp, new_val);
 }

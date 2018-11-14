@@ -10,6 +10,7 @@ struct ColorPickerProperty : public QWidget {
 public:
     enum ColorComponent : int {
         cc_none = 0,
+        cc_a,
         cc_r,
         cc_g,
         cc_b,
@@ -26,16 +27,18 @@ public:
     ColorComponent comp;
     QLabel * label;
     QSlider * slider;
-    QSpinBox * spin;
+    QDoubleSpinBox * spin;
 
     ColorPickerProperty(QWidget * parent);
 
     void change(const ColorComponent & new_comp, const int & new_max);
+    void setVal(const qreal & new_val);
 signals:
-    void changed(const int & component, const int & new_val);
+    void changed(const int & component, const qreal & new_val);
 
 protected slots:
-    void valChanged(int);
+    void sliderValChanged(int);
+    void spinValChanged(qreal);
 };
 
 #endif // COLOR_PICKER_PROPERTY_H
