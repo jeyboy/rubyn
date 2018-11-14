@@ -79,7 +79,8 @@ SOURCES += main.cpp\
     controls/search_box.cpp \
     controls/project_tree_item_delegate.cpp \
     controls/color_picker.cpp \
-    controls/color_grabber.cpp
+    controls/color_grabber.cpp \
+    controls/color_picker_property.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -192,7 +193,8 @@ HEADERS  += ide_window.h \
     controls/search_box.h \
     controls/project_tree_item_delegate.h \
     controls/color_picker.h \
-    controls/color_grabber.h
+    controls/color_grabber.h \
+    controls/color_picker_property.h
 
 FORMS    += ide_window.ui
 
