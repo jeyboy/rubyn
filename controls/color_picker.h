@@ -7,6 +7,7 @@ class QLabel;
 class ColorPickerProperty;
 class QToolButton;
 class QComboBox;
+class ColorButton;
 
 class ColorPicker : public QWidget {
     Q_OBJECT
@@ -20,7 +21,7 @@ class ColorPicker : public QWidget {
         cn_hvb
     };
 
-    QWidget * curr_color_item;
+    ColorButton * curr_color_item;
     ColorNamespace curr_color_namespace;
 //    QLabel * colors_space;
 
@@ -38,7 +39,7 @@ class ColorPicker : public QWidget {
 public:
     ColorPicker(QWidget * parent = nullptr);
     void setColor(const QColor & color);
-    inline void setCurrentColorButton(QWidget * clr_btn) {
+    inline void setCurrentColorButton(ColorButton * clr_btn) {
         curr_color_item = clr_btn;
         colorChanged();
     }

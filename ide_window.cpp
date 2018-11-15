@@ -17,6 +17,7 @@
 #include "controls/dumper.h"
 #include "controls/run_configuration.h"
 #include "controls/color_picker.h"
+#include "controls/color_button.h"
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
@@ -388,7 +389,8 @@ void IDEWindow::setupToolWindows() {
 
     DockWidgets::obj().append(widget);
 
-    QToolButton * curr_color_btn = widget -> insertHeaderButton(QIcon(), nullptr, nullptr, 0);
+    ColorButton * curr_color_btn = new ColorButton(this);
+    widget -> insertHeaderButton(curr_color_btn, nullptr, nullptr, 0);
     curr_color_btn -> setDisabled(true);
     color_picker -> setCurrentColorButton(curr_color_btn);
     widget -> insertHeaderButton(QIcon(":/tools/color_picker"), color_picker, SLOT(colorPickingRequired()), 1);

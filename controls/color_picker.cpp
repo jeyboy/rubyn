@@ -6,7 +6,8 @@
 #include <qbuttongroup.h>
 
 #include "misc/defines.h"
-#include "controls/logger.h"
+#include "logger.h"
+#include "color_button.h"
 #include "color_picker_property.h"
 
 ColorPicker::ColorPicker(QWidget * parent) : QWidget(parent) {
@@ -135,7 +136,7 @@ void ColorPicker::changeColorOutputs(QColor color) {
     const QSignalBlocker blocker_hex(hex_name);
 
     current_color = color;
-    qreal a = 1;
+    qreal a = color.alphaF();
 
     switch(curr_color_namespace) {
         case cn_rgb: {
@@ -266,7 +267,7 @@ void ColorPicker::componentChanged(const int & component, const qreal & new_val)
 }
 
 void ColorPicker::colorChanged() {
-    curr_color_item -> setStyleSheet(QLatin1Literal("border: 1px solid white; background-color: ") % current_color.name(QColor::HexArgb));
+    curr_color_item -> setColor(current_color);
 }
 
 void ColorPicker::colorSpaceChanged(const int & new_namespace) {

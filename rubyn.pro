@@ -80,7 +80,8 @@ SOURCES += main.cpp\
     controls/project_tree_item_delegate.cpp \
     controls/color_picker.cpp \
     controls/color_grabber.cpp \
-    controls/color_picker_property.cpp
+    controls/color_picker_property.cpp \
+    controls/color_button.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -194,7 +195,8 @@ HEADERS  += ide_window.h \
     controls/project_tree_item_delegate.h \
     controls/color_picker.h \
     controls/color_grabber.h \
-    controls/color_picker_property.h
+    controls/color_picker_property.h \
+    controls/color_button.h
 
 FORMS    += ide_window.ui
 

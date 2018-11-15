@@ -19,6 +19,8 @@ public:
     HeaderDockWidget(QWidget * parent = nullptr, const QString & title = QString());
 
     void setTitle(const QString & title);
+
+    void insertButton(QWidget * btn, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
     QToolButton * insertButton(const QIcon & ico, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
     void registerSearchCallbacks(QObject * target, const char * search_show_signal, const char * search_hide_signal, const char * search_request_slot, const char * search_close_slot);
     void showSearch(const bool & show = true);

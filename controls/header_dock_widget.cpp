@@ -45,9 +45,8 @@ void HeaderDockWidget::setTitle(const QString & title) {
     title_widget -> setText(title);
 }
 
-QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target, const char * slot, const int pos, const Qt::Alignment & alignment) {
-    QToolButton * btn = new QToolButton(this);
-    btn -> setIcon(ico);
+void HeaderDockWidget::insertButton(QWidget * btn, QObject * target, const char * slot, const int pos, const Qt::Alignment & alignment) {
+    btn -> setParent(this);
 
     if (target)
         connect(btn, SIGNAL(released()), target, slot);
@@ -56,6 +55,13 @@ QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target
         _layout -> addWidget(btn, 0, alignment);
     else
         _layout -> insertWidget(pos + 2, btn, 0, alignment);
+}
+
+QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target, const char * slot, const int pos, const Qt::Alignment & alignment) {
+    QToolButton * btn = new QToolButton(this);
+    btn -> setIcon(ico);
+
+    insertButton(btn, target, slot, pos, alignment);
 
     return btn;
 }

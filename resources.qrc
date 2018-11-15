@@ -61,6 +61,7 @@
         <file alias="indent">icons/indent.png</file>
         <file alias="search">icons/search.png</file>
         <file alias="show_target">icons/show_target.png</file>
+        <file alias="transparency">icons/transparency.png</file>
     </qresource>
     <qresource prefix="/completer">
         <file alias="const">icons/completer/comp_const.png</file>

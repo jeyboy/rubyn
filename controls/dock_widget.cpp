@@ -27,6 +27,9 @@ void DockWidget::showSearch(const bool & show) {
     header -> showSearch(show);
 }
 
+void DockWidget::insertHeaderButton(QWidget * btn, QObject * target, const char * slot, const int pos, const Qt::Alignment & alignment) {
+    return header -> insertButton(btn, target, slot, pos, alignment);
+}
 QToolButton * DockWidget::insertHeaderButton(const QIcon & ico, QObject * target, const char * slot, const int pos, const Qt::Alignment & alignment) {
     return header -> insertButton(ico, target, slot, pos, alignment);
 }
