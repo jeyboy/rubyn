@@ -6,6 +6,7 @@
 class QLabel;
 class ColorPickerProperty;
 class QToolButton;
+class QComboBox;
 
 class ColorPicker : public QWidget {
     Q_OBJECT
@@ -13,15 +14,17 @@ class ColorPicker : public QWidget {
     enum ColorNamespace {
         cn_none = 0,
         cn_rgb,
+        cn_cmyk,
         cn_hsv,
         cn_hsl,
-        cn_cmyk,
         cn_hvb
     };
 
-    QLabel * curr_color_item;
+    QWidget * curr_color_item;
     ColorNamespace curr_color_namespace;
 //    QLabel * colors_space;
+
+    QComboBox * hex_name;
 
     ColorPickerProperty * row1;
     ColorPickerProperty * row2;
@@ -35,17 +38,24 @@ class ColorPicker : public QWidget {
 public:
     ColorPicker(QWidget * parent = nullptr);
     void setColor(const QColor & color);
-
+    inline void setCurrentColorButton(QWidget * clr_btn) {
+        curr_color_item = clr_btn;
+        colorChanged();
+    }
 protected:
-    void componentChanged();
     void changeColorOutputs(QColor color);
 
-    void hwbToHsv(const qreal & h, const qreal & w, const qreal & b, qreal & s, qreal & v) {
+    void hwbToHsv(const qreal & w, const qreal & b, qreal & s, qreal & v) {
         s = 1.0 - (w / (1.0 - b));
         v = 1.0 - b;
     }
 
+public slots:
+    void colorPickingRequired();
+
 private slots:
+    void componentChanged(const int & component, const qreal & new_val);
+    void colorChanged();
     void colorSpaceChanged(const int & new_namespace);
 
 };

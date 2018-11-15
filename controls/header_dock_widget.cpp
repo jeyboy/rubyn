@@ -49,7 +49,8 @@ QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target
     QToolButton * btn = new QToolButton(this);
     btn -> setIcon(ico);
 
-    connect(btn, SIGNAL(released()), target, slot);
+    if (target)
+        connect(btn, SIGNAL(released()), target, slot);
 
     if (pos < 0)
         _layout -> addWidget(btn, 0, alignment);

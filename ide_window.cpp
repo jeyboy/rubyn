@@ -388,6 +388,11 @@ void IDEWindow::setupToolWindows() {
 
     DockWidgets::obj().append(widget);
 
+    QToolButton * curr_color_btn = widget -> insertHeaderButton(QIcon(), nullptr, nullptr, 0);
+    curr_color_btn -> setDisabled(true);
+    color_picker -> setCurrentColorButton(curr_color_btn);
+    widget -> insertHeaderButton(QIcon(":/tools/color_picker"), color_picker, SLOT(colorPickingRequired()), 1);
+
 
 
     Logger::obj().initiate(QLatin1Literal("loh.txt"), true);

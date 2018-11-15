@@ -1,6 +1,7 @@
 #include "color_picker_property.h"
 
 #include <qlayout.h>
+#include <qdebug.h>
 
 ColorPickerProperty::ColorPickerProperty(QWidget * parent) : QWidget(parent) {
     QHBoxLayout * l = new QHBoxLayout(this);
@@ -19,7 +20,7 @@ ColorPickerProperty::ColorPickerProperty(QWidget * parent) : QWidget(parent) {
     spin = new QDoubleSpinBox(this);
     spin -> setDecimals(2);
     spin -> setMinimum(0);
-    spin -> setFixedWidth(spin -> fontMetrics().width(QLatin1Literal("222.00")) + 25);
+    spin -> setFixedWidth(spin -> fontMetrics().width(QLatin1Literal("1.00")) + 25);
     l -> addWidget(spin);
 
     connect(spin, SIGNAL(valueChanged(qreal)), this, SLOT(spinValChanged(qreal)));
