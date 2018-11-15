@@ -21,6 +21,13 @@ class ColorPicker : public QWidget {
         cn_hvb
     };
 
+    enum PropertyMetric {
+        pm_none = 0,
+        pm_proportional, // 0..1
+        pm_ranged, // 0..255
+        pm_percentage // 0..100%
+    };
+
     ColorButton * curr_color_item;
     ColorNamespace curr_color_namespace;
 //    QLabel * colors_space;
@@ -41,7 +48,7 @@ public:
     void setColor(const QColor & color);
     inline void setCurrentColorButton(ColorButton * clr_btn) {
         curr_color_item = clr_btn;
-        colorChanged();
+        setColor(current_color);
     }
 protected:
     void changeColorOutputs(QColor color);
@@ -56,9 +63,8 @@ public slots:
 
 private slots:
     void componentChanged(const int & component, const qreal & new_val);
-    void colorChanged();
     void colorSpaceChanged(const int & new_namespace);
-
+    void hexChanged(const QString &);
 };
 
 #endif // COLOR_PICKER_H

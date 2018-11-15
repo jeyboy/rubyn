@@ -10,16 +10,18 @@
 #include "color_button.h"
 #include "color_picker_property.h"
 
-ColorPicker::ColorPicker(QWidget * parent) : QWidget(parent) {
+ColorPicker::ColorPicker(QWidget * parent) : QWidget(parent), curr_color_item(nullptr) {
     setuplayout();
 }
 
 void ColorPicker::setColor(const QColor & color) {
+    current_color = color;
 
+    if (curr_color_item)
+        curr_color_item -> setColor(current_color);
+
+    changeColorOutputs(color);
 }
-
-//TODO: add color picker button to header
-// add curr_color_item to header
 
 void ColorPicker::setuplayout() {
     QButtonGroup * btn_group = new QButtonGroup(this);
@@ -39,11 +41,20 @@ void ColorPicker::setuplayout() {
 
     hex_name = new QComboBox(this);
     hex_name -> setEditable(true);
-    l -> addWidget(hex_name, 0, 1, 1, 4);
+    hex_name -> setDuplicatesEnabled(false);
+//    setValidator
+    l -> addWidget(hex_name, 0, 1, 1, 3);
 
-//    curr_color_item = new QLabel(this);
-//    curr_color_item -> setStyleSheet("background-color: #00ff00");
-//    l -> addWidget(curr_color_item, 1, 11);
+    connect(hex_name, SIGNAL(editTextChanged(const QString &)), this, SLOT(hexChanged(const QString &)));
+    connect(hex_name, SIGNAL(currentTextChanged(const QString &)), this, SLOT(hexChanged(const QString &)));
+
+    QComboBox * metric = new QComboBox(this);
+    metric -> setEditable(false);
+    metric -> addItem(QLatin1Literal("0.0-1.0"), pm_proportional);
+    metric -> addItem(QLatin1Literal("0-255"), pm_ranged);
+    metric -> addItem(QLatin1Literal("0-100%"), pm_percentage);
+    l -> addWidget(metric, 0, 4);
+
 
     QList<QPair<ColorNamespace, QLatin1String> > names = {
         QPair<ColorNamespace, QLatin1String>(cn_rgb, QLatin1Literal("RGB")),
@@ -262,12 +273,7 @@ void ColorPicker::componentChanged(const int & component, const qreal & new_val)
         default:;
     }
 
-    changeColorOutputs(color);
-    colorChanged();
-}
-
-void ColorPicker::colorChanged() {
-    curr_color_item -> setColor(current_color);
+    setColor(color);
 }
 
 void ColorPicker::colorSpaceChanged(const int & new_namespace) {
@@ -321,5 +327,9 @@ void ColorPicker::colorSpaceChanged(const int & new_namespace) {
 
     row4 -> setVisible(new_namespace == cn_cmyk);
     curr_color_namespace = static_cast<ColorNamespace>(new_namespace);
-    changeColorOutputs(current_color);
+    setColor(current_color);
+}
+
+void ColorPicker::hexChanged(const QString & name) {
+    setColor(QColor(name));
 }
