@@ -153,11 +153,11 @@ void Color::getHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & me
         break;}
 
         case cm_ranged: {
-            h *= componentMax(cc_hwb_h); v *= componentMax(cc_hwb_w); b *= componentMax(cc_hwb_b); a *= componentMax(cc_alpha);
+            h *= componentMax(cc_hwb_h); w *= componentMax(cc_hwb_w); b *= componentMax(cc_hwb_b); a *= componentMax(cc_alpha);
         break;}
 
         default: {
-            h = 0; v = 0; b = 0; a = 0;
+            h = 0; w = 0; b = 0; a = 0;
         }
     }
 }
@@ -231,11 +231,28 @@ void Color::setHsl(qreal & h, qreal & s, qreal & l, qreal & a, const Metric & me
     }
 }
 void Color::setHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & metric) {
+    switch(metric) {
+        case cm_percentage: {
+            h /= 100.0; w /= 100.0; b /= 100.0; a /= 100.0;
+        break;}
+
+        case cm_proportional: { break;}
+
+        case cm_ranged: {
+            h /= componentMax(cc_hwb_h);
+            w /= componentMax(cc_hwb_w);
+            b /= componentMax(cc_hwb_b);
+            a /= componentMax(cc_alpha);
+        break;}
+
+        default: { return; }
+    }
+
     qreal s, v;
 
     hwbToHsv(w, b, s, v);
 
-    setHsv(h, s, v, a, metric);
+    setHsv(h, s, v, a, cm_proportional);
 }
 
 void Color::setComponent(const Namespace & color_space, const Component & c, const qreal & val, const Metric & metric) {
