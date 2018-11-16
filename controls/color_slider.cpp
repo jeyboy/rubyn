@@ -4,7 +4,7 @@
 #include <qvariant.h>
 
 #include "jslider_style.h"
-#include "misc/color_component.h"
+#include "misc/color.h"
 
 ColorSlider::ColorSlider(QWidget * parent) : QSlider(parent) {
     setMinimumWidth(80);

@@ -5,13 +5,13 @@
 
 class Color : public QColor {
 public:
-    enum Namespace { Invalid, Rgb, Hsv, Cmyk, Hsl, Hvb };
+    enum Namespace { Invalid, Rgb, Hsv, Cmyk, Hsl, Hwb };
 
     enum Metric {
-        pm_invalid = 0,
-        pm_proportional, // 0..1
-        pm_ranged, // 0..255
-        pm_percentage // 0..100%
+        cm_invalid = 0,
+        cm_proportional, // 0..1
+        cm_ranged, // 0..255
+        cm_percentage // 0..100%
     };
 
     enum Component : int {
@@ -26,27 +26,17 @@ public:
         cc_hsl_h, // 359
         cc_hsl_s, // 255
         cc_hsl_l, // 255
-        cc_hvb_h, // 359
-        cc_hvb_v, // 255
-        cc_hvb_b, // 255
+        cc_hwb_h, // 359
+        cc_hwb_w, // 255
+        cc_hwb_b, // 255
         cc_cmyk_c, // 255
         cc_cmyk_m, // 255
         cc_cmyk_y, // 255
         cc_cmyk_k // 255
     };
 
-    static int componentMax(const Component & c, const Metric & metric = pm_ranged) {
-        if (metric == pm_ranged) {
-            switch(c)  {
-                case cc_hsv_h:
-                case cc_hsl_h:
-                case cc_hvb_h: return 359;
-
-                default: return 255;
-            }
-        }
-        else return 1000;
-    }
+    static QLatin1String componentName(const Component & c);
+    static int componentMax(const Component & c, const Metric & metric = cm_ranged);
 
     inline Color() : QColor() {}
     inline Color(Qt::GlobalColor color) : QColor(color) {}
@@ -54,25 +44,36 @@ public:
     inline Color(const QString & name) : QColor(name) {}
     inline Color(const char * aname) : Color(QLatin1String(aname)) {}
     inline Color(QLatin1String name) : QColor(name) {}
+    inline Color(const QColor & color) : QColor(color) {}
+    inline Color(QColor && color) : QColor(color) {}
 
-    void getRgb(qreal & r, qreal & g, qreal & b, qreal & a, const Metric & metric = pm_ranged) const;
-    void getHsv(qreal & h, qreal & s, qreal & v, qreal & a, const Metric & metric = pm_ranged) const;
-    void getCmyk(qreal & c, qreal & m, qreal & y, qreal & k, qreal & a, const Metric & metric = pm_ranged) const;
-    void getHsl(qreal & h, qreal & s, qreal & l, qreal & a, const Metric & metric = pm_ranged) const;
-    void getHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & metric = pm_ranged) const;
+    inline QColor & operator=(QColor && color) { return QColor::operator=(color); }
+    inline QColor & operator=(const QColor & color) { return QColor::operator=(color); }
 
-    void setRgb(qreal & r, qreal & g, qreal & b, qreal & a, const Metric & metric = pm_ranged) const;
-    void setHsv(qreal & h, qreal & s, qreal & v, qreal & a, const Metric & metric = pm_ranged) const;
-    void setCmyk(qreal & c, qreal & m, qreal & y, qreal & k, qreal & a, const Metric & metric = pm_ranged) const;
-    void setHsl(qreal & h, qreal & s, qreal & l, qreal & a, const Metric & metric = pm_ranged) const;
-    void setHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & metric = pm_ranged) const;
+    void getRgb(qreal & r, qreal & g, qreal & b, qreal & a, const Metric & metric = cm_ranged) const;
+    void getHsv(qreal & h, qreal & s, qreal & v, qreal & a, const Metric & metric = cm_ranged) const;
+    void getCmyk(qreal & c, qreal & m, qreal & y, qreal & k, qreal & a, const Metric & metric = cm_ranged) const;
+    void getHsl(qreal & h, qreal & s, qreal & l, qreal & a, const Metric & metric = cm_ranged) const;
+    void getHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & metric = cm_ranged) const;
+
+    void setRgb(qreal & r, qreal & g, qreal & b, qreal & a, const Metric & metric = cm_ranged);
+    void setHsv(qreal & h, qreal & s, qreal & v, qreal & a, const Metric & metric = cm_ranged);
+    void setCmyk(qreal & c, qreal & m, qreal & y, qreal & k, qreal & a, const Metric & metric = cm_ranged);
+    void setHsl(qreal & h, qreal & s, qreal & l, qreal & a, const Metric & metric = cm_ranged);
+    void setHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & metric = cm_ranged);
+
+    void setComponent(const Namespace & color_space, const Component & c, const qreal & val, const Metric & metric = cm_ranged);
+    void setComponents(const Namespace & color_space, qreal & c1, qreal & c2, qreal & c3, qreal & c4, qreal & a, const Metric & metric = cm_ranged);
+    void getComponents(const Namespace & color_space, qreal & c1, qreal & c2, qreal & c3, qreal & c4, qreal & a, const Metric & metric = cm_ranged) const;
+
+    Color convertTo(const Namespace & color_space) const Q_DECL_NOTHROW;
+
 private:
-    void hsvToHwb(const qreal & s, const qreal & v, qreal & w, qreal & b) const {
+    inline void hsvToHwb(const qreal & s, const qreal & v, qreal & w, qreal & b) const {
         w = (1.0 - s) * v;
         b = 1.0 - v;
     }
-
-    void hwbToHsv(const qreal & w, const qreal & b, qreal & s, qreal & v) const {
+    inline void hwbToHsv(const qreal & w, const qreal & b, qreal & s, qreal & v) const {
         s = 1.0 - (w / (1.0 - b));
         v = 1.0 - b;
     }

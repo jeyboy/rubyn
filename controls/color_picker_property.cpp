@@ -31,27 +31,13 @@ ColorPickerProperty::ColorPickerProperty(QWidget * parent) : QWidget(parent) {
     connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(sliderValChanged(int)));
 }
 
-void ColorPickerProperty::change(const ColorComponent & new_comp, const int & new_max, const bool & with_precision) {
+void ColorPickerProperty::change(const Color::Component & new_comp, const Color::Metric & metric) {
     comp = new_comp;
     slider -> setProperty("component_id", new_comp);
 
-    switch(comp) {
-        case cc_none: { label -> setText(QLatin1Literal("None")); break;}
-        case cc_a: { label -> setText(QLatin1Literal("A")); break;}
-        case cc_r: { label -> setText(QLatin1Literal("R")); break;}
-        case cc_g: { label -> setText(QLatin1Literal("G")); break;}
-        case cc_b: { label -> setText(QLatin1Literal("B")); break;}
-        case cc_h: { label -> setText(QLatin1Literal("H")); break;}
-        case cc_s: { label -> setText(QLatin1Literal("S")); break;}
-        case cc_v: { label -> setText(QLatin1Literal("V")); break;}
-        case cc_l: { label -> setText(QLatin1Literal("L")); break;}
-        case cc_c: { label -> setText(QLatin1Literal("C")); break;}
-        case cc_m: { label -> setText(QLatin1Literal("M")); break;}
-        case cc_y: { label -> setText(QLatin1Literal("Y")); break;}
-        case cc_k: { label -> setText(QLatin1Literal("K")); break;}
+    label -> setText(Color::componentName(new_comp));
 
-//        default: label -> setText(QLatin1Literal("Unknown"));
-    };
+    qreal new_max = Color::componentMax(new_comp, metric);
 
     spin -> setMaximum(new_max);
     slider -> setMaximum(new_max * 100);

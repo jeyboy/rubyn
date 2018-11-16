@@ -14,7 +14,7 @@ ColorPicker::ColorPicker(QWidget * parent) : QWidget(parent), curr_color_item(nu
     setuplayout();
 }
 
-void ColorPicker::setColor(const QColor & color) {
+void ColorPicker::setColor(const Color & color) {
     current_color = color;
 
     if (curr_color_item)
@@ -48,22 +48,26 @@ void ColorPicker::setuplayout() {
     connect(hex_name, SIGNAL(editTextChanged(const QString &)), this, SLOT(hexChanged(const QString &)));
     connect(hex_name, SIGNAL(currentTextChanged(const QString &)), this, SLOT(hexChanged(const QString &)));
 
-    QComboBox * metric = new QComboBox(this);
-    metric -> setEditable(false);
-    metric -> addItem(QLatin1Literal("0.0-1.0"), pm_proportional);
-    metric -> addItem(QLatin1Literal("0-255"), pm_ranged);
-    metric -> addItem(QLatin1Literal("0-100%"), pm_percentage);
-    l -> addWidget(metric, 0, 4);
+    metrics_list = new QComboBox(this);
+    metrics_list -> setEditable(false);
+    metrics_list -> addItem(QLatin1Literal("0.0-1.0"), Color::cm_proportional);
+    metrics_list -> addItem(QLatin1Literal("0-255"), Color::cm_ranged);
+    metrics_list -> addItem(QLatin1Literal("0-100%"), Color::cm_percentage);
+    l -> addWidget(metrics_list, 0, 4);
+
+    metrics_list -> setCurrentText(QLatin1Literal("0-255"));
+    color_metric = Color::cm_ranged;
+    connect(metrics_list, SIGNAL(currentIndexChanged(int)), this, SLOT(metricSelectionChanged(int)));
 
 
-    QList<QPair<ColorNamespace, QLatin1String> > names = {
-        QPair<ColorNamespace, QLatin1String>(cn_rgb, QLatin1Literal("RGB")),
-        QPair<ColorNamespace, QLatin1String>(cn_hsv, QLatin1Literal("HSV")),
-        QPair<ColorNamespace, QLatin1String>(cn_hsl, QLatin1Literal("HSL")),
-        QPair<ColorNamespace, QLatin1String>(cn_cmyk, QLatin1Literal("CMYK")),
-        QPair<ColorNamespace, QLatin1String>(cn_hvb, QLatin1Literal("HVB")),
+    QList<QPair<Color::Namespace, QLatin1String> > names = {
+        QPair<Color::Namespace, QLatin1String>(Color::Rgb, QLatin1Literal("RGB")),
+        QPair<Color::Namespace, QLatin1String>(Color::Hsv, QLatin1Literal("HSV")),
+        QPair<Color::Namespace, QLatin1String>(Color::Hsl, QLatin1Literal("HSL")),
+        QPair<Color::Namespace, QLatin1String>(Color::Cmyk, QLatin1Literal("CMYK")),
+        QPair<Color::Namespace, QLatin1String>(Color::Hwb, QLatin1Literal("HWB")),
     };
-    QList<QPair<ColorNamespace, QLatin1String> >::Iterator it = names.begin();
+    QList<QPair<Color::Namespace, QLatin1String> >::Iterator it = names.begin();
 
     for(int pos = 1; it != names.end(); it++, pos++) {
         QToolButton * btn = new QToolButton(this);
@@ -79,26 +83,26 @@ void ColorPicker::setuplayout() {
     connect(btn_group, SIGNAL(buttonClicked(int)), this, SLOT(colorSpaceChanged(int)));
 
     row1 = new ColorPickerProperty(this);
-    row1 -> change(ColorPickerProperty::cc_r, 1, false);
+    row1 -> change(Color::cc_rgb_r, color_metric);
     vl -> addWidget(row1);
 
     row2 = new ColorPickerProperty(this);
-    row2 -> change(ColorPickerProperty::cc_g, 1, false);
+    row2 -> change(Color::cc_rgb_g, color_metric);
     vl -> addWidget(row2);
 
     row3 = new ColorPickerProperty(this);
-    row3 -> change(ColorPickerProperty::cc_b, 1, false);
+    row3 -> change(Color::cc_rgb_b, color_metric);
     vl -> addWidget(row3);
 
     row4 = new ColorPickerProperty(this);
-    row4 -> change(ColorPickerProperty::cc_k, 1, false);
+    row4 -> change(Color::cc_cmyk_k, color_metric);
     vl -> addWidget(row4);
     row4 -> setVisible(false);
 
     l -> addLayout(vl, 1, 1, 4, 4);
 
     row_alpha = new ColorPickerProperty(this);
-    row_alpha -> change(ColorPickerProperty::cc_a, 1, false);
+    row_alpha -> change(Color::cc_alpha, color_metric);
     l -> addWidget(row_alpha, 5, 1, 1, 4);
 
     connect(row1, SIGNAL(changed(const int &, const qreal &)), this, SLOT(componentChanged(const int &, const qreal &)));
@@ -138,7 +142,7 @@ void ColorPicker::setuplayout() {
     btn_group -> buttons().first() -> click();
 }
 
-void ColorPicker::changeColorOutputs(QColor color) {
+void ColorPicker::changeColorOutputs(Color color) {
     const QSignalBlocker blocker1(row1);
     const QSignalBlocker blocker2(row2);
     const QSignalBlocker blocker3(row3);
@@ -147,63 +151,17 @@ void ColorPicker::changeColorOutputs(QColor color) {
     const QSignalBlocker blocker_hex(hex_name);
 
     current_color = color;
-    qreal a = color.alphaF();
+    qreal c1, c2, c3, c4, a;
 
-    switch(curr_color_namespace) {
-        case cn_rgb: {
-            row1 -> setVal(color.redF());
-            row2 -> setVal(color.greenF());
-            row3 -> setVal(color.blueF());
-        break;}
+    color.getComponents(color_space, c1, c2, c3, c4, a, color_metric);
 
-        case cn_hsv: {
-            qreal h, s, v;
-
-            color.getHsvF(&h, &s, &v, &a);
-
-            row1 -> setVal(h);
-            row2 -> setVal(s);
-            row3 -> setVal(v);
-        break;}
-
-        case cn_hsl: {
-            qreal h, s, l;
-
-            color.getHslF(&h, &s, &l, &a);
-
-            row1 -> setVal(h);
-            row2 -> setVal(s);
-            row3 -> setVal(l);
-        break;}
-
-        case cn_cmyk: {
-            qreal c, m, y, k;
-
-            color.getCmykF(&c, &m, &y, &k, &a);
-
-            row1 -> setVal(c);
-            row2 -> setVal(m);
-            row3 -> setVal(y);
-            row4 -> setVal(k);
-        break;}
-
-        case cn_hvb: {
-            qreal h, s, v, w, b;
-
-            color.getHsvF(&h, &s, &v, &a);
-
-            w = (1.0 - s) * v;
-            b = 1.0 - v;
-
-            row1 -> setVal(h);
-            row2 -> setVal(w);
-            row3 -> setVal(b);
-        break;}
-
-        default: Logger::obj().write(QLatin1Literal("ColorPicker"), QLatin1Literal("colorSpaceChanged: unknown namespace"), Logger::log_error);
-    };
+    row1 -> setVal(c1);
+    row2 -> setVal(c2);
+    row3 -> setVal(c3);
+    row4 -> setVal(c4);
 
     row_alpha -> setVal(a);
+
     hex_name -> setCurrentText(color.name(QColor::HexArgb));
 }
 
@@ -211,122 +169,61 @@ void ColorPicker::colorPickingRequired() {
 
 }
 
+void ColorPicker::metricSelectionChanged(int index) {
+    color_metric = static_cast<Color::Metric>(metrics_list -> itemData(index).toInt());
+    changeColorOutputs(current_color);
+}
+
 void ColorPicker::componentChanged(const int & component, const qreal & new_val) {
-    QColor color = current_color;
+    Color color = current_color;
 
-    switch(component) {
-        case ColorPickerProperty::cc_a: { color.setAlphaF(new_val); break;}
-        case ColorPickerProperty::cc_r: { color.setRedF(new_val); break;}
-        case ColorPickerProperty::cc_g: { color.setGreenF(new_val); break;}
-        case ColorPickerProperty::cc_b:
-        case ColorPickerProperty::cc_h:
-        case ColorPickerProperty::cc_s:
-        case ColorPickerProperty::cc_v:
-        case ColorPickerProperty::cc_l: {
-            switch(curr_color_namespace) {
-                case cn_rgb: { color.setBlueF(new_val); break;}
-                case cn_hsv: {
-                    color.setHsvF(
-                        row1 -> spin -> value(),
-                        row2 -> spin -> value(),
-                        row3 -> spin -> value(),
-                        row_alpha -> spin -> value()
-                    );
-                break;}
-                case cn_hsl: {
-                    color.setHslF(
-                        row1 -> spin -> value(),
-                        row2 -> spin -> value(),
-                        row3 -> spin -> value(),
-                        row_alpha -> spin -> value()
-                    );
-                break;}
-                case cn_hvb: {
-                    qreal s, v;
-
-                    hwbToHsv(row2 -> spin -> value(), row3 -> spin -> value(), s, v);
-
-                    color.setHsvF(
-                        row1 -> spin -> value(),
-                        s,
-                        v,
-                        row_alpha -> spin -> value()
-                    );
-                break;}
-
-                default:;
-            }
-        break;}
-        case ColorPickerProperty::cc_c:
-        case ColorPickerProperty::cc_m:
-        case ColorPickerProperty::cc_y:
-        case ColorPickerProperty::cc_k: {
-            color.setCmykF(
-                row1 -> spin -> value(),
-                row2 -> spin -> value(),
-                row3 -> spin -> value(),
-                row4 -> spin -> value(),
-                row_alpha -> spin -> value()
-            );
-        break;}
-
-        default:;
-    }
+    color.setComponent(color_space, static_cast<Color::Component>(component), new_val, color_metric);
 
     setColor(color);
 }
 
 void ColorPicker::colorSpaceChanged(const int & new_namespace) {
-    if (curr_color_namespace == new_namespace)
+    if (color_space == new_namespace)
         return;
 
     switch(new_namespace) {
-        case cn_rgb: {
-            current_color = current_color.convertTo(QColor::Rgb);
-
-            row1 -> change(ColorPickerProperty::cc_r, 1, true); // 255
-            row2 -> change(ColorPickerProperty::cc_g, 1, true); // 255
-            row3 -> change(ColorPickerProperty::cc_b, 1, true); // 255
+        case Color::Rgb: {
+            row1 -> change(Color::cc_rgb_r, color_metric);
+            row2 -> change(Color::cc_rgb_g, color_metric);
+            row3 -> change(Color::cc_rgb_b, color_metric);
         break;}
 
-        case cn_hsv: {
-            current_color = current_color.convertTo(QColor::Hsv);
-
-            row1 -> change(ColorPickerProperty::cc_h, 1, true); // 359
-            row2 -> change(ColorPickerProperty::cc_s, 1, true); // 255
-            row3 -> change(ColorPickerProperty::cc_v, 1, true); // 255
+        case Color::Hsv: {
+            row1 -> change(Color::cc_hsv_h, color_metric);
+            row2 -> change(Color::cc_hsv_s, color_metric);
+            row3 -> change(Color::cc_hsv_v, color_metric);
         break;}
 
-        case cn_hsl: {
-            current_color = current_color.convertTo(QColor::Hsl);
-
-            row1 -> change(ColorPickerProperty::cc_h, 1, true); // 359
-            row2 -> change(ColorPickerProperty::cc_s, 1, true); // 255
-            row3 -> change(ColorPickerProperty::cc_l, 1, true); // 255
+        case Color::Hsl: {
+            row1 -> change(Color::cc_hsl_h, color_metric);
+            row2 -> change(Color::cc_hsl_s, color_metric);
+            row3 -> change(Color::cc_hsl_l, color_metric);
         break;}
 
-        case cn_cmyk: {
-            current_color = current_color.convertTo(QColor::Cmyk);
-
-            row1 -> change(ColorPickerProperty::cc_c, 1, true); // 255
-            row2 -> change(ColorPickerProperty::cc_m, 1, true); // 255
-            row3 -> change(ColorPickerProperty::cc_y, 1, true); // 255
-            row4 -> change(ColorPickerProperty::cc_k, 1, true); // 255
+        case Color::Cmyk: {
+            row1 -> change(Color::cc_cmyk_c, color_metric);
+            row2 -> change(Color::cc_cmyk_m, color_metric);
+            row3 -> change(Color::cc_cmyk_y, color_metric);
+            row4 -> change(Color::cc_cmyk_k, color_metric);
         break;}
 
-        case cn_hvb: {
-            current_color = current_color.convertTo(QColor::Hsv);
-
-            row1 -> change(ColorPickerProperty::cc_h, 1, true); // 255
-            row2 -> change(ColorPickerProperty::cc_v, 1, true); // 255
-            row3 -> change(ColorPickerProperty::cc_b, 1, true); // 255
+        case Color::Hwb: {
+            row1 -> change(Color::cc_hwb_h, color_metric);
+            row2 -> change(Color::cc_hwb_w, color_metric);
+            row3 -> change(Color::cc_hwb_b, color_metric);
         break;}
 
         default: Logger::obj().write(QLatin1Literal("ColorPicker"), QLatin1Literal("colorSpaceChanged: unknown namespace"), Logger::log_error);
     };
 
-    row4 -> setVisible(new_namespace == cn_cmyk);
-    curr_color_namespace = static_cast<ColorNamespace>(new_namespace);
+    row4 -> setVisible(new_namespace == Color::Cmyk);
+    color_space = static_cast<Color::Namespace>(new_namespace);
+    current_color = current_color.convertTo(color_space);
     setColor(current_color);
 }
 

@@ -14,12 +14,15 @@ class ColorButton;
 class ColorPicker : public QWidget {
     Q_OBJECT
 
-    Color::Spec curr_color_namespace;
+    Color current_color;
+    Color::Namespace color_space;
+    Color::Metric color_metric;
 
     ColorButton * curr_color_item;
 //    QLabel * colors_space;
 
     QComboBox * hex_name;
+    QComboBox * metrics_list;
 
     ColorPickerProperty * row1;
     ColorPickerProperty * row2;
@@ -27,28 +30,21 @@ class ColorPicker : public QWidget {
     ColorPickerProperty * row4;
     ColorPickerProperty * row_alpha;
 
-    QColor current_color;
-
     void setuplayout();
 public:
     ColorPicker(QWidget * parent = nullptr);
-    void setColor(const QColor & color);
+    void setColor(const Color & color);
     inline void setCurrentColorButton(ColorButton * clr_btn) {
         curr_color_item = clr_btn;
         setColor(current_color);
     }
 protected:
-    void changeColorOutputs(QColor color);
-
-    void hwbToHsv(const qreal & w, const qreal & b, qreal & s, qreal & v) {
-        s = 1.0 - (w / (1.0 - b));
-        v = 1.0 - b;
-    }
+    void changeColorOutputs(Color color);
 
 public slots:
     void colorPickingRequired();
-
 private slots:
+    void metricSelectionChanged(int index);
     void componentChanged(const int & component, const qreal & new_val);
     void colorSpaceChanged(const int & new_namespace);
     void hexChanged(const QString &);
