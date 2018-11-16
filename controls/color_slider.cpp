@@ -20,20 +20,20 @@ void ColorSlider::resizeEvent(QResizeEvent * e) {
 }
 
 void ColorSlider::calcBackground() {
-    QPixmap p(width(), height());
+//    QPixmap p(width(), height());
 
-    QPainter painter(&p);
+//    QPainter painter(&p);
 
-    QColor c;
+//    QColor c;
 
-    int namespace_id = property("namespace_id").toInt();
-    int component_id = property("component_id").toInt();
+//    int namespace_id = property("namespace_id").toInt();
+//    int component_id = property("component_id").toInt();
 
-//    for(int i = 0; i < width(); i++) {
-//        switch(component_id) {
-//            case
-//        }
-//    }
+////    for(int i = 0; i < width(); i++) {
+////        switch(component_id) {
+////            case
+////        }
+////    }
 
-    jstyle -> setBackground(p);
+//    jstyle -> setBackground(p);
 }

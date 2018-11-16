@@ -1,5 +1,7 @@
 #include "color.h"
 
+#include <qdebug.h>
+
 QLatin1String Color::componentName(const Component & c) {
     switch(c) {
         case cc_alpha: return QLatin1Literal("A");
@@ -86,18 +88,24 @@ void Color::getHsv(qreal & h, qreal & s, qreal & v, qreal & a, const Metric & me
     }
 }
 void Color::getCmyk(qreal & c, qreal & m, qreal & y, qreal & k, qreal & a, const Metric & metric) const {
+    QColor col = *this;
+
     switch(metric) {
         case cm_percentage: {
-            c = QColor::cyanF(); m = QColor::magentaF(); y = QColor::yellowF(); k = QColor::blackF();
+            col.getCmykF(&c, &m, &y, &k, &a);
             c *= 100.0; m *= 100.0; y *= 100.0; k *= 100.0; a *= 100.0;
         break;}
 
         case cm_proportional: {
-            c = QColor::cyanF(); m = QColor::magentaF(); y = QColor::yellowF(); k = QColor::blackF();
+            col.getCmykF(&c, &m, &y, &k, &a);
         break;}
 
         case cm_ranged: {
-            c = QColor::cyan(); m = QColor::magenta(); y = QColor::yellow(); k = QColor::black();
+            int cc, mm, yy, kk, aa;
+
+            col.getCmyk(&cc, &mm, &yy, &kk, &aa);
+
+            c = cc; m = mm; y = yy; k = kk; a = aa;
         break;}
 
         default: {
