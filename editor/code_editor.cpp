@@ -577,6 +577,7 @@ void CodeEditor::showFoldingContentPopup(const QTextBlock & block) {
         if (!place_after)
             popup_rect.translate(0, potential_height);
 
+        //TODO: need remove this
         pixmap = pixmap.copy(0, 0, pixmap.width(), popup_rect.height());
     }
 

@@ -3,6 +3,8 @@
 
 #include <qwidget.h>
 
+#include "misc/color.h"
+
 class QLabel;
 class ColorPickerProperty;
 class QToolButton;
@@ -12,24 +14,9 @@ class ColorButton;
 class ColorPicker : public QWidget {
     Q_OBJECT
 
-    enum ColorNamespace {
-        cn_none = 0,
-        cn_rgb,
-        cn_cmyk,
-        cn_hsv,
-        cn_hsl,
-        cn_hvb
-    };
-
-    enum PropertyMetric {
-        pm_none = 0,
-        pm_proportional, // 0..1
-        pm_ranged, // 0..255
-        pm_percentage // 0..100%
-    };
+    Color::Spec curr_color_namespace;
 
     ColorButton * curr_color_item;
-    ColorNamespace curr_color_namespace;
 //    QLabel * colors_space;
 
     QComboBox * hex_name;

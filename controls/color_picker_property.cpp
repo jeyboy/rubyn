@@ -1,6 +1,6 @@
 #include "color_picker_property.h"
 
-#include "jslider_style.h"
+#include "color_slider.h"
 
 #include <qlayout.h>
 #include <qdebug.h>
@@ -18,12 +18,7 @@ ColorPickerProperty::ColorPickerProperty(QWidget * parent) : QWidget(parent) {
     label -> setFont(f);
     l -> addWidget(label);
 
-    slider = new QSlider(this);
-    slider -> setMinimum(0);
-    slider -> setMinimumWidth(80);
-    slider -> setOrientation(Qt::Horizontal);
-    slider -> setStyle(new JSliderStyle(slider -> style()));
-
+    slider = new ColorSlider(this);
     l -> addWidget(slider, 1);
 
     spin = new QDoubleSpinBox(this);
@@ -38,6 +33,7 @@ ColorPickerProperty::ColorPickerProperty(QWidget * parent) : QWidget(parent) {
 
 void ColorPickerProperty::change(const ColorComponent & new_comp, const int & new_max, const bool & with_precision) {
     comp = new_comp;
+    slider -> setProperty("component_id", new_comp);
 
     switch(comp) {
         case cc_none: { label -> setText(QLatin1Literal("None")); break;}

@@ -17,7 +17,8 @@ void JSliderStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 if (groove_rect.isValid()) {
                     painter -> save();
                     painter -> setRenderHint(QPainter::Antialiasing);
-                    painter -> setBrush(QColor(255, 0, 0, 32));
+//                    painter -> setBrush(QColor(255, 0, 0, 32));
+                    painter -> setBrush(QBrush(background));
                     painter -> drawRoundedRect(groove_rect, 8, 8);
                     painter -> restore();
                 }
@@ -62,9 +63,9 @@ QRect JSliderStyle::subControlRect(ComplexControl control, const QStyleOptionCom
                 case SC_SliderHandle: {
                     bool is_horizontal = slider -> orientation == Qt::Horizontal;
 
-                    int slider_pos = sliderPositionFromValue(slider -> minimum, slider -> maximum + 1, slider -> sliderPosition,
-                                                        (is_horizontal ? slider -> rect.width() : slider -> rect.height()) - len,
-                                                        slider -> upsideDown);
+                    int slider_pos = sliderPositionFromValue(slider -> minimum, slider -> maximum, slider -> sliderPosition,
+                        (is_horizontal ? slider -> rect.width() : slider -> rect.height()) - len, slider -> upsideDown);
+
                     if (is_horizontal)
                         ret.setRect(slider -> rect.x() + slider_pos, slider -> rect.y() + tickOffset, len, thickness);
                     else
@@ -73,9 +74,11 @@ QRect JSliderStyle::subControlRect(ComplexControl control, const QStyleOptionCom
 
                 case SC_SliderGroove:
                     if (slider -> orientation == Qt::Horizontal)
-                        ret.setRect(slider -> rect.x() + 1, slider -> rect.y() + tickOffset, slider -> rect.width() - 3, thickness);
+                        ret = widget -> rect();
+//                        ret.setRect(slider -> rect.x() + 1, slider -> rect.y() + tickOffset, slider -> rect.width() - 3, thickness);
                     else
-                        ret.setRect(slider -> rect.x() + tickOffset, slider -> rect.y(), thickness, slider -> rect.height());
+                        ret = widget -> rect();
+//                        ret.setRect(slider -> rect.x() + tickOffset, slider -> rect.y(), thickness, slider -> rect.height());
                     break;
 
                 default:;
