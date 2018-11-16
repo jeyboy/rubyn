@@ -24,7 +24,7 @@ QLatin1String Color::componentName(const Component & c) {
     }
 }
 
-int Color::componentMax(const Component & c, const Metric & metric) {
+qreal Color::componentMax(const Component & c, const Metric & metric) {
     if (metric == cm_ranged) {
         switch(c)  {
             case cc_hsv_h:
@@ -34,7 +34,9 @@ int Color::componentMax(const Component & c, const Metric & metric) {
             default: return 255;
         }
     }
-    else return 1000;
+    else if (metric == cm_percentage)
+        return 100.0;
+    else return 1.0;
 }
 
 void Color::getRgb(qreal & r, qreal & g, qreal & b, qreal & a, const Metric & metric) const {

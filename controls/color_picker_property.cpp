@@ -40,7 +40,8 @@ void ColorPickerProperty::change(const Color::Component & new_comp, const Color:
     qreal new_max = Color::componentMax(new_comp, metric);
 
     spin -> setMaximum(new_max);
-    slider -> setMaximum(new_max * 100);
+    spin -> setDecimals(metric == Color::cm_ranged ? 0 : 2);
+    slider -> setMaximum(static_cast<int>(new_max * 100));
 }
 
 void ColorPickerProperty::setVal(const qreal & new_val) {

@@ -171,6 +171,8 @@ void ColorPicker::colorPickingRequired() {
 
 void ColorPicker::metricSelectionChanged(int index) {
     color_metric = static_cast<Color::Metric>(metrics_list -> itemData(index).toInt());
+
+    colorSpaceChanged(color_space);
     changeColorOutputs(current_color);
 }
 
@@ -183,9 +185,6 @@ void ColorPicker::componentChanged(const int & component, const qreal & new_val)
 }
 
 void ColorPicker::colorSpaceChanged(const int & new_namespace) {
-    if (color_space == new_namespace)
-        return;
-
     switch(new_namespace) {
         case Color::Rgb: {
             row1 -> change(Color::cc_rgb_r, color_metric);
@@ -220,6 +219,8 @@ void ColorPicker::colorSpaceChanged(const int & new_namespace) {
 
         default: Logger::obj().write(QLatin1Literal("ColorPicker"), QLatin1Literal("colorSpaceChanged: unknown namespace"), Logger::log_error);
     };
+
+    row_alpha -> change(Color::cc_alpha, color_metric);
 
     row4 -> setVisible(new_namespace == Color::Cmyk);
     color_space = static_cast<Color::Namespace>(new_namespace);

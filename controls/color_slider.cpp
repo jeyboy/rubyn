@@ -29,11 +29,11 @@ void ColorSlider::calcBackground() {
     int namespace_id = property("namespace_id").toInt();
     int component_id = property("component_id").toInt();
 
-    for(int i = 0; i < width(); i++) {
-        switch(component_id) {
-            case
-        }
-    }
+//    for(int i = 0; i < width(); i++) {
+//        switch(component_id) {
+//            case
+//        }
+//    }
 
     jstyle -> setBackground(p);
 }

@@ -36,7 +36,7 @@ public:
     };
 
     static QLatin1String componentName(const Component & c);
-    static int componentMax(const Component & c, const Metric & metric = cm_ranged);
+    static qreal componentMax(const Component & c, const Metric & metric = cm_ranged);
 
     inline Color() : QColor() {}
     inline Color(Qt::GlobalColor color) : QColor(color) {}
