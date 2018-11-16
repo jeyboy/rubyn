@@ -1,5 +1,7 @@
 #include "color_picker_property.h"
 
+#include "jslider_style.h"
+
 #include <qlayout.h>
 #include <qdebug.h>
 
@@ -9,12 +11,19 @@ ColorPickerProperty::ColorPickerProperty(QWidget * parent) : QWidget(parent) {
     setContentsMargins(0, 0, 0, 0);
 
     label = new QLabel(this);
+    QFont f = label -> font();
+    f.setBold(true);
+    f.setKerning(true);
+    f.setPixelSize(12);
+    label -> setFont(f);
     l -> addWidget(label);
 
     slider = new QSlider(this);
     slider -> setMinimum(0);
     slider -> setMinimumWidth(80);
     slider -> setOrientation(Qt::Horizontal);
+    slider -> setStyle(new JSliderStyle(slider -> style()));
+
     l -> addWidget(slider, 1);
 
     spin = new QDoubleSpinBox(this);

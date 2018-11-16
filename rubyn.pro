@@ -81,7 +81,8 @@ SOURCES += main.cpp\
     controls/color_picker.cpp \
     controls/color_grabber.cpp \
     controls/color_picker_property.cpp \
-    controls/color_button.cpp
+    controls/color_button.cpp \
+    controls/jslider_style.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -196,7 +197,8 @@ HEADERS  += ide_window.h \
     controls/color_picker.h \
     controls/color_grabber.h \
     controls/color_picker_property.h \
-    controls/color_button.h
+    controls/color_button.h \
+    controls/jslider_style.h
 
 FORMS    += ide_window.ui
 
