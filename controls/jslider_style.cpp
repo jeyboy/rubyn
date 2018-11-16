@@ -55,9 +55,9 @@ QRect JSliderStyle::subControlRect(ComplexControl control, const QStyleOptionCom
         if (const QStyleOptionSlider * slider = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
             QRect ret;
 
-            int tickOffset = 0;
-            int thickness = widget -> height();     // height
-            int len = thickness;           // width
+            int tick_offset = 0;
+            int thickness = handle_size;     // height
+            int len = handle_size;           // width
 
             switch (subControl) {
                 case SC_SliderHandle: {
@@ -67,18 +67,18 @@ QRect JSliderStyle::subControlRect(ComplexControl control, const QStyleOptionCom
                         (is_horizontal ? slider -> rect.width() : slider -> rect.height()) - len, slider -> upsideDown);
 
                     if (is_horizontal)
-                        ret.setRect(slider -> rect.x() + slider_pos, slider -> rect.y() + tickOffset, len, thickness);
+                        ret.setRect(slider -> rect.x() + slider_pos, slider -> rect.y() + tick_offset, len, thickness);
                     else
-                        ret.setRect(slider -> rect.x() + tickOffset, slider -> rect.y() + slider_pos, thickness, len);
+                        ret.setRect(slider -> rect.x() + tick_offset, slider -> rect.y() + slider_pos, thickness, len);
                 break;}
 
                 case SC_SliderGroove:
                     if (slider -> orientation == Qt::Horizontal)
                         ret = widget -> rect();
-//                        ret.setRect(slider -> rect.x() + 1, slider -> rect.y() + tickOffset, slider -> rect.width() - 3, thickness);
+//                        ret.setRect(slider -> rect.x() + 1, slider -> rect.y() + tick_offset, slider -> rect.width() - 3, thickness);
                     else
                         ret = widget -> rect();
-//                        ret.setRect(slider -> rect.x() + tickOffset, slider -> rect.y(), thickness, slider -> rect.height());
+//                        ret.setRect(slider -> rect.x() + tick_offset, slider -> rect.y(), thickness, slider -> rect.height());
                     break;
 
                 default:;

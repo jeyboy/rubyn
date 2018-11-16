@@ -17,6 +17,7 @@ ColorPickerProperty::ColorPickerProperty(QWidget * parent) : QWidget(parent) {
     f.setPixelSize(12);
     label -> setFont(f);
     l -> addWidget(label);
+    label -> setMinimumWidth(14);
 
     slider = new ColorSlider(this);
     l -> addWidget(slider, 1);
@@ -42,6 +43,7 @@ void ColorPickerProperty::change(const Color::Component & new_comp, const Color:
     spin -> setMaximum(new_max);
     spin -> setDecimals(metric == Color::cm_ranged ? 0 : 2);
     slider -> setMaximum(static_cast<int>(new_max * 100));
+    slider -> calcBackground(true);
 }
 
 void ColorPickerProperty::setVal(const qreal & new_val) {

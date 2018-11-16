@@ -2,6 +2,7 @@
 #define COLOR_H
 
 #include <qcolor.h>
+#include <qdebug.h>
 
 class Color : public QColor {
 public:
@@ -46,6 +47,7 @@ public:
     inline Color(QLatin1String name) : QColor(name) {}
     inline Color(const QColor & color) : QColor(color) {}
     inline Color(QColor && color) : QColor(color) {}
+    inline Color(const Component & component) : QColor(componentToSpec(component)) {}
 
     inline QColor & operator=(QColor && color) { return QColor::operator=(color); }
     inline QColor & operator=(const QColor & color) { return QColor::operator=(color); }
@@ -56,11 +58,11 @@ public:
     void getHsl(qreal & h, qreal & s, qreal & l, qreal & a, const Metric & metric = cm_ranged) const;
     void getHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & metric = cm_ranged) const;
 
-    void setRgb(qreal & r, qreal & g, qreal & b, qreal & a, const Metric & metric = cm_ranged);
-    void setHsv(qreal & h, qreal & s, qreal & v, qreal & a, const Metric & metric = cm_ranged);
-    void setCmyk(qreal & c, qreal & m, qreal & y, qreal & k, qreal & a, const Metric & metric = cm_ranged);
-    void setHsl(qreal & h, qreal & s, qreal & l, qreal & a, const Metric & metric = cm_ranged);
-    void setHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & metric = cm_ranged);
+    void setRgb(const qreal & r, const qreal & g, const qreal & b, const qreal & a, const Metric & metric = cm_ranged);
+    void setHsv(const qreal & h, const qreal & s, const qreal & v, const qreal & a, const Metric & metric = cm_ranged);
+    void setCmyk(const qreal & c, const qreal & m, const qreal & y, const qreal & k, const qreal & a, const Metric & metric = cm_ranged);
+    void setHsl(const qreal & h, const qreal & s, const qreal & l, const qreal & a, const Metric & metric = cm_ranged);
+    void setHwb(const qreal & h, const qreal & w, const qreal & b, const qreal & a, const Metric & metric = cm_ranged);
 
     void setComponent(const Namespace & color_space, const Component & c, const qreal & val, const Metric & metric = cm_ranged);
     void setComponents(const Namespace & color_space, qreal & c1, qreal & c2, qreal & c3, qreal & c4, qreal & a, const Metric & metric = cm_ranged);
@@ -69,13 +71,20 @@ public:
     Color convertTo(const Namespace & color_space) const Q_DECL_NOTHROW;
 
 private:
+    QColor::Spec componentToSpec(const Component & component);
+
     inline void hsvToHwb(const qreal & s, const qreal & v, qreal & w, qreal & b) const {
         w = (1.0 - s) * v;
         b = 1.0 - v;
     }
     inline void hwbToHsv(const qreal & w, const qreal & b, qreal & s, qreal & v) const {
-        s = 1.0 - (w / (1.0 - b));
         v = 1.0 - b;
+        s = b == 1.0 ? 0 : (1.0 - w / v);
+
+        if (s < 0) {
+            v += s;
+            s = -s;
+        }
     }
 };
 

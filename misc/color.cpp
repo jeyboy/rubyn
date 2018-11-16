@@ -162,7 +162,7 @@ void Color::getHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & me
     }
 }
 
-void Color::setRgb(qreal & r, qreal & g, qreal & b, qreal & a, const Metric & metric) {
+void Color::setRgb(const qreal & r, const qreal & g, const qreal & b, const qreal & a, const Metric & metric) {
     switch(metric) {
         case cm_percentage: {
             QColor::setRgbF(r / 100.0, g / 100.0, b / 100.0, a / 100.0);
@@ -179,7 +179,7 @@ void Color::setRgb(qreal & r, qreal & g, qreal & b, qreal & a, const Metric & me
         default:;
     }
 }
-void Color::setHsv(qreal & h, qreal & s, qreal & v, qreal & a, const Metric & metric) {
+void Color::setHsv(const qreal & h, const qreal & s, const qreal & v, const qreal & a, const Metric & metric) {
     switch(metric) {
         case cm_percentage: {
             QColor::setHsvF(h / 100.0, s / 100.0, v / 100.0, a / 100.0);
@@ -196,7 +196,7 @@ void Color::setHsv(qreal & h, qreal & s, qreal & v, qreal & a, const Metric & me
         default:;
     }
 }
-void Color::setCmyk(qreal & c, qreal & m, qreal & y, qreal & k, qreal & a, const Metric & metric) {
+void Color::setCmyk(const qreal & c, const qreal & m, const qreal & y, const qreal & k, const qreal & a, const Metric & metric) {
     switch(metric) {
         case cm_percentage: {
             QColor::setCmykF(c / 100.0, m / 100.0, y / 100.0, k / 100.0, a / 100.0);
@@ -213,7 +213,7 @@ void Color::setCmyk(qreal & c, qreal & m, qreal & y, qreal & k, qreal & a, const
         default:;
     }
 }
-void Color::setHsl(qreal & h, qreal & s, qreal & l, qreal & a, const Metric & metric) {
+void Color::setHsl(const qreal & h, const qreal & s, const qreal & l, const qreal & a, const Metric & metric) {
     switch(metric) {
         case cm_percentage: {
             QColor::setHslF(h / 100.0, s / 100.0, l / 100.0, a / 100.0);
@@ -230,19 +230,21 @@ void Color::setHsl(qreal & h, qreal & s, qreal & l, qreal & a, const Metric & me
         default:;
     }
 }
-void Color::setHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & metric) {
+void Color::setHwb(const qreal & h, const qreal & w, const qreal & b, const qreal & a, const Metric & metric) {
+    qreal hh = h, ww = w, bb = b, aa = a;
+
     switch(metric) {
         case cm_percentage: {
-            h /= 100.0; w /= 100.0; b /= 100.0; a /= 100.0;
+            hh /= 100.0; ww /= 100.0; bb /= 100.0; aa /= 100.0;
         break;}
 
         case cm_proportional: { break;}
 
         case cm_ranged: {
-            h /= componentMax(cc_hwb_h);
-            w /= componentMax(cc_hwb_w);
-            b /= componentMax(cc_hwb_b);
-            a /= componentMax(cc_alpha);
+            hh /= componentMax(cc_hwb_h);
+            ww /= componentMax(cc_hwb_w);
+            bb /= componentMax(cc_hwb_b);
+            aa /= componentMax(cc_alpha);
         break;}
 
         default: { return; }
@@ -250,9 +252,9 @@ void Color::setHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & me
 
     qreal s, v;
 
-    hwbToHsv(w, b, s, v);
+    hwbToHsv(ww, bb, s, v);
 
-    setHsv(h, s, v, a, cm_proportional);
+    setHsv(hh, s, v, aa, cm_proportional);
 }
 
 void Color::setComponent(const Namespace & color_space, const Component & c, const qreal & val, const Metric & metric) {
@@ -327,4 +329,28 @@ Color Color::convertTo(const Namespace & color_space) const Q_DECL_NOTHROW {
             return QColor::convertTo(spec);
         }
     }
+}
+
+QColor::Spec Color::componentToSpec(const Component & component) {
+    switch(component) {
+        case cc_alpha: return QColor::Rgb;
+        case cc_rgb_r: return QColor::Rgb;
+        case cc_rgb_g: return QColor::Rgb;
+        case cc_rgb_b: return QColor::Rgb;
+        case cc_hsv_h: return QColor::Hsv;
+        case cc_hsv_s: return QColor::Hsv;
+        case cc_hsv_v: return QColor::Hsv;
+        case cc_hsl_h: return QColor::Hsl;
+        case cc_hsl_s: return QColor::Hsl;
+        case cc_hsl_l: return QColor::Hsl;
+        case cc_hwb_h: return QColor::Hsv;
+        case cc_hwb_w: return QColor::Hsv;
+        case cc_hwb_b: return QColor::Hsv;
+        case cc_cmyk_c: return QColor::Cmyk;
+        case cc_cmyk_m: return QColor::Cmyk;
+        case cc_cmyk_y: return QColor::Cmyk;
+        case cc_cmyk_k: return QColor::Cmyk;
+
+        default: return QColor::Invalid;
+    };
 }

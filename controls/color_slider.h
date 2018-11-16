@@ -11,10 +11,11 @@ class ColorSlider : public QSlider {
     JSliderStyle * jstyle;
 public:
     explicit ColorSlider(QWidget * parent = nullptr);
+
+    void calcBackground(const bool & updating = false);
 protected:
     void resizeEvent(QResizeEvent * e);
 
-    void calcBackground();
 signals:
 
 public slots:
