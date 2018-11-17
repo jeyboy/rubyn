@@ -312,8 +312,6 @@ void ProjectTree::showContextMenu(const QPoint & point) {
 
     menu.addSeparator();
 
-
-
     menu.exec(mapToGlobal(point));
 }
 

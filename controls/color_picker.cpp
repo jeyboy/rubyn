@@ -181,10 +181,16 @@ void ColorPicker::colorPickingRequired() {
 }
 
 void ColorPicker::metricSelectionChanged(int index) {
+    const QSignalBlocker blocker1(row1);
+    const QSignalBlocker blocker2(row2);
+    const QSignalBlocker blocker3(row3);
+    const QSignalBlocker blocker4(row4);
+    const QSignalBlocker blockera(row_alpha);
+    const QSignalBlocker blocker_hex(hex_name);
+
     color_metric = static_cast<Color::Metric>(metrics_list -> itemData(index).toInt());
 
     colorSpaceChanged(color_space);
-    changeColorOutputs(current_color);
 }
 
 void ColorPicker::componentChanged(const int & component, const qreal & new_val) {
