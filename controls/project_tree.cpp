@@ -292,20 +292,20 @@ void ProjectTree::showContextMenu(const QPoint & point) {
     QTreeWidgetItem * curr_item = itemAt(point);
 //    [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); }
 
-    QAction action1("Collapse All", this);
+    QAction action1(QIcon(QLatin1Literal(":/menu/collapse_all")), "Collapse All", this);
     connect(&action1, SIGNAL(triggered()), this, SLOT(collapseAll()));
     menu.addAction(&action1);
 
-    QAction action2("Expand All", this);
+    QAction action2(QIcon(QLatin1Literal(":/menu/expand_all")), "Expand All", this);
     connect(&action2, SIGNAL(triggered()), this, SLOT(expandAll()));
     menu.addAction(&action2);
 
     if (curr_item && curr_item -> childCount() > 0) {
-        QAction * action3 = new QAction("Collapse children", &menu);
+        QAction * action3 = new QAction(QIcon(QLatin1Literal(":/menu/collapse")), "Collapse children", &menu);
         connect(action3, SIGNAL(triggered()), this, SLOT(collapseChildren()));
         menu.addAction(action3);
 
-        QAction * action4 = new QAction("Expand children", &menu);
+        QAction * action4 = new QAction(QIcon(QLatin1Literal(":/menu/expand")), "Expand children", &menu);
         connect(action4, SIGNAL(triggered()), this, SLOT(expandChildren()));
         menu.addAction(action4);
     }

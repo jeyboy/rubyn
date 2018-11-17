@@ -81,4 +81,10 @@
         <file alias="class">icons/completer/comp_class.png</file>
         <file alias="module">icons/completer/comp_module.png</file>
     </qresource>
+    <qresource prefix="/menu">
+        <file alias="collapse">icons/collapse.png</file>
+        <file alias="collapse_all">icons/collapse_all.png</file>
+        <file alias="expand">icons/expand.png</file>
+        <file alias="expand_all">icons/expand_all.png</file>
+    </qresource>
 </RCC>
