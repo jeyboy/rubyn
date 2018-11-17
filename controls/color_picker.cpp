@@ -7,11 +7,16 @@
 
 #include "misc/defines.h"
 #include "logger.h"
+#include "color_grabber.h"
 #include "color_button.h"
 #include "color_picker_property.h"
 
-ColorPicker::ColorPicker(QWidget * parent) : QWidget(parent), curr_color_item(nullptr) {
+ColorPicker::ColorPicker(QWidget * parent) : QWidget(parent), grabber(nullptr), curr_color_item(nullptr) {
     setuplayout();
+}
+
+ColorPicker::~ColorPicker() {
+    delete grabber;
 }
 
 void ColorPicker::setColor(const Color & color) {
@@ -166,7 +171,13 @@ void ColorPicker::changeColorOutputs(Color color) {
 }
 
 void ColorPicker::colorPickingRequired() {
+    if (!grabber) {
+        grabber = new ColorGrabber();
+        connect(grabber, SIGNAL(colorHovered(const QRgb &)), this, SLOT(colorHovered(const QRgb &)));
+    }
 
+    grabber -> initiate();
+    grabber -> show();
 }
 
 void ColorPicker::metricSelectionChanged(int index) {
@@ -231,3 +242,5 @@ void ColorPicker::colorSpaceChanged(const int & new_namespace) {
 void ColorPicker::hexChanged(const QString & name) {
     setColor(QColor(name));
 }
+
+void ColorPicker::colorHovered(const QRgb & rgb) { setColor(QColor(rgb)); }

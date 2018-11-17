@@ -10,6 +10,7 @@ class ColorPickerProperty;
 class QToolButton;
 class QComboBox;
 class ColorButton;
+class ColorGrabber;
 
 class ColorPicker : public QWidget {
     Q_OBJECT
@@ -18,6 +19,7 @@ class ColorPicker : public QWidget {
     Color::Namespace color_space;
     Color::Metric color_metric;
 
+    ColorGrabber * grabber;
     ColorButton * curr_color_item;
 //    QLabel * colors_space;
 
@@ -33,6 +35,8 @@ class ColorPicker : public QWidget {
     void setuplayout();
 public:
     ColorPicker(QWidget * parent = nullptr);
+    ~ColorPicker();
+
     void setColor(const Color & color);
     inline void setCurrentColorButton(ColorButton * clr_btn) {
         curr_color_item = clr_btn;
@@ -48,6 +52,7 @@ private slots:
     void componentChanged(const int & component, const qreal & new_val);
     void colorSpaceChanged(const int & new_namespace);
     void hexChanged(const QString &);
+    void colorHovered(const QRgb & rgb);
 };
 
 #endif // COLOR_PICKER_H
