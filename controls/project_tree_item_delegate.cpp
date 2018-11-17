@@ -7,6 +7,13 @@
 ProjectTreeItemDelegate::ProjectTreeItemDelegate() {}
 
 void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const {
+    QVariant brush_var = index.data(Qt::UserRole + 20);
+
+    if (brush_var.isValid()) {
+        QBrush brush = qvariant_cast<QBrush>(brush_var);
+        painter -> fillRect(option.rect.adjusted(-option.rect.left(), 0, 0, 0), brush);
+    }
+
     QStyledItemDelegate::paint(painter, option, index);
 
     if (option.widget -> property("in_search").toBool()) {

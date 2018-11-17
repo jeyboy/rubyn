@@ -39,7 +39,7 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path, QC
         item -> setToolTip(0, name);
 
         if (color) {
-            item -> setBackgroundColor(0, *color);
+            item -> setData(0, Qt::UserRole + 20, *color);
         }
     }
 }
@@ -64,7 +64,7 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
     }
 
     if (color) {
-        view_item -> setBackgroundColor(0, *color);
+        view_item -> setData(0, Qt::UserRole + 20, *color);
     }
 
 //        (Folder *)view_item -> data(0, Qt::UserRole).value<void *>() -> name();
@@ -91,11 +91,11 @@ RecursiveFolder::RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent
 
     if (!color) {
         color = identifyColor(ico_type);
-        color_clearing_required = color != 0;
+        color_clearing_required = color != nullptr;
     }
 
     if (color) {
-        curr_view_item -> setBackgroundColor(0, *color);
+        curr_view_item -> setData(0, Qt::UserRole + 20, *color);
     }
 
     proc(curr_view_item, fullPath(), color, level);

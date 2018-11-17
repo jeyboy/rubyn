@@ -9,7 +9,7 @@ class RecursiveFolder : public IFolder {
     void proc(QTreeWidgetItem * view_parent, const QString & path, QColor * color = nullptr, const uint & level = 0);
 public:
     RecursiveFolder(const QString & path, QColor * color = nullptr);
-    RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent, const QString & name, const uint & level, QColor * color = 0);
+    RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent, const QString & name, const uint & level, QColor * color = nullptr);
 };
 
 #endif // RECURSIVE_FOLDER_H
