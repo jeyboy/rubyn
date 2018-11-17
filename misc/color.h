@@ -1,8 +1,9 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+//https://github.com/dmilos/color
+
 #include <qcolor.h>
-#include <qdebug.h>
 
 class Color : public QColor {
 public:
@@ -69,7 +70,6 @@ public:
     void getComponents(const Namespace & color_space, qreal & c1, qreal & c2, qreal & c3, qreal & c4, qreal & a, const Metric & metric = cm_ranged) const;
 
     Color convertTo(const Namespace & color_space) const Q_DECL_NOTHROW;
-
 private:
     QColor::Spec componentToSpec(const Component & component);
 

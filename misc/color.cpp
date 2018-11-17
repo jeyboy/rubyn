@@ -1,7 +1,5 @@
 #include "color.h"
 
-#include <qdebug.h>
-
 QLatin1String Color::componentName(const Component & c) {
     switch(c) {
         case cc_alpha: return QLatin1Literal("A");
