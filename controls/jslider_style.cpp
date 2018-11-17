@@ -35,8 +35,13 @@ void JSliderStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 if (handle_rect.isValid()) {
                     painter -> save();
                     painter -> setRenderHint(QPainter::Antialiasing);
-                    painter -> setBrush(QColor(0, 255, 0, 128));
+                    painter -> setPen(QColor(0, 0, 0));
                     painter -> drawEllipse(handle_rect);
+
+                    painter -> setPen(QColor(0, 0, 0));
+                    painter -> setBrush(QColor(255, 255, 255, 192));
+                    painter -> drawEllipse(handle_rect.adjusted(1, 1, -1, -1));
+
                     painter -> restore();
                 }
 
