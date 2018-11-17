@@ -50,6 +50,10 @@ public slots:
 
     bool search(const QString & pattern);
     void clearSearch();
+private slots:
+    void showContextMenu(const QPoint & point);
+    void collapseChildren(QTreeWidgetItem * curr_item = nullptr);
+    void expandChildren(QTreeWidgetItem * curr_item = nullptr);
 };
 
 #endif // PROJECT_TREE_H

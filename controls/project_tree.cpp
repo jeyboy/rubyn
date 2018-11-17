@@ -1,6 +1,7 @@
 #include "project_tree.h"
 
 #include <qevent.h>
+#include <qmenu.h>
 #include <qjsonobject.h>
 
 #include "tools/json/json.h"
@@ -10,6 +11,7 @@
 ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setHeaderHidden(true);
     setAutoScroll(false);
+    setContextMenuPolicy(Qt::CustomContextMenu);
 
     QFont f(font());
     f.setPointSize(11);
@@ -19,6 +21,7 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setIconSize(QSize(22, 22));
 
     connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*,int)));
+    connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu(const QPoint &)));
 
 //    setSortingEnabled(true);
 //    sortByColumn(0, Qt::AscendingOrder);
@@ -281,4 +284,67 @@ void ProjectTree::clearSearch() {
     clearSearch(invisibleRootItem());
 
     scrollToItem(currentItem(), PositionAtCenter);
+}
+
+void ProjectTree::showContextMenu(const QPoint & point) {
+    QMenu menu(this);
+
+    QTreeWidgetItem * curr_item = itemAt(point);
+//    [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); }
+
+    QAction action1("Collapse All", this);
+    connect(&action1, SIGNAL(triggered()), this, SLOT(collapseAll()));
+    menu.addAction(&action1);
+
+    QAction action2("Expand All", this);
+    connect(&action2, SIGNAL(triggered()), this, SLOT(expandAll()));
+    menu.addAction(&action2);
+
+    if (curr_item && curr_item -> childCount() > 0) {
+        QAction * action3 = new QAction("Collapse children", &menu);
+        connect(action3, SIGNAL(triggered()), this, SLOT(collapseChildren()));
+        menu.addAction(action3);
+
+        QAction * action4 = new QAction("Expand children", &menu);
+        connect(action4, SIGNAL(triggered()), this, SLOT(expandChildren()));
+        menu.addAction(action4);
+    }
+
+    menu.addSeparator();
+
+
+
+    menu.exec(mapToGlobal(point));
+}
+
+void ProjectTree::collapseChildren(QTreeWidgetItem * curr_item) {
+    if (!curr_item)
+        curr_item = currentItem();
+
+    if (!curr_item) return;
+
+    int child_count = curr_item -> childCount();
+
+    for(int i = 0; i < child_count; i++) {
+        QTreeWidgetItem * child = curr_item -> child(i);
+
+        child -> setExpanded(false);
+        collapseChildren(child);
+    }
+}
+
+void ProjectTree::expandChildren(QTreeWidgetItem * curr_item) {
+    if (!curr_item)
+        curr_item = currentItem();
+
+    if (!curr_item) return;
+
+    int child_count = curr_item -> childCount();
+
+    for(int i = 0; i < child_count; i++) {
+        QTreeWidgetItem * child = curr_item -> child(i);
+
+        child -> setExpanded(true);
+        expandChildren(child);
+    }
 }

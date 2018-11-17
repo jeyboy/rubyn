@@ -67,17 +67,17 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
     }
 }
 
-QSize ProjectTreeItemDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const {
-//    QStyleOptionViewItem optionV4 = option;
-//    initStyleOption(&optionV4, index);
+//QSize ProjectTreeItemDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const {
+////    QStyleOptionViewItem optionV4 = option;
+////    initStyleOption(&optionV4, index);
 
 
-//    QTextDocument doc;
-//    doc.setHtml(optionV4.text);
-//    doc.setTextWidth(optionV4.rect.width());
-//    return QSize(doc.idealWidth(), doc.size().height());
+////    QTextDocument doc;
+////    doc.setHtml(optionV4.text);
+////    doc.setTextWidth(optionV4.rect.width());
+////    return QSize(doc.idealWidth(), doc.size().height());
 
-    return QStyledItemDelegate::sizeHint(option, index);
-}
+//    return QStyledItemDelegate::sizeHint(option, index);
+//}
 
 
