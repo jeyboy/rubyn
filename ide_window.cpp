@@ -378,22 +378,23 @@ void IDEWindow::setupToolWindows() {
 
 
     color_picker = new ColorPicker(this);
-    widget =
+    DockWidget * color_picker_widget =
         DockWidgets::obj().createWidget(
             QLatin1Literal("Color"),
             color_picker,
             (Qt::DockWidgetAreas)(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea)
         );
 
-    widget -> setBehaviour(DockWidget::dwf_movable);
+    color_picker_widget -> setBehaviour((DockWidget::Features)(DockWidget::dwf_movable | DockWidget::dwf_closable));
 
-    DockWidgets::obj().append(widget);
+    DockWidgets::obj().append(color_picker_widget);
 
     ColorButton * curr_color_btn = new ColorButton(this);
-    widget -> insertHeaderButton(curr_color_btn, nullptr, nullptr, 0);
+    color_picker_widget -> insertHeaderButton(curr_color_btn, nullptr, nullptr, 0);
     curr_color_btn -> setDisabled(true);
     color_picker -> setCurrentColorButton(curr_color_btn);
-    widget -> insertHeaderButton(QIcon(":/tools/color_picker"), color_picker, SLOT(colorPickingRequired()), 1);
+    color_picker_widget -> insertHeaderButton(QIcon(":/tools/color_picker"), color_picker, SLOT(colorPickingRequired()), 1);
+    color_picker_widget -> hide();
 
 
 
@@ -421,7 +422,7 @@ void IDEWindow::setupToolWindows() {
     control_bar -> addSeparator();
 
     QAction * _color_picker = control_bar -> addAction(QIcon(QLatin1Literal(":/tools/color_picker")), QLatin1Literal());
-    _color_picker -> setDisabled(true);
+    connect(_color_picker, &QAction::triggered, [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); });
 
     control_bar -> addSeparator();
 

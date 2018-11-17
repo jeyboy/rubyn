@@ -1,6 +1,7 @@
 #include "dock_widget.h"
 
 #include <qevent.h>
+#include <qtoolbutton.h>
 //#include <qdatetime.h>
 
 #include "header_dock_widget.h"
@@ -16,6 +17,18 @@ DockWidget::DockWidget(const QString & title, QWidget * parent, const Qt::DockWi
     setObjectName(title);
     setAllowedAreas(areas);
     setFeatures(QDockWidget::NoDockWidgetFeatures);
+}
+
+void DockWidget::setBehaviour(const Features & params) {
+    if (params & dwf_destroyable)
+        setAttribute(Qt::WA_DeleteOnClose, true);
+
+    if (params & dwf_closable) {
+        QToolButton * cls_btn = insertHeaderButton(QIcon(QLatin1Literal(":/tools/close")), this, SLOT(close()), -1);
+        cls_btn -> setStyleSheet("background: transparent");
+    }
+
+    setFeatures((DockWidgetFeatures)(params & (dwf_destroyable - 1)));
 }
 
 void DockWidget::setWindowTitle(const QString & new_title) {

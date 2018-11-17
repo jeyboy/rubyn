@@ -54,7 +54,7 @@ void HeaderDockWidget::insertButton(QWidget * btn, QObject * target, const char 
     if (pos < 0)
         _layout -> addWidget(btn, 0, alignment);
     else
-        _layout -> insertWidget(pos + 2, btn, 0, alignment);
+        _layout -> insertWidget(pos < 0 ? pos : (pos + 2), btn, 0, alignment);
 }
 
 QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target, const char * slot, const int pos, const Qt::Alignment & alignment) {

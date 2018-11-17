@@ -28,17 +28,10 @@ public:
 
         dwf_destroyable = 128
     };
-    Q_DECLARE_FLAGS(DockFeatures, Features)
-    Q_FLAG(DockFeatures)
 
     explicit DockWidget(const QString & title, QWidget * parent = nullptr, const Qt::DockWidgetAreas & areas = Qt::AllDockWidgetAreas);
 
-    void setBehaviour(const DockFeatures & params) {
-        if (params & dwf_destroyable)
-            setAttribute(Qt::WA_DeleteOnClose, true);
-
-        setFeatures((DockWidgetFeatures)(int)(params & (dwf_destroyable - 1)));
-    }
+    void setBehaviour(const Features & params);
 
     void setWindowTitle(const QString & new_title);
 
@@ -47,8 +40,6 @@ public:
     QToolButton * insertHeaderButton(const QIcon & ico, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
 
     void registerSearchCallbacks(QObject * target, const char * search_show_signal, const char * search_hide_signal, const char * search_request_slot, const char * search_close_slot);
-
-//    inline void initiateSearch() { titleWidget -> initiateSearch(mainWidget(), SLOT(startInnerSearch(QString)), SLOT(endInnerSearch()), SIGNAL(searchFinished())); }
 signals:
     void closing();
 
