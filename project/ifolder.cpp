@@ -27,24 +27,24 @@ FormatType IFolder::icoType(const QString & name, const uint & level) {
 }
 
 QColor * IFolder::identifyColor(const FormatType & ico_type) {
-    switch(ico_type) {
-        case ft_folder_public:
-            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_public_range).background().color());
-        case ft_folder_log:
-            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_log_range).background().color());
-        case ft_folder_temp:
-            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_tmp_range).background().color());
-        case ft_folder_test:
-            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_spec_range).background().color());
-        case ft_folder_db:
-            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_db_range).background().color());
-        case ft_folder_config:
-            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_config_range).background().color());
-        case ft_folder_app:
-            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_app_range).background().color());
+    Identifier uid = hid_none;
 
-        default: return nullptr;
+    switch(ico_type) {
+        case ft_folder_public: { uid = hid_project_tree_public_range; break;}
+        case ft_folder_log: { uid = hid_project_tree_log_range; break;}
+        case ft_folder_temp: { uid = hid_project_tree_tmp_range; break;}
+        case ft_folder_test: { uid = hid_project_tree_spec_range; break;}
+        case ft_folder_db: { uid = hid_project_tree_db_range; break;}
+        case ft_folder_config: { uid = hid_project_tree_config_range; break;}
+        case ft_folder_app: { uid = hid_project_tree_app_range; break;}
+
+        default:;
     }
+
+    if (uid)
+        return new QColor(HighlightFormatFactory::obj().getFormatFor(uid).background().color());
+    else
+        return nullptr;
 }
 
 IFolder::IFolder(const QString & path, const bool & create) : _valid(true), _parent(nullptr), _name(path) {
