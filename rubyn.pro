@@ -178,7 +178,6 @@ HEADERS  += ide_window.h \
     lexer/lexers_factory.h \
     lexer/ruby/lexer_frontend_ruby.h \
     lexer/ruby/lexer_regexp_ruby.h \
-    lexer/ruby/_lexer_ruby_regexp.h \
     lexer/ruby/_flags_ruby.h \
     lexer/lexer_control.h \
     lexer/state_lexems.h \

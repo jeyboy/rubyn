@@ -2,6 +2,7 @@
 
 #include "file.h"
 #include "misc/dir.h"
+#include "highlighter/highlight_format_factory.h"
 
 FormatType IFolder::icoType(const QString & name, const uint & level) {
     if (level == 1) {
@@ -27,15 +28,20 @@ FormatType IFolder::icoType(const QString & name, const uint & level) {
 
 QColor * IFolder::identifyColor(const FormatType & ico_type) {
     switch(ico_type) {
-        case ft_folder_public: return new QColor(0, 255, 255, 24);
-        case ft_folder_log: return new QColor(255, 39, 220, 24);
-        case ft_folder_temp: return new QColor(255, 215, 0, 24);
-        case ft_folder_test: return new QColor(75, 255, 0, 24);
-//        case ft_folder_db: return new QColor(255, 0, 0, 16);
-        case ft_folder_db: return new QColor(220, 220, 220, 108);
-        case ft_folder_config: return new QColor(74, 90, 185, 24);
-        case ft_folder_app: return new QColor(192, 127, 92, 24);
-
+        case ft_folder_public:
+            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_public_range).background().color());
+        case ft_folder_log:
+            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_log_range).background().color());
+        case ft_folder_temp:
+            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_tmp_range).background().color());
+        case ft_folder_test:
+            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_spec_range).background().color());
+        case ft_folder_db:
+            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_db_range).background().color());
+        case ft_folder_config:
+            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_config_range).background().color());
+        case ft_folder_app:
+            return new QColor(HighlightFormatFactory::obj().getFormatFor(hid_project_tree_app_range).background().color());
 
         default: return nullptr;
     }

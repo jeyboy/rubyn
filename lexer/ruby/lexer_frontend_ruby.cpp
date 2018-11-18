@@ -8,6 +8,35 @@
 
 using namespace Ruby;
 
+void LexerFrontend::registerVariable(LexerControl * state) {
+//    if (!state -> scope -> hasVar(state -> cached)) {
+//        state -> scope -> addVar(
+//            state -> cached,
+//            new FilePoint(state -> lex_word, 0, 0, state -> cached_str_pos)
+//        );
+//    }
+//    else state -> lex_word = state -> scope -> varType(state -> cached);
+}
+
+void LexerFrontend::registerMethod(LexerControl * state) {
+//    if (!state -> scope -> hasVar(state -> cached)) {
+//        state -> scope -> addVar(
+//            state -> cached,
+//            new FilePoint(state -> lex_word, 0, 0, state -> cached_str_pos)
+//        );
+//    }
+//    else state -> lex_word = state -> scope -> varType(state -> cached);
+}
+
+void LexerFrontend::registerClass(LexerControl * state) {
+
+}
+
+void LexerFrontend::registerModule(LexerControl * state) {
+
+}
+
+
 void LexerFrontend::identifyWordType(LexerControl * state) {
     switch(SCHAR0) {
         case ':': { state -> lex_word = lex_symbol; break;}
@@ -33,16 +62,6 @@ void LexerFrontend::identifyWordType(LexerControl * state) {
             }
         }
     }
-}
-
-void LexerFrontend::registerVariable(LexerControl * state) {
-//    if (!state -> scope -> hasVar(state -> cached)) {
-//        state -> scope -> addVar(
-//            state -> cached,
-//            new FilePoint(state -> lex_word, 0, 0, state -> cached_str_pos)
-//        );
-//    }
-//    else state -> lex_word = state -> scope -> varType(state -> cached);
 }
 
 void LexerFrontend::translateState(LexerControl * state) {
@@ -897,8 +916,11 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     } else {
                         if (len == 0 && isWord(ECHAR1, false))
                             goto iterate;
-                        else
-                            del_state = lex_ternary_alt_start;
+                        else {
+                            // ternary parts shpuld be on the same stack level
+                            if (state -> stack_token -> lexem == lex_ternary_main_start)
+                                del_state = lex_ternary_alt_start;
+                        }
                     }
                 }
 

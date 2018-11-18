@@ -30,6 +30,7 @@ struct LexerControl {
     Highlighter * lighter;
 
     IGrammar * grammar;
+    //    Scope * scope;
 
     QByteArray cached;
 
@@ -37,7 +38,6 @@ struct LexerControl {
     StateLexem lex_word;
     StateLexem lex_delimiter;
 
-//    Scope * scope;
     quint8 next_offset;
 
     TokenCell * heredoc_token;

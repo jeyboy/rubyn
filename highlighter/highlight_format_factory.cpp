@@ -1,5 +1,51 @@
 #include "highlight_format_factory.h"
 
+void HighlightFormatFactory::registerProjectTreeTmpRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(255, 215, 0, 24));
+    _formats.insert(hid_project_tree_tmp_range, format);
+}
+
+void HighlightFormatFactory::registerProjectTreeSpecRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(75, 255, 0, 24));
+    _formats.insert(hid_project_tree_spec_range, format);
+}
+
+void HighlightFormatFactory::registerProjectTreePublicRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(0, 255, 255, 24));
+    _formats.insert(hid_project_tree_public_range, format);
+}
+
+void HighlightFormatFactory::registerProjectTreeLogRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(255, 39, 220, 24));
+    _formats.insert(hid_project_tree_log_range, format);
+}
+
+void HighlightFormatFactory::registerProjectTreeDbRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(220, 220, 220, 108));
+    _formats.insert(hid_project_tree_db_range, format);
+}
+
+void HighlightFormatFactory::registerProjectTreeConfigRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(74, 90, 185, 24));
+    _formats.insert(hid_project_tree_config_range, format);
+}
+
+void HighlightFormatFactory::registerProjectTreeAppRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(192, 127, 92, 24));
+    _formats.insert(hid_project_tree_app_range, format);
+}
+
+
+
+
+
 void HighlightFormatFactory::registerExtraIconsRangeFormat() {
     QTextCharFormat format;
     format.setBackground(QColor::fromRgb(92, 157, 192, 64));
@@ -75,6 +121,13 @@ void HighlightFormatFactory::registerParaHoverLineFormat() {
     QTextCharFormat format;
     format.setForeground(QColor::fromRgb(50, 205, 50, 224));
     _formats.insert(hid_para_hover_line, format);
+}
+
+void HighlightFormatFactory::registerParaHoverOverlay2Format() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(180, 238, 180, 192));
+    format.setBackground(QColor::fromRgb(180, 238, 180, 192));
+    _formats.insert(hid_para_hover_overlay, format);
 }
 
 void HighlightFormatFactory::registerParaHoverOverlayFormat() {
@@ -278,6 +331,14 @@ void HighlightFormatFactory::registerRegularExpresionBorderFormat() {
 
 
 HighlightFormatFactory::HighlightFormatFactory() {
+    registerProjectTreeTmpRangeFormat();
+    registerProjectTreeSpecRangeFormat();
+    registerProjectTreePublicRangeFormat();
+    registerProjectTreeLogRangeFormat();
+    registerProjectTreeDbRangeFormat();
+    registerProjectTreeConfigRangeFormat();
+    registerProjectTreeAppRangeFormat();
+
     registerExtraIconsRangeFormat();
     registerSelectionFormat();
     registerCurrentLineFormat();
@@ -291,6 +352,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerParaHoverLineFormat();
     registerFoldedOverlayFormat();
     registerSearchResultsOverlayFormat();
+    registerParaHoverOverlay2Format();
     registerParaHoverOverlayFormat();
     registerBreakpointsRangeFormat();
     registerBreakpointLineFormat();

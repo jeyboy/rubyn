@@ -10,6 +10,15 @@
 class HighlightFormatFactory : public Singleton<HighlightFormatFactory> {
     QHash<Identifier, QTextCharFormat> _formats;
 protected:
+    void registerProjectTreeTmpRangeFormat();
+    void registerProjectTreeSpecRangeFormat();
+    void registerProjectTreePublicRangeFormat();
+    void registerProjectTreeLogRangeFormat();
+    void registerProjectTreeDbRangeFormat();
+    void registerProjectTreeConfigRangeFormat();
+    void registerProjectTreeAppRangeFormat();
+
+
     void registerExtraIconsRangeFormat();
 
     void registerSelectionFormat();
@@ -33,6 +42,8 @@ protected:
     void registerSearchResultsOverlayFormat();
 
     void registerParaHoverLineFormat();
+
+    void registerParaHoverOverlay2Format();
 
     void registerParaHoverOverlayFormat();
 
@@ -78,14 +89,6 @@ protected:
 
     void registerTernaryFormat();
 
-//    void registerMethodFormat() {
-//        QTextCharFormat format;
-//        format.setForeground(Qt::darkBlue);
-//        format.setBackground(QColor::fromRgb(0, 0, 255, 16));
-//        format.setFontWeight(QFont::Black);
-//        formats.insert(hid_method, format);
-//    }
-
     void registerCommentFormat();
 
     void registerNumericFormat();
@@ -93,18 +96,6 @@ protected:
     void registerRegularExpresionFormat();
 
     void registerRegularExpresionBorderFormat();
-
-//    void registerPreprocessingFormat() {
-//        QTextCharFormat format;
-//        format.setForeground(QColor::fromRgb(0, 255, 0, 164));
-//        formats.insert(hid_preprocessing, format);
-//    }
-
-//    void registerDatatypeFormat() {
-//        QTextCharFormat format;
-//        format.setForeground(QColor::fromRgb(0, 0, 255, 164));
-//        formats.insert(hid_datatype, format);
-//    }
 
 public:
     HighlightFormatFactory();

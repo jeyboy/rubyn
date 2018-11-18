@@ -6,9 +6,20 @@
 #include "misc/defines.h"
 
 enum Identifier : UID_TYPE {
-    hid_extra_icons_range = -17,
-    hid_para_hover_line = -16,
-    hid_para_content_popup = -15,
+    hid_custom = -80, // not used yet
+
+    hid_project_tree_tmp_range = -70,
+    hid_project_tree_spec_range = -69,
+    hid_project_tree_public_range = -68,
+    hid_project_tree_log_range = -67,
+    hid_project_tree_db_range = -66,
+    hid_project_tree_config_range = -65,
+    hid_project_tree_app_range = -64,
+
+    hid_extra_icons_range = -18,
+    hid_para_hover_line = -17,
+    hid_para_content_popup = -16,
+    hid_para_hover_overlay2 = -15,
     hid_para_hover_overlay = -14,
     hid_search_results_overlay = -13,
     hid_folding_level_line = -12,

@@ -6,9 +6,13 @@
 class LexerControl;
 
 namespace Ruby {
-    class LexerFrontend : public ILexer {
-        void identifyWordType(LexerControl * state);
+    class LexerFrontend : public ILexer {       
         void registerVariable(LexerControl * state);
+        void registerMethod(LexerControl * state);
+        void registerClass(LexerControl * state);
+        void registerModule(LexerControl * state);
+
+        void identifyWordType(LexerControl * state);
         void translateState(LexerControl * state);
         bool cutWord(LexerControl * state, const StateLexem & predefined_lexem = lex_none,
                      const StateLexem & predefined_delimiter = lex_none, StackLexemFlag flags = slf_none);
