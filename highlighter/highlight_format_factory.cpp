@@ -241,6 +241,14 @@ void HighlightFormatFactory::registerStringFormat() {
     _formats.insert(hid_string, format);
 }
 
+void HighlightFormatFactory::registerTernaryFormat() {
+    QTextCharFormat format;
+    format.setFontWeight(QFont::Bold);
+    format.setForeground(QColor::fromRgb(255, 86, 150));
+    _formats.insert(hid_ternary, format);
+}
+
+
 void HighlightFormatFactory::registerCommentFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
@@ -300,6 +308,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerConstFormat();
     registerStringBorderFormat();
     registerStringFormat();
+    registerTernaryFormat();
 //        registerMethodFormat();
     registerCommentFormat();
     registerNumericFormat();

@@ -27,7 +27,7 @@ protected:
     bool isAlpha(const char & c);
     bool isAlphaNum(const char & c);
 
-    bool isWord(const char & c);
+    bool isWord(const char & c, const bool & with_digits = true);
 
     //    inline bool isCtrl(const char & c) { return c >= 0 && c < 0x20 || c == 0x7f; }
     bool isBlank(const char & c);

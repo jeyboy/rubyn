@@ -12,7 +12,7 @@ bool ILexer::isLower(const char & c) { return c >= 'a' && c <= 'z'; }
 bool ILexer::isAlpha(const char & c) { return isLower(c) || isUpper(c); }
 bool ILexer::isAlphaNum(const char & c) { return isAlpha(c) || isDigit(c); }
 
-bool ILexer::isWord(const char & c) { return c == '_' || isAlpha(c) || isDigit(c); }
+bool ILexer::isWord(const char & c, const bool & with_digits) { return c == '_' || isAlpha(c) || (with_digits && isDigit(c)); }
 
 //    bool ILexer::isCtrl(const char & c) { return c >= 0 && c < 0x20 || c == 0x7f; }
 bool ILexer::isBlank(const char & c) { return c == ' ' || c == '\t'; }

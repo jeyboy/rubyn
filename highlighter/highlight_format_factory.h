@@ -76,6 +76,8 @@ protected:
 
     void registerStringFormat();
 
+    void registerTernaryFormat();
+
 //    void registerMethodFormat() {
 //        QTextCharFormat format;
 //        format.setForeground(Qt::darkBlue);

@@ -656,6 +656,10 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_regexp_flags:
             return hid_regexp_border;
 
+        case lex_ternary_main_start:
+        case lex_ternary_alt_start:
+            return hid_ternary;
+
         case lex_visibility_scope: return hid_scope_visibility;
 
         case lex_word: return hid_unknown_name;

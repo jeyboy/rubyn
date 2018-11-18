@@ -889,11 +889,13 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == ':')
                     ++state -> next_offset;
                 else { // if we have deal with symbol
-                    if (isWord(ECHAR_PREV1)) {
+                    EDITOR_LEN_TYPE len = state -> strLength();
+
+                    if (len > 0 && isWord(ECHAR_PREV1)) {
                         ++state -> buffer;
                         state -> next_offset = 0;
                     } else {
-                        if (state -> strLength() == 0 && isWord(ECHAR1))
+                        if (len == 0 && isWord(ECHAR1, false))
                             goto iterate;
                         else
                             del_state = lex_ternary_alt_start;
@@ -1234,7 +1236,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
 //        state -> validateHeredocState();
 }
 
-int LexerFrontend::lineState(BlockUserData * udata, const int & prev_user_state, const bool & override_status) {
+int LexerFrontend::rubyLineState(BlockUserData * udata, const int & prev_user_state, const bool & override_status) {
     //INFO: Hack for heredoc marks
     if (override_status || udata -> stack_token) {
         TokenCell * it = udata -> stack_token;
@@ -1306,7 +1308,7 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
 
     int prev_state = block.userState();
-    int new_state = lineState(udata, prev_state, override_status);
+    int new_state = rubyLineState(udata, prev_state, override_status);
 
     block.setUserState(new_state);
 }
