@@ -964,7 +964,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case '?': {
-                if (isAlphaNum(ECHAR_PREV1)) goto iterate;
+                if (state -> strLength() > 0 && isWord(ECHAR_PREV1)) goto iterate;
 
                 if (!cutWord(state, lex_none, lex_ternary_main_start)) goto exit;
             break;}
