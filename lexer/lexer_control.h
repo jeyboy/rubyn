@@ -128,7 +128,7 @@ struct LexerControl {
         TokenCell * it = token;
 
         while(it) {
-            if (it -> lexem < lex_tab)
+            if (it -> lexem >= lex_none)
                 return (last_non_blank_token = it) -> lexem;
 
             it = it -> prev;
@@ -218,7 +218,7 @@ struct LexerControl {
         }
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
 
-        if (token -> lexem < lex_tab)
+        if (token -> lexem >= lex_none)
             last_non_blank_token = token;
 
         if (flags != slf_none) {

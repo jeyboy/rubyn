@@ -4,229 +4,8 @@ using namespace Ruby;
 
 Grammar::Grammar() : IGrammar() {
     initParas();
-    initRules();
 }
 
-void Grammar::initRules() {
-    for(quint32 i = 0; i < lex_max; i++) {
-        StateLexem curr = static_cast<StateLexem>(i);
-
-        rules[i][lex_end_line] = curr;
-//        rules[lex_end_line][i] = curr;
-
-        rules[i][lex_blank] = curr;
-        rules[lex_blank][i] = curr;
-
-        rules[lex_blanks][i] = curr;
-        rules[i][lex_blanks] = curr;
-
-        rules[i][lex_tab] = curr;
-        rules[lex_tab][i] = curr;
-
-        rules[i][lex_tabs] = curr;
-        rules[lex_tabs][i] = curr;
-
-
-        rules[lex_operator_assigment][i] = curr;
-
-
-        rules[lex_symbol_key][i] = curr;
-
-        rules[i][lex_inline_commentary_content] = lex_inline_commentary_content;
-
-        rules[lex_estring_interception][i] = curr;
-        rules[lex_command_interception][i] = curr;
-
-//        rules[lex_inline_block_start][i] = curr;
-    }
-
-    rules[lex_symbol_key][lex_end_line] = lex_symbol_key;
-
-    rules[lex_symbol_key][lex_blank] = lex_symbol_key;
-    rules[lex_symbol_key][lex_blanks] = lex_symbol_key;
-
-    rules[lex_symbol_key][lex_tab] = lex_symbol_key;
-    rules[lex_symbol_key][lex_tabs] = lex_symbol_key;
-
-    rules[lex_blank][lex_tab] = lex_blanks;
-    rules[lex_tab][lex_blank] = lex_blanks;
-    rules[lex_blanks][lex_tab] = lex_blanks;
-    rules[lex_blanks][lex_tabs] = lex_blanks;
-
-    rules[lex_string_start][lex_string_content] = lex_string_content;
-    rules[lex_string_content][lex_string_end] = lex_string_end;
-
-    rules[lex_estring_start][lex_estring_content] = lex_estring_content;
-    rules[lex_estring_content][lex_estring_end] = lex_estring_end;
-
-    rules[lex_command_start][lex_command_content] = lex_command_content;
-    rules[lex_command_content][lex_command_end] = lex_command_end;
-
-    // PERCENTAGE PRESENTATION
-//        %r(/home/#{foo})#=> "/\\/home\\/Foo/"
-
-    rules[lex_percent_presentation_start][lex_percent_presentation_end] = lex_expression;
-    rules[lex_epercent_presentation_start][lex_epercent_presentation_end] = lex_expression;
-
-
-    // MODULE DEFINITION
-
-    rules[lex_module_def][lex_word] = lex_module_def_name;
-    rules[lex_module_def][lex_module_def_resolution] = lex_module_def_resolution;
-    rules[lex_module_def_name][lex_resolution] = lex_module_def_resolution;
-    rules[lex_module_def_resolution][lex_word] = lex_module_def_name;
-
-    rules[lex_module_def_name][lex_end_line] = lex_module_def_block;
-    rules[lex_none][lex_module_def_block_end] = lex_none;
-
-    // CLASS DEFINITION
-
-    rules[lex_class_def][lex_word] = lex_class_def_name;
-    rules[lex_class_def][lex_operator_bit_left_shift] = lex_class_def_extension;
-
-    rules[lex_class_def_name][lex_operator_less] = lex_class_def_inheritance;
-    rules[lex_class_def_name][lex_semicolon] = lex_block_start;
-    rules[lex_class_def_name][lex_end_line] = lex_block_start;
-
-    rules[lex_class_def_extension][lex_word] = lex_class_def_extender;
-    rules[lex_class_def_extender][lex_semicolon] = lex_block_start;
-    rules[lex_class_def_extender][lex_end_line] = lex_block_start;
-
-    rules[lex_class_def_inheritance][lex_word] = lex_class_def_ancestor;
-    rules[lex_class_def_inheritance][lex_resolution] = lex_class_def_resolution;
-    rules[lex_class_def_ancestor][lex_resolution] = lex_class_def_resolution;
-    rules[lex_class_def_resolution][lex_word] = lex_class_def_ancestor;
-    rules[lex_class_def_ancestor][lex_semicolon] = lex_block_start;
-    rules[lex_class_def_ancestor][lex_end_line] = lex_block_start;
-
-    rules[lex_method_def][lex_word] = lex_method_def_scope_or_name;
-    rules[lex_method_def_scope_or_name][lex_dot] = lex_method_def_scoped_delimiter;
-    rules[lex_method_def_scope_or_name][lex_blank] = lex_method_def_vars_start;
-    rules[lex_method_def_scope_or_name][lex_blanks] = lex_method_def_vars_start;
-
-    rules[lex_method_def_vars_start][lex_operator_multiplication] = lex_method_def_var_access_type;
-    rules[lex_method_def_vars_start][lex_operator_exponentiation] = lex_method_def_var_access_type;
-    rules[lex_method_def_vars_start][lex_operator_bit_and] = lex_method_def_var_access_type;
-    rules[lex_method_def_vars_start][lex_word] = lex_method_def_var_name;
-    rules[lex_method_def_var_access_type][lex_word] = lex_method_def_var_name;
-    rules[lex_method_def_var_name][lex_operator_equality] = lex_method_def_var_assign;
-    rules[lex_method_def_var_assign][lex_expression] = lex_method_def_var_assign_val;
-
-    rules[lex_method_def_var_assign_val][lex_comma] = lex_method_def_vars_splitter;
-    rules[lex_method_def_vars_splitter][lex_operator_multiplication] = lex_method_def_var_access_type;
-    rules[lex_method_def_vars_splitter][lex_operator_exponentiation] = lex_method_def_var_access_type;
-    rules[lex_method_def_vars_splitter][lex_operator_bit_and] = lex_method_def_var_access_type;
-    rules[lex_method_def_vars_splitter][lex_word] = lex_method_def_var_name;
-
-    rules[lex_method_def_var_assign_val][lex_end_line] = lex_method_call_block;
-    rules[lex_method_def_vars_start][lex_end_line] = lex_method_call_block;
-
-
-
-    rules[lex_method_def][lex_self] = lex_method_def_scoped_name;
-    rules[lex_method_def_scoped_name][lex_dot] = lex_method_def_scoped_delimiter;
-    rules[lex_method_def_scoped_delimiter][lex_word] = lex_method_def_name;
-    rules[lex_method_def_name][lex_blank] = lex_method_def_vars_start;
-    rules[lex_method_def_name][lex_blanks] = lex_method_def_vars_start;
-    rules[lex_method_def_name][lex_wrap_open] = lex_method_def_args_start;
-    rules[lex_method_def_scope_or_name][lex_wrap_open] = lex_method_def_args_start;
-
-
-    rules[lex_method_def_args_start][lex_operator_multiplication] = lex_method_def_arg_access_type;
-    rules[lex_method_def_args_start][lex_operator_exponentiation] = lex_method_def_arg_access_type;
-    rules[lex_method_def_args_start][lex_operator_bit_and] = lex_method_def_arg_access_type;
-
-    rules[lex_method_def_args_start][lex_word] = lex_method_def_arg_name;
-    rules[lex_method_def_arg_access_type][lex_word] = lex_method_def_arg_name;
-    rules[lex_method_def_arg_name][lex_operator_equality] = lex_method_def_arg_assign;
-    rules[lex_method_def_arg_name][lex_comma] = lex_method_def_arg_splitter;
-    rules[lex_method_def_arg_assign][lex_expression] = lex_method_def_arg_assign_val;
-    rules[lex_method_def_arg_assign_val][lex_comma] = lex_method_def_arg_splitter;
-
-    rules[lex_method_def_var_assign_val][lex_comma] = lex_method_def_arg_splitter;
-    rules[lex_method_def_arg_splitter][lex_operator_multiplication] = lex_method_def_arg_access_type;
-    rules[lex_method_def_arg_splitter][lex_operator_exponentiation] = lex_method_def_arg_access_type;
-    rules[lex_method_def_arg_splitter][lex_operator_bit_and] = lex_method_def_arg_access_type;
-    rules[lex_method_def_arg_splitter][lex_word] = lex_method_def_arg_name;
-
-
-
-
-    rules[lex_method_def_var_assign_val][lex_wrap_close] = lex_method_def_args_end;
-    rules[lex_method_def_args_start][lex_wrap_close] = lex_method_def_args_end;
-    rules[lex_method_def_args_end][lex_end_line] = lex_method_call_block;
-
-
-    rules[lex_method_def_scope_or_name][lex_end_line] = lex_method_call_block;
-    rules[lex_method_def_name][lex_end_line] = lex_method_call_block;
-
-
-
-//        rules[lex_module_def][lex_word] = lex_module_def_name;
-//        rules[lex_module_def_resolution][lex_word] = lex_module_def_name;
-//        rules[lex_module_def_name][lex_resolution] = lex_module_def_resolution;
-//        rules[lex_module_def_name][lex_semicolon] = lex_block_start;
-//        rules[lex_module_def_name][lex_end_line] = lex_block_start;
-
-
-//        rules[lex_method_def][lex_self] = lex_method_def_name;
-//        rules[lex_method_def][lex_word] = lex_method_def_name;
-//        rules[lex_method_def_scoped][lex_word] = lex_method_def_scoped_name;
-
-//        rules[lex_method_def_name][lex_dot] = lex_method_def_scoped;
-//        rules[lex_method_def_name][lex_wrap_start] = lex_method_def_vars_start;
-//        rules[lex_method_def_name][lex_operator_multiplication] = lex_method_def_var_access_type;
-//        rules[lex_method_def_name][lex_word] = lex_method_def_var_name;
-//        rules[lex_method_def_name][lex_semicolon] = lex_block_start;
-//        rules[lex_method_def_name][lex_end_line] = lex_block_start;
-
-//        rules[lex_method_def_scoped_name][lex_wrap_start] = lex_method_def_vars_start;
-//        rules[lex_method_def_scoped_name][lex_operator_multiplication] = lex_method_def_var_access_type;
-//        rules[lex_method_def_scoped_name][lex_word] = lex_method_def_var_name;
-//        rules[lex_method_def_scoped_name][lex_semicolon] = lex_block_start;
-//        rules[lex_method_def_scoped_name][lex_end_line] = lex_block_start;
-
-//        rules[lex_method_def_vars_start][lex_wrap_end] = lex_method_def_vars_end;
-//        rules[lex_method_def_vars_start][lex_operator_multiplication] = lex_method_def_var_access_type;
-//        rules[lex_method_def_vars_start][lex_word] = lex_method_def_var_name;
-
-//        rules[lex_method_def_var_access_type][lex_word] = lex_method_def_var_name;
-
-//        rules[lex_method_def_var_name][lex_wrap_end] = lex_method_def_vars_end;
-//        rules[lex_method_def_var_name][lex_comma] = lex_method_def_vars_splitter;
-
-//        rules[lex_method_def_vars_splitter][lex_operator_multiplication] = lex_method_def_var_access_type;
-//        rules[lex_method_def_vars_splitter][lex_word] = lex_method_def_var_name;
-
-    rules[lex_word][lex_blank] = lex_method_call_vars_start;
-    rules[lex_word][lex_blanks] = lex_method_call_vars_start;
-
-    rules[lex_word][lex_wrap_open] = lex_method_call_args_start;
-    rules[lex_wrap_open][lex_wrap_close] = lex_method_call_args_close;
-    rules[lex_method_call_args_close][lex_end_line] = lex_none;
-    rules[lex_method_call_args_close][lex_semicolon] = lex_none;
-
-    rules[lex_method][lex_dot] = lex_method_access;
-    rules[lex_word][lex_dot] = lex_method_access;
-    rules[lex_method_access][lex_word] = lex_method;
-
-
-
-//    lex_method_call_args_start,
-//    lex_method_call_args_close,
-//    lex_method_call_arg_entry,
-//    lex_method_call_args_splitter,
-
-//    lex_method_call_vars_start,
-//    lex_method_call_var_entry,
-//    lex_method_call_vars_splitter,
-//    lex_method_call_vars_end,
-
-
-    // HEREDOC
-
-//    rules[lex_method_call_vars_start][lex_eheredoc_intended_mark] = lex_eheredoc_intended_mark;
-}
 void Grammar::initParas() {
     para_tokens[lex_open_curly_bracket] = pt_foldable_curly_bracket;
     para_tokens[lex_close_curly_bracket] = pt_close_foldable_curly_bracket;
@@ -669,3 +448,431 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         default: return hid_none;
     }
 }
+
+StateLexem Grammar::translate(const StateLexem & state, const StateLexem & input) {
+    if (state == lex_none)
+        return input;
+
+    if (input == lex_none)
+        return state;
+
+    switch(state) {
+        case lex_blank: {
+            switch(input) {
+                case lex_tab:
+                case lex_tabs:
+                case lex_blank:
+                    return lex_blanks;
+                default: return input;
+            }
+        }
+
+        case lex_blanks: {
+            switch(input) {
+                case lex_tab:
+                case lex_tabs:
+                case lex_blank:
+                    return lex_blanks;
+                default: return input;
+            }
+        }
+
+        case lex_tab: {
+            switch(input) {
+                case lex_tab: return lex_tabs;
+                default: return input;
+            }
+        }
+
+        case lex_tabs: {
+            switch(input) {
+                case lex_tab:
+                case lex_tabs:
+                    return lex_tabs;
+                case lex_blank:
+                case lex_blanks:
+                    return lex_blanks;
+                default: return input;
+            }
+        }
+
+        case lex_symbol_key: {
+            switch(input) {
+                case lex_blank:
+                case lex_blanks:
+                case lex_tab:
+                case lex_tabs:
+                case lex_end_line:
+                    return state;
+                default: return input;
+            }
+        }
+
+        case lex_operator_assigment: {
+            switch(input) {
+                case lex_blank:
+                case lex_blanks:
+                case lex_tab:
+                case lex_tabs:
+                case lex_end_line:
+                    return state;
+                default: return input;
+            }
+        }
+
+        case lex_string_start: {
+            switch(input) {
+                case lex_string_content: return lex_string_content;
+                case lex_string_end: return lex_string_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_string_content: {
+            switch(input) {
+                case lex_string_end: return lex_string_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_estring_start: {
+            switch(input) {
+                case lex_estring_content: return lex_estring_content;
+                case lex_estring_interception: return lex_estring_interception;
+                case lex_estring_end: return lex_estring_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_estring_content: {
+            switch(input) {
+                case lex_estring_end: return lex_estring_end;
+                case lex_estring_interception: return lex_estring_interception;
+                default: return lex_error;
+            }
+        }
+
+        case lex_command_start: {
+            switch(input) {
+                case lex_command_content: return lex_command_content;
+                case lex_command_interception: return lex_command_interception;
+                case lex_command_end: return lex_command_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_command_content: {
+            switch(input) {
+                case lex_command_end: return lex_command_end;
+                case lex_command_interception: return lex_command_interception;
+                default: return lex_error;
+            }
+        }
+
+        case lex_percent_presentation_start: {
+            switch(input) {
+                case lex_percent_presentation_content: return lex_percent_presentation_content;
+                case lex_percent_presentation_end: return lex_percent_presentation_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_percent_presentation_content: {
+            switch(input) {
+                case lex_percent_presentation_end: return lex_percent_presentation_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_module_def: {
+            switch(input) {
+                case lex_word: return lex_module_def_name;
+                case lex_module_def_resolution: return lex_module_def_resolution;
+                default: return lex_error;
+            }
+        }
+
+        case lex_module_def_resolution: {
+            switch(input) {
+                case lex_word: return lex_module_def_name;
+                default: return lex_error;
+            }
+        }
+
+        case lex_module_def_name: {
+            switch(input) {
+                case lex_resolution: return lex_module_def_resolution;
+                case lex_end_line: return lex_module_def_block;
+                default: return lex_error;
+            }
+        }
+
+        case lex_class_def: {
+            switch(input) {
+                case lex_word: return lex_class_def_name;
+                case lex_operator_bit_left_shift: return lex_class_def_extension;
+                default: return lex_error;
+            }
+        }
+
+        case lex_class_def_name: {
+            switch(input) {
+                case lex_operator_less: return lex_class_def_inheritance;
+                case lex_semicolon: return lex_block_start;
+                case lex_end_line: return lex_block_start;
+                default: return lex_error;
+            }
+        }
+
+        case lex_class_def_extension: {
+            switch(input) {
+                case lex_word: return lex_class_def_extender;
+                default: return lex_error;
+            }
+        }
+
+        case lex_class_def_resolution: {
+            switch(input) {
+                case lex_word: return lex_class_def_ancestor;
+                default: return lex_error;
+            }
+        }
+
+        case lex_class_def_extender: {
+            switch(input) {
+                case lex_semicolon: return lex_block_start;
+                case lex_end_line: return lex_block_start;
+                default: return lex_error;
+            }
+        }
+
+        case lex_class_def_inheritance: {
+            switch(input) {
+                case lex_word: return lex_class_def_ancestor;
+                case lex_resolution: return lex_class_def_resolution;
+                default: return lex_error;
+            }
+        }
+
+        case lex_class_def_ancestor: {
+            switch(input) {
+                case lex_resolution: return lex_class_def_resolution;
+                case lex_semicolon: return lex_block_start;
+                case lex_end_line: return lex_block_start;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def: {
+            switch(input) {
+                case lex_self: return lex_method_def_scoped_name;
+                case lex_word: return lex_method_def_scope_or_name;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_name: {
+            switch(input) {
+                case lex_blank: return lex_method_def_vars_start;
+                case lex_blanks: return lex_method_def_vars_start;
+                case lex_wrap_open: return lex_method_def_args_start;
+                case lex_end_line: return lex_method_call_block;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_scoped_name: {
+            switch(input) {
+                case lex_dot: return lex_method_def_scoped_delimiter;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_scope_or_name: {
+            switch(input) {
+                case lex_wrap_open: return lex_method_def_args_start;
+                case lex_dot: return lex_method_def_scoped_delimiter;
+                case lex_blank: return lex_method_def_vars_start;
+                case lex_blanks: return lex_method_def_vars_start;
+                case lex_end_line: return lex_method_call_block;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_vars_start: {
+            switch(input) {
+                case lex_operator_multiplication: return lex_method_def_var_access_type;
+                case lex_operator_exponentiation: return lex_method_def_var_access_type;
+                case lex_operator_bit_and: return lex_method_def_var_access_type;
+                case lex_word: return lex_method_def_var_name;
+                case lex_end_line: return lex_method_call_block;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_var_access_type: {
+            switch(input) {
+                case lex_word: return lex_method_def_var_name;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_var_name: {
+            switch(input) {
+                case lex_operator_equality: return lex_method_def_var_assign;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_var_assign: {
+            switch(input) {
+                case lex_expression: return lex_method_def_var_assign_val;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_var_assign_val: {
+            switch(input) {
+                case lex_end_line: return lex_method_call_block;
+                case lex_comma: return lex_method_def_vars_splitter;
+                case lex_wrap_close: return lex_method_def_args_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_vars_splitter: {
+            switch(input) {
+                case lex_operator_multiplication: return lex_method_def_var_access_type;
+                case lex_operator_exponentiation: return lex_method_def_var_access_type;
+                case lex_operator_bit_and: return lex_method_def_var_access_type;
+                case lex_word: return lex_method_def_var_name;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_scoped_delimiter: {
+            switch(input) {
+                case lex_word: return lex_method_def_name;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_args_start: {
+            switch(input) {
+                case lex_operator_multiplication: return lex_method_def_arg_access_type;
+                case lex_operator_exponentiation: return lex_method_def_arg_access_type;
+                case lex_operator_bit_and: return lex_method_def_arg_access_type;
+                case lex_word: return lex_method_def_arg_name;
+                case lex_wrap_close: return lex_method_def_args_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_arg_assign_val: {
+            switch(input) {
+                case lex_comma: return lex_method_def_arg_splitter;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_arg_access_type: {
+            switch(input) {
+                case lex_word: return lex_method_def_arg_name;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_arg_name: {
+            switch(input) {
+                case lex_operator_equality: return lex_method_def_arg_assign;
+                case lex_comma: return lex_method_def_arg_splitter;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_arg_assign: {
+            switch(input) {
+                case lex_expression: return lex_method_def_arg_assign_val;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_arg_splitter: {
+            switch(input) {
+                case lex_operator_multiplication: return lex_method_def_arg_access_type;
+                case lex_operator_exponentiation: return lex_method_def_arg_access_type;
+                case lex_operator_bit_and: return lex_method_def_arg_access_type;
+                case lex_word: return lex_method_def_arg_name;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_args_end: {
+            switch(input) {
+                case lex_end_line: return lex_method_call_block;
+                default: return lex_error;
+            }
+        }
+
+        case lex_word: {
+            switch(input) {
+                case lex_blank: return lex_method_call_vars_start;
+                case lex_blanks: return lex_method_call_vars_start;
+                case lex_wrap_open: return lex_method_call_args_start;
+                case lex_dot: return lex_method_access;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_call_args_close: {
+            switch(input) {
+                case lex_end_line: return lex_none;
+                case lex_semicolon: return lex_none;
+                default: return lex_error;
+            }
+        }
+
+        case lex_wrap_open: {
+            switch(input) {
+                case lex_wrap_close: return lex_method_call_args_close;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method: {
+            switch(input) {
+                case lex_dot: return lex_method_access;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_access: {
+            switch(input) {
+                case lex_word: return lex_method;
+                default: return lex_error;
+            }
+        }
+
+        case lex_none: {
+            switch(input) {
+                case lex_module_def_block_end: return lex_none;
+                default: return lex_error;
+            }
+        }
+
+        default: {
+            switch(input) {
+                case lex_end_line:
+                case lex_blank:
+                case lex_blanks:
+                case lex_tab:
+                case lex_tabs:
+                    return state;
+
+
+                default: return lex_error;
+            }
+        }
+    };
+}
+

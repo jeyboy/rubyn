@@ -1141,7 +1141,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     bool next_is_blank = isBlank(ECHAR1);
 
                     bool is_division = (lex != lex_none || (!state -> isBufferStart() && isAlphaNum(ECHAR_PREV1))) &&
-                        (next_is_blank || (lex < lex_division_braker_start || lex > lex_division_braker_end));
+                        (next_is_blank || !(lex & lex_ruby_division_braker));
 
                     if (is_division) {
                         if (!cutWord(state)) goto exit;
@@ -1279,10 +1279,12 @@ int LexerFrontend::rubyLineState(BlockUserData * udata, const int & prev_user_st
 
             while(true) {
                 hash = static_cast<int>(qHash(QDateTime::currentMSecsSinceEpoch()));
+
+                if (hash > 0) hash = -hash;
 //                uint seed = qHash(QDateTime::currentMSecsSinceEpoch());
 //                hash = static_cast<int>(qHash(res, seed));
 
-                if ((hash > lex_max || hash < lex_default) && hash != prev_user_state)
+                if (hash < lex_min && hash != prev_user_state)
                     break;
             }
 

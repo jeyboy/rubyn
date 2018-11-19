@@ -11,7 +11,6 @@ namespace Ruby {
 
         friend class Singleton<Grammar>;
     protected:
-        void initRules();
         void initParas();
     public:
         void initFlags(StackLexemFlag & flags, const StateLexem & lex, const StateLexem & last_non_blank_lex);
@@ -33,6 +32,8 @@ namespace Ruby {
 //        StateLexem fromContinious(const StateLexem & lexem);
 
         Identifier toHighlightable(const StateLexem & lexem);
+
+        StateLexem translate(const StateLexem & state, const StateLexem & input);
     };
 }
 
