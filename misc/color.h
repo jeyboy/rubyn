@@ -4,9 +4,12 @@
 //https://github.com/dmilos/color
 
 #include <qcolor.h>
+//#include <qhash.h>
 
 class Color : public QColor {
 public:
+//    static QHash<QLatin1String, QLatin1String> predefined;
+
     enum Namespace { Invalid, Rgb, Hsv, Cmyk, Hsl, Hwb };
 
     enum Metric {
