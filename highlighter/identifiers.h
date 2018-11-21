@@ -55,20 +55,7 @@ enum Identifier : UID_TYPE {
     hid_scope_visibility,
     hid_unclosed_para,
     hid_ternary,
-
-//    lex_key = 1 << 19,
-//    lex_block = 1 << 20,
-//    lex_def = 1 << 21,
-//    lex_commentary = 1 << 22,
-//    lex_string = 1 << 23,
-//    lex_def_name = 1 << 24,
-//    lex_symbol = 1 << 25,
-//    lex_regexp = 1 << 26,
-//    lex_method = 1 << 27,
-//    lex_class = 1 << 28,
-//    lex_predefined = 1 << 29,
-//    lex_name = 1 << 30,
-//    //////////
+    hid_sequence,
 
     hid_unknown_name,
 

@@ -328,6 +328,13 @@ void HighlightFormatFactory::registerRegularExpresionBorderFormat() {
     _formats.insert(hid_regexp_border, format);
 }
 
+void HighlightFormatFactory::registerSecuenceFormat() {
+    QTextCharFormat format;
+    format.setFontWeight(QFont::Bold);
+    format.setForeground(QColor::fromRgb(183, 149, 11));
+    _formats.insert(hid_sequence, format);
+}
+
 
 
 HighlightFormatFactory::HighlightFormatFactory() {
@@ -378,6 +385,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerRegularExpresionBorderFormat();
 //        registerPreprocessingFormat();
 //        registerDatatypeFormat();
+    registerSecuenceFormat();
 
     registerErrorFormat();
     registerWarningFormat();

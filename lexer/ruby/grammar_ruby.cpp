@@ -439,6 +439,9 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_ternary_alt_start:
             return hid_ternary;
 
+        case lex_char_sequence:
+            return hid_sequence;
+
         case lex_visibility_scope: return hid_scope_visibility;
 
         case lex_word: return hid_unknown_name;

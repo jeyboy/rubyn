@@ -97,6 +97,8 @@ protected:
 
     void registerRegularExpresionBorderFormat();
 
+    void registerSecuenceFormat();
+
 public:
     HighlightFormatFactory();
 

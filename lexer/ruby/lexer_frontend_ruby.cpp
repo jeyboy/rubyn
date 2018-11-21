@@ -784,6 +784,65 @@ bool LexerFrontend::parseComment(LexerControl * state) {
     return false;
 }
 
+bool LexerFrontend::parseCharCode(LexerControl * state) {
+    bool has_error = false;
+    state -> next_offset = 0;
+
+    if (isWord(ECHAR0)) {
+        ++state -> buffer;
+
+        while(isWord(ECHAR0)) {
+            has_error = true;
+            ++state -> buffer;
+        }
+    } else {
+        switch(ECHAR1) {
+            case '\\': {
+                switch(ECHAR2) {
+                    case 'C': { //    \C-\M-x #	meta-control-x
+                        //    \C-x # 	control-x
+                    break;}
+
+                    case 'M': { //    \M-\C-x #	meta-control-x
+                        //    \M-x # 	meta-x
+                    break;}
+
+                    case 'x': {
+                        //    \xnn 	# character with hexadecimal value nn
+                    break; }
+
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 0: { break;} // \nnn #	character with octal value nnn
+
+                    case 'c': { break;} //    \cx #	control-x
+
+                    case 'u': { break;}
+                    //    \unnnn #	Unicode code point U+nnnn (Ruby 1.9 and later)
+                    //    \u{nnnnn} # 	Unicode code point U+nnnnn with more than four hex digits must be enclosed in curly braces
+
+                    default:; // \x #	character x itself (for example \" is the double quote character)
+                }
+            break;}
+
+            default:;
+        }
+    }
+
+    bool res = cutWord(state, lex_char_sequence);
+
+    if (has_error)
+        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong symbol code"));
+
+    return res;
+}
+
+
 void LexerFrontend::lexicate(LexerControl * state) {
 //        a + b is interpreted as a.+(b)
 //        a + b is interpreted as a+b ( Here a is a local variable)
@@ -986,9 +1045,27 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case '?': {
-                if (state -> strLength() > 0 && isWord(ECHAR_PREV1)) goto iterate;
+                uint len = state -> strLength();
+                StateLexem lex = lex_ternary_main_start;
 
-                if (!cutWord(state, lex_none, lex_ternary_main_start)) goto exit;
+                if (len == 0) {
+                    StateLexem lex = state -> lastNonBlankLexem();
+
+                    bool is_charcode = lex == lex_none || lex & lex_ruby_ternary_braker;
+
+                    if (is_charcode) {
+                        ++state -> buffer;
+
+                        if (parseCharCode(state)) {
+                            --state -> buffer;
+                            goto iterate;
+                        }
+                    }
+                } else {
+                    if (isWord(ECHAR_PREV1)) goto iterate;
+                }
+
+                if (!cutWord(state, lex_none, lex)) goto exit;
             break;}
 
 
@@ -1141,7 +1218,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     bool next_is_blank = isBlank(ECHAR1);
 
                     bool is_division = (lex != lex_none || (!state -> isBufferStart() && isAlphaNum(ECHAR_PREV1))) &&
-                        (next_is_blank || !(lex & lex_ruby_division_braker));
+                        (next_is_blank || !(lex & lex_ruby_division_breaker));
 
                     if (is_division) {
                         if (!cutWord(state)) goto exit;

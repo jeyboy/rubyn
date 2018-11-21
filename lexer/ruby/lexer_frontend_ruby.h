@@ -27,6 +27,7 @@ namespace Ruby {
         bool parseHeredoc(LexerControl * state);
         bool parseRegexp(LexerControl * state);
         bool parseComment(LexerControl * state);
+        bool parseCharCode(LexerControl * state);
 
         void lexicate(LexerControl * control);
     protected:
