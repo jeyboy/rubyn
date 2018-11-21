@@ -6,7 +6,18 @@
 class LexerControl;
 
 namespace Ruby {
-    class LexerFrontend : public ILexer {       
+    class LexerFrontend : public ILexer {
+        enum CharCodePart : quint8 {
+            ccp_none = 0,
+            ccp_symbol = 1,
+            ccp_octal = 2,
+            ccp_hex = 4,
+            ccp_unicode = 8,
+            ccp_ctrl = 16,
+            ccp_short_ctrl = 32,
+            ccp_meta = 64,
+        };
+
         void registerVariable(LexerControl * state);
         void registerMethod(LexerControl * state);
         void registerClass(LexerControl * state);

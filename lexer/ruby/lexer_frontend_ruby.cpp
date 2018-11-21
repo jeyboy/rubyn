@@ -786,52 +786,95 @@ bool LexerFrontend::parseComment(LexerControl * state) {
 
 bool LexerFrontend::parseCharCode(LexerControl * state) {
     bool has_error = false;
+    bool parsed = false;
     state -> next_offset = 0;
 
     if (isWord(ECHAR0)) {
         ++state -> buffer;
-
-        while(isWord(ECHAR0)) {
-            has_error = true;
-            ++state -> buffer;
-        }
     } else {
-        switch(ECHAR1) {
-            case '\\': {
-                switch(ECHAR2) {
-                    case 'C': { //    \C-\M-x #	meta-control-x
-                        //    \C-x # 	control-x
-                    break;}
+        quint8 cpart = ccp_none;
 
-                    case 'M': { //    \M-\C-x #	meta-control-x
-                        //    \M-x # 	meta-x
-                    break;}
+        while(!parsed) {
+            switch(ECHAR0) {
+                case '\\': {
+                    ++state -> buffer;
 
-                    case 'x': {
-                        //    \xnn 	# character with hexadecimal value nn
-                    break; }
+                    switch(ECHAR0) {
+                        case 'C': { //    \C-\M-x #	meta-control-x
+                            ++state -> buffer;
 
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 7:
-                    case 0: { break;} // \nnn #	character with octal value nnn
+                            if (isBlank(ECHAR0)) {
+                                parsed = has_error = true;
+                                break;
+                            }
 
-                    case 'c': { break;} //    \cx #	control-x
+                            if (ECHAR0 == '-') {
+                                ++state -> buffer;
+                                cpart |= ccp_ctrl;
+                            }
 
-                    case 'u': { break;}
-                    //    \unnnn #	Unicode code point U+nnnn (Ruby 1.9 and later)
-                    //    \u{nnnnn} # 	Unicode code point U+nnnnn with more than four hex digits must be enclosed in curly braces
+                            if (isBlank(ECHAR0)) {
+                                parsed = true;
+                                break;
+                            }
+                        break;}
 
-                    default:; // \x #	character x itself (for example \" is the double quote character)
-                }
-            break;}
+                        case 'M': { //    \M-\C-x #	meta-control-x
+                            ++state -> buffer;
 
-            default:;
-        }
+                            if (isBlank(ECHAR0)) {
+                                parsed = has_error = true;
+                                break;
+                            }
+
+                            if (ECHAR0 == '-') {
+                                ++state -> buffer;
+                                cpart |= ccp_meta;
+                            }
+
+                            if (isBlank(ECHAR0)) {
+                                parsed = true;
+                                break;
+                            }
+                        break;}
+
+                        case 'x': {
+                            //    \xnn 	# character with hexadecimal value nn
+                        break; }
+
+                        case 8:
+                        case 9: { has_error = true; }
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                        case 0: {
+
+                        break;} // \nnn #	character with octal value nnn
+
+                        case 'c': {
+
+                        break;} //    \cx #	control-x
+
+                        case 'u': { break;}
+                        //    \unnnn #	Unicode code point U+nnnn (Ruby 1.9 and later)
+                        //    \u{nnnnn} # 	Unicode code point U+nnnnn with more than four hex digits must be enclosed in curly braces
+
+                        default:; // \x #	character x itself (for example \" is the double quote character)
+                    }
+                break;}
+
+                default:;
+            }
+        };
+    }
+
+    while(isWord(ECHAR0)) {
+        has_error = true;
+        ++state -> buffer;
     }
 
     bool res = cutWord(state, lex_char_sequence);
