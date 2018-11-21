@@ -72,7 +72,6 @@ TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1
         }
     }
 
-
 //    connect(_doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
 
     layout = new TextDocumentLayout(_doc);

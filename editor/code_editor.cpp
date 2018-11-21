@@ -125,8 +125,10 @@ void CodeEditor::openDocument(File * file) {
         text_doc -> setDefaultFont(new_font);
         setFont(new_font);
 
+        text_doc -> setUndoRedoEnabled(false);
         setDocumentTitle(file -> name());
         setDocument(text_doc);
+        text_doc -> setUndoRedoEnabled(true);
 
         /// TODO: need to hide this panels for some types of doc
         show_foldings_panel = true;

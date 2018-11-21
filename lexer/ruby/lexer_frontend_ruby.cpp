@@ -1051,7 +1051,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (len == 0) {
                     StateLexem lex = state -> lastNonBlankLexem();
 
-                    bool is_charcode = lex == lex_none || lex & lex_ruby_ternary_braker;
+                    bool is_charcode = lex == lex_none || (lex & lex_ruby_ternary_braker && !isBlank(ECHAR1));
 
                     if (is_charcode) {
                         ++state -> buffer;
