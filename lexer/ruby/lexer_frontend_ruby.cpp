@@ -838,12 +838,32 @@ bool LexerFrontend::parseCharCode(LexerControl * state) {
                             }
                         break;}
 
-                        case 'x': {
-                            //    \xnn 	# character with hexadecimal value nn
+                        case 'x': { //    \xnn 	# character with hexadecimal value nn
+                            ++state -> buffer;
+
+                            if (isBlank(ECHAR0)) {
+                                parsed = has_error = true;
+                                break;
+                            }
+
+                            if (isHDigit(ECHAR0)) {
+                                ++state -> buffer;
+                                cpart |= ccp_hex;
+                            }
+
+                            if (isBlank(ECHAR0)) {
+                                parsed = true;
+                                break;
+                            }
+
+                            if (isHDigit(ECHAR0)) {
+                                ++state -> buffer;
+                                parsed = true;
+                            }
                         break; }
 
                         case 8:
-                        case 9: { has_error = true; }
+                        case 9: { parsed = has_error = true; break;}
                         case 1:
                         case 2:
                         case 3:
@@ -851,17 +871,77 @@ bool LexerFrontend::parseCharCode(LexerControl * state) {
                         case 5:
                         case 6:
                         case 7:
-                        case 0: {
+                        case 0: { // \nnn #	character with octal value nnn
+                            ++state -> buffer;
 
-                        break;} // \nnn #	character with octal value nnn
+                            for(int i = 0; i < 3; i++) {
+                                switch(ECHAR0) {
+                                    case 1:
+                                    case 2:
+                                    case 3:
+                                    case 4:
+                                    case 5:
+                                    case 6:
+                                    case 7:
+                                    case 0: {
+                                        ++state -> buffer;
+                                    break;}
 
-                        case 'c': {
+                                    default: {
+                                        if (isWord(ECHAR0)) {
+                                            has_error = true;
+                                        }
 
-                        break;} //    \cx #	control-x
+                                        parsed = true;
+                                    }
+                                }
+                            }
+                        break;}
 
-                        case 'u': { break;}
-                        //    \unnnn #	Unicode code point U+nnnn (Ruby 1.9 and later)
-                        //    \u{nnnnn} # 	Unicode code point U+nnnnn with more than four hex digits must be enclosed in curly braces
+                        case 'c': { // \cx #	control-x
+                            ++state -> buffer;
+
+                            if (isBlank(ECHAR0)) {
+                                parsed = has_error = true;
+                                break;
+                            }
+
+                            if (isBlank(ECHAR0)) {
+                                parsed = true;
+                                break;
+                            }
+                        break;}
+
+                        case 'u': { //    \unnnn #	Unicode code point U+nnnn (Ruby 1.9 and later)
+                            //    \u{nnnnn} # 	Unicode code point U+nnnnn with more than four hex digits must be enclosed in curly braces
+                            ++state -> buffer;
+                            cpart |= ccp_unicode;
+
+                            if (ECHAR0 == '{') {
+                                for(int i = 0; i < 5; i++) {
+                                    if (isHDigit(ECHAR0)) {
+                                        ++state -> buffer;
+                                    }
+                                    else {
+                                        parsed = true;
+                                        break;
+                                    }
+                                }
+
+                                has_error = ECHAR0 != '}';
+                            } else {
+                                for(int i = 0; i < 4; i++) {
+                                    if (isHDigit(ECHAR0)) {
+                                        ++state -> buffer;
+                                    }
+                                    else {
+                                        parsed = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                        break;}
 
                         default:; // \x #	character x itself (for example \" is the double quote character)
                     }
