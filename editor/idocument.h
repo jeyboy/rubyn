@@ -12,6 +12,8 @@ public:
     virtual ~IDocument() {}
 
     inline bool isFullyReaded() const { return fully_readed; }
+    virtual bool isChanged() const { return false; }
+    virtual bool save() const { return false; }
 
     virtual bool dump(QVariant & /*data*/) { return false; }
     virtual bool restore(const QVariant & /*data*/) { return false; }

@@ -30,6 +30,10 @@ protected:
 
     bool userAskFileType();
     void initUid();
+    bool openDevice();
+    const QFile::OpenMode openMode();
+
+    friend class TextDocument;
 public:
     enum FileOps {
         fo_none = 0,
@@ -37,18 +41,15 @@ public:
     };
 
     bool open();
+    void close();
+    inline bool save() { return _doc && _doc -> save(); }
 
     File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops = fo_none);
 
     virtual ~File() {
+        close();
+
         delete _doc;
-
-        if (_device) {
-            if (_device -> isOpen())
-                _device -> close();
-
-            delete _device;
-        }
     }
 
     inline IDocument * document() { return _doc; }
@@ -73,7 +74,8 @@ public:
     }
 
     inline bool isOpened() const { return _device && _device -> isOpen(); }
-    inline bool isFullyReaded() const { return _device && _doc && _doc -> isFullyReaded(); }
+    inline bool isChanged() const { return _doc && _doc -> isChanged(); }
+    inline bool isFullyReaded() const { return _doc && _doc -> isFullyReaded(); }
 
     inline FormatType formatType() const { return _main_format; }
     inline int baseFormatType() const { return _main_format & ft_base_file_types; }

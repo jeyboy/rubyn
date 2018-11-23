@@ -15,6 +15,40 @@ void File::initUid() {
     _uid = _name % QString::number(_device -> size()) % QString::number(QDateTime::currentMSecsSinceEpoch());
 }
 
+bool File::openDevice() {
+    if (isOpened())
+        return true;
+
+    QFile * file = new QFile(_path);
+
+    QFile::setPermissions(_path,
+        QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
+        QFile::ReadUser | QFile::WriteUser | QFile::ExeUser |
+        QFile::ReadGroup | QFile::WriteGroup | QFile::ExeGroup /*|
+        QFile::ReadOther | QFile::WriteOther | QFile::ExeOther*/
+    );
+
+    if (file -> open(openMode())) {
+        _device = file;
+
+        if (!_doc)
+            initUid();
+    } else {
+        file -> deleteLater();
+        return false;
+    }
+
+    return true;
+}
+
+const QFile::OpenMode File::openMode() {
+    QFile::OpenMode omode = QFile::ReadOnly;
+    if (_main_format & ft_text)
+        omode = QFile::Text | QFile::ReadWrite;
+
+    return omode;
+}
+
 bool File::identifyType(const QString & name) {
     QString lower_name = name.toLower();
     QStringList parts = lower_name.split('.', QString::SkipEmptyParts);
@@ -75,46 +109,36 @@ bool File::open() {
         if (!userAskFileType())
             return false;
 
-    bool is_text = _main_format & ft_text;
-    bool is_bynary = _main_format & ft_binary;
+    if (!openDevice())
+        return false;
 
-    if (is_text || is_bynary) {
-        QFile * file = new QFile(_path);
-
-        QFile::setPermissions(_path,
-            QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
-            QFile::ReadUser | QFile::WriteUser | QFile::ExeUser |
-            QFile::ReadGroup | QFile::WriteGroup | QFile::ExeGroup /*|
-            QFile::ReadOther | QFile::WriteOther | QFile::ExeOther*/
-        );
-
-        QFile::OpenMode omode = QFile::ReadOnly;
-        if (is_text)
-            omode |= QFile::Text;
-
-        if (file -> open(omode)) {
-            _device = file;
-            initUid();
-        } else {
-            file -> deleteLater();
-            return false;
-        }
-
-
-        //TODO: return BynaryDocument if is_bynary
-
+    if (_main_format & ft_text) {
         _doc = new TextDocument(this);
-
         return true;
     }
-//    else if (_main_format & ft_image)
-//        _doc = new ImageDocument(_path, _name, device, project, f);
+    else if (_main_format & ft_binary) {
+
+    }
+    else if (_main_format & ft_image) {
+        //_doc = new ImageDocument(_path, _name, device, project, f);
+    }
 
     return false;
 }
 
+void File::close() {
+    if (isChanged())
+        save();
+
+    if (isOpened()) {
+        _device -> close();
+        _device -> deleteLater();
+        _device = nullptr;
+    }
+}
+
 File::File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops)
-    : _doc(0), _device(0), _main_format(ft_unknown), _path(path), _name(name), level(inproject_level)
+    : _doc(nullptr), _device(nullptr), _main_format(ft_unknown), _path(path), _name(name), level(inproject_level)
 {
     identifyType(_name);
 

@@ -59,6 +59,9 @@ public:
     LEXEM_TYPE getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const bool & global_offset = true);
     ParaCell * getPara(const QTextBlock & block, const EDITOR_POS_TYPE & pos);
 
+    bool isChanged() const { return _doc -> isModified(); }
+    bool save() const;
+
     bool dump(QVariant & data);
     bool restore(const QVariant & data);
 

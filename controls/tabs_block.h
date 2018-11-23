@@ -47,6 +47,7 @@ public:
     void registerCursorPosOutput(QLabel * output);
 
     bool openFile(File * file, const bool & is_external = false);
+    void saveFiles();
 
     int tabsCount();
     QString tabFilePath(const int & index);

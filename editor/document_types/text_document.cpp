@@ -7,6 +7,7 @@
 
 #include <qdebug.h>
 #include <qtextcursor.h>
+#include <qtextstream.h>
 
 #include <qelapsedtimer.h>
 
@@ -251,6 +252,23 @@ ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE
     BlockUserData * udata = static_cast<BlockUserData *>(block.userData());
 
     return udata ? udata -> paraForPos(pos) : nullptr;
+}
+
+bool TextDocument::save() const {
+    if (!isChanged())
+        return true;
+
+    if (_file -> openDevice()) {
+        QTextStream writer(_file -> _device);
+        writer.setGenerateByteOrderMark(true);
+//        writer.setCodec();
+
+        writer << _doc -> toPlainText();//toRawText();
+
+        writer.flush();
+    }
+
+    return false;
 }
 
 bool TextDocument::dump(QVariant & data) {

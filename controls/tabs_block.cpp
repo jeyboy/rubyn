@@ -185,6 +185,10 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
     return true;
 }
 
+void TabsBlock::saveFiles() {
+
+}
+
 int TabsBlock::tabsCount() { return _bar -> count(); }
 
 QString TabsBlock::tabFilePath(const int & index) {
@@ -338,6 +342,8 @@ void TabsBlock::tabRemoved(QListWidgetItem * tab) {
     File * file = _bar -> tabFile(tab);
 
     if (file) {
+        file -> close();
+
         QString file_uid = file -> uid();
         if (_external_files.contains(file_uid)) {
             delete _external_files.take(file_uid);

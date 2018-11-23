@@ -84,7 +84,8 @@ SOURCES += main.cpp\
     controls/color_button.cpp \
     controls/jslider_style.cpp \
     controls/color_slider.cpp \
-    misc/color.cpp
+    misc/color.cpp \
+    tools/filesystem_watcher/watcher.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -201,7 +202,8 @@ HEADERS  += ide_window.h \
     controls/color_button.h \
     controls/jslider_style.h \
     controls/color_slider.h \
-    misc/color.h
+    misc/color.h \
+    tools/filesystem_watcher/watcher.h
 
 FORMS    += ide_window.ui
 
@@ -209,3 +211,21 @@ RESOURCES += \
     resources.qrc
 
 RC_FILE = rubyn.rc
+
+unix:!mac {
+#        QT += gui-private
+#        CONFIG += link_pkgconfig
+#        PKGCONFIG += x11
+#        LDFLAGS =- lX11
+#        DEFINES += HAVE_X11
+#        SOURCES += modules/controls/qxtglobalshortcut_x11.cpp
+        SOURCES += tools/filesystem_watcher/watcher_x11.cpp
+}
+win32: {
+#    SOURCES += modules/controls/qxtglobalshortcut_win.cpp
+    SOURCES += tools/filesystem_watcher/watcher_win.cpp
+}
+mac: {
+#    SOURCES += modules/controls/qxtglobalshortcut_mac.cpp
+    SOURCES += tools/filesystem_watcher/watcher_mac.cpp
+}
