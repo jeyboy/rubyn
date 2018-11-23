@@ -789,168 +789,174 @@ bool LexerFrontend::parseCharCode(LexerControl * state) {
     bool parsed = false;
     state -> next_offset = 0;
 
-    if (isWord(ECHAR0)) {
-        ++state -> buffer;
-    } else {
-        quint8 cpart = ccp_none;
+    quint8 cpart = ccp_none;
 
-        while(!parsed) {
-            switch(ECHAR0) {
-                case '\\': {
-                    ++state -> buffer;
+    while(!parsed) {
+        switch(ECHAR0) {
+            case '\\': {
+                ++state -> buffer;
 
-                    switch(ECHAR0) {
-                        case 'C': { //    \C-\M-x #	meta-control-x
+                switch(ECHAR0) {
+                    case 'C': { //    \C-\M-x #	meta-control-x
+                        ++state -> buffer;
+                        has_error |= (cpart & ccp_ctrl);
+
+                        if (isBlank(ECHAR0)) {
+                            parsed = has_error = true;
+                            break;
+                        }
+
+                        if (ECHAR0 == '-') {
                             ++state -> buffer;
+                            cpart |= ccp_ctrl;
+                        }
 
-                            if (isBlank(ECHAR0)) {
-                                parsed = has_error = true;
-                                break;
-                            }
+                        if (isBlank(ECHAR0)) {
+                            parsed = true;
+                            break;
+                        }
+                    break;}
 
-                            if (ECHAR0 == '-') {
-                                ++state -> buffer;
-                                cpart |= ccp_ctrl;
-                            }
+                    case 'M': { //    \M-\C-x #	meta-control-x
+                        ++state -> buffer;
+                        has_error |= (cpart & ccp_meta);
 
-                            if (isBlank(ECHAR0)) {
-                                parsed = true;
-                                break;
-                            }
-                        break;}
+                        if (isBlank(ECHAR0)) {
+                            parsed = has_error = true;
+                            break;
+                        }
 
-                        case 'M': { //    \M-\C-x #	meta-control-x
+                        if (ECHAR0 == '-') {
                             ++state -> buffer;
+                            cpart |= ccp_meta;
+                        }
 
-                            if (isBlank(ECHAR0)) {
-                                parsed = has_error = true;
-                                break;
-                            }
+                        if (isBlank(ECHAR0)) {
+                            parsed = true;
+                            break;
+                        }
+                    break;}
 
-                            if (ECHAR0 == '-') {
-                                ++state -> buffer;
-                                cpart |= ccp_meta;
-                            }
+                    case 'x': { //    \xnn 	# character with hexadecimal value nn
+                        ++state -> buffer;
 
-                            if (isBlank(ECHAR0)) {
-                                parsed = true;
-                                break;
-                            }
-                        break;}
+                        if (isBlank(ECHAR0)) {
+                            parsed = has_error = true;
+                            break;
+                        }
 
-                        case 'x': { //    \xnn 	# character with hexadecimal value nn
+                        if (isHDigit(ECHAR0)) {
                             ++state -> buffer;
+                            cpart |= ccp_hex;
+                        }
 
-                            if (isBlank(ECHAR0)) {
-                                parsed = has_error = true;
-                                break;
-                            }
+                        if (isBlank(ECHAR0)) {
+                            parsed = true;
+                            break;
+                        }
 
-                            if (isHDigit(ECHAR0)) {
-                                ++state -> buffer;
-                                cpart |= ccp_hex;
-                            }
-
-                            if (isBlank(ECHAR0)) {
-                                parsed = true;
-                                break;
-                            }
-
-                            if (isHDigit(ECHAR0)) {
-                                ++state -> buffer;
-                                parsed = true;
-                            }
-                        break; }
-
-                        case 8:
-                        case 9: { parsed = has_error = true; break;}
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                        case 6:
-                        case 7:
-                        case 0: { // \nnn #	character with octal value nnn
+                        if (isHDigit(ECHAR0)) {
                             ++state -> buffer;
+                            parsed = true;
+                        }
+                    break; }
 
-                            for(int i = 0; i < 3; i++) {
-                                switch(ECHAR0) {
-                                    case 1:
-                                    case 2:
-                                    case 3:
-                                    case 4:
-                                    case 5:
-                                    case 6:
-                                    case 7:
-                                    case 0: {
-                                        ++state -> buffer;
-                                    break;}
+                    case 8:
+                    case 9: { parsed = has_error = true; break;}
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 0: { // \nnn #	character with octal value nnn
+                        ++state -> buffer;
 
-                                    default: {
-                                        if (isWord(ECHAR0)) {
-                                            has_error = true;
-                                        }
+                        for(int i = 0; i < 3; i++) {
+                            switch(ECHAR0) {
+                                case 1:
+                                case 2:
+                                case 3:
+                                case 4:
+                                case 5:
+                                case 6:
+                                case 7:
+                                case 0: {
+                                    ++state -> buffer;
+                                break;}
 
-                                        parsed = true;
+                                default: {
+                                    if (isWord(ECHAR0)) {
+                                        has_error = true;
                                     }
+
+                                    parsed = true;
                                 }
                             }
-                        break;}
+                        }
+                    break;}
 
-                        case 'c': { // \cx #	control-x
+                    case 'c': { // \cx #	control-x
+                        ++state -> buffer;
+                        has_error |= (cpart & ccp_ctrl || cpart & ccp_short_ctrl);
+
+                        if (isBlank(ECHAR0)) {
+                            parsed = true;
+                            break;
+                        }
+                    break;}
+
+                    case 'u': { //    \unnnn #	Unicode code point U+nnnn (Ruby 1.9 and later)
+                        //    \u{nnnnn} # 	Unicode code point U+nnnnn with more than four hex digits must be enclosed in curly braces
+                        has_error |= (cpart & ccp_unicode || cpart & ccp_ctrl || cpart & ccp_meta);
+
+                        ++state -> buffer;
+                        cpart |= ccp_unicode;
+
+                        if (ECHAR0 == '{') {
                             ++state -> buffer;
 
-                            if (isBlank(ECHAR0)) {
-                                parsed = has_error = true;
-                                break;
-                            }
-
-                            if (isBlank(ECHAR0)) {
-                                parsed = true;
-                                break;
-                            }
-                        break;}
-
-                        case 'u': { //    \unnnn #	Unicode code point U+nnnn (Ruby 1.9 and later)
-                            //    \u{nnnnn} # 	Unicode code point U+nnnnn with more than four hex digits must be enclosed in curly braces
-                            ++state -> buffer;
-                            cpart |= ccp_unicode;
-
-                            if (ECHAR0 == '{') {
-                                for(int i = 0; i < 5; i++) {
-                                    if (isHDigit(ECHAR0)) {
-                                        ++state -> buffer;
-                                    }
-                                    else {
-                                        parsed = true;
-                                        break;
-                                    }
+                            for(int i = 0; i < 5; i++) {
+                                if (isHDigit(ECHAR0)) {
+                                    ++state -> buffer;
                                 }
-
-                                has_error = ECHAR0 != '}';
-                            } else {
-                                for(int i = 0; i < 4; i++) {
-                                    if (isHDigit(ECHAR0)) {
-                                        ++state -> buffer;
-                                    }
-                                    else {
-                                        parsed = true;
-                                        break;
-                                    }
+                                else {
+                                    break;
                                 }
                             }
 
-                        break;}
+                            if (ECHAR0 == '}')
+                                ++state -> buffer;
+                            else
+                                has_error = true;
+                        } else {
+                            for(int i = 0; i < 4; i++) {
+                                if (isHDigit(ECHAR0)) {
+                                    ++state -> buffer;
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+                        }
 
-                        default:; // \x #	character x itself (for example \" is the double quote character)
+                        parsed = true;
+                    break;}
+
+                    default: { // \x #	character x itself (for example \" is the double quote character)
+                        ++state -> buffer;
+                        parsed = true;
                     }
-                break;}
+                }
+            break;}
 
-                default:;
+            default: {
+                ++state -> buffer;
+                parsed = true;
             }
-        };
-    }
+        }
+    };
 
     while(isWord(ECHAR0)) {
         has_error = true;
