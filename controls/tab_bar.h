@@ -38,6 +38,7 @@ protected slots:
 public slots:
     void scrollForward();
     void scrollBackward();
+    void markAsChanged(const QString & uid, const bool & mark);
 
     friend class TabsBlock;
 };

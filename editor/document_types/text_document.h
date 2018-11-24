@@ -32,7 +32,9 @@ protected:
     File * _file;
 
     bool identificateLexer();
+    bool registerStateChangedCallback(QObject * /*target*/, const char * /*slot*/);
 signals:
+    void hasChanges(const QString & uid, const bool & has);
     void enterPressed();
     void wordHovered(const QPoint & point, const int & start, const int & end);
 public:
@@ -59,9 +61,7 @@ public:
     LEXEM_TYPE getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const bool & global_offset = true);
     ParaCell * getPara(const QTextBlock & block, const EDITOR_POS_TYPE & pos);
 
-    bool isChanged() const { return _doc -> isModified(); }
     bool save() const;
-
     bool dump(QVariant & data);
     bool restore(const QVariant & data);
 
@@ -73,6 +73,7 @@ public:
         return res;
     }
 protected slots:
+    void hasUnsavedChanges(const bool & has);
 //    void changesInContent(int position, int removed_count, int added_count);
 };
 

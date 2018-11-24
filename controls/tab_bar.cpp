@@ -195,3 +195,27 @@ void TabBar::scrollBackward() {
     horizontalScrollBar() -> triggerAction(QAbstractSlider::SliderSingleStepSub);
 }
 
+void TabBar::markAsChanged(const QString & uid, const bool & mark) {
+    if (_tabs_linkages.contains(uid)) {
+
+        QListWidgetItem * item = _tabs_linkages[uid];
+
+        QString curr_text = item -> text();
+
+        if (mark) {
+            if (!curr_text.startsWith('*'))
+                curr_text.prepend('*');
+            else
+                return;
+        }
+        else {
+            if (!curr_text.startsWith('*'))
+                curr_text.remove(0, 1);
+            else
+                return;
+        }
+
+        item -> setText(curr_text);
+    }
+}
+

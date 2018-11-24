@@ -167,6 +167,8 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
         QListWidgetItem * item = _bar -> addTab(file -> ico(), file -> name());
         item -> setData(Qt::UserRole, QVariant::fromValue(reinterpret_cast<quintptr>(file)));
 
+        file -> document() -> registerStateChangedCallback(_bar, SLOT(markAsChanged(QString, bool)));
+
         _bar -> _tabs_linkages.insert(file_uid, item);
 
         if (is_external) {
