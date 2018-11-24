@@ -7,10 +7,11 @@ class IDocument {
     bool _fully_readed;
 protected:
     bool _changed;
+    int _revision;
 
     inline void setFullyReaded(const bool & readed) { _fully_readed = readed; }
 public:
-    IDocument() : _fully_readed(false), _changed(false) {}
+    IDocument() : _fully_readed(false), _changed(false), _revision(-1) {}
     virtual ~IDocument() {}
 
     inline bool isFullyReaded() const { return _fully_readed; }

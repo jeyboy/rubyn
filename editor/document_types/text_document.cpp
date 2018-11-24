@@ -264,9 +264,9 @@ bool TextDocument::save() const {
     if (!isChanged())
         return true;
 
-    if (_file -> openDevice()) {
+    if (_file -> openDevice(QFile::WriteOnly)) {
         QTextStream writer(_file -> _device);
-        writer.setGenerateByteOrderMark(true);
+//        writer.setGenerateByteOrderMark(true);
 //        writer.setCodec();
 
         writer << _doc -> toPlainText();//toRawText();

@@ -109,7 +109,7 @@ void CodeEditor::openDocument(File * file) {
         QScrollBar * vscroll = verticalScrollBar();
 
         if (wrapper && display_cacher -> size() > 0) {
-            disconnect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(bool)));
+            disconnect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
             wrapper -> setVerticalScrollPos(vscroll -> value());
             if (display_cacher -> isShowOverlay())
                 hideOverlays();
@@ -131,7 +131,7 @@ void CodeEditor::openDocument(File * file) {
         setDocument(text_doc);
         text_doc -> setUndoRedoEnabled(true);
 
-        connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(bool)));
+        connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
 
         /// TODO: need to hide this panels for some types of doc
         show_foldings_panel = true;
@@ -1454,6 +1454,10 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
     }
 
     e -> accept();
+
+    if (document() -> revision() != wrapper -> revision()) {
+        emit modificationChanged(true);
+    }
 }
 
 void CodeEditor::keyReleaseEvent(QKeyEvent * e) {

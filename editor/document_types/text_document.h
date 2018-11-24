@@ -32,7 +32,7 @@ protected:
     File * _file;
 
     bool identificateLexer();
-    bool registerStateChangedCallback(QObject * /*target*/, const char * /*slot*/);
+    bool registerStateChangedCallback(QObject * target, const char * slot);
 signals:
     void hasChanges(const QString & uid, const bool & has);
     void enterPressed();
@@ -64,6 +64,9 @@ public:
     bool save() const;
     bool dump(QVariant & data);
     bool restore(const QVariant & data);
+
+    inline void setRevision(const int & new_revision) { _revision = new_revision; }
+    inline int revision() { return _revision; }
 
     inline void setVerticalScrollPos(const int & pos) { scroll_pos_y = pos; }
     inline int verticalScrollPos(const bool & drop = true) {

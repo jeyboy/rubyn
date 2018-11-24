@@ -30,7 +30,8 @@ protected:
 
     bool userAskFileType();
     void initUid();
-    bool openDevice();
+    bool openDevice(const QFile::OpenMode & def_mode = QFile::NotOpen);
+    void closeDevice();
     const QFile::OpenMode openMode();
 
     friend class TextDocument;

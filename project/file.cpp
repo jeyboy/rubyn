@@ -15,9 +15,11 @@ void File::initUid() {
     _uid = _name % QString::number(_device -> size()) % QString::number(QDateTime::currentMSecsSinceEpoch());
 }
 
-bool File::openDevice() {
-    if (isOpened())
+bool File::openDevice(const QFile::OpenMode & def_mode) {
+    if (isOpened() && !def_mode)
         return true;
+    else
+        closeDevice();
 
     QFile * file = new QFile(_path);
 
@@ -28,7 +30,7 @@ bool File::openDevice() {
         QFile::ReadOther | QFile::WriteOther | QFile::ExeOther*/
     );
 
-    if (file -> open(openMode())) {
+    if (file -> open(def_mode ? def_mode : openMode())) {
         _device = file;
 
         if (!_doc)
@@ -41,10 +43,18 @@ bool File::openDevice() {
     return true;
 }
 
+void File::closeDevice() {
+    if (isOpened()) {
+        _device -> close();
+        _device -> deleteLater();
+        _device = nullptr;
+    }
+}
+
 const QFile::OpenMode File::openMode() {
     QFile::OpenMode omode = QFile::ReadOnly;
     if (_main_format & ft_text)
-        omode = QFile::Text | QFile::ReadWrite;
+        omode = QFile::Text | QFile::ReadOnly;
 
     return omode;
 }
@@ -130,11 +140,7 @@ void File::close() {
     if (isChanged())
         save();
 
-    if (isOpened()) {
-        _device -> close();
-        _device -> deleteLater();
-        _device = nullptr;
-    }
+    closeDevice();
 }
 
 File::File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops)
