@@ -108,11 +108,14 @@ void CodeEditor::openDocument(File * file) {
 
         QScrollBar * vscroll = verticalScrollBar();
 
-        if (wrapper && display_cacher -> size() > 0) {
+        if (wrapper) {
             disconnect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
-            wrapper -> setVerticalScrollPos(vscroll -> value());
-            if (display_cacher -> isShowOverlay())
-                hideOverlays();
+
+            if (display_cacher -> size() > 0) {
+                wrapper -> setVerticalScrollPos(vscroll -> value());
+                if (display_cacher -> isShowOverlay())
+                    hideOverlays();
+            }
         }
 
         wrapper = file -> asText();

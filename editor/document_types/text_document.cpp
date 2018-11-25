@@ -105,6 +105,8 @@ TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1
 //            readNextBlock();
 //        }
 
+    setRevision(_doc -> revision());
+
     identificateLexer();
 }
 

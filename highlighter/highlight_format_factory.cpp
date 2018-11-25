@@ -125,7 +125,7 @@ void HighlightFormatFactory::registerParaHoverLineFormat() {
 
 void HighlightFormatFactory::registerParaHoverOverlay2Format() {
     QTextCharFormat format;
-    format.setBackground(QColor::fromRgb(255, 0, 255, 92));
+    format.setBackground(QColor::fromRgb(255, 115, 255, 92));
     _formats.insert(hid_para_hover_overlay2, format);
 }
 

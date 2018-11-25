@@ -484,7 +484,7 @@ void IDEWindow::keyPressEvent(QKeyEvent * event) {
                     saveEditor();
                 break;}
 
-                case Qt::ShiftModifier: {
+                case Qt::ControlModifier | Qt::ShiftModifier: {
                     saveAll();
                 break;}
             }
