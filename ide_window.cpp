@@ -288,6 +288,21 @@ void IDEWindow::openFolder(const QUrl & url) {
         Projects::obj().open(folder_url);
 }
 
+void IDEWindow::saveEditor(TabsBlock * editor) {
+    qDebug() << editor;
+
+    if (!editor)
+        editor = active_editor;
+
+    editor -> saveFiles();
+}
+void IDEWindow::saveAll() {
+    auto editors = widgets_list -> findChildren<TabsBlock *>();
+
+    for(auto it = editors.begin(); it != editors.end(); it++)
+        saveEditor(*it);
+}
+
 void IDEWindow::setupPosOutput() {
     pos_status = new QLabel();
     pos_status -> setStyleSheet("border: 1px solid gray; border-radius: 6px;");
@@ -422,12 +437,14 @@ void IDEWindow::setupToolWindows() {
     control_bar -> addSeparator();
 
     QAction * _color_picker = control_bar -> addAction(QIcon(QLatin1Literal(":/tools/color_picker")), QLatin1Literal());
-    connect(_color_picker, &QAction::triggered, [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); });
+    _color_picker -> setCheckable(true);
+    _color_picker -> setChecked(color_picker_widget -> isVisible());
+    connect(_color_picker, &QAction::triggered, [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); _color_picker -> setChecked(color_picker_widget -> isVisible()); });
 
     control_bar -> addSeparator();
 
     QAction * _save_doc = control_bar -> addAction(QIcon(QLatin1Literal(":/tools/save")), QLatin1Literal());
-    _save_doc -> setDisabled(true);
+    connect(_save_doc, SIGNAL(triggered()), this, SLOT(saveEditor()));
 
     Toolbars::obj().append(control_bar, Qt::TopToolBarArea);
 }
@@ -458,6 +475,23 @@ void IDEWindow::dropEvent(QDropEvent * event) {
 
         event -> accept();
     } else event -> ignore();
+}
+void IDEWindow::keyPressEvent(QKeyEvent * event) {
+    switch(event -> key()) {
+        case Qt::Key_S: {
+            switch(event -> modifiers()) {
+                case Qt::ControlModifier: {
+                    saveEditor();
+                break;}
+
+                case Qt::ShiftModifier: {
+                    saveAll();
+                break;}
+            }
+        break;}
+    }
+
+    QMainWindow::keyPressEvent(event);
 }
 
 void IDEWindow::closeEvent(QCloseEvent * event) {

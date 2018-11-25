@@ -461,6 +461,7 @@ protected:
     inline void setMouseCursor(const Qt::CursorShape & shape) { viewport() -> setCursor(QCursor(shape)); }
     inline void restoreDefaultMouseCursor() { setMouseCursor(Qt::IBeamCursor); }
 
+    void procRevision();
     void imitateClick();
     void prepareIcons(const int & size = ICO_WIDTH);
 

@@ -57,6 +57,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent *);
     void dragMoveEvent(QDragMoveEvent *);
     void dropEvent(QDropEvent *);
+    void keyPressEvent(QKeyEvent *);
 
     void closeEvent(QCloseEvent *);
 public:
@@ -78,6 +79,9 @@ public slots:
     void newFolder();
     void openFile(const QUrl & url = QUrl());
     void openFolder(const QUrl & url = QUrl());
+
+    void saveEditor(TabsBlock * editor = nullptr);
+    void saveAll();
 };
 
 #endif // IDE_WINDOW_H

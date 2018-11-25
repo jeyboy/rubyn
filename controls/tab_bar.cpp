@@ -209,7 +209,7 @@ void TabBar::markAsChanged(const QString & uid, const bool & mark) {
                 return;
         }
         else {
-            if (!curr_text.startsWith('*'))
+            if (curr_text.startsWith('*'))
                 curr_text.remove(0, 1);
             else
                 return;

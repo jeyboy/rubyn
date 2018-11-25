@@ -187,10 +187,6 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
     return true;
 }
 
-void TabsBlock::saveFiles() {
-
-}
-
 int TabsBlock::tabsCount() { return _bar -> count(); }
 
 QString TabsBlock::tabFilePath(const int & index) {
@@ -309,6 +305,18 @@ void TabsBlock::tabsCountChanged(const int & correction) {
     if (new_amount == 0) {
         emit moveToBlankState(this);
         hide();
+    }
+}
+
+void TabsBlock::saveFiles() {
+    QHash<QString, QListWidgetItem *>::Iterator it = _bar -> _tabs_linkages.begin();
+
+    for(; it != _bar -> _tabs_linkages.end(); it++) {
+        File * f = _bar -> tabFile(it.value());
+
+        if (f && f -> isChanged()) {
+            f -> save();
+        }
     }
 }
 

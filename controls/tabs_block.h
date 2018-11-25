@@ -47,7 +47,6 @@ public:
     void registerCursorPosOutput(QLabel * output);
 
     bool openFile(File * file, const bool & is_external = false);
-    void saveFiles();
 
     int tabsCount();
     QString tabFilePath(const int & index);
@@ -68,6 +67,7 @@ signals:
     void moveToBlankState(TabsBlock *);
 
 public slots:
+    void saveFiles();
     void currentTabChanged(QListWidgetItem * tab);
     void currentTabIndexChanged(const int & index);
 

@@ -200,6 +200,15 @@ void CodeEditor::fillBackground(QPainter * p, const QRectF & rect, QBrush brush,
     p -> restore();
 }
 
+void CodeEditor::procRevision() {
+    int doc_revision = document() -> revision();
+
+    if (doc_revision != wrapper -> revision()) {
+        wrapper -> setRevision(doc_revision);
+        emit modificationChanged(true);
+    }
+}
+
 void CodeEditor::imitateClick() {
     highlightCurrentLine();
     cursorMoved();
@@ -1434,6 +1443,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         default: {
             if (!completer) {
                 QPlainTextEdit::keyPressEvent(e);
+                procRevision();
                 return;
             }
 
@@ -1444,8 +1454,10 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                 QPlainTextEdit::keyPressEvent(e);
 
             if (completer -> popup() -> isHidden()) { // ignore showing of suggestions for action keys
-                if (curr_key < Qt::Key_Space || curr_key > Qt::Key_ydiaeresis)
+                if (curr_key < Qt::Key_Space || curr_key > Qt::Key_ydiaeresis) {
+                    procRevision();
                     return;
+                }
             }
 
             QTextCursor tc = textCursor();
@@ -1453,11 +1465,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         }
     }
 
-    e -> accept();
-
-    if (document() -> revision() != wrapper -> revision()) {
-        emit modificationChanged(true);
-    }
+    procRevision();
 }
 
 void CodeEditor::keyReleaseEvent(QKeyEvent * e) {

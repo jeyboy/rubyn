@@ -260,7 +260,7 @@ ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE
     return udata ? udata -> paraForPos(pos) : nullptr;
 }
 
-bool TextDocument::save() const {
+bool TextDocument::save() {
     if (!isChanged())
         return true;
 
@@ -272,6 +272,8 @@ bool TextDocument::save() const {
         writer << _doc -> toPlainText();//toRawText();
 
         writer.flush();
+
+        hasUnsavedChanges(false);
     }
 
     return false;
