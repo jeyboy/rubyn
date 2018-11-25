@@ -417,6 +417,16 @@ void CodeEditor::drawParaOverlays(QPainter & painter) {
             QTextBlock closer_blk = para_info.start_block_num == para_info.end_block_num ? opener_blk : document() -> findBlockByNumber(para_info.end_block_num);
             drawTextOverlay(hid_para_hover_overlay, painter, closer_blk, para_info.closer_pos, para_info.closer_length);
         }
+
+        if (alt_para_info.isValid()) {
+            QTextBlock opener_blk = document() -> findBlockByNumber(alt_para_info.start_block_num);
+            drawTextOverlay(hid_para_hover_overlay2, painter, opener_blk, alt_para_info.opener_pos, alt_para_info.opener_length);
+
+            if (alt_para_info.closer_pos != NO_INFO) {
+                QTextBlock closer_blk = alt_para_info.start_block_num == alt_para_info.end_block_num ? opener_blk : document() -> findBlockByNumber(alt_para_info.end_block_num);
+                drawTextOverlay(hid_para_hover_overlay2, painter, closer_blk, alt_para_info.closer_pos, alt_para_info.closer_length);
+            }
+        }
     }
 }
 
@@ -1273,8 +1283,6 @@ bool CodeEditor::event(QEvent * event) {
 void CodeEditor::paintEvent(QPaintEvent * e) {
     Logger::obj().startMark();
 
-//    hideOverlayIfNoNeed();
-
     QPainter painter(viewport());
 
     painter.save();
@@ -1666,6 +1674,75 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
     }
 }
 
+bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para, int start_pos) {
+    bool initiated = false;
+    int end_pos = start_pos;
+    info.level = TextDocumentLayout::getBlockLevel(blk);
+
+    if (para) {
+        if (para -> is_blockator) {
+            ParaCell * stoper = para -> closer;
+
+            if (!stoper) {
+                stoper = info.findOpositePara(para);
+            }
+
+            if (stoper) {
+                if (para -> is_opener) {
+                    info.setOpener(para -> pos, para -> length);
+                    info.setCloser(stoper -> pos, stoper -> length);
+
+                    while(para && para != stoper) {
+                        if (para -> para_type == pt_max)
+                            ++end_pos;
+
+                        para = para -> next;
+                    }
+                } else {
+                    info.setOpener(stoper -> pos, stoper -> length);
+                    info.setCloser(para -> pos, para -> length);
+
+                    while(para && para != stoper) {
+                        if (para -> para_type == pt_max)
+                            --start_pos;
+
+                        para = para -> prev;
+                    }
+                }
+
+                initiated = true;
+            } else {
+                qDebug() << "PARA WITHOUT CLOSER";
+            }
+        } else {
+            info.setOpener(para -> pos, para -> length);
+            info.setCloser(NO_INFO);
+
+            while(para -> next) {
+                if (para -> para_type == pt_max) {
+                    blk = blk.next();
+
+                    if (TextDocumentLayout::getBlockLevel(blk) <= info.level)
+                        break;
+                    else
+                        ++end_pos;
+                }
+
+                para = para -> next;
+            }
+
+            initiated = true;
+        }
+    }
+
+    if (initiated) {
+        info.start_block_num = start_pos;
+        info.end_block_num = end_pos;
+    }
+
+    return initiated;
+}
+
 void CodeEditor::overlayHidden(const OVERLAY_POS_TYPE & uid) {
     display_cacher -> mapOverlayState(uid, false);
     restoreDefaultMouseCursor();
@@ -1713,6 +1790,9 @@ void CodeEditor::highlightCurrentLine() {
 
 void CodeEditor::cursorMoved() {
     bool initiated = false;
+    bool alt_initiated = false;
+
+    alt_para_info.clear();
 
     //INFO: when a document opened but do not have the focus yet we always have the cursor in pos 0:0 but it's not drawn. We should ignore this case.
     if (hasFocus()) {
@@ -1723,6 +1803,7 @@ void CodeEditor::cursorMoved() {
         QTextBlock blk = cursor.block();
         int start_pos = blk.blockNumber();
         int pos_in_block = cursor.positionInBlock();
+        bool can_has_second_para = false;
 
         if (show_folding_scope_lines) {
             CodeEditorCacheCell * cache = display_cacher -> cacheForBlockNumber(start_pos);
@@ -1733,7 +1814,6 @@ void CodeEditor::cursorMoved() {
                 if (!scope_offset.isNull()) {
                     start_pos = scope_offset.start_block_number;
                     blk = document() -> findBlockByNumber(start_pos);
-//                    para = wrapper -> getPara(blk, pos_in_block);
 
                     BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
@@ -1743,84 +1823,39 @@ void CodeEditor::cursorMoved() {
             }
         }
 
-        if (!para)
+        if (!para) {
+            can_has_second_para = true;
             para = wrapper -> getPara(blk, pos_in_block);
-
-        int end_pos = start_pos;
-        para_info.level = TextDocumentLayout::getBlockLevel(blk);
-
-        if (para) {
-            if (para -> is_blockator) {
-                ParaCell * stoper = para -> closer;
-
-                if (!stoper) {
-                    stoper = para_info.findOpositePara(para);
-                }
-
-                if (stoper) {
-                    if (para -> is_opener) {
-                        para_info.setOpener(para -> pos, para -> length);
-                        para_info.setCloser(stoper -> pos, stoper -> length);
-
-                        while(para && para != stoper) {
-                            if (para -> para_type == pt_max)
-                                ++end_pos;
-
-                            para = para -> next;
-                        }
-                    } else {
-                        para_info.setOpener(stoper -> pos, stoper -> length);
-                        para_info.setCloser(para -> pos, para -> length);
-
-                        while(para && para != stoper) {
-                            if (para -> para_type == pt_max)
-                                --start_pos;
-
-                            para = para -> prev;
-                        }
-                    }
-
-                    initiated = true;
-                } else {
-                    qDebug() << "PARA WITHOUT CLOSER";
-                }
-            } else {
-                para_info.setOpener(para -> pos, para -> length);
-                para_info.setCloser(NO_INFO);
-
-                while(para -> next) {
-                    if (para -> para_type == pt_max) {
-                        blk = blk.next();
-
-                        if (TextDocumentLayout::getBlockLevel(blk) <= para_info.level)
-                            break;
-                        else
-                            ++end_pos;
-                    }
-
-                    para = para -> next;
-                }
-
-                initiated = true;
-            }
         }
 
-        if (initiated) {
-            para_info.start_block_num = start_pos;
-            para_info.end_block_num = end_pos;
+        initiated = findPara(para_info, blk, para, start_pos);
 
-            if (start_pos < display_cacher -> top_block_number)
-                showOverlay(OverlayInfo::ol_top, hid_para_content_popup, document() -> findBlockByNumber(start_pos));
+        if (can_has_second_para && para) {
+            if (para -> pos == pos_in_block) {
+                para = para -> prevInLine();
 
-            if (end_pos > display_cacher -> bottom_block_number)
-                showOverlay(OverlayInfo::ol_bottom, hid_para_content_popup, document() -> findBlockByNumber(end_pos));
+                if (para && para -> pos != para_info.opener_pos && para -> pos + para -> length == pos_in_block)
+                    alt_initiated = findPara(alt_para_info, blk, para, start_pos);
+            } else if (para -> pos + para -> length == pos_in_block) {
+                para = para -> nextInLine();
 
-            viewport() -> update(); // update editor marks
-            update(); // update folding scope on extra area
+                if (para && para -> pos != para_info.closer_pos && para -> pos == pos_in_block)
+                    alt_initiated = findPara(alt_para_info, blk, para, start_pos);
+            }
         }
     }
 
-    if (!initiated && para_info.isValid()) {
+    if (initiated) {
+        if (para_info.start_block_num < display_cacher -> top_block_number)
+            showOverlay(OverlayInfo::ol_top, hid_para_content_popup, document() -> findBlockByNumber(para_info.start_block_num));
+
+        if (para_info.end_block_num > display_cacher -> bottom_block_number)
+            showOverlay(OverlayInfo::ol_bottom, hid_para_content_popup, document() -> findBlockByNumber(para_info.end_block_num));
+
+        viewport() -> update(); // update editor marks
+        update(); // update folding scope on extra area
+    }
+    else if (para_info.isValid()) {
         para_info.clear();
 
         if (display_cacher -> isShowOverlay())

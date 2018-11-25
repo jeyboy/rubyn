@@ -245,6 +245,7 @@ class CodeEditor : public QPlainTextEdit {
     QPoint curr_folding_limits;
 
     ActiveParaInfo para_info;
+    ActiveParaInfo alt_para_info;
     ActiveFoldingInfo active_folding;
 
     int curr_block_number;
@@ -541,6 +542,7 @@ protected:
 }
 
     void procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup = true, const bool & has_modifiers = false);
+    bool findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para, int start_pos);
 signals:
     void inFocus();
     void fileDropped(const QUrl & uri/*, bool multiple*/); // Multiple files are dropped?

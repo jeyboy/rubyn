@@ -41,6 +41,18 @@ struct ParaCell {
             closer -> closer = nullptr;
     }
 
+    ParaCell * prevInLine() {
+        if (!prev || prev -> para_type == pt_none || prev -> para_type == pt_max_end) return nullptr;
+
+        return prev;
+    }
+
+    ParaCell * nextInLine() {
+        if (!next || next -> para_type == pt_none || next -> para_type == pt_max_end) return nullptr;
+
+        return next;
+    }
+
 //    EDITOR_POS_TYPE linesCoverage() {
 //        if (!close) {
 //            qDebug() << "MISSED CLOSE";
