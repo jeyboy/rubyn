@@ -55,6 +55,9 @@ public:
 
     static void dump(const QByteArray & content);
 
+    static void info(const QString & initiator, const QString & value = QString());
+    static void error(const QString & initiator, const QString & value = QString());
+
     void write(const QString & initiator, const LogLevel & level = log_info);
     void write(const QString & initiator, const QString & value, const LogLevel & level = log_info);
     void write(const QString & initiator, const QString & value, const QString & attr, const LogLevel & level = log_info);

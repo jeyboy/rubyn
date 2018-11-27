@@ -63,7 +63,7 @@ public:
 signals:
     void resourceDropped(TabsBlock *, const QUrl &);
     void activated(TabsBlock *);
-    void newTabsBlockRequested(File *);
+    void newTabsBlockRequested(File *, const bool & vertical);
     void moveToBlankState(TabsBlock *);
 
 public slots:

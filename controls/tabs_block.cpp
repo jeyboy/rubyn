@@ -374,9 +374,15 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
     if (tab) {
         QMenu menu(this);
 
-        QAction * action = menu.addAction(tr("In separate editor"), this, SLOT(newTabsBlockRequest()));
         File * file = _bar -> tabFile(tab);
+
+        QAction * action = menu.addAction(tr("In new horizontal editor"), this, SLOT(newTabsBlockRequest()));
         action -> setProperty("uid", file -> uid());
+        action -> setProperty("vertical", false);
+
+        action = menu.addAction(tr("In new vertical editor"), this, SLOT(newTabsBlockRequest()));
+        action -> setProperty("uid", file -> uid());
+        action -> setProperty("vertical", true);
 
         menu.exec(_bar -> mapToGlobal(point));
     }
@@ -390,6 +396,6 @@ void TabsBlock::newTabsBlockRequest() {
     File * file = _bar -> tabFile(tab);
 
     if (file) {
-        emit newTabsBlockRequested(file);
+        emit newTabsBlockRequested(file, obj -> property("vertical").toBool());
     }
 }

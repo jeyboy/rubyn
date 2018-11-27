@@ -22,6 +22,19 @@ void Logger::dump(const QByteArray & content) {
     }
 }
 
+void Logger::info(const QString & initiator, const QString & value) {
+    if (value.isEmpty())
+        obj().write(initiator, log_info);
+    else
+        obj().write(initiator, value, log_info);
+}
+void Logger::error(const QString & initiator, const QString & value) {
+    if (value.isEmpty())
+        obj().write(initiator, log_error);
+    else
+        obj().write(initiator, value, log_error);
+}
+
 Logger::Logger() : QObject(), out(nullptr), file(nullptr), m_editor(nullptr), m_showDate(true), fm(nullptr), timer(new QElapsedTimer()) {}
 
 Logger::~Logger() {

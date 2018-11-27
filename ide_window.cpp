@@ -172,13 +172,29 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
         _file -> asText() -> setVerticalScrollPos(scroll_pos_y);
 
     if (!active_editor || in_new)
-        newEditorRequired(_file, is_external);
+        newEditorRequired(_file, true, is_external);
     else
         active_editor -> openFile(_file, is_external);
 }
 
-void IDEWindow::newEditorRequired(File * file, const bool & is_external) {
-    setupEditor();
+void IDEWindow::newEditorRequired(File * file, const bool & vertical, const bool & is_external) {
+    QSplitter * parent_splitter = nullptr;
+
+    if (active_editor)
+        parent_splitter = static_cast<QSplitter *>(active_editor -> parentWidget());
+    else
+        parent_splitter = widgets_list;
+
+    if ((parent_splitter -> orientation() == Qt::Vertical) != vertical) {
+        QSplitter * new_child = setupChildSplitter(this, vertical);
+
+        int index = parent_splitter -> indexOf(active_editor);
+        parent_splitter -> replaceWidget(index, new_child);
+        new_child -> addWidget(active_editor);
+        parent_splitter = new_child;
+    }
+
+    setupEditor(parent_splitter);
     active_editor -> openFile(file, is_external);
 }
 
@@ -190,32 +206,64 @@ void IDEWindow::setActiveEditor(TabsBlock * new_active) {
 
     if (active_editor) {
         active_editor -> activate(true);
-//        active_editor -> setFocus();
+        active_editor -> setFocus(); // ?
     }
 }
 
 void IDEWindow::editorIsEmpty(TabsBlock * target_editor) {
-    if (active_editor == target_editor) {
-        int index = widgets_list -> indexOf(active_editor);
+    QSplitter * parent_splitter = static_cast<QSplitter *>(target_editor -> parentWidget());
+    bool active_is_deleting = active_editor == target_editor;
 
-        if (index - 1 >= 0)
-            --index;
-        else if (index + 1 < widgets_list -> count())
-            ++index;
-        else {
-            setActiveEditor(nullptr);
-            return;
+    while(parent_splitter) {
+        bool is_main = parent_splitter == widgets_list;
+        bool del_required = !is_main && parent_splitter -> count() == 1;
+
+        if (active_is_deleting) {
+            QWidget * widget = nullptr;
+
+            if (del_required) {
+                QSplitter * psplitter = static_cast<QSplitter *>(parent_splitter -> parentWidget());
+
+                while(psplitter) {
+                    if (psplitter -> count() == 1) {
+                        if (psplitter != widgets_list) {
+                            QSplitter * subpsplitter = static_cast<QSplitter *>(psplitter -> parentWidget());
+                            psplitter -> deleteLater();
+                            psplitter = subpsplitter;
+                        }
+                        else break;
+                    } else {
+                        widget = findEditor(psplitter);
+                        break;
+                    }
+                }
+            }
+            else {
+                int index = parent_splitter -> indexOf(active_editor);
+
+                if (index - 1 >= 0)
+                    widget = parent_splitter -> widget(index - 1);
+                else if (index + 1 < parent_splitter -> count())
+                    widget = parent_splitter -> widget(index + 1);
+
+                if (qobject_cast<QSplitter *>(widget))
+                     widget = findEditor(qobject_cast<QSplitter *>(widget));
+            }
+
+            setActiveEditor(qobject_cast<TabsBlock *>(widget));
+            active_is_deleting = false;
         }
 
-        QWidget * widget = widgets_list -> widget(index);
-        setActiveEditor(dynamic_cast<TabsBlock *>(widget));
+        target_editor -> deleteLater();
 
-        if (active_editor) {
-            active_editor -> setFocus();
+        if (!del_required)
+            break;
+        else {
+            QSplitter * psplitter = static_cast<QSplitter *>(parent_splitter -> parentWidget());
+            parent_splitter -> deleteLater();
+            parent_splitter = psplitter;
         }
     }
-
-    target_editor -> deleteLater();
 }
 
 void IDEWindow::about() {
@@ -289,8 +337,6 @@ void IDEWindow::openFolder(const QUrl & url) {
 }
 
 void IDEWindow::saveEditor(TabsBlock * editor) {
-    qDebug() << editor;
-
     if (!editor)
         editor = active_editor;
 
@@ -309,18 +355,21 @@ void IDEWindow::setupPosOutput() {
     ui -> status_bar -> addPermanentWidget(pos_status);
 }
 
-void IDEWindow::setupEditor() {
+void IDEWindow::setupEditor(QSplitter * list) {
+    if (!list)
+        list = widgets_list;
+
     TabsBlock * new_editor = new TabsBlock(this);
     setActiveEditor(new_editor);
 
     new_editor -> registerCursorPosOutput(pos_status);
-    connect(new_editor, SIGNAL(newTabsBlockRequested(File*)), this, SLOT(newEditorRequired(File*)));
+    connect(new_editor, SIGNAL(newTabsBlockRequested(File*, const bool &)), this, SLOT(newEditorRequired(File*, const bool &)));
     connect(new_editor, SIGNAL(moveToBlankState(TabsBlock*)), this, SLOT(editorIsEmpty(TabsBlock*)));
     connect(new_editor, SIGNAL(activated(TabsBlock*)), this, SLOT(setActiveEditor(TabsBlock*)));
     connect(new_editor, SIGNAL(resourceDropped(TabsBlock*,QUrl)), this, SLOT(openResource(TabsBlock*,QUrl)));
 
-    widgets_list -> addWidget(new_editor);
 
+    list -> addWidget(new_editor);
     active_editor -> hide();
 }
 
@@ -341,34 +390,50 @@ void IDEWindow::setupHelpMenu() {
 }
 
 void IDEWindow::setupSplitter() {
-    widgets_list = new QSplitter(this);
-    widgets_list -> setOrientation(Qt::Vertical);
-
-//    "QSplitter::handle:horizontal {"
-//    "   border: 2px solid #ddd;"
-//    "   background-color: #708090;"
-//    "   border-radius: 6px;"
-//    "   background-image: url(:/grape);"
-//    "   height: 20px;"
-//    "}"
-
-    widgets_list -> setStyleSheet(
-        QLatin1Literal(
-            "QSplitter::handle:vertical {"
-            "   border: 2px solid #ddd;"
-            "   background-color: #555;"
-            "   border-radius: 6px;"
-            "   background-image: url(:/grape);"
-            "   background-repeat: no-repeat;"
-            "   background-position: center center;"
-            "   height: 4px;"
-            "}"
-        )
-    );
+    widgets_list = setupChildSplitter(this);
 
     setCentralWidget(widgets_list);
+}
 
-    connect(widgets_list, &QSplitter::splitterMoved, this, &IDEWindow::splitterMoved);
+QSplitter * IDEWindow::setupChildSplitter(QWidget * parent, const bool & vertical) {
+    QSplitter * list = new QSplitter(parent);
+    configSplitter(list, vertical);
+
+    connect(list, &QSplitter::splitterMoved, this, &IDEWindow::splitterMoved);
+
+    return list;
+}
+
+void IDEWindow::configSplitter(QSplitter * splitter, const bool & vertical) {
+    splitter -> setOrientation(vertical ? Qt::Vertical : Qt::Horizontal);
+
+    splitter -> setMinimumSize(8, 8);
+
+    splitter -> setStyleSheet(
+        vertical ?
+            QLatin1Literal(
+                "QSplitter::handle:vertical {"
+                "   border: 2px solid #ddd;"
+                "   background-color: #555;"
+                "   border-radius: 6px;"
+                "   background-image: url(:/grape);"
+                "   background-repeat: no-repeat;"
+                "   background-position: center center;"
+                "   padding: 2px;"
+                "}"
+            ) :
+            QLatin1Literal(
+                "QSplitter[orientation=\"1\"]::handle {"
+                "   border: 2px solid #ddd;"
+                "   background-color: #555;"
+                "   border-radius: 6px;"
+                "   background-image: url(:/grape_horizontal);"
+                "   background-repeat: no-repeat;"
+                "   background-position: center center;"
+                "   padding: 2px;"
+                "}"
+            )
+    );
 }
 
 void IDEWindow::setupToolWindows() {
@@ -447,6 +512,26 @@ void IDEWindow::setupToolWindows() {
     connect(_save_doc, SIGNAL(triggered()), this, SLOT(saveEditor()));
 
     Toolbars::obj().append(control_bar, Qt::TopToolBarArea);
+}
+
+QWidget * IDEWindow::findEditor(QSplitter * active_table) {
+    QWidget * widget = nullptr;
+
+    while(active_table) {
+        widget = active_table -> widget(0);
+
+        if (!widget) {
+            Logger::obj().write(QLatin1Literal("editorIsEmpty"), QLatin1Literal("incorrect editors table state"), Logger::log_error);
+            break;
+        }
+
+        if (qobject_cast<TabsBlock *>(widget))
+            break;
+        else
+            active_table = qobject_cast<QSplitter *>(widget);
+    }
+
+    return widget;
 }
 
 void IDEWindow::loadSettings() {

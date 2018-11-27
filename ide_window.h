@@ -42,10 +42,12 @@ class IDEWindow : public QMainWindow {
     QLabel * pos_status;
 
     void setupPosOutput();
-    void setupEditor();
+    void setupEditor(QSplitter * list = nullptr);
     void setupFileMenu();
     void setupHelpMenu();
     void setupSplitter();
+    QSplitter * setupChildSplitter(QWidget * parent, const bool & vertical = true);
+    void configSplitter(QSplitter * splitter, const bool & vertical = true);
 
     void loadSettings();
     void saveSettings();
@@ -53,6 +55,7 @@ class IDEWindow : public QMainWindow {
     friend class Dumper;
 protected:
     void setupToolWindows();
+    QWidget * findEditor(QSplitter * active_table);
 
     void dragEnterEvent(QDragEnterEvent *);
     void dragMoveEvent(QDragMoveEvent *);
@@ -67,7 +70,7 @@ public:
 protected slots:
     void splitterMoved(int pos, int index);
     void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false, const int & scroll_pos_y = 0);
-    void newEditorRequired(File * file, const bool & is_external = false);
+    void newEditorRequired(File * file, const bool & vertical, const bool & is_external = false);
     void setActiveEditor(TabsBlock *);
     void editorIsEmpty(TabsBlock *);
     void openResource(TabsBlock * target_editor, const QUrl & url);
