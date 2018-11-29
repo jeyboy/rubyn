@@ -196,7 +196,6 @@ void IDEWindow::setActiveEditor(TabsBlock * new_active) {
 
     if (active_editor) {
         active_editor -> activate(true);
-        active_editor -> setFocus(); // ?
     }
 }
 
