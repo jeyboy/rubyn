@@ -396,30 +396,23 @@ QSplitter * IDEWindow::setupChildSplitter(QWidget * parent, const bool & vertica
 void IDEWindow::configSplitter(QSplitter * splitter, const bool & vertical) {
     splitter -> setOrientation(vertical ? Qt::Vertical : Qt::Horizontal);
 
-//    splitter -> setMinimumSize(8, 8);
-
     splitter -> setStyleSheet(
-        vertical ?
             QLatin1Literal(
-                "QSplitter::handle:vertical {"
+                "QSplitter::handle {"
                 "   border: 2px solid #ddd;"
                 "   background-color: #555;"
                 "   border-radius: 6px;"
-                "   background-image: url(:/grape);"
                 "   background-repeat: no-repeat;"
                 "   background-position: center center;"
                 "   padding: 2px;"
                 "}"
-            ) :
-            QLatin1Literal(
-                "QSplitter[orientation=\"1\"]::handle {"
-                "   border: 2px solid #ddd;"
-                "   background-color: #555;"
-                "   border-radius: 6px;"
+
+                "QSplitter::handle:vertical {"
+                "   background-image: url(:/grape);"
+                "}"
+
+                "QSplitter::handle:horizontal {"
                 "   background-image: url(:/grape_horizontal);"
-                "   background-repeat: no-repeat;"
-                "   background-position: center center;"
-                "   padding: 2px;"
                 "}"
             )
     );
