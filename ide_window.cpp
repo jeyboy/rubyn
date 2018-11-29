@@ -47,7 +47,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     setupFileMenu();
     setupHelpMenu();
     setupSplitter();
-    setupEditor();
+//    setupEditor();
 
     connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
     connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
@@ -396,7 +396,7 @@ QSplitter * IDEWindow::setupChildSplitter(QWidget * parent, const bool & vertica
 void IDEWindow::configSplitter(QSplitter * splitter, const bool & vertical) {
     splitter -> setOrientation(vertical ? Qt::Vertical : Qt::Horizontal);
 
-    splitter -> setMinimumSize(8, 8);
+//    splitter -> setMinimumSize(8, 8);
 
     splitter -> setStyleSheet(
         vertical ?

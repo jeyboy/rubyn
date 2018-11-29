@@ -149,42 +149,34 @@ void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
     for(QJsonArray::Iterator child = children.begin(); child != children.end(); child++) {
         JsonObj child_obj = (*child).toObject();
 
-        if (child_obj.string(QLatin1Literal("type")) == QLatin1Literal("e")) {
-            JsonArr tabs = child_obj.arr(QLatin1Literal("tabs"));
-            bool new_editor = false;
+        if (child_obj.string(QLatin1Literal("type")) == QLatin1Literal("e")) {           
+            QString curr_path = child_obj.string(QLatin1Literal("current"));
+            int scroll_y = child_obj.integer(QLatin1Literal("scroll_y"));
 
-            for(JsonArr::Iterator tab = tabs.begin(); tab != tabs.end(); tab++) {
-                JsonObj widget_obj = (*tab).toObject();
-                new_editor = tab != tabs.begin();
+            JsonArr items = child_obj.arr(QLatin1Literal("tabs"));
+            int index = 0, counter = 0;
 
-                QString curr_path = widget_obj.string(QLatin1Literal("current"));
-                int scroll_y = widget_obj.integer(QLatin1Literal("scroll_y"));
+            w -> setupEditor(list);
 
-                JsonArr items = widget_obj.arr(QLatin1Literal("tabs"));
-                int index = 0, counter = 0;
+            for(JsonArr::Iterator item = items.begin(); item != items.end(); item++, counter++) {
+                QJsonObject obj = (*item).toObject();
 
-                for(JsonArr::Iterator item = items.begin(); item != items.end(); item++, counter++) {
-                    QJsonObject obj = (*item).toObject();
+                QString path = obj.value(QLatin1Literal("path")).toString();
+                QVariant state = obj.value(QLatin1Literal("state")).toVariant();
+                int tab_scroll_y = obj.value(QLatin1Literal("scroll_y")).toInt();
 
-                    QString path = obj.value(QLatin1Literal("path")).toString();
-                    QVariant state = obj.value(QLatin1Literal("state")).toVariant();
-                    int tab_scroll_y = obj.value(QLatin1Literal("scroll_y")).toInt();
-
-                    if (path == curr_path) {
-                        index = counter;
-                        tab_scroll_y = scroll_y;
-                    }
-
-                    w -> fileOpenRequired(path, nullptr, new_editor, true, tab_scroll_y);
-                    w -> active_editor -> tabRestoreState(counter, state);
-
-                    new_editor = false;
+                if (path == curr_path) {
+                    index = counter;
+                    tab_scroll_y = scroll_y;
                 }
 
-                w -> active_editor -> currentTabIndexChanged(index);
+                w -> fileOpenRequired(path, nullptr, false, true, tab_scroll_y);
+                w -> active_editor -> tabRestoreState(counter, state);
             }
+
+            w -> active_editor -> currentTabIndexChanged(index);
         } else {
-            QSplitter * new_child = w -> setupChildSplitter(w);
+            QSplitter * new_child = w -> setupChildSplitter(list);
             list -> addWidget(new_child);
             loadSplitter(w, new_child, child_obj);
         }
