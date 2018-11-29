@@ -57,95 +57,138 @@ void Dumper::saveTree(IDEWindow * w, JsonObj & json) {
 }
 
 void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
-    JsonArr tabs = json.arr(QLatin1Literal("editors"));
-
-    if (tabs.isEmpty())
-        return;
-
-    bool new_editor = false;
-
-    for(JsonArr::Iterator tab = tabs.begin(); tab != tabs.end(); tab++) {
-        JsonObj widget_obj = (*tab).toObject();
-        new_editor = tab != tabs.begin();
-
-        QString curr_path = widget_obj.string(QLatin1Literal("current"));
-        int scroll_y = widget_obj.integer(QLatin1Literal("scroll_y"));
-
-        JsonArr items = widget_obj.arr(QLatin1Literal("tabs"));
-        int index = 0, counter = 0;
-
-        for(JsonArr::Iterator item = items.begin(); item != items.end(); item++, counter++) {
-            QJsonObject obj = (*item).toObject();
-
-            QString path = obj.value(QLatin1Literal("path")).toString();
-            QVariant state = obj.value(QLatin1Literal("state")).toVariant();
-            int tab_scroll_y = obj.value(QLatin1Literal("scroll_y")).toInt();
-
-            if (path == curr_path) {
-                index = counter;
-                tab_scroll_y = scroll_y;
-            }
-
-            w -> fileOpenRequired(path, nullptr, new_editor, tab_scroll_y);
-            w -> active_editor -> tabRestoreState(counter, state);
-
-            new_editor = false;
-        }
-
-        w -> active_editor -> currentTabIndexChanged(index);
-    }
+    QJsonObject editors = json.obj(QLatin1Literal("editors"));
+    loadSplitter(w, w -> widgets_list, editors);
 }
 
 void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
-//    int index = w -> widgets_list -> indexOf(w -> active_editor);
+    QJsonObject editors_json;
+    saveSplitter(w -> widgets_list, editors_json);
 
+    json.insert(QLatin1Literal("editors"), editors_json);
+}
+
+void Dumper::saveTab(TabsBlock * editor, QJsonObject & widget_obj) {
+    int limit = editor -> tabsCount();
+
+    QJsonArray tabs_arr;
+
+    for(int j = 0; j < limit; j++) {
+        QString tab_path = editor -> tabFilePath(j);
+
+        if (!tab_path.isNull()) {
+            QJsonObject tab_data;
+            tab_data.insert(QLatin1Literal("path"), tab_path);
+
+            QVariant state;
+            if (editor -> tabDumpState(j, state))
+                tab_data.insert(QLatin1Literal("state"), QJsonValue::fromVariant(state));
+
+            tab_data.insert(QLatin1Literal("scroll_y"), editor -> tabVerticalScrollPos(j));
+
+            tabs_arr.append(tab_data);
+        }
+    }
+
+    QString curr_path = editor -> currentTabFilePath();
+
+    if (!curr_path.isNull())
+        widget_obj.insert(QLatin1Literal("current"), curr_path);
+
+    widget_obj.insert(QLatin1Literal("tabs"), tabs_arr);
+
+    QScrollBar * scroll = editor -> editor() -> verticalScrollBar();
+
+    if (scroll -> value() != 0)
+        widget_obj.insert(QLatin1Literal("scroll_y"), scroll -> value());
+}
+
+void Dumper::saveSplitter(QSplitter * list, QJsonObject & obj) {
     QJsonArray arr;
 
-    for(int i = 0; i < w -> widgets_list -> count(); i++) {
-        QWidget * widget = w ->  widgets_list -> widget(i);
-        TabsBlock * editor = dynamic_cast<TabsBlock *>(widget);
+    for(int i = 0; i < list -> count(); i++) {
+        QJsonObject json;
+        QWidget * widget = list -> widget(i);
+        TabsBlock * editor = qobject_cast<TabsBlock *>(widget);
 
-        int limit = editor -> tabsCount();
+        if (editor) {
+            int limit = editor -> tabsCount();
 
-        if (limit == 0)
-            continue;
+            if (limit == 0)
+                continue;
 
-        QJsonObject widget_obj;
-        QJsonArray tabs_arr;
+            json.insert(QLatin1Literal("type"), "e");
+            saveTab(editor, json);
+        } else {
+            QSplitter * splitter = qobject_cast<QSplitter *>(widget);
 
-        for(int j = 0; j < limit; j++) {
-            QString tab_path = editor -> tabFilePath(j);
-
-            if (!tab_path.isNull()) {
-                QJsonObject tab_data;
-                tab_data.insert(QLatin1Literal("path"), tab_path);
-
-                QVariant state;
-                if (editor -> tabDumpState(j, state))
-                    tab_data.insert(QLatin1Literal("state"), QJsonValue::fromVariant(state));
-
-                tab_data.insert(QLatin1Literal("scroll_y"), editor -> tabVerticalScrollPos(j));
-
-                tabs_arr.append(tab_data);
+            if (splitter) {
+                json.insert(QLatin1Literal("type"), "s");
+                saveSplitter(splitter, json);
+            } else {
+                qDebug() << "PIPI";
+                continue;
             }
         }
 
-        QString curr_path = editor -> currentTabFilePath();
-
-        if (!curr_path.isNull())
-            widget_obj.insert(QLatin1Literal("current"), curr_path);
-
-        widget_obj.insert(QLatin1Literal("tabs"), tabs_arr);
-
-        QScrollBar * scroll = editor -> editor() -> verticalScrollBar();
-
-        if (scroll -> value() != 0)
-            widget_obj.insert(QLatin1Literal("scroll_y"), scroll -> value());
-
-        arr << widget_obj;
+        arr << json;
     }
 
-    json.insert(QLatin1Literal("editors"), arr);
+    obj.insert(QLatin1Literal("dir"), list -> orientation());
+    obj.insert(QLatin1Literal("child"), arr);
+}
+
+void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
+    list -> setOrientation(static_cast<Qt::Orientation>(obj.value(QLatin1Literal("dir")).toInt()));
+
+    QJsonArray children = obj.value(QLatin1Literal("child")).toArray();
+
+    if (children.isEmpty())
+        return;
+
+    for(QJsonArray::Iterator child = children.begin(); child != children.end(); child++) {
+        JsonObj child_obj = (*child).toObject();
+
+        if (child_obj.string(QLatin1Literal("type")) == QLatin1Literal("e")) {
+            JsonArr tabs = child_obj.arr(QLatin1Literal("tabs"));
+            bool new_editor = false;
+
+            for(JsonArr::Iterator tab = tabs.begin(); tab != tabs.end(); tab++) {
+                JsonObj widget_obj = (*tab).toObject();
+                new_editor = tab != tabs.begin();
+
+                QString curr_path = widget_obj.string(QLatin1Literal("current"));
+                int scroll_y = widget_obj.integer(QLatin1Literal("scroll_y"));
+
+                JsonArr items = widget_obj.arr(QLatin1Literal("tabs"));
+                int index = 0, counter = 0;
+
+                for(JsonArr::Iterator item = items.begin(); item != items.end(); item++, counter++) {
+                    QJsonObject obj = (*item).toObject();
+
+                    QString path = obj.value(QLatin1Literal("path")).toString();
+                    QVariant state = obj.value(QLatin1Literal("state")).toVariant();
+                    int tab_scroll_y = obj.value(QLatin1Literal("scroll_y")).toInt();
+
+                    if (path == curr_path) {
+                        index = counter;
+                        tab_scroll_y = scroll_y;
+                    }
+
+                    w -> fileOpenRequired(path, nullptr, new_editor, true, tab_scroll_y);
+                    w -> active_editor -> tabRestoreState(counter, state);
+
+                    new_editor = false;
+                }
+
+                w -> active_editor -> currentTabIndexChanged(index);
+            }
+        } else {
+            QSplitter * new_child = w -> setupChildSplitter(w);
+            list -> addWidget(new_child);
+            loadSplitter(w, new_child, child_obj);
+        }
+    }
 }
 
 void Dumper::load(IDEWindow * w, const QString & settings_filename) {

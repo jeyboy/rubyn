@@ -124,7 +124,7 @@ void IDEWindow::splitterMoved(int /*pos*/, int index) {
     }
 }
 
-void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool & in_new, const int & scroll_pos_y) {
+void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool & in_new, const bool & vertical, const int & scroll_pos_y) {
     File * _file = nullptr;
     bool is_external = false;
 
@@ -172,26 +172,16 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
         _file -> asText() -> setVerticalScrollPos(scroll_pos_y);
 
     if (!active_editor || in_new)
-        newEditorRequired(_file, true, is_external);
+        newEditorRequired(_file, vertical, is_external);
     else
         active_editor -> openFile(_file, is_external);
 }
 
 void IDEWindow::newEditorRequired(File * file, const bool & vertical, const bool & is_external) {
-    QSplitter * parent_splitter = nullptr;
-
-    if (active_editor)
-        parent_splitter = static_cast<QSplitter *>(active_editor -> parentWidget());
-    else
-        parent_splitter = widgets_list;
+    QSplitter * parent_splitter = parentSplitter();
 
     if ((parent_splitter -> orientation() == Qt::Vertical) != vertical) {
-        QSplitter * new_child = setupChildSplitter(this, vertical);
-
-        int index = parent_splitter -> indexOf(active_editor);
-        parent_splitter -> replaceWidget(index, new_child);
-        new_child -> addWidget(active_editor);
-        parent_splitter = new_child;
+        parent_splitter = splitActiveEditor(vertical);
     }
 
     setupEditor(parent_splitter);
@@ -435,6 +425,24 @@ void IDEWindow::configSplitter(QSplitter * splitter, const bool & vertical) {
             )
     );
 }
+
+QSplitter * IDEWindow::parentSplitter() {
+    if (active_editor)
+        return static_cast<QSplitter *>(active_editor -> parentWidget());
+    else
+        return widgets_list;
+}
+
+QSplitter * IDEWindow::splitActiveEditor(const bool & vertical) {
+    QSplitter * parent_splitter = parentSplitter();
+    QSplitter * new_child = setupChildSplitter(this, vertical);
+
+    int index = parent_splitter -> indexOf(active_editor);
+    parent_splitter -> replaceWidget(index, new_child);
+    new_child -> addWidget(active_editor);
+    return new_child;
+}
+
 
 void IDEWindow::setupToolWindows() {
     DockWidgets::obj().registerContainer(this);

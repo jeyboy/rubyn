@@ -48,6 +48,8 @@ class IDEWindow : public QMainWindow {
     void setupSplitter();
     QSplitter * setupChildSplitter(QWidget * parent, const bool & vertical = true);
     void configSplitter(QSplitter * splitter, const bool & vertical = true);
+    QSplitter * parentSplitter();
+    QSplitter * splitActiveEditor(const bool & vertical = true);
 
     void loadSettings();
     void saveSettings();
@@ -69,7 +71,7 @@ public:
 
 protected slots:
     void splitterMoved(int pos, int index);
-    void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false, const int & scroll_pos_y = 0);
+    void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false, const bool & vertical = true, const int & scroll_pos_y = 0);
     void newEditorRequired(File * file, const bool & vertical, const bool & is_external = false);
     void setActiveEditor(TabsBlock *);
     void editorIsEmpty(TabsBlock *);

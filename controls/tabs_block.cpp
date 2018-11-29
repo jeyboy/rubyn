@@ -369,6 +369,8 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
     if (point.isNull())
         return;
 
+    emit activated(this);
+
     QListWidgetItem * tab = _bar -> itemAt(point);
 
     if (tab) {
