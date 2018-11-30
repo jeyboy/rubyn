@@ -81,7 +81,10 @@ enum ParaType : PARA_TYPE {
     pt_foldable_comment = pt_comment | pt_foldable,
     pt_close_foldable_comment = pt_comment | pt_close| pt_foldable,
 
-    pt_max = 1 << 29,
+    pt_ternary = 1 << 29,
+    pt_close_ternary = pt_ternary | pt_close,
+
+    pt_max = 1 << 30,
     pt_max_end = pt_max | pt_close
 };
 

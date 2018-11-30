@@ -1092,6 +1092,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
             case ':': {
                 StateLexem del_state = lex_none;
+                StackLexemFlag flags = slf_none;
 
                 if (ECHAR1 == ':')
                     ++state -> next_offset;
@@ -1105,14 +1106,16 @@ void LexerFrontend::lexicate(LexerControl * state) {
                         if (len == 0 && isWord(ECHAR1, false))
                             goto iterate;
                         else {
-                            // ternary parts shpuld be on the same stack level
-                            if (state -> stack_token -> lexem == lex_ternary_main_start)
+                            // ternary parts should be on the same stack level
+                            if (state -> stack_token -> lexem == lex_ternary_main_start) {
                                 del_state = lex_ternary_alt_start;
+                                flags = slf_unstack_delimiter;
+                            }
                         }
                     }
                 }
 
-                if (!cutWord(state, lex_none, del_state)) goto exit;
+                if (!cutWord(state, lex_none, del_state, flags)) goto exit;
             break;}
 
 
@@ -1178,9 +1181,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 StateLexem lex = lex_ternary_main_start;
 
                 if (len == 0) {
-                    StateLexem lex = state -> lastNonBlankLexem();
+                    StateLexem sublex = state -> lastNonBlankLexem();
 
-                    bool is_charcode = lex == lex_none || (lex & lex_ruby_ternary_braker && !isBlank(ECHAR1));
+                    bool is_charcode = sublex == lex_none || (sublex & lex_ruby_ternary_braker && !isBlank(ECHAR1));
 
                     if (is_charcode) {
                         ++state -> buffer;
@@ -1194,7 +1197,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     if (isWord(ECHAR_PREV1)) goto iterate;
                 }
 
-                if (!cutWord(state, lex_none, lex)) goto exit;
+                if (!cutWord(state, lex_none, lex, lex == lex_ternary_main_start ? slf_stack_delimiter : slf_none)) goto exit;
             break;}
 
 

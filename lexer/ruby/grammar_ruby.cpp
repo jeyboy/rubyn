@@ -7,6 +7,9 @@ Grammar::Grammar() : IGrammar() {
 }
 
 void Grammar::initParas() {
+    para_tokens[lex_ternary_main_start] = pt_ternary;
+    para_tokens[lex_ternary_alt_start] = pt_close_ternary;
+
     para_tokens[lex_open_curly_bracket] = pt_foldable_curly_bracket;
     para_tokens[lex_close_curly_bracket] = pt_close_foldable_curly_bracket;
     para_tokens[lex_interpolation] = pt_interpolation;
@@ -192,6 +195,8 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
         case lex_cheredoc_start:
         case lex_eheredoc_intended_start:
         case lex_eheredoc_start: return input == lex_heredoc_close_mark;
+
+        case lex_ternary_main_start: return input == lex_ternary_alt_start;
 
         case lex_case:
             return input == lex_end || input == lex_when;
