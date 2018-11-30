@@ -58,17 +58,23 @@ void Dumper::saveTree(IDEWindow * w, JsonObj & json) {
 
 void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
     QJsonObject editors = json.obj(QLatin1Literal("editors"));
-    loadSplitter(w, w -> widgets_list, editors);
+
+    TabsBlock * active = nullptr;
+
+    loadSplitter(w, w -> widgets_list, editors, active);
+
+    if (active)
+        emit active -> activated(active);
 }
 
 void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
     QJsonObject editors_json;
-    saveSplitter(w -> widgets_list, editors_json);
+    saveSplitter(w, w -> widgets_list, editors_json);
 
     json.insert(QLatin1Literal("editors"), editors_json);
 }
 
-void Dumper::saveTab(TabsBlock * editor, QJsonObject & widget_obj) {
+void Dumper::saveTab(IDEWindow * w, TabsBlock * editor, QJsonObject & widget_obj) {
     int limit = editor -> tabsCount();
 
     QJsonArray tabs_arr;
@@ -101,9 +107,12 @@ void Dumper::saveTab(TabsBlock * editor, QJsonObject & widget_obj) {
 
     if (scroll -> value() != 0)
         widget_obj.insert(QLatin1Literal("scroll_y"), scroll -> value());
+
+    if (w -> active_editor == editor)
+        widget_obj.insert(QLatin1Literal("is_active"), true);
 }
 
-void Dumper::saveSplitter(QSplitter * list, QJsonObject & obj) {
+void Dumper::saveSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
     QJsonArray arr;
 
     for(int i = 0; i < list -> count(); i++) {
@@ -118,13 +127,13 @@ void Dumper::saveSplitter(QSplitter * list, QJsonObject & obj) {
                 continue;
 
             json.insert(QLatin1Literal("type"), "e");
-            saveTab(editor, json);
+            saveTab(w, editor, json);
         } else {
             QSplitter * splitter = qobject_cast<QSplitter *>(widget);
 
             if (splitter) {
                 json.insert(QLatin1Literal("type"), "s");
-                saveSplitter(splitter, json);
+                saveSplitter(w, splitter, json);
             } else {
                 qDebug() << "PIPI";
                 continue;
@@ -139,7 +148,7 @@ void Dumper::saveSplitter(QSplitter * list, QJsonObject & obj) {
     obj.insert(QLatin1Literal("child"), arr);
 }
 
-void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
+void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, TabsBlock *& active) {
     list -> setOrientation(static_cast<Qt::Orientation>(obj.value(QLatin1Literal("dir")).toInt()));
 
     QJsonArray children = obj.value(QLatin1Literal("child")).toArray();
@@ -158,6 +167,9 @@ void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
             int index = 0, counter = 0;
 
             w -> setupEditor(list);
+
+            if (child_obj.hasKey(QLatin1Literal("is_active")))
+                active = w -> active_editor;
 
             for(JsonArr::Iterator item = items.begin(); item != items.end(); item++, counter++) {
                 QJsonObject obj = (*item).toObject();
@@ -179,7 +191,7 @@ void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
         } else {
             QSplitter * new_child = w -> setupChildSplitter(list);
             list -> addWidget(new_child);
-            loadSplitter(w, new_child, child_obj);
+            loadSplitter(w, new_child, child_obj, active);
         }
     }
 

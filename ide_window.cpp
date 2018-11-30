@@ -118,19 +118,23 @@ void IDEWindow::splitterMoved(int /*pos*/, int index) {
 
     if (obj) {
         QList<int> sizes = obj -> sizes();
+        QWidget * target = nullptr;
 
         if (sizes.at(index) == 0) {
-            QWidget * w = obj -> widget(index);
-
-            if (active_editor == w) {
-                setActiveEditor(dynamic_cast<TabsBlock *>(obj -> widget(index - 1)));
+            if (editorInWidget(active_editor, obj -> widget(index))) {
+                target = obj -> widget(index - 1);
             }
         } else if (sizes.at(index - 1) == 0) {
-            QWidget * w = obj -> widget(index - 1);
-
-            if (active_editor == w) {
-                setActiveEditor(dynamic_cast<TabsBlock *>(obj -> widget(index)));
+            if (editorInWidget(active_editor, obj -> widget(index - 1))) {
+                target = obj -> widget(index);
             }
+        }
+
+        if (target) {
+            if (!qobject_cast<TabsBlock *>(target))
+                target = findEditor(qobject_cast<QSplitter *>(target));
+
+            setActiveEditor(qobject_cast<TabsBlock *>(target));
         }
     }
 }
@@ -450,6 +454,25 @@ QSplitter * IDEWindow::splitActiveEditor(const bool & vertical) {
     parent_splitter -> replaceWidget(index, new_child);
     new_child -> addWidget(active_editor);
     return new_child;
+}
+
+bool IDEWindow::editorInWidget(TabsBlock * editor, QWidget * target) {
+    if (!qobject_cast<QSplitter *>(target))
+        return editor == target;
+
+    QWidget * w = editor -> parentWidget();
+
+    while(w) {
+        if (!qobject_cast<QSplitter *>(w))
+            return false;
+
+        if (w == target)
+            return true;
+
+        w = w -> parentWidget();
+    }
+
+    return false;
 }
 
 void IDEWindow::setupToolWindows() {

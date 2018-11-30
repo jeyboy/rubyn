@@ -50,6 +50,7 @@ class IDEWindow : public QMainWindow {
     void configSplitter(QSplitter * splitter, const bool & vertical = true);
     QSplitter * parentSplitter();
     QSplitter * splitActiveEditor(const bool & vertical = true);
+    bool editorInWidget(TabsBlock * editor, QWidget * target);
 
     void loadSettings();
     void saveSettings();
