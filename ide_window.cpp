@@ -349,7 +349,6 @@ void IDEWindow::setupEditor(QSplitter * list) {
         list = widgets_list;
 
     TabsBlock * new_editor = new TabsBlock(this);
-    setActiveEditor(new_editor);
 
     new_editor -> registerCursorPosOutput(pos_status);
     connect(new_editor, SIGNAL(newTabsBlockRequested(File*, const bool &)), this, SLOT(newEditorRequired(File*, const bool &)));
@@ -357,8 +356,15 @@ void IDEWindow::setupEditor(QSplitter * list) {
     connect(new_editor, SIGNAL(activated(TabsBlock*)), this, SLOT(setActiveEditor(TabsBlock*)));
     connect(new_editor, SIGNAL(resourceDropped(TabsBlock*,QUrl)), this, SLOT(openResource(TabsBlock*,QUrl)));
 
+    if (active_editor && active_editor -> parentWidget() == list) {
+        int index = list -> indexOf(active_editor);
 
-    list -> addWidget(new_editor);
+        list -> insertWidget(index + 1, new_editor);
+    }
+    else list -> addWidget(new_editor);
+
+
+    setActiveEditor(new_editor);
     active_editor -> hide();
 }
 
@@ -434,7 +440,6 @@ QSplitter * IDEWindow::splitActiveEditor(const bool & vertical) {
     new_child -> addWidget(active_editor);
     return new_child;
 }
-
 
 void IDEWindow::setupToolWindows() {
     DockWidgets::obj().registerContainer(this);
