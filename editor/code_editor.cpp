@@ -137,8 +137,8 @@ void CodeEditor::openDocument(File * file) {
         connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
 
         /// TODO: need to hide this panels for some types of doc
-        show_foldings_panel = true;
-        show_breakpoints_panel = true;
+        show_foldings_panel = wrapper -> canHasFoldings();
+        show_breakpoints_panel = wrapper -> canHasBreakpoints();
         show_extra_icons = false;
         ///////////////
 

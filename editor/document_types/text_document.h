@@ -44,6 +44,9 @@ public:
 
     ~TextDocument();
 
+    inline bool canHasFoldings() { return _lexer != nullptr; }
+    inline bool canHasBreakpoints() { return _lexer != nullptr; }
+
     const QLatin1String & tabSpace() { return tab_space; }
 
     QTextDocument * toQDoc() { return _doc; }
