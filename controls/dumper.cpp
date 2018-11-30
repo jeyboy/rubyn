@@ -135,6 +135,7 @@ void Dumper::saveSplitter(QSplitter * list, QJsonObject & obj) {
     }
 
     obj.insert(QLatin1Literal("dir"), list -> orientation());
+    obj.insert(QLatin1Literal("sizes"), QJsonValue::fromVariant(QVariant::fromValue(list -> sizes())));
     obj.insert(QLatin1Literal("child"), arr);
 }
 
@@ -181,6 +182,8 @@ void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
             loadSplitter(w, new_child, child_obj);
         }
     }
+
+    list -> setSizes(obj.value(QLatin1Literal("sizes")).toVariant().value<QList<int>>());
 }
 
 void Dumper::load(IDEWindow * w, const QString & settings_filename) {

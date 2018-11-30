@@ -40,13 +40,13 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 {
     ui -> setupUi(this);
 
-    setStyleSheet(
-        "IDEWindow {"
-        "   background-image: url(:/background);"
-        "   background-position: center;"
-        "   background-repeat: no-repeat;"
-        "}"
-    );
+//    setStyleSheet(
+//        "IDEWindow {"
+//        "   background-image: url(:/background);"
+//        "   background-position: center;"
+//        "   background-repeat: no-repeat;"
+//        "}"
+//    );
 
     setAcceptDrops(true);
 
@@ -120,11 +120,15 @@ void IDEWindow::splitterMoved(int /*pos*/, int index) {
         QList<int> sizes = obj -> sizes();
 
         if (sizes.at(index) == 0) {
-            if (active_editor == obj -> widget(index)) {
+            QWidget * w = obj -> widget(index);
+
+            if (active_editor == w) {
                 setActiveEditor(dynamic_cast<TabsBlock *>(obj -> widget(index - 1)));
             }
         } else if (sizes.at(index - 1) == 0) {
-            if (active_editor == obj -> widget(index - 1)) {
+            QWidget * w = obj -> widget(index - 1);
+
+            if (active_editor == w) {
                 setActiveEditor(dynamic_cast<TabsBlock *>(obj -> widget(index)));
             }
         }
