@@ -8,6 +8,22 @@ QToolBar * Toolbars::createWidget(const QString & name, const Qt::ToolBarArea & 
     bar -> setObjectName(name);
     bar -> setAllowedAreas(areas);
 
+    bar -> setStyleSheet(
+        QLatin1Literal(
+            "QToolBar {"
+            "   border: 2px solid #ddd;"
+            "   background-color: #555;"
+            "   border-radius: 6px;"
+            "}"
+
+            "QToolBar * {"
+            "   border: 2px solid #aaa;"
+            "   background-color: #fff;"
+            "   border-radius: 6px;"
+            "}"
+        )
+    );
+
     return bar;
 }
 

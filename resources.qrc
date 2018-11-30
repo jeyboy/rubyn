@@ -10,6 +10,7 @@
         <file alias="grape">icons/grape.png</file>
         <file alias="breakpoint">icons/breakpoint.png</file>
         <file alias="grape_horizontal">icons/grape_horizontal.png</file>
+        <file alias="background">icons/smile.png</file>
     </qresource>
     <qresource prefix="/doc_types">
         <file alias="folder">icons/folder.png</file>

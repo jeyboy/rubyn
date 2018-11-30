@@ -40,6 +40,14 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 {
     ui -> setupUi(this);
 
+    setStyleSheet(
+        "IDEWindow {"
+        "   background-image: url(:/background);"
+        "   background-position: center;"
+        "   background-repeat: no-repeat;"
+        "}"
+    );
+
     setAcceptDrops(true);
 
     setupToolWindows();
@@ -47,7 +55,6 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     setupFileMenu();
     setupHelpMenu();
     setupSplitter();
-//    setupEditor();
 
     connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
     connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
