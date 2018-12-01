@@ -7,8 +7,6 @@
 #include <qfile.h>
 #include <qscrollbar.h>
 #include <qtooltip.h>
-#include <qcompleter.h>
-#include <qabstractitemview.h> // completer dependency
 
 #include "project/file.h"
 
@@ -19,6 +17,7 @@
 #include "editor/document_types/text_document.h"
 
 #include "controls/logger.h"
+#include "controls/completer.h"
 
 #include "highlighter/highlight_format_factory.h"
 
@@ -83,7 +82,7 @@ CodeEditor::~CodeEditor() {
     qDeleteAll(overlays);
 }
 
-void CodeEditor::setCompleter(QCompleter * new_completer) {
+void CodeEditor::setCompleter(Completer * new_completer) {
     if (completer)
         QObject::disconnect(completer, nullptr, this, nullptr);
 
@@ -1374,7 +1373,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
 //    qDebug() << "KEY PRESSED:" << ((Qt::Key)e -> key());
     int curr_key = e -> key();
 
-    if (completer && completer -> popup() -> isVisible()) {
+    if (completer && completer -> isVisible()) {
         switch (curr_key) {
             case Qt::Key_Enter:
             case Qt::Key_Return:
@@ -1393,17 +1392,9 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             QPlainTextEdit::keyPressEvent(e);
         break;}
 
-        case Qt::Key_Tab: { procSelectionIndent(); break;}
-        case Qt::Key_Backtab: { procSelectionIndent(false); break; }
-
-        case Qt::Key_Escape: // ignore non printable keys
-        case Qt::Key_CapsLock:
-        case Qt::Key_NumLock:
-        case Qt::Key_ScrollLock:
-        case Qt::Key_Meta:
-        case Qt::Key_Alt:
-        case Qt::Key_Shift:
-        case Qt::Key_Control: { QPlainTextEdit::keyPressEvent(e); break;}
+//        case Qt::Key_Backspace: {
+//            QPlainTextEdit::keyPressEvent(e);
+//        break;}
 
         case Qt::Key_Return: {
             emit wrapper -> enterPressed();
@@ -1420,6 +1411,9 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                 cursor.insertText(str);
             }
         break;}
+
+        case Qt::Key_Tab: { procSelectionIndent(); break;}
+        case Qt::Key_Backtab: { procSelectionIndent(false); break; }
 
         case Qt::Key_Right:
         case Qt::Key_Left: {
@@ -1451,25 +1445,30 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             }
         break;}
 
+        case Qt::Key_Escape: // ignore non printable keys
+        case Qt::Key_CapsLock:
+        case Qt::Key_NumLock:
+        case Qt::Key_ScrollLock:
+        case Qt::Key_Meta:
+        case Qt::Key_Alt:
+        case Qt::Key_Shift:
+        case Qt::Key_Control: { QPlainTextEdit::keyPressEvent(e); break;}
+
         default: {
-            if (!completer) {
+            if (!completer || (!completer -> isVisible() &&
+                    (curr_key < Qt::Key_Space || curr_key > Qt::Key_ydiaeresis)
+                )
+            ) {
                 QPlainTextEdit::keyPressEvent(e);
                 procRevision();
                 return;
             }
 
             bool has_modifiers = e -> modifiers() != Qt::NoModifier;
-            bool is_shortcut = has_modifiers && (e -> modifiers() & Qt::ControlModifier) && curr_key == Qt::Key_Space;
+            bool is_shortcut = (e -> modifiers() & Qt::ControlModifier) && curr_key == Qt::Key_Space;
 
             if (!is_shortcut)
                 QPlainTextEdit::keyPressEvent(e);
-
-            if (completer -> popup() -> isHidden()) { // ignore showing of suggestions for action keys
-                if (curr_key < Qt::Key_Space || curr_key > Qt::Key_ydiaeresis) {
-                    procRevision();
-                    return;
-                }
-            }
 
             QTextCursor tc = textCursor();
             procCompleterForCursor(tc, is_shortcut, has_modifiers);
@@ -1624,15 +1623,12 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
     LEXEM_TYPE lex = wrapper -> getWordBoundaries(start, length, block, pos, false);
     QString block_text = block.text();
 
-    QStringRef completion_prefix = block_text.midRef(start, pos - start);//wordUnderCursor(tc, wuco_before_caret_part);
-    QStringRef text = block_text.midRef(start, length); //(wordUnderCursor(tc, wuco_full));
+    QStringRef completion_prefix = block_text.midRef(start, pos - start);
+    QStringRef text = block_text.midRef(start, length);
 
     if (initiate_popup && has_selection) {
         completer -> setCompletionPrefix(QString());
         completer -> popup() -> reset();
-//                completer -> popup() -> setCurrentIndex(
-//                    completer -> completionModel() -> index(0, 0)
-//                );
     } else {
         if (!initiate_popup && (has_modifiers || text.isEmpty() /*|| completion_prefix.length() < 3*/)) {
             completer -> popup() -> hide();
@@ -1645,14 +1641,11 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
             int prefix_len = completion_prefix.length();
             bool from_scratch = !wrapper -> isCompleterContinuable(lex, prefix_len == length);
 
-            Logger::obj().write("Completer: prefix from_scratch", from_scratch ? "true" : "false");
+            Logger::info("Completer: prefix from_scratch", from_scratch ? "true" : "false");
 
             completer -> setCompletionPrefix(
                 from_scratch ? QString() : completion_prefix.toString()
             );
-//                    completer -> popup() -> setCurrentIndex(
-//                        completer -> completionModel() -> index(0, 0)
-//                    );
         }
     }
 
@@ -1668,10 +1661,7 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
     } else {
         QRect cr = cursorRect();
         cr.setLeft(cr.left() + extra_area -> width());
-        cr.setWidth(
-            completer -> popup() -> sizeHintForColumn(0) +
-                completer -> popup() -> verticalScrollBar() -> sizeHint().width()
-        );
+        cr.setWidth(completer -> execWidth());
 
         completer -> complete(cr);
     }

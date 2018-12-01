@@ -15,8 +15,8 @@ class QResizeEvent;
 class QSize;
 class QWidget;
 class QPen;
-class QCompleter;
 
+class Completer;
 class TextDocument;
 class ExtraArea;
 class File;
@@ -230,7 +230,7 @@ class CodeEditor : public QPlainTextEdit {
 
     CodeEditorCache * display_cacher;
     ExtraArea * extra_area;
-    QCompleter * completer;
+    Completer * completer;
     TextDocument * wrapper;
 
     EDITOR_POS_TYPE tooplip_block_num;
@@ -293,7 +293,7 @@ public:
     CodeEditor(QWidget * parent = nullptr);
     ~CodeEditor() Q_DECL_OVERRIDE;
 
-    void setCompleter(QCompleter * new_completer);
+    void setCompleter(Completer * new_completer);
 
     inline bool hasDocument() { return document() != nullptr; }
     void openDocument(File * file);
