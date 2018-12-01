@@ -40,13 +40,30 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 {
     ui -> setupUi(this);
 
-//    setStyleSheet(
+    setStyleSheet(
 //        "IDEWindow {"
 //        "   background-image: url(:/background);"
 //        "   background-position: center;"
 //        "   background-repeat: no-repeat;"
 //        "}"
-//    );
+
+        "IDEWindow::separator {"
+        "   border: 2px solid #666;"
+        "   background-color: #ddd;"
+        "   border-radius: 4px;"
+        "   background-repeat: no-repeat;"
+        "   background-position: center center;"
+        "}"
+
+        "IDEWindow::separator:horizontal {"
+        "   background-image: url(:/grape_alt);"
+        "   height: 6px;"
+        "}"
+        "IDEWindow::separator:vertical {"
+        "   background-image: url(:/grape_horizontal_alt);"
+        "   width: 6px;"
+        "}"
+    );
 
     setAcceptDrops(true);
 
@@ -422,10 +439,10 @@ void IDEWindow::configSplitter(QSplitter * splitter, const bool & vertical) {
                 "QSplitter::handle {"
                 "   border: 2px solid #ddd;"
                 "   background-color: #555;"
-                "   border-radius: 6px;"
+                "   border-radius: 4px;"
                 "   background-repeat: no-repeat;"
                 "   background-position: center center;"
-                "   padding: 2px;"
+                "   padding: 1px;"
                 "}"
 
                 "QSplitter::handle:vertical {"
