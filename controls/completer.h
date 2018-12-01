@@ -21,6 +21,8 @@ public:
 
     inline void addItem(QStandardItem * item) { mdl -> appendRow(item); }
 
+    void reset();
+    void hide();
     void clear();
     void update();
 

@@ -48,6 +48,7 @@ public:
     enum LogLevel : int {
         log_info = 0,
         log_error = 1,
+        log_success = 2,
         log_url
     };
 
@@ -57,6 +58,8 @@ public:
 
     static void info(const QString & initiator, const QString & value = QString());
     static void error(const QString & initiator, const QString & value = QString());
+    static void success(const QString & initiator, const QString & value = QString());
+
 
     void write(const QString & initiator, const LogLevel & level = log_info);
     void write(const QString & initiator, const QString & value, const LogLevel & level = log_info);
@@ -75,7 +78,10 @@ private:
     QString path(const QString & file);
 
     void toFile(const QString & initiator, const QString & value);
-    void toEditor(const QString & initiator, const QString & value);
+    void toEditor(const QString & initiator, const QString & value, const int & level);
+
+    QLatin1String textColor(const int & level);
+    QLatin1String backColor(const int & level);
 
     Logger(); friend class Singleton<Logger>;
 

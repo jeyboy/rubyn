@@ -34,6 +34,12 @@ void Logger::error(const QString & initiator, const QString & value) {
     else
         obj().write(initiator, value, log_error);
 }
+void Logger::success(const QString & initiator, const QString & value) {
+    if (value.isEmpty())
+        obj().write(initiator, log_success);
+    else
+        obj().write(initiator, value, log_success);
+}
 
 Logger::Logger() : QObject(), out(nullptr), file(nullptr), m_editor(nullptr), m_showDate(true), fm(nullptr), timer(new QElapsedTimer()) {}
 
@@ -142,7 +148,7 @@ void Logger::toFile(const QString & initiator, const QString & value) {
         out -> flush();
     }
 }
-void Logger::toEditor(const QString & initiator, const QString & value) {
+void Logger::toEditor(const QString & initiator, const QString & value, const int & level) {
     if (m_editor) {
         QString text;
 
@@ -153,23 +159,48 @@ void Logger::toEditor(const QString & initiator, const QString & value) {
 
         ///////////// monkey patch for crash on missed symbols (khmer and etc)
         QString cval;
-        for(QString::ConstIterator ch = value.constBegin(); ch != value.constEnd(); ch++)
-            if (fm && fm -> inFont(*ch))
-                cval.append(*ch);
 
+        if (!value.isEmpty()) {
+            cval = QLatin1Literal(" ::: ");
+
+            for(QString::ConstIterator ch = value.constBegin(); ch != value.constEnd(); ch++)
+                if (fm && fm -> inFont(*ch))
+                    cval.append(*ch);
+        }
         ///////////////////////////////////////
 
-        text = QString("%1%2 ::: %3").arg(
-            text,
-            (m_showDate ? QStringLiteral("<b>") % TIME_MARK % QStringLiteral("</b>") : QStringLiteral("")),
-            cval/*value*/
-        );
+        text = text %
+            QLatin1String("<span style='background-color:") %
+            backColor(level) %
+            QLatin1String("'>") %
+            (m_showDate ? QStringLiteral("<b>") % TIME_MARK % QStringLiteral("</b>") : QStringLiteral("")) %
+            cval %
+            QLatin1String("</span>");
 
-        bool atEnd = m_editor -> verticalScrollBar() -> maximum() - m_editor -> verticalScrollBar() -> value() < 10;
+        bool at_end = m_editor -> verticalScrollBar() -> maximum() - m_editor -> verticalScrollBar() -> value() < 10;
         m_editor -> appendHtml(text);
 
-        if (atEnd)
+        if (at_end)
             m_editor -> ensureCursorVisible();
+    }
+}
+
+QLatin1String Logger::textColor(const int & level) {
+    switch(level) {
+        case log_error: return QLatin1Literal("red");
+        case log_info: return QLatin1Literal("blue");
+        case log_success: return QLatin1Literal("green");
+
+        default: return QLatin1String();
+    }
+}
+QLatin1String Logger::backColor(const int & level) {
+    switch(level) {
+        case log_error: return QLatin1Literal("rgba(255, 0, 0, .1)");
+        case log_info: return QLatin1Literal("rgba(0, 0, 255, .1)");
+        case log_success: return QLatin1Literal("rgba(0, 255, 0, .1)");
+
+        default: return QLatin1String();
     }
 }
 
@@ -187,9 +218,10 @@ void Logger::writeToStream(const QString & initiator, const QString & value, con
 
 void Logger::writeToStream(const QString & initiator, const QString & value, const QString & attr, int level) {
     toFile(initiator, QStringLiteral("%1   :::   %2").arg(value, attr));
-    toEditor(initiator,
-        QString("<span style='color: " %
-            QString(level == log_error ? QLatin1String("red") : level == log_info ? QLatin1String("green") : QLatin1String("blue")) %
-                "'>%1</span> ::: <span style='color: darkblue'>%2</span>").arg(value, attr)
+
+    toEditor(
+        initiator,
+        QString("<span>%1</span> ::: <span style='color: darkblue'>%2</span>").arg(value, attr),
+        level
     );
 }

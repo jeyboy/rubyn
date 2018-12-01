@@ -147,7 +147,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
         IFolder * _folder = reinterpret_cast<IFolder *>(folder);
 
         if (_folder == nullptr) {
-            Logger::obj().write(QStringLiteral("IDE"), QStringLiteral("Cant find folder for file: '") % name % '\'', Logger::log_error);
+            Logger::error(QStringLiteral("IDE"), QStringLiteral("Cant find folder for file: '") % name % '\'');
             return;
         }
 
@@ -165,7 +165,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
 
     if (_file == nullptr) {
         qDebug() << "FILE IS NULL";
-        Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Cant find file: '") % name % '\'',  Logger::log_error);
+        Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Cant find file: '") % name % '\'');
         return;
     }
 
@@ -178,7 +178,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
                 delete _file;
             }
 
-            Logger::obj().write(QStringLiteral("IDE"), QStringLiteral("Cant open file: '") % name % '\'', Logger::log_error);
+            Logger::error(QStringLiteral("IDE"), QStringLiteral("Cant open file: '") % name % '\'');
             return;
         }
     }
@@ -290,12 +290,12 @@ void IDEWindow::openResource(TabsBlock * target_editor, const QUrl & url) {
 
         if (f.isDir()) {
 //            openFolder(url);
-            Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Unsupported resource: DIR: '") % url.toString() % '\'',  Logger::log_error);
+            Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Unsupported resource: DIR: '") % url.toString() % '\'');
         } else {
             openFile(url);
         }
     } else {
-        Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Unsupported resource: '") % url.toString() % '\'',  Logger::log_error);
+        Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Unsupported resource: '") % url.toString() % '\'');
     }
 }
 
@@ -560,7 +560,7 @@ QWidget * IDEWindow::findEditor(QSplitter * active_table) {
         widget = active_table -> widget(0);
 
         if (!widget) {
-            Logger::obj().write(QLatin1Literal("editorIsEmpty"), QLatin1Literal("incorrect editors table state"), Logger::log_error);
+            Logger::error(QLatin1Literal("editorIsEmpty"), QLatin1Literal("incorrect editors table state"));
             break;
         }
 

@@ -72,7 +72,7 @@ bool File::identifyType(const QString & name) {
             if ((_main_format & ft_priority) < (ft & ft_priority)) {
                 _main_format = ft;
 //            } else {
-//                Logger::obj().write(QLatin1Literal("File"), QLatin1Literal("Cant identify file type for: ") % _name % '(' % name % ')');
+//                Logger::error(QLatin1Literal("File"), QLatin1Literal("Cant identify file type for: ") % _name % '(' % name % ')');
             }
         }
     }

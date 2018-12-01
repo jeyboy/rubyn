@@ -961,9 +961,7 @@ void CodeEditor::extraAreaLeaveEvent(QEvent *) {
 }
 
 void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
-    Logger::obj().startMark();
-
-//    hideOverlayIfNoNeed();
+//    Logger::obj().startMark();
 
     int target_top = event -> rect().top();
     int target_bottom = event -> rect().bottom();
@@ -994,7 +992,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
     event -> accept();
 
-    Logger::obj().endMark(false, QLatin1Literal("extraAreaPaintEvent"));
+//    Logger::obj().endMark(false, QLatin1Literal("extraAreaPaintEvent"));
 }
 
 
@@ -1283,7 +1281,7 @@ bool CodeEditor::event(QEvent * event) {
 }
 
 void CodeEditor::paintEvent(QPaintEvent * e) {
-    Logger::obj().startMark();
+//    Logger::obj().startMark();
 
     QPainter painter(viewport());
 
@@ -1359,7 +1357,7 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     e -> accept();
 
-    Logger::obj().endMark(false, QLatin1Literal("paintEvent"));
+//    Logger::obj().endMark(false, QLatin1Literal("paintEvent"));
 }
 
 void CodeEditor::resizeEvent(QResizeEvent * e) {
@@ -1614,7 +1612,7 @@ void CodeEditor::mouseMoveEvent(QMouseEvent * e) {
 
 void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup, const bool & has_modifiers) {
     QTextBlock block = tc.block();
-    bool has_selection = tc.hasSelection();
+//    bool has_selection = tc.hasSelection();
 
     EDITOR_POS_TYPE pos = tc.positionInBlock();
     EDITOR_POS_TYPE start = 0;
@@ -1626,17 +1624,17 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
     QStringRef completion_prefix = block_text.midRef(start, pos - start);
     QStringRef text = block_text.midRef(start, length);
 
-    if (initiate_popup && has_selection) {
+    if (initiate_popup/* && has_selection*/) {
         completer -> setCompletionPrefix(QString());
-        completer -> popup() -> reset();
+        completer -> reset();
     } else {
-        if (!initiate_popup && (has_modifiers || text.isEmpty() /*|| completion_prefix.length() < 3*/)) {
-            completer -> popup() -> hide();
+        if (!initiate_popup && (has_modifiers || text.length() < 2)) {
+            completer -> hide();
             return;
         }
 
         if (completion_prefix != completer -> completionPrefix()) {
-            completer -> popup() -> reset();
+            completer -> reset();
 
             int prefix_len = completion_prefix.length();
             bool from_scratch = !wrapper -> isCompleterContinuable(lex, prefix_len == length);
@@ -1652,7 +1650,7 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
     int completions_amount = completer -> completionCount();
 
     if (completions_amount == 0) {
-        completer -> popup() -> hide();
+        completer -> hide();
         return;
     }
 
@@ -1662,6 +1660,8 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
         QRect cr = cursorRect();
         cr.setLeft(cr.left() + extra_area -> width());
         cr.setWidth(completer -> execWidth());
+
+        qDebug() << ((StateLexem)lex) << text << (start == pos);
 
         completer -> complete(cr);
     }
@@ -1760,7 +1760,8 @@ void CodeEditor::applyCompletion(const QString & completion) {
     wordUnderCursor(tc, wuco_remove_full);
     tc.insertText(completion);
 
-    completer -> popup() -> clearSelection();
+    completer -> reset();
+//    completer -> popup() -> clearSelection();
 }
 
 void CodeEditor::highlightCurrentLine() {

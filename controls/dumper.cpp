@@ -45,7 +45,7 @@ void Dumper::saveTree(IDEWindow * w, JsonObj & json) {
         QVariant data = top -> data(0, Qt::UserRole);
 
         if (data.isNull()) {
-            Logger::obj().write(QLatin1Literal("Dumper"), QLatin1Literal("Cant save project: ") % top -> text(0));
+            Logger::error(QLatin1Literal("Dumper"), QLatin1Literal("Cant save project: ") % top -> text(0));
         }
         else {
             IFolder * folder = VariantPtr<IFolder>::asPtr(data);

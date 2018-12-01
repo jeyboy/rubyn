@@ -250,7 +250,7 @@ bool TabsBlock::openFileInEditor(File * file) {
         case ft_image: //{ emit parent() -> imageAdded(url); break;}
         case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
         default: {
-            Logger::obj().write(QLatin1Literal("IDE"), QLatin1Literal("Undefined format of file: '") % QString::number(file -> formatType()) % '\'',  Logger::log_error);
+            Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Undefined format of file: '") % QString::number(file -> formatType()) % '\'');
             return false;
         }
     };
@@ -333,13 +333,13 @@ void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
     File * file = _bar -> tabFile(tab);
 
     if (!file) {
-        Logger::obj().write(QLatin1Literal("Editor"), QLatin1Literal("INternal error: can't find file: ") % file -> name());
+        Logger::error(QLatin1Literal("Editor"), QLatin1Literal("Internal error: can't find file: ") % file -> name());
         return;
     }
 
     if (_editor -> documentUid() != file -> uid()) {
         if (!openFileInEditor(file)) {
-            Logger::obj().write(QLatin1Literal("Editor"), QLatin1Literal("Can't open file: ") % file -> name());
+            Logger::error(QLatin1Literal("Editor"), QLatin1Literal("Can't open file: ") % file -> name());
             return;
         }
     }

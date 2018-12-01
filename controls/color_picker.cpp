@@ -234,7 +234,7 @@ void ColorPicker::colorSpaceChanged(const int & new_namespace) {
             row3 -> change(Color::cc_hwb_b, color_metric);
         break;}
 
-        default: Logger::obj().write(QLatin1Literal("ColorPicker"), QLatin1Literal("colorSpaceChanged: unknown namespace"), Logger::log_error);
+        default: Logger::error(QLatin1Literal("ColorPicker"), QLatin1Literal("colorSpaceChanged: unknown namespace"));
     };
 
     row_alpha -> change(Color::cc_alpha, color_metric);

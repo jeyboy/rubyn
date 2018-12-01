@@ -68,10 +68,9 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
                     ver_urls.stdlib_url = href;
                     cache_obj.obj(version).insert(VersionUrls::stdlib_type, href);
                 } else
-                    Logger::obj().write(
+                    Logger::error(
                         QLatin1Literal("RubyDocPreparer"), QLatin1Literal("Unknown link type: ") %
-                            url_type % QLatin1Literal("for href: ") % href,
-                        Logger::log_error
+                            url_type % QLatin1Literal("for href: ") % href
                     );
             }
         }
@@ -109,10 +108,9 @@ void RubyDocPreparer::prepare(const QString & version) {
             if (urls.isValid())
                 downloadRubyPacks(urls);
             else
-                Logger::obj().write(
+                Logger::error(
                     QLatin1Literal("RubyDocPreparer"),
-                    QLatin1Literal("Corrupted links data for ruby version: ") % version,
-                    Logger::log_error
+                    QLatin1Literal("Corrupted links data for ruby version: ") % version
                 );
         }
     }
@@ -123,26 +121,24 @@ void RubyDocPreparer::prepare(const QString & version) {
         if (list.contains(version)) {
             downloadRubyPacks(list[version]);
         } else {
-            Logger::obj().write(
+            Logger::error(
                 QLatin1Literal("RubyDocPreparer"),
-                QLatin1Literal("Can find data for ruby version: ") % version,
-                Logger::log_error
+                QLatin1Literal("Can find data for ruby version: ") % version
             );
 
             QString nearest_version;
 
             if (findNearestVersion(version, list, nearest_version)) {
-                Logger::obj().write(
+                Logger::info(
                     QLatin1Literal("RubyDocPreparer"),
                     QLatin1Literal("Finded nearest version: ") % nearest_version
                 );
 
                 prepare(nearest_version);
             } else {
-                Logger::obj().write(
+                Logger::error(
                     QLatin1Literal("RubyDocPreparer"),
-                    QLatin1Literal("Cant find acceptable version for: ") % version,
-                    Logger::log_error
+                    QLatin1Literal("Cant find acceptable version for: ") % version
                 );
             }
         }

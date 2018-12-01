@@ -54,6 +54,13 @@ void Completer::setModel(QStandardItemModel * new_mdl) {
     QCompleter::setModel(mdl);
 }
 
+void Completer::reset() {
+    popup() -> reset();
+}
+void Completer::hide() {
+    popup() -> hide();
+}
+
 void Completer::clear() {
     mdl -> clear();
 }
