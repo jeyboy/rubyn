@@ -96,6 +96,22 @@ void TextDocument::lexicate(const QString & text, Highlighter * highlighter) {
         _lexer -> handle(text, highlighter);
 }
 
+bool TextDocument::isCompleterInitiable(const LEXEM_TYPE & lex) {
+    switch(lex) {
+        case lex_inline_commentary_content:
+        case lex_commentary_content:
+        case lex_bin:
+        case lex_oct:
+        case lex_dec:
+        case lex_hex:
+        case lex_float:
+        case lex_double:
+            return false;
+    }
+
+    return true;
+}
+
 bool TextDocument::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & /*at_end*/) {
     switch(lex) {
         case lex_undefined: //INFO: compatibility for not lexable documents

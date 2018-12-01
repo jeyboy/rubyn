@@ -135,11 +135,9 @@ void CodeEditor::openDocument(File * file) {
 
         connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
 
-        /// TODO: need to hide this panels for some types of doc
         show_foldings_panel = wrapper -> canHasFoldings();
         show_breakpoints_panel = wrapper -> canHasBreakpoints();
         show_extra_icons = false;
-        ///////////////
 
         updateExtraAreaWidth(0);
         setShowSpacesAndTabs(true);
@@ -147,9 +145,9 @@ void CodeEditor::openDocument(File * file) {
         setShowFoldingContentOnHoverOverlay(true);
         setUnfoldOnClickOverlay(true);
 
-        if (!file -> isFullyReaded()) {
-            //    verticalScrollBar()
-        }
+//        if (!file -> isFullyReaded()) {
+//            //    verticalScrollBar()
+//        }
     }
     // else inform user about fail
 }
@@ -1624,6 +1622,11 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
     QStringRef completion_prefix = block_text.midRef(start, pos - start);
     QStringRef text = block_text.midRef(start, length);
 
+    if (!wrapper -> isCompleterInitiable(lex)) {
+        completer -> hide();
+        return;
+    }
+
     if (initiate_popup/* && has_selection*/) {
         completer -> setCompletionPrefix(QString());
         completer -> reset();
@@ -1661,7 +1664,7 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
         cr.setLeft(cr.left() + extra_area -> width());
         cr.setWidth(completer -> execWidth());
 
-        qDebug() << ((StateLexem)lex) << text << (start == pos);
+        qDebug() << lex << text << (start == pos);
 
         completer -> complete(cr);
     }

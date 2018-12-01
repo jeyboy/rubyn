@@ -57,6 +57,7 @@ public:
 
     void lexicate(const QString & text, Highlighter * highlighter);
 
+    bool isCompleterInitiable(const LEXEM_TYPE & lex);
     bool isCompleterContinuable(const LEXEM_TYPE & lex, const bool & at_end = true);
 
     void paraOpositionStr(const PARA_TYPE & para, QString & res);
