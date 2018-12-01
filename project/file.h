@@ -16,6 +16,7 @@ class Folder;
 
 class File {
     bool identifyType(const QString & name);
+    bool identifyTypeByShebang(const QString & str);
 protected:
     IDocument * _doc;
     QIODevice * _device;

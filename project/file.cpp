@@ -2,6 +2,7 @@
 
 #include <qdatetime.h>
 #include <qstringbuilder.h>
+#include <qregularexpression.h>
 #include "editor/document_types/documents_types.h"
 
 #include "controls/logger.h"
@@ -112,6 +113,24 @@ bool File::identifyType(const QString & name) {
 
 //        ++iter;
 //    }
+}
+
+bool File::identifyTypeByShebang(const QString & str) {
+    if (str.startsWith(QLatin1Literal("#!"))) {
+        QRegularExpression regex(QLatin1Literal("\\b(ruby)\\b"), QRegularExpression::CaseInsensitiveOption);
+
+        QRegularExpressionMatch match = regex.match(str);
+
+        if (match.hasMatch()) {
+            QString captured = match.captured(1);
+
+            if (captured.toLower() == QLatin1Literal("ruby")) {
+                _main_format = ft_file_rb;
+            }
+        }
+    }
+
+    return _main_format != ft_unknown;
 }
 
 bool File::open() {

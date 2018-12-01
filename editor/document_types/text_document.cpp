@@ -45,39 +45,36 @@ bool TextDocument::registerStateChangedCallback(QObject * target, const char * s
 }
 
 TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1), removed(0), added(0)*/, _doc(nullptr), _lexer(nullptr), _file(file), layout(nullptr) {
-    qint64 content_length = _file -> source() -> size();
+//    qint64 content_length = _file -> source() -> size();
 
     setFullyReaded(true);
 
-    QElapsedTimer timer;
-//    qDebug() << "START FILE READING" << "FILE SIZE: " << content_length;
-    timer.start();
+    QByteArray ar = _file -> source() -> readAll();
+    ar.replace('\t', TextDocument::tab_space);
+    _doc = new QTextDocument(ar);
 
-    if (content_length < 50000000) { // ~ 50 MB
-//        char * buff = new char[content_length];
+    if (!identificateLexer()) {
+        QString str = _doc -> firstBlock().text();
 
-        QByteArray ar = _file -> source() -> readAll();
-//        _file -> source() -> read(buff, content_length);
-//        qDebug() << "readed";
-        ar.replace('\t', TextDocument::tab_space);
-//        qDebug() << "replaced";
-//        _doc = new QTextDocument(QString(buff));
-        _doc = new QTextDocument(ar);
-//        _doc -> setProperty("tab_space", TextDocument::tab_space);
-
-//        delete [] buff;
-    } else {
-        _doc = new QTextDocument();
-//        _doc -> setProperty("tab_space", QLatin1String("\t"));
-
-        QTextStream stream(_file -> source());
-        QTextCursor cursor(_doc);
-
-        while(!stream.atEnd()) {
-            cursor.insertText(stream.readLine());
-            cursor.insertBlock();
-        }
+        if (file -> identifyTypeByShebang(str))
+            identificateLexer();
     }
+
+//    timer.start();
+//        _doc = new QTextDocument();
+
+//        QTextStream stream(_file -> source());
+//        QTextCursor cursor(_doc);
+
+//        while(!stream.atEnd()) {
+//            QString s = stream.readLine();
+//            s.replace('\t', TextDocument::tab_space);
+//            cursor.insertText(s);
+//            cursor.insertBlock();
+//        }
+//    qDebug() << "LINES WAY: " << timer.nsecsElapsed();
+
+
 
 //    connect(_doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
 
@@ -85,29 +82,7 @@ TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1
     layout -> setCursorWidth(2);
     _doc -> setDocumentLayout(layout);
 
-//    QTextOption option = _doc -> defaultTextOption();
-//    option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
-////    else
-////        option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
-
-//    option.setFlags(option.flags() | QTextOption::ShowLineAndParagraphSeparators);
-//    option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
-
-//    _doc -> setDefaultTextOption(option);
-
-
-//        _device -> close(); // this closed already in IDocument
-
-//        if (_device -> size() < READ_LIMIT)
-//            setPlainText(ar);
-//        else {
-//            fully_readed = false;
-//            readNextBlock();
-//        }
-
     setRevision(_doc -> revision());
-
-    identificateLexer();
 }
 
 TextDocument::~TextDocument() {
