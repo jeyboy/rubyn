@@ -116,6 +116,7 @@ struct LexerControl {
         prev = buffer;
     }
 
+    inline EDITOR_POS_TYPE scratchPos() { return buffer - start; }
     inline EDITOR_POS_TYPE bufferPos() { return prev - start; }
     inline EDITOR_LEN_TYPE strLength() { return static_cast<EDITOR_LEN_TYPE>(buffer - prev); }
 
@@ -357,6 +358,12 @@ struct LexerControl {
                 HighlightFormatFactory::obj().getFormatFor(last_uid)
             );
         }
+    }
+    inline void light(const int & pos, const int & len, const Identifier & uid) {
+        lighter -> setFormat(
+            pos, len,
+            HighlightFormatFactory::obj().getFormatFor(uid)
+        );
     }
     inline void light(const StateLexem & lexem) {
         light(grammar -> toHighlightable(lexem));

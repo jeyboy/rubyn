@@ -99,6 +99,10 @@ protected:
 
     void registerSecuenceFormat();
 
+    void registerCommentMarkInfoFormat();
+    void registerCommentMarkWarnFormat();
+    void registerCommentMarkTodoFormat();
+
 public:
     HighlightFormatFactory();
 

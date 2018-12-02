@@ -57,6 +57,10 @@ enum Identifier : UID_TYPE {
     hid_ternary,
     hid_sequence,
 
+    hid_comment_mark_info,
+    hid_comment_mark_warn,
+    hid_comment_mark_todo,
+
     hid_unknown_name,
 
     hid_error,

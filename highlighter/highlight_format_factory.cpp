@@ -333,6 +333,24 @@ void HighlightFormatFactory::registerSecuenceFormat() {
     _formats.insert(hid_sequence, format);
 }
 
+void HighlightFormatFactory::registerCommentMarkInfoFormat() {
+    QTextCharFormat format;
+    format.setFontWeight(QFont::Bold);
+    format.setBackground(QColor::fromRgb(173, 216, 230));
+    _formats.insert(hid_comment_mark_info, format);
+}
+void HighlightFormatFactory::registerCommentMarkWarnFormat() {
+    QTextCharFormat format;
+    format.setFontWeight(QFont::Bold);
+    format.setBackground(QColor::fromRgb(173, 216, 230));
+    _formats.insert(hid_comment_mark_warn, format);
+}
+void HighlightFormatFactory::registerCommentMarkTodoFormat() {
+    QTextCharFormat format;
+    format.setFontWeight(QFont::Bold);
+    format.setBackground(QColor::fromRgb(173, 216, 230));
+    _formats.insert(hid_comment_mark_todo, format);
+}
 
 
 HighlightFormatFactory::HighlightFormatFactory() {
@@ -390,6 +408,10 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerSpellcheckFormat();
 
     registerUnknownName();
+
+    registerCommentMarkInfoFormat();
+    registerCommentMarkWarnFormat();
+    registerCommentMarkTodoFormat();
 }
 
 const QTextCharFormat & HighlightFormatFactory::getFormatFor(const Identifier & uid) { return _formats[uid]; }

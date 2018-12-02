@@ -8,6 +8,39 @@
 
 using namespace Ruby;
 
+void LexerFrontend::highlightMarkupInComments(LexerControl * state) {
+    state -> buffer -= state -> token -> length;
+
+    while(true) {
+        switch(ECHAR0) {
+            case 'I': {
+                if (ECHAR4 == ':' && ECHAR1 == 'N' && ECHAR2 == 'F' && ECHAR3 == 'O') {
+                    state -> light(state -> scratchPos(), 5, hid_comment_mark_info);
+                    state -> buffer += 4;
+                }
+            break;}
+
+            case 'W': {
+                if (ECHAR4 == ':' && ECHAR1 == 'A' && ECHAR2 == 'R' && ECHAR3 == 'N') {
+                    state -> light(state -> scratchPos(), 5, hid_comment_mark_warn);
+                    state -> buffer += 4;
+                }
+            break;}
+
+            case 'T': {
+                if (ECHAR4 == ':' && ECHAR1 == 'O' && ECHAR2 == 'D' && ECHAR3 == 'O') {
+                    state -> light(state -> scratchPos(), 5, hid_comment_mark_todo);
+                    state -> buffer += 4;
+                }
+            break;}
+
+            case 0: return;
+        }
+
+        ++state -> buffer;
+    }
+}
+
 void LexerFrontend::registerVariable(LexerControl * state) {
 //    if (!state -> scope -> hasVar(state -> cached)) {
 //        state -> scope -> addVar(
@@ -780,7 +813,11 @@ bool LexerFrontend::parseComment(LexerControl * state) {
     }
 
     state -> moveBufferToEnd();
+
     cutWord(state, lex_commentary_content);
+
+    highlightMarkupInComments(state);
+
     return false;
 }
 
@@ -1237,6 +1274,8 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 state -> next_offset = 0;
 
                 if (!cutWord(state, lex_inline_commentary_content)) goto exit;
+
+                highlightMarkupInComments(state);
             break;}
 
 

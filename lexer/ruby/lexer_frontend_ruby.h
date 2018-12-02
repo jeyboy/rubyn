@@ -18,6 +18,8 @@ namespace Ruby {
             ccp_meta = 64,
         };
 
+        void highlightMarkupInComments(LexerControl * state);
+
         void registerVariable(LexerControl * state);
         void registerMethod(LexerControl * state);
         void registerClass(LexerControl * state);
