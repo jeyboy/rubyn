@@ -118,7 +118,6 @@ Predefined::Predefined() {
     keys.insert(QByteArrayLiteral("<"), lex_operator_less);
     keys.insert(QByteArrayLiteral(">="), lex_operator_great_eql);
     keys.insert(QByteArrayLiteral("<="), lex_operator_less_eql);
-    keys.insert(QByteArrayLiteral("=="), lex_operator_comparison);
     keys.insert(QByteArrayLiteral("<=>"), lex_operator_sort);
     keys.insert(QByteArrayLiteral("==="), lex_operator_equality);
     keys.insert(QByteArrayLiteral(".."), lex_dot_dot);

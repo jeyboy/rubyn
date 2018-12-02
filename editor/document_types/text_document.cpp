@@ -96,7 +96,7 @@ void TextDocument::lexicate(const QString & text, Highlighter * highlighter) {
         _lexer -> handle(text, highlighter);
 }
 
-bool TextDocument::isCompleterInitiable(const LEXEM_TYPE & lex) {
+bool TextDocument::isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end) {
     switch(lex) {
         case lex_inline_commentary_content:
         case lex_commentary_content:
@@ -107,6 +107,61 @@ bool TextDocument::isCompleterInitiable(const LEXEM_TYPE & lex) {
         case lex_float:
         case lex_double:
             return false;
+
+        case lex_operator_add:
+        case lex_operator_minus:
+        case lex_operator_multiplication:
+        case lex_operator_division:
+        case lex_operator_modulus:
+        case lex_operator_exponentiation:
+
+        case lex_operator_add_assigment:
+        case lex_operator_minus_assigment:
+        case lex_operator_multiplication_assigment:
+        case lex_operator_division_assigment:
+        case lex_operator_modulus_assigment:
+        case lex_operator_exponentiation_assigment:
+
+        case lex_operator_assigment:
+        case lex_operator_comparison:
+        case lex_operator_not_equal:
+        case lex_operator_great:
+        case lex_operator_less:
+        case lex_operator_great_eql:
+        case lex_operator_less_eql:
+        case lex_operator_sort:
+        case lex_operator_equality:
+        case lex_dot_dot:
+        case lex_dot_dot_dot:
+
+        case lex_operator_bit_and:
+        case lex_operator_bit_or:
+        case lex_operator_bit_exclusive_or:
+        case lex_operator_bit_not:
+        case lex_operator_bit_left_shift:
+        case lex_operator_bit_right_shift:
+
+        case lex_operator_bit_and_assigment:
+        case lex_operator_bit_or_assigment:
+        case lex_operator_bit_exclusive_or_assigment:
+        case lex_operator_bit_left_shift_assigment:
+        case lex_operator_bit_right_shift_assigment:
+
+
+        case lex_rocket:
+        case lex_question_mark:
+        case lex_colon:
+
+        case lex_operator_not:
+        case lex_operator_and:
+        case lex_operator_or:
+
+
+        case lex_operator_and_assigment:
+        case lex_operator_or_assigment:
+
+        case lex_resolution:
+            return at_end;
     }
 
     return true;

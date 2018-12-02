@@ -1622,7 +1622,9 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
     QStringRef completion_prefix = block_text.midRef(start, pos - start);
     QStringRef text = block_text.midRef(start, length);
 
-    if (!wrapper -> isCompleterInitiable(lex)) {
+    int prefix_len = completion_prefix.length();
+
+    if (!wrapper -> isCompleterInitiable(lex, prefix_len == length)) {
         completer -> hide();
         return;
     }
@@ -1639,7 +1641,6 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
         if (completion_prefix != completer -> completionPrefix()) {
             completer -> reset();
 
-            int prefix_len = completion_prefix.length();
             bool from_scratch = !wrapper -> isCompleterContinuable(lex, prefix_len == length);
 
             Logger::info("Completer: prefix from_scratch", from_scratch ? "true" : "false");
