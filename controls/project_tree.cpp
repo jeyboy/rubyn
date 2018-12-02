@@ -291,7 +291,14 @@ void ProjectTree::showContextMenu(const QPoint & point) {
     QMenu menu(this);
 
     QTreeWidgetItem * curr_item = itemAt(point);
-//    [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); }
+
+    QAction action0(QIcon(QLatin1Literal(":/menu/palette")), "Fill Sections", this);
+    action0.setCheckable(true);
+    action0.setChecked(item_delegate -> isFilled());
+    connect(&action0, &QAction::triggered, [=]() { item_delegate -> toggleFill(); });
+    menu.addAction(&action0);
+
+    menu.addSeparator();
 
     QAction action1(QIcon(QLatin1Literal(":/menu/collapse_all")), "Collapse All", this);
     connect(&action1, SIGNAL(triggered()), this, SLOT(collapseAll()));

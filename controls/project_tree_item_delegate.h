@@ -7,6 +7,9 @@ class ProjectTreeItemDelegate : public QStyledItemDelegate {
     bool ignore_back_fill;
 public:
     ProjectTreeItemDelegate();
+
+    inline bool isFilled() { return !ignore_back_fill; }
+    inline void toggleFill() { ignore_back_fill = !ignore_back_fill; }
 protected:
     void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 //    QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;

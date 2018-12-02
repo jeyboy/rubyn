@@ -90,5 +90,6 @@
         <file alias="collapse_all">icons/collapse_all.png</file>
         <file alias="expand">icons/expand.png</file>
         <file alias="expand_all">icons/expand_all.png</file>
+        <file alias="palette">icons/palette.png</file>
     </qresource>
 </RCC>
