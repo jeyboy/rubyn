@@ -9,6 +9,7 @@
 #include "misc/defines.h"
 #include "editor/active_para_info.h"
 #include "editor/active_folding_info.h"
+#include "editor/completer_info.h"
 
 class QPaintEvent;
 class QResizeEvent;
@@ -247,6 +248,7 @@ class CodeEditor : public QPlainTextEdit {
     ActiveParaInfo para_info;
     ActiveParaInfo alt_para_info;
     ActiveFoldingInfo active_folding;
+    CompleterInfo completer_info;
 
     int curr_block_number;
 

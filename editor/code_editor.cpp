@@ -1612,19 +1612,17 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
     QTextBlock block = tc.block();
 //    bool has_selection = tc.hasSelection();
 
-    EDITOR_POS_TYPE pos = tc.positionInBlock();
-    EDITOR_POS_TYPE start = 0;
-    EDITOR_POS_TYPE length = 0;
+    completer_info.cursor_pos = tc.positionInBlock();
+    completer_info.word_start = 0;
+    completer_info.word_length = 0;
+    completer_info.lex = wrapper -> getWordBoundaries(completer_info.word_start, completer_info.word_length, block, completer_info.cursor_pos, false);
+    completer_info.at_word_end = completer_info.cursor_pos - completer_info.word_start == completer_info.word_length;
 
-    LEXEM_TYPE lex = wrapper -> getWordBoundaries(start, length, block, pos, false);
     QString block_text = block.text();
+    QStringRef completion_prefix = block_text.midRef(completer_info.word_start, completer_info.cursor_pos - completer_info.word_start);
+    QStringRef text = block_text.midRef(completer_info.word_start, completer_info.word_length);
 
-    QStringRef completion_prefix = block_text.midRef(start, pos - start);
-    QStringRef text = block_text.midRef(start, length);
-
-    int prefix_len = completion_prefix.length();
-
-    if (!wrapper -> isCompleterInitiable(lex, prefix_len == length)) {
+    if (!wrapper -> isCompleterInitiable(completer_info.lex, completer_info.at_word_end)) {
         completer -> hide();
         return;
     }
@@ -1641,7 +1639,7 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
         if (completion_prefix != completer -> completionPrefix()) {
             completer -> reset();
 
-            bool from_scratch = !wrapper -> isCompleterContinuable(lex, prefix_len == length);
+            bool from_scratch = !wrapper -> isCompleterContinuable(completer_info.lex, completer_info.at_word_end);
 
             Logger::info("Completer: prefix from_scratch", from_scratch ? "true" : "false");
 
@@ -1664,8 +1662,6 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
         QRect cr = cursorRect();
         cr.setLeft(cr.left() + extra_area -> width());
         cr.setWidth(completer -> execWidth());
-
-        qDebug() << lex << text << (start == pos);
 
         completer -> complete(cr);
     }
@@ -1747,18 +1743,16 @@ void CodeEditor::overlayHidden(const OVERLAY_POS_TYPE & uid) {
 
 void CodeEditor::applyCompletion(const QString & completion) {
     QTextCursor tc = textCursor();
-    if (tc.hasSelection()) {
-        tc.removeSelectedText();
-//        wordUnderCursor(tc, wuco_remove_full);
-//        tc.insertText(completion);
-    }/* else {
-//            bool is_replaceable = wrapper -> isCompleterReplaceable(lex, prefix_len == length);
 
-//            int extra = completion.length() - completer -> completionPrefix().length();
-    //    tc.movePosition(QTextCursor::Left);
-//        tc.movePosition(QTextCursor::EndOfWord);
-//            tc.insertText(completion.right(extra));
-    }*/
+    if (!tc.hasSelection()) {
+        bool is_replaceable = wrapper -> isCompleterReplaceable(completer_info.lex, completer_info.at_word_end);
+
+        if (is_replaceable) {
+            int pos = tc.block().position();
+            tc.setPosition(pos + completer_info.word_start, QTextCursor::MoveAnchor);
+            tc.setPosition(pos + completer_info.word_start + completer_info.word_length, QTextCursor::KeepAnchor);
+        }
+    }
 
 //        wordUnderCursor(tc, wuco_remove_full);
 

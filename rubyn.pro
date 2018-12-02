@@ -203,7 +203,8 @@ HEADERS  += ide_window.h \
     controls/jslider_style.h \
     controls/color_slider.h \
     misc/color.h \
-    tools/filesystem_watcher/watcher.h
+    tools/filesystem_watcher/watcher.h \
+    editor/completer_info.h
 
 FORMS    += ide_window.ui
 
