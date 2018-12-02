@@ -1610,7 +1610,6 @@ void CodeEditor::mouseMoveEvent(QMouseEvent * e) {
 
 void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup, const bool & has_modifiers) {
     QTextBlock block = tc.block();
-//    bool has_selection = tc.hasSelection();
 
     completer_info.cursor_pos = tc.positionInBlock();
     completer_info.word_start = 0;
@@ -1627,9 +1626,9 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
         return;
     }
 
-    if (initiate_popup/* && has_selection*/) {
-        completer -> setCompletionPrefix(QString());
+    if (initiate_popup && tc.hasSelection()) {
         completer -> reset();
+        completer -> setCompletionPrefix(QString());
     } else {
         if (!initiate_popup && (has_modifiers || text.length() < 2)) {
             completer -> hide();
@@ -1640,8 +1639,6 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
             completer -> reset();
 
             bool from_scratch = !wrapper -> isCompleterContinuable(completer_info.lex, completer_info.at_word_end);
-
-            Logger::info("Completer: prefix from_scratch", from_scratch ? "true" : "false");
 
             completer -> setCompletionPrefix(
                 from_scratch ? QString() : completion_prefix.toString()
