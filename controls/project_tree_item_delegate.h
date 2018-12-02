@@ -9,6 +9,7 @@ public:
     ProjectTreeItemDelegate();
 
     inline bool isFilled() { return !ignore_back_fill; }
+    inline void setFill(const bool & fill) { ignore_back_fill = !fill; }
     inline void toggleFill() { ignore_back_fill = !ignore_back_fill; }
 protected:
     void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;

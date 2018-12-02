@@ -77,6 +77,7 @@ QByteArray ProjectTree::saveState() {
     QJsonObject obj;
 
     saveStateHelper(invisibleRootItem(), obj);
+    obj.insert(QLatin1Literal("*fill*"), item_delegate -> isFilled());
 
     return Json(obj).toJsonStr();
 }
@@ -85,6 +86,7 @@ void ProjectTree::restoreState(const QByteArray & state) {
     setUpdatesEnabled(false);
 
     JsonObj obj(JsonObj::fromJsonStr(state));
+    item_delegate -> setFill(obj.boolean(QLatin1Literal("*fill*"), true));
 
     loadStateHelper(invisibleRootItem(), obj);
 
