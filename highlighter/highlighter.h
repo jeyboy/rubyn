@@ -55,7 +55,7 @@ public:
 //    void setCurrentBlockUserData(QTextBlockUserData * data);
 //    QTextBlockUserData * currentBlockUserData() const;
 
-    void initBlockUserData(QTextBlock & block, BlockUserData * prev_udata, BlockUserData *& udata);
+    void initBlockUserData(QTextBlock & block, BlockUserData * prev_udata, BlockUserData *& udata, const int & text_len);
 
 //    inline void clearExtraFormatForCurrBlock() {
 //        if (current_block.isValid())

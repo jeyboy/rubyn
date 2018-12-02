@@ -13,22 +13,25 @@ void LexerFrontend::highlightMarkupInComments(LexerControl * state) {
 
     while(true) {
         switch(ECHAR0) {
+            case 'i':
             case 'I': {
-                if (ECHAR4 == ':' && ECHAR1 == 'N' && ECHAR2 == 'F' && ECHAR3 == 'O') {
+                if (ECHAR4 == ':' && (ECHAR1 == 'N' || ECHAR1 == 'n') && (ECHAR2 == 'F' || ECHAR2 == 'f') && (ECHAR3 == 'O' || ECHAR3 == 'o')) {
                     state -> light(state -> scratchPos(), 5, hid_comment_mark_info);
                     state -> buffer += 4;
                 }
             break;}
 
+            case 'w':
             case 'W': {
-                if (ECHAR4 == ':' && ECHAR1 == 'A' && ECHAR2 == 'R' && ECHAR3 == 'N') {
+                if (ECHAR4 == ':' && (ECHAR1 == 'A' || ECHAR1 == 'a') && (ECHAR2 == 'R' || ECHAR2 == 'r') && (ECHAR3 == 'N' || ECHAR3 == 'n')) {
                     state -> light(state -> scratchPos(), 5, hid_comment_mark_warn);
                     state -> buffer += 4;
                 }
             break;}
 
+            case 't':
             case 'T': {
-                if (ECHAR4 == ':' && ECHAR1 == 'O' && ECHAR2 == 'D' && ECHAR3 == 'O') {
+                if (ECHAR4 == ':' && (ECHAR1 == 'O' || ECHAR1 == 'o') && (ECHAR2 == 'D' || ECHAR2 == 'd') && (ECHAR3 == 'O' || ECHAR3 == 'o')) {
                     state -> light(state -> scratchPos(), 5, hid_comment_mark_todo);
                     state -> buffer += 4;
                 }
@@ -1184,8 +1187,13 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case '|': {
-                if (ECHAR1 == '|')
+                if (ECHAR1 == '|') {
                     ++state -> next_offset;
+
+                    if (ECHAR2 == '=') {
+                        ++state -> next_offset;
+                    }
+                }
 
                 if (ECHAR1 == '=')
                     ++state -> next_offset;
@@ -1554,7 +1562,8 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
     BlockUserData * prev_udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
     BlockUserData * udata = reinterpret_cast<BlockUserData *>(block.userData());
 
-    lighter -> initBlockUserData(block, prev_udata, udata);
+    QByteArray text_val = text.toUtf8();
+    lighter -> initBlockUserData(block, prev_udata, udata, text_val.length());
 
     LexerControl state(
         &Ruby::Grammar::obj(),
@@ -1563,7 +1572,7 @@ void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
         lighter
     );
 
-    QByteArray text_val = text.toUtf8();
+
     const char * window = text_val.constData();
     bool override_status = false;
 

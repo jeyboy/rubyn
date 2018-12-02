@@ -336,19 +336,19 @@ void HighlightFormatFactory::registerSecuenceFormat() {
 void HighlightFormatFactory::registerCommentMarkInfoFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
-    format.setBackground(QColor::fromRgb(173, 216, 230));
+    format.setForeground(QColor::fromRgb(0, 182, 255));
     _formats.insert(hid_comment_mark_info, format);
 }
 void HighlightFormatFactory::registerCommentMarkWarnFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
-    format.setBackground(QColor::fromRgb(173, 216, 230));
+    format.setForeground(QColor::fromRgb(255, 159, 0));
     _formats.insert(hid_comment_mark_warn, format);
 }
 void HighlightFormatFactory::registerCommentMarkTodoFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
-    format.setBackground(QColor::fromRgb(173, 216, 230));
+    format.setForeground(QColor::fromRgb(255, 0, 0));
     _formats.insert(hid_comment_mark_todo, format);
 }
 

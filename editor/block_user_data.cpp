@@ -31,19 +31,31 @@ TokenCell * BlockUserData::tokenForPos(const EDITOR_POS_TYPE & pos) {
     TokenCell * it = token_end -> prev;
     EDITOR_POS_TYPE length = it -> start_pos + static_cast<int>(it -> length);
 
+    if (token_begin -> next == token_end)
+        return nullptr;
+
+    if (pos == 0)
+        return token_begin -> next;
+
     if (length - pos < length / 2) {
-        while(it != token_begin) {
+        while(true) {
             if (pos > it -> start_pos)
                 return it;
+
+            if (it == token_begin)
+                break;
 
             it = it -> prev;
         }
     } else {
         it = token_begin -> next;
 
-        while(it != token_end) {
+        while(true) {
             if (pos <= it -> start_pos)
                 return it -> prev;
+
+            if (it == token_end)
+                break;
 
             it = it -> next;
         }
