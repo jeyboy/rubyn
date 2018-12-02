@@ -1056,7 +1056,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
             break;}
 
             case ',':
-            case '^':
             case '~':
             case ';':
             case '\r':
@@ -1159,6 +1158,14 @@ void LexerFrontend::lexicate(LexerControl * state) {
             break;}
 
 
+            case '^': {
+                if (ECHAR1 == '=')
+                    ++state -> next_offset;
+
+                if (!cutWord(state)) goto exit;
+            break;}
+
+
             case '=': {
                 if (ECHAR1 == '~')
                     ++state -> next_offset;
@@ -1167,6 +1174,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
                     if (ECHAR2 == '=') // ===
                         ++state -> next_offset;
+                }
+                else if (ECHAR1 == '>') {
+                    ++state -> next_offset;
                 }
                 else if (ECHAR1 == 'b') { // =begin
                    if (ECHAR2 == 'e' && ECHAR3 == 'g' &&
@@ -1203,7 +1213,17 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case '&': {
-                if (ECHAR1 == '&' || ECHAR1 == '.')
+                if (ECHAR1 == '&') {
+                    ++state -> next_offset;
+
+                    if (ECHAR2 == '=')
+                        ++state -> next_offset;
+                }
+
+                if (ECHAR1 == '=')
+                    ++state -> next_offset;
+
+                if (ECHAR1 == '.')
                     ++state -> next_offset;
 
                 if (!cutWord(state)) goto exit;
@@ -1252,7 +1272,9 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (ECHAR1 == '<') {
                     ++state -> next_offset;
 
-                    if (!isBlank(ECHAR2)) {
+                    if (ECHAR2 == '=') {
+                        ++state -> next_offset;
+                    } else if (!isBlank(ECHAR2)) {
                         if (parseHeredocMarks(state, lex))
                             goto iterate;
                     }
@@ -1270,7 +1292,14 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case '>': {
-                if (ECHAR1 == '>' || ECHAR1 == '=')
+                if (ECHAR1 == '>') {
+                    ++state -> next_offset;
+
+                    if (ECHAR2 == '=')
+                        ++state -> next_offset;
+                }
+
+                if (ECHAR1 == '=')
                     ++state -> next_offset;
 
                 if (!cutWord(state)) goto exit;

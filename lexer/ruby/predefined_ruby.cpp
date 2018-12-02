@@ -131,6 +131,13 @@ Predefined::Predefined() {
     keys.insert(QByteArrayLiteral("<<"), lex_operator_bit_left_shift);
     keys.insert(QByteArrayLiteral(">>"), lex_operator_bit_right_shift);
 
+    keys.insert(QByteArrayLiteral("&="), lex_operator_bit_and_assigment);
+    keys.insert(QByteArrayLiteral("|="), lex_operator_bit_or_assigment);
+    keys.insert(QByteArrayLiteral("^="), lex_operator_bit_exclusive_or_assigment);
+    keys.insert(QByteArrayLiteral("<<="), lex_operator_bit_left_shift_assigment);
+    keys.insert(QByteArrayLiteral(">>="), lex_operator_bit_right_shift_assigment);
+
+
     keys.insert(QByteArrayLiteral("=>"), lex_rocket);
     keys.insert(QByteArrayLiteral("?"), lex_question_mark);
     keys.insert(QByteArrayLiteral(":"), lex_colon);
@@ -139,6 +146,8 @@ Predefined::Predefined() {
     keys.insert(QByteArrayLiteral("&&"), lex_operator_and);
     keys.insert(QByteArrayLiteral("||"), lex_operator_or);
 
+
+    keys.insert(QByteArrayLiteral("&&="), lex_operator_and_assigment);
     keys.insert(QByteArrayLiteral("||="), lex_operator_or_assigment);
 
     keys.insert(QByteArrayLiteral("::"), lex_resolution);

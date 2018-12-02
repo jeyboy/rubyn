@@ -104,14 +104,21 @@ enum StateLexem : LEXEM_TYPE {
     lex_operator_bit_left_shift             = 43 | lex_ruby_ternary_braker, // <<
     lex_operator_bit_right_shift            = 44 | lex_ruby_ternary_braker, // >>
 
-    lex_operator_and_word                   = 45 | lex_ruby_ternary_braker,
-    lex_operator_and                        = 46 | lex_ruby_ternary_braker, // &&
-    lex_operator_or_word                    = 47 | lex_ruby_ternary_braker,
-    lex_operator_or                         = 48 | lex_ruby_ternary_braker, // ||
-    lex_operator_or_assigment               = 49 | lex_ruby_ternary_braker, // ||=
-    lex_operator_not                        = 50 | lex_ruby_ternary_braker, // !
+    lex_operator_bit_and_assigment          = 45 | lex_ruby_ternary_braker, // &=
+    lex_operator_bit_or_assigment           = 46 | lex_ruby_ternary_braker, // |=
+    lex_operator_bit_exclusive_or_assigment = 47 | lex_ruby_ternary_braker, // ^=
+    lex_operator_bit_left_shift_assigment   = 48 | lex_ruby_ternary_braker, // <<=
+    lex_operator_bit_right_shift_assigment  = 49 | lex_ruby_ternary_braker, // >>=
 
-    lex_operator_safe_navigation = 51, // &. // ruby 2.3+
+    lex_operator_and_word                   = 50 | lex_ruby_ternary_braker,
+    lex_operator_and                        = 51 | lex_ruby_ternary_braker, // &&
+    lex_operator_and_assigment              = 52 | lex_ruby_ternary_braker, // &&=
+    lex_operator_or_word                    = 53 | lex_ruby_ternary_braker,
+    lex_operator_or                         = 54 | lex_ruby_ternary_braker, // ||
+    lex_operator_or_assigment               = 55 | lex_ruby_ternary_braker, // ||=
+    lex_operator_not                        = 56 | lex_ruby_ternary_braker, // !
+
+    lex_operator_safe_navigation = 57, // &. // ruby 2.3+
 
     lex_loop,
     lex_yield,
