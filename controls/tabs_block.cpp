@@ -378,11 +378,11 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
 
         File * file = _bar -> tabFile(tab);
 
-        QAction * action = menu.addAction(tr("In new horizontal editor"), this, SLOT(newTabsBlockRequest()));
+        QAction * action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_horizontal")), tr("Split"), this, SLOT(newTabsBlockRequest()));
         action -> setProperty("uid", file -> uid());
         action -> setProperty("vertical", false);
 
-        action = menu.addAction(tr("In new vertical editor"), this, SLOT(newTabsBlockRequest()));
+        action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_vertical")), tr("Split"), this, SLOT(newTabsBlockRequest()));
         action -> setProperty("uid", file -> uid());
         action -> setProperty("vertical", true);
 

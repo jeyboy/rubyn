@@ -91,5 +91,7 @@
         <file alias="expand">icons/expand.png</file>
         <file alias="expand_all">icons/expand_all.png</file>
         <file alias="palette">icons/palette.png</file>
+        <file alias="break_horizontal">icons/break_horizontal.png</file>
+        <file alias="break_vertical">icons/break_vertical.png</file>
     </qresource>
 </RCC>
