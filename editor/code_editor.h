@@ -543,7 +543,7 @@ protected:
         else QPlainTextEdit::insertFromMimeData(source);
 }
 
-    void procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup = true, const bool & has_modifiers = false);
+    void procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup = true);
     bool findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para, int start_pos);
 signals:
     void inFocus();

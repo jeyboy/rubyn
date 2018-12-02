@@ -1439,6 +1439,11 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                     wrapper -> layout -> toggleFolding(head_blk);
                 }
             }
+
+            if (completer && completer -> isVisible()) {
+                QTextCursor tc = textCursor();
+                procCompleterForCursor(tc, false);
+            }
         break;}
 
         case Qt::Key_Escape: // ignore non printable keys
@@ -1451,23 +1456,22 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         case Qt::Key_Control: { QPlainTextEdit::keyPressEvent(e); break;}
 
         default: {
+            bool is_shortcut = e -> modifiers() == Qt::ControlModifier && curr_key == Qt::Key_Space;
+
             if (!completer || (!completer -> isVisible() &&
                     (curr_key < Qt::Key_Space || curr_key > Qt::Key_ydiaeresis)
-                )
+                ) || (e -> modifiers() != Qt::NoModifier && !is_shortcut)
             ) {
                 QPlainTextEdit::keyPressEvent(e);
                 procRevision();
                 return;
             }
 
-            bool has_modifiers = e -> modifiers() != Qt::NoModifier;
-            bool is_shortcut = (e -> modifiers() & Qt::ControlModifier) && curr_key == Qt::Key_Space;
-
             if (!is_shortcut)
                 QPlainTextEdit::keyPressEvent(e);
 
             QTextCursor tc = textCursor();
-            procCompleterForCursor(tc, is_shortcut, has_modifiers);
+            procCompleterForCursor(tc, is_shortcut);
         }
     }
 
@@ -1608,7 +1612,7 @@ void CodeEditor::mouseMoveEvent(QMouseEvent * e) {
     }
 }
 
-void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup, const bool & has_modifiers) {
+void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup) {
     QTextBlock block = tc.block();
 
     completer_info.cursor_pos = tc.positionInBlock();
@@ -1630,7 +1634,7 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
         completer -> reset();
         completer -> setCompletionPrefix(QString());
     } else {
-        if (!initiate_popup && (has_modifiers || text.length() < 2)) {
+        if (!initiate_popup && text.length() < 2) {
             completer -> hide();
             return;
         }
