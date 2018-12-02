@@ -1659,7 +1659,23 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
     }
 
     if (initiate_popup && completions_amount == 1 && completion_prefix == text) {
-        applyCompletion(completer -> currentCompletion());
+        if (tc.hasSelection()) {
+            tc.removeSelectedText();
+    //        wordUnderCursor(tc, wuco_remove_full);
+    //        tc.insertText(completion);
+        }/* else {
+//            bool is_replaceable = wrapper -> isCompleterReplaceable(lex, prefix_len == length);
+
+//            int extra = completion.length() - completer -> completionPrefix().length();
+        //    tc.movePosition(QTextCursor::Left);
+    //        tc.movePosition(QTextCursor::EndOfWord);
+//            tc.insertText(completion.right(extra));
+        }*/
+
+//        wordUnderCursor(tc, wuco_remove_full);
+        tc.insertText(completer -> currentCompletion());
+
+        completer -> reset();
     } else {
         QRect cr = cursorRect();
         cr.setLeft(cr.left() + extra_area -> width());
@@ -1743,29 +1759,6 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
 void CodeEditor::overlayHidden(const OVERLAY_POS_TYPE & uid) {
     display_cacher -> mapOverlayState(uid, false);
     restoreDefaultMouseCursor();
-}
-
-void CodeEditor::applyCompletion(const QString & completion) {
-    if (completer -> widget() != this) return;
-
-    QTextCursor tc = textCursor();
-
-    if (tc.hasSelection()) {
-        tc.removeSelectedText();
-//        wordUnderCursor(tc, wuco_remove_full);
-//        tc.insertText(completion);
-    }/* else {
-        int extra = completion.length() - completer -> completionPrefix().length();
-    //    tc.movePosition(QTextCursor::Left);
-//        tc.movePosition(QTextCursor::EndOfWord);
-        tc.insertText(completion.right(extra));
-    }*/
-
-    wordUnderCursor(tc, wuco_remove_full);
-    tc.insertText(completion);
-
-    completer -> reset();
-//    completer -> popup() -> clearSelection();
 }
 
 void CodeEditor::highlightCurrentLine() {

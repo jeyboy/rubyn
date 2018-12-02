@@ -237,6 +237,23 @@ bool TextDocument::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & /
     return false;
 }
 
+bool TextDocument::isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & /*at_end*/) {
+    switch(lex) {
+        case lex_undefined: //INFO: compatibility for not lexable documents
+
+        case lex_method:
+        case lex_word:
+        case lex_const:
+        case lex_var_local:
+        case lex_var_instance:
+        case lex_var_object:
+        case lex_var_global:
+            return true;
+    }
+
+    return false;
+}
+
 void TextDocument::paraOpositionStr(const PARA_TYPE & para, QString & res) {
     if (_lexer)
         _lexer -> paraOpositionStr(para, res);

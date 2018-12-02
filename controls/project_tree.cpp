@@ -15,6 +15,7 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
 
     QFont f(font());
     f.setPointSize(11);
+//    f.setLetterSpacing(QFont::AbsoluteSpacing, 0.6);
     setFont(f);
 
     //TODO: need to set double font size

@@ -550,7 +550,6 @@ signals:
 
 private slots:
     void overlayHidden(const OVERLAY_POS_TYPE & uid);
-    void applyCompletion(const QString & completion);
 
     void highlightCurrentLine();
 

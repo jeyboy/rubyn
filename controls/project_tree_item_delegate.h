@@ -4,6 +4,7 @@
 #include <qstyleditemdelegate.h>
 
 class ProjectTreeItemDelegate : public QStyledItemDelegate {
+    bool ignore_back_fill;
 public:
     ProjectTreeItemDelegate();
 protected:
