@@ -143,14 +143,13 @@ void Dumper::saveSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
         arr << json;
     }
 
-//    obj.insert(QLatin1Literal("dir"), list -> orientation());
-    obj.insert(QLatin1Literal("state"), QString(list -> saveState()));
-    obj.insert(QLatin1Literal("geom"), QString(list -> saveGeometry()));
+    obj.insert(QLatin1Literal("dir"), list -> orientation());
+    obj.insert(QLatin1Literal("sizes"), intArrToStr(list -> sizes()));
     obj.insert(QLatin1Literal("child"), arr);
 }
 
 void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, TabsBlock *& active) {
-//    list -> setOrientation(static_cast<Qt::Orientation>(obj.value(QLatin1Literal("dir")).toInt()));
+    list -> setOrientation(static_cast<Qt::Orientation>(obj.value(QLatin1Literal("dir")).toInt()));
 
     QJsonArray children = obj.value(QLatin1Literal("child")).toArray();
 
@@ -196,12 +195,35 @@ void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, Ta
         }
     }
 
-
-    list -> restoreState(obj.value(QLatin1Literal("state")).toString().toUtf8());
-    list -> restoreGeometry(obj.value(QLatin1Literal("geom")).toString().toUtf8());
-//    qDebug() << obj.value(QLatin1Literal("sizes")).toVariant().value<QList<int>>();
-//    list -> setSizes(obj.value(QLatin1Literal("sizes")).toVariant().value<QList<int>>());
+    list -> setSizes(strToIntArr(obj.value(QLatin1Literal("sizes")).toString()));
 }
+
+
+QString Dumper::intArrToStr(const QList<int> & arr) {
+    QString res;
+
+    if (arr.isEmpty())
+        return res;
+
+    QList<int>::ConstIterator it = arr.constBegin();
+
+    for(; it != arr.constEnd(); it++)
+        res = res % "," % QString::number(*it);
+
+    return res.mid(1);
+}
+QList<int> Dumper::strToIntArr(const QString & str) {
+    QVector<QStringRef> parts = str.splitRef(',');
+    QList<int> res;
+
+    QVector<QStringRef>::ConstIterator it = parts.constBegin();
+
+    for(; it != parts.constEnd(); it++)
+        res.append((*it).toInt());
+
+    return res;
+}
+
 
 void Dumper::load(IDEWindow * w, const QString & settings_filename) {
     QSettings settings(Dir::appPath(settings_filename), QSettings::IniFormat, w);

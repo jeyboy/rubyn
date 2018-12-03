@@ -20,6 +20,9 @@ class Dumper : public QObject {
     void saveTab(IDEWindow * w, TabsBlock * editor, QJsonObject & widget_obj);
     void saveSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj);
     void loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, TabsBlock *& active);
+
+    QString intArrToStr(const QList<int> & arr);
+    QList<int> strToIntArr(const QString & str);
 public:
     void load(IDEWindow * w, const QString & settings_filename = QString("fsettings"));
     void save(IDEWindow * w, const QString & settings_filename = QString("fsettings"));
