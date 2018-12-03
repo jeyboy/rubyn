@@ -43,9 +43,7 @@ bool Highlighter::toggleFolding(const QTextBlock & blk) {
     return _doc_wrapper -> layout -> toggleFolding(blk);
 }
 
-Highlighter::Highlighter(TextDocument * doc) : QObject(), rehighlighting(false),
-    _tokens(new TokenList()), _paras(new ParaList()), _doc_wrapper(nullptr), doc(nullptr)
-{
+Highlighter::Highlighter(TextDocument * doc) : QObject(), IHighlighter(), rehighlighting(false), _doc_wrapper(nullptr), doc(nullptr) {
     setDocument(doc);
 }
 
@@ -337,10 +335,6 @@ void Highlighter::applyFormatChanges(int from, int chars_removed, int chars_adde
     }
 }
 
-//void Highlighter::blockCountChanged(int count) {
-//    qDebug() << "blockCountChanged" << count << doc -> blockCount();
-//}
-
 //void Highlighter::cursorPositionChanged(const QTextCursor & cursor) {
 //    EDITOR_POS_TYPE pos = cursor.positionInBlock();
 //    EDITOR_POS_TYPE start = 0;
@@ -349,15 +343,4 @@ void Highlighter::applyFormatChanges(int from, int chars_removed, int chars_adde
 //    LEXEM_TYPE lex = _doc_wrapper -> getWordBoundaries(start, length, cursor.block(), pos, false);
 
 
-//}
-
-//void Highlighter::enterPressed() {
-//    QTextCursor cursor(doc);
-
-//    int level = TextDocumentLayout::getBlockLevel(cursor.block());
-//    const QLatin1String & tab_str = _doc_wrapper -> tabSpace();
-
-//    QString str = QString(tab_str[0].toLatin1(), level * tab_str.size());
-
-//    cursor.insertText(str);
 //}

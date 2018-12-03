@@ -1,7 +1,11 @@
 #ifndef IDOCUMENT_H
 #define IDOCUMENT_H
 
+#include "project/code_formats.h"
+
 #include <qvariant.h>
+
+class ILexer;
 
 class IDocument {
     bool _fully_readed;
@@ -9,10 +13,12 @@ protected:
     bool _changed;
     int _revision;
 
+    ILexer * _lexer;
+
     inline void setFullyReaded(const bool & readed) { _fully_readed = readed; }
 public:
-    IDocument() : _fully_readed(false), _changed(false), _revision(-1) {}
-    virtual ~IDocument() {}
+    inline IDocument() : _fully_readed(false), _changed(false), _revision(-1), _lexer(nullptr) {}
+    virtual ~IDocument();
 
     inline bool isFullyReaded() const { return _fully_readed; }
     inline bool isChanged() const { return _changed; }

@@ -1584,7 +1584,7 @@ LexerFrontend::LexerFrontend() {}
 
 LexerFrontend::~LexerFrontend() {}
 
-void LexerFrontend::handle(const QString & text, Highlighter * lighter) {
+void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
     QTextBlock block = lighter -> currentBlock();
     QTextBlock prev_block = lighter -> prevBlock();
 

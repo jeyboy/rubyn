@@ -5,6 +5,8 @@
 #include "lexer/ilexer.h"
 #include "lexer/lexers_factory.h"
 
+#include "highlighter/highlighter.h"
+
 #include <qdebug.h>
 #include <qtextcursor.h>
 #include <qtextstream.h>
@@ -44,7 +46,7 @@ bool TextDocument::registerStateChangedCallback(QObject * target, const char * s
     return true;
 }
 
-TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1), removed(0), added(0)*/, _doc(nullptr), _lexer(nullptr), _file(file), layout(nullptr) {
+TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1), removed(0), added(0)*/, _doc(nullptr), _file(file), layout(nullptr) {
 //    qint64 content_length = _file -> source() -> size();
 
     setFullyReaded(true);
@@ -91,7 +93,7 @@ TextDocument::~TextDocument() {
 
 const QString & TextDocument::documentUid() { return _file -> uid(); }
 
-void TextDocument::lexicate(const QString & text, Highlighter * highlighter) {
+void TextDocument::lexicate(const QString & text, IHighlighter * highlighter) {
     if (_lexer)
         _lexer -> handle(text, highlighter);
 }

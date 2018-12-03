@@ -1,23 +1,17 @@
 #ifndef HIGHLIGHTER_H
 #define HIGHLIGHTER_H
 
-//#include <qobject.h>
+#include "highlighter/ihighlighter.h"
 
 #include <qtextdocument.h>
 #include <qpointer.h>
 
-#include "editor/block_user_data.h"
-
 class TextDocument;
 
-class Highlighter : public QObject {
+class Highlighter : public QObject, public IHighlighter {
     Q_OBJECT
 
     bool rehighlighting;
-
-    TokenList * _tokens;
-    ParaList * _paras;
-//    Scope * _scope;
 protected:
     void highlightBlock(const QString & text);
     void procFlagsForLastHighlightedBlock(const QTextBlock & block);
@@ -27,7 +21,7 @@ protected:
 
     QTextBlock current_block;
 
-    QVector<QTextCharFormat> formats;
+//    QVector<QTextCharFormat> formats;
     QVector<QTextCharFormat> format_changes;
 public:
     Highlighter(TextDocument * doc);

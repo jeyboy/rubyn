@@ -85,7 +85,11 @@ SOURCES += main.cpp\
     controls/jslider_style.cpp \
     controls/color_slider.cpp \
     misc/color.cpp \
-    tools/filesystem_watcher/watcher.cpp
+    tools/filesystem_watcher/watcher.cpp \
+    highlighter/ihighlighter.cpp \
+    editor/document_types/pseudo_text_document.cpp \
+    editor/idocument.cpp \
+    highlighter/pseudo_highlighter.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -204,7 +208,10 @@ HEADERS  += ide_window.h \
     controls/color_slider.h \
     misc/color.h \
     tools/filesystem_watcher/watcher.h \
-    editor/completer_info.h
+    editor/completer_info.h \
+    highlighter/ihighlighter.h \
+    editor/document_types/pseudo_text_document.h \
+    highlighter/pseudo_highlighter.h
 
 FORMS    += ide_window.ui
 

@@ -14,8 +14,8 @@ public:
     Completer(QObject * parent = nullptr);
 
     void setModel(QStandardItemModel * new_mdl = nullptr);
-    void prepareMemory(int & new_items_amount) {
-        mdl -> setColumnCount(1);
+    void prepareMemory(int & new_items_amount, const int & columns_count = 1) {
+        mdl -> setColumnCount(columns_count);
         mdl -> setRowCount(new_items_amount);
     }
 

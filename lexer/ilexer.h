@@ -3,7 +3,7 @@
 
 #include <qstring.h>
 
-#include "highlighter/highlighter.h"
+#include "highlighter/ihighlighter.h"
 
 #define ERROR_STATE(msg, lex1, lex2) msg + QByteArrayLiteral(" (") + QByteArray::number(lex1) + QByteArrayLiteral(" VS ") + QByteArray::number(lex2) + QByteArrayLiteral(")")
 
@@ -43,7 +43,7 @@ public:
 
     virtual ~ILexer();
 
-    virtual void handle(const QString & text, Highlighter * lighter) = 0;
+    virtual void handle(const QString & text, IHighlighter * lighter) = 0;
 
     virtual void paraOpositionStr(const PARA_TYPE & /*para*/, QString & res) { res.clear(); }
 

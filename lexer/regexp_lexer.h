@@ -16,7 +16,7 @@ public:
     RegexpLexer();
     virtual ~RegexpLexer();
 
-    void handle(const QString & text, Highlighter * lighter);
+    void handle(const QString & text, IHighlighter * lighter);
 };
 
 #endif // REGEXP_LEXER_H

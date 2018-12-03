@@ -57,7 +57,7 @@ RegexpLexer::~RegexpLexer() {
     _rules.clear();
 }
 
-void RegexpLexer::handle(const QString & text, Highlighter * lighter) {
+void RegexpLexer::handle(const QString & text, IHighlighter * lighter) {
     lighter -> setCurrentBlockState(0);
 
     for(RulesList::ConstIterator it = _rules.cbegin(); it != _rules.cend(); it++) {

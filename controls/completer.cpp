@@ -3,7 +3,6 @@
 #include <qabstractitemview.h>
 
 Completer::Completer(QObject * parent) : QCompleter(parent), mdl(new QStandardItemModel(this)) {
-    popup() -> setIconSize(QSize(22, 22));
     setFilterMode(Qt::MatchContains);
     setMaxVisibleItems(12);
 
@@ -31,6 +30,7 @@ Completer::Completer(QObject * parent) : QCompleter(parent), mdl(new QStandardIt
 //    QTreeView::item:hover:!selected{background-color: #e6e6e6;} //gray
 
 
+    popup() -> setIconSize(QSize(22, 22));
     popup() -> setStyleSheet(
         QLatin1Literal(
             "   selection-background-color: rgba(135, 206, 250, 0.2);"

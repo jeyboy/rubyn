@@ -5,7 +5,6 @@
 #include <qtextdocument.h>
 
 #include "misc/defines.h"
-#include "project/code_formats.h"
 #include "editor/idocument.h"
 #include "editor/text_document_layout.h"
 
@@ -13,8 +12,7 @@
 
 class Project;
 class File;
-class ILexer;
-class Highlighter;
+class IHighlighter;
 
 class TextDocument : public QObject, public IDocument {
     Q_OBJECT
@@ -26,8 +24,6 @@ class TextDocument : public QObject, public IDocument {
 //    int pos, removed, added;
 protected:
     QPointer<QTextDocument> _doc;
-
-    ILexer * _lexer;
 
     File * _file;
 
@@ -55,7 +51,7 @@ public:
 
     void readNextBlock();
 
-    void lexicate(const QString & text, Highlighter * highlighter);
+    void lexicate(const QString & text, IHighlighter * highlighter);
 
     bool isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end);
     bool isCompleterContinuable(const LEXEM_TYPE & lex, const bool & at_end);

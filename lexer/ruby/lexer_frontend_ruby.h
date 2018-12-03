@@ -49,7 +49,7 @@ namespace Ruby {
         LexerFrontend();
         ~LexerFrontend();
 
-        void handle(const QString & text, Highlighter * lighter);
+        void handle(const QString & text, IHighlighter * lighter);
 
         void paraOpositionStr(const PARA_TYPE & para, QString & res);
     };
