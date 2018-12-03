@@ -395,9 +395,13 @@ void TabsBlock::newTabsBlockRequest() {
 
     QListWidgetItem * tab = _bar -> _tabs_linkages[obj -> property("uid").toString()];
 
-    File * file = _bar -> tabFile(tab);
+    if (tab) {
+        File * file = _bar -> tabFile(tab);
 
-    if (file) {
-        emit newTabsBlockRequested(file, obj -> property("vertical").toBool());
+        if (file) {
+            emit newTabsBlockRequested(file, obj -> property("vertical").toBool());
+        }
+    } else {
+        qDebug() << "JOPA";
     }
 }

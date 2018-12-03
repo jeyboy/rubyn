@@ -1746,7 +1746,7 @@ void CodeEditor::applyCompletion(const QString & completion) {
     QTextCursor tc = textCursor();
 
     if (!tc.hasSelection()) {
-        bool is_replaceable = wrapper -> isCompleterReplaceable(completer_info.lex, completer_info.at_word_end);
+        bool is_replaceable = wrapper -> isCompleterReplaceable(completer_info.lex, completer_info.cursor_pos == completer_info.word_start);
 
         if (is_replaceable) {
             int pos = tc.block().position();

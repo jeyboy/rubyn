@@ -143,13 +143,14 @@ void Dumper::saveSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
         arr << json;
     }
 
-    obj.insert(QLatin1Literal("dir"), list -> orientation());
-    obj.insert(QLatin1Literal("sizes"), QJsonValue::fromVariant(QVariant::fromValue(list -> sizes())));
+//    obj.insert(QLatin1Literal("dir"), list -> orientation());
+    obj.insert(QLatin1Literal("state"), QString(list -> saveState()));
+    obj.insert(QLatin1Literal("geom"), QString(list -> saveGeometry()));
     obj.insert(QLatin1Literal("child"), arr);
 }
 
 void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, TabsBlock *& active) {
-    list -> setOrientation(static_cast<Qt::Orientation>(obj.value(QLatin1Literal("dir")).toInt()));
+//    list -> setOrientation(static_cast<Qt::Orientation>(obj.value(QLatin1Literal("dir")).toInt()));
 
     QJsonArray children = obj.value(QLatin1Literal("child")).toArray();
 
@@ -195,7 +196,11 @@ void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, Ta
         }
     }
 
-    list -> setSizes(obj.value(QLatin1Literal("sizes")).toVariant().value<QList<int>>());
+
+    list -> restoreState(obj.value(QLatin1Literal("state")).toString().toUtf8());
+    list -> restoreGeometry(obj.value(QLatin1Literal("geom")).toString().toUtf8());
+//    qDebug() << obj.value(QLatin1Literal("sizes")).toVariant().value<QList<int>>();
+//    list -> setSizes(obj.value(QLatin1Literal("sizes")).toVariant().value<QList<int>>());
 }
 
 void Dumper::load(IDEWindow * w, const QString & settings_filename) {

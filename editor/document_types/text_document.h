@@ -59,7 +59,7 @@ public:
 
     bool isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end);
     bool isCompleterContinuable(const LEXEM_TYPE & lex, const bool & at_end);
-    bool isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_end);
+    bool isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start);
 
     void paraOpositionStr(const PARA_TYPE & para, QString & res);
 

@@ -143,7 +143,14 @@ void TabBar::dropEvent(QDropEvent * event) {
 
         delete copy_source;
     }
-    else emit copy_parent -> tabCloseRequested(copy_source);
+    else {
+        if (!target_item) {
+            File * file = tabFile(copy_source);
+            _tabs_linkages.insert(file -> uid(), currentItem());
+        }
+
+        emit copy_parent -> tabCloseRequested(copy_source);
+    }
 }
 
 //QMimeData * TabBar::mimeData(const QList<QListWidgetItem *> items) const {
