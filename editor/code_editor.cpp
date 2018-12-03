@@ -514,7 +514,7 @@ void CodeEditor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, 
     painter.setPen(format.foreground().color());
     painter.setBrush(format.background().color());
 
-    painter.drawRoundedRect(fold_rect, 3, 3);
+    painter.drawRoundedRect(fold_rect.adjusted(1, 1, -1, -1), 3, 3);
     painter.restore();
 }
 

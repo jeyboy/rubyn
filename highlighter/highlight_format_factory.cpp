@@ -125,12 +125,14 @@ void HighlightFormatFactory::registerParaHoverLineFormat() {
 
 void HighlightFormatFactory::registerParaHoverOverlay2Format() {
     QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(0, 0, 0, 92));
     format.setBackground(QColor::fromRgb(255, 115, 255, 92));
     _formats.insert(hid_para_hover_overlay2, format);
 }
 
 void HighlightFormatFactory::registerParaHoverOverlayFormat() {
     QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(0, 0, 0, 92));
     format.setBackground(QColor::fromRgb(180, 238, 180, 192));
     _formats.insert(hid_para_hover_overlay, format);
 }
