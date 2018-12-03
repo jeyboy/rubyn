@@ -15,8 +15,8 @@ class BinaryDocument;
 class Folder;
 
 class File {
-    bool identifyType(const QString & name);
-    bool identifyTypeByShebang(const QString & str);
+    static bool identifyType(const QString & name, FormatType & format, const int & level = 0);
+    static bool identifyTypeByShebang(const QString & str, FormatType & format);
 protected:
     IDocument * _doc;
     QIODevice * _device;
@@ -48,11 +48,7 @@ public:
 
     File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops = fo_none);
 
-    virtual ~File() {
-        close();
-
-        delete _doc;
-    }
+    virtual ~File();
 
     inline IDocument * document() { return _doc; }
     inline QIODevice * source() { return _device; }

@@ -1,10 +1,19 @@
 #include "pseudo_highlighter.h"
 
+#include "project/file.h"
+
 PseudoHighlighter::PseudoHighlighter() {
 
 }
 
 PseudoHighlighter::~PseudoHighlighter() {
+
+}
+
+void PseudoHighlighter::analyze(const QString & text) {
+
+}
+void PseudoHighlighter::analyze(QIODevice * file) {
 
 }
 
@@ -18,20 +27,6 @@ QTextBlock PseudoHighlighter::nextBlock() const {
 
 }
 
-bool PseudoHighlighter::toggleFolding(const QTextBlock & blk) {
-
-}
-
-void PseudoHighlighter::setFormat(const int & start, const int & count, const QTextCharFormat & format) {
-
-}
-void PseudoHighlighter::setFormat(const int & start, const int & count, const QColor & color) {
-
-}
-void PseudoHighlighter::setFormat(const int & start, const int & count, const QFont & font) {
-
-}
-
 int PseudoHighlighter::previousBlockState() const {
 
 }
@@ -39,8 +34,5 @@ int PseudoHighlighter::currentBlockState() const {
 
 }
 void PseudoHighlighter::setCurrentBlockState(const int & new_state) {
-
-}
-void PseudoHighlighter::initBlockUserData(QTextBlock & block, BlockUserData * prev_udata, BlockUserData *& udata, const int & text_len) {
 
 }

@@ -92,27 +92,6 @@ void Highlighter::rehighlightBlock(const QTextBlock & block) {
     rehighlight(cursor, QTextCursor::EndOfBlock);
 }
 
-void Highlighter::setFormat(const int & start, const int & count, const QTextCharFormat & format) {
-    if (start < 0 || start >= format_changes.count())
-        return;
-
-    const int end = qMin(start + count, format_changes.count());
-    for (int i = start; i < end; ++i)
-        format_changes[i] = format;
-}
-
-void Highlighter::setFormat(const int & start, const int & count, const QColor & color) {
-    QTextCharFormat format;
-    format.setForeground(color);
-    setFormat(start, count, format);
-}
-
-void Highlighter::setFormat(const int & start, const int & count, const QFont & font) {
-    QTextCharFormat format;
-    format.setFont(font);
-    setFormat(start, count, format);
-}
-
 QTextCharFormat Highlighter::format(const int & pos) const {
     if (pos < 0 || pos >= format_changes.count())
         return QTextCharFormat();

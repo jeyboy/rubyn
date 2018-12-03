@@ -37,10 +37,6 @@ public:
 
     QTextCharFormat format(const int & pos) const;
 
-    void setFormat(const int & start, const int & count, const QTextCharFormat & format);
-    void setFormat(const int & start, const int & count, const QColor & color);
-    void setFormat(const int & start, const int & count, const QFont & font);
-
     int previousBlockState() const;
     int currentBlockState() const;
     void setCurrentBlockState(const int & new_state);

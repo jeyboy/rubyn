@@ -58,7 +58,7 @@ TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1
     if (!identificateLexer()) {
         QString str = _doc -> firstBlock().text();
 
-        if (file -> identifyTypeByShebang(str))
+        if (File::identifyTypeByShebang(str, file -> _main_format))
             identificateLexer();
     }
 

@@ -40,6 +40,20 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 {
     ui -> setupUi(this);
 
+    setAcceptDrops(true);
+    setWindowTitle(tr("Bla bla blashka"));
+//    setCorner();
+
+//    QTabWidget::North	0	The tabs are drawn above the pages.
+//    QTabWidget::South	1	The tabs are drawn below the pages.
+//    QTabWidget::West	2	The tabs are drawn to the left of the pages.
+//    QTabWidget::East	3	The tabs are drawn to the right of the pages.
+
+    setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::East);
+    setTabPosition(Qt::RightDockWidgetArea, QTabWidget::West);
+    setTabPosition(Qt::BottomDockWidgetArea, QTabWidget::North);
+    setTabPosition(Qt::TopDockWidgetArea, QTabWidget::South);
+
     setStyleSheet(
 //        "IDEWindow {"
 //        "   background-image: url(:/background);"
@@ -65,8 +79,6 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
         "}"
     );
 
-    setAcceptDrops(true);
-
     setupToolWindows();
     setupPosOutput();
     setupFileMenu();
@@ -79,7 +91,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 //    openFolder(QUrl::fromLocalFile("F:/rubyn test/projects/rails 4 - RebelsMarketplace"));
 //    openFile(QUrl::fromLocalFile("F:/rubyn test/ruby/test1.rb"));
 
-    setWindowTitle(tr("Bla bla blashka"));
+
     loadSettings();
 
     // TESTS // REMOVE LATER

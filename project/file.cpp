@@ -60,7 +60,7 @@ const QFile::OpenMode File::openMode() {
     return omode;
 }
 
-bool File::identifyType(const QString & name) {
+bool File::identifyType(const QString & name, FormatType & format, const int & level) {
     QString lower_name = name.toLower();
     QStringList parts = lower_name.split('.', QString::SkipEmptyParts);
 
@@ -70,24 +70,24 @@ bool File::identifyType(const QString & name) {
 
             if (ft == ft_unknown) continue;
 
-            if ((_main_format & ft_priority) < (ft & ft_priority)) {
-                _main_format = ft;
+            if ((format & ft_priority) < (ft & ft_priority)) {
+                format = ft;
 //            } else {
 //                Logger::error(QLatin1Literal("File"), QLatin1Literal("Cant identify file type for: ") % _name % '(' % name % ')');
             }
         }
     }
 
-    if (_main_format == ft_unknown && level == 0) {
-        _main_format = Projects::obj().identificateName(lower_name);
+    if (format == ft_unknown && level == 0) {
+        format = Projects::obj().identificateName(lower_name);
     }
 
     ////////////// temp
-    if (_main_format == ft_unknown)
-        _main_format = ft_text;
+    if (format == ft_unknown)
+        format = ft_text;
     ///////////////////
 
-    return _main_format > ft_unknown;
+    return format > ft_unknown;
 //    QByteArray ch_arr = name.toUtf8();
 //    const char * str = ch_arr.constData();
 //    const char * iter = str, * sub = 0;
@@ -115,7 +115,7 @@ bool File::identifyType(const QString & name) {
 //    }
 }
 
-bool File::identifyTypeByShebang(const QString & str) {
+bool File::identifyTypeByShebang(const QString & str, FormatType & format) {
     if (str.startsWith(QLatin1Literal("#!"))) {
         QRegularExpression regex(QLatin1Literal("\\b(ruby)\\b"), QRegularExpression::CaseInsensitiveOption);
 
@@ -125,12 +125,12 @@ bool File::identifyTypeByShebang(const QString & str) {
             QString captured = match.captured(1);
 
             if (captured.toLower() == QLatin1Literal("ruby")) {
-                _main_format = ft_file_rb;
+                format = ft_file_rb;
             }
         }
     }
 
-    return _main_format != ft_unknown;
+    return format != ft_unknown;
 }
 
 bool File::open() {
@@ -165,11 +165,17 @@ void File::close() {
 File::File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops)
     : _doc(nullptr), _device(nullptr), _main_format(ft_unknown), _path(path), _name(name), level(inproject_level)
 {
-    identifyType(_name);
+    identifyType(_name, _main_format, level);
 
     if (ops & fo_open) {
         open();
     }
+}
+
+File::~File() {
+    close();
+
+    delete _doc;
 }
 
 //File::File(const QUrl & uri, Project * project) : _doc(0), _device(0), _project(project) {
