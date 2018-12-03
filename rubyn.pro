@@ -89,7 +89,8 @@ SOURCES += main.cpp\
     highlighter/ihighlighter.cpp \
     editor/document_types/pseudo_text_document.cpp \
     editor/idocument.cpp \
-    highlighter/pseudo_highlighter.cpp
+    highlighter/pseudo_highlighter.cpp \
+    controls/debug_panel.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -211,7 +212,8 @@ HEADERS  += ide_window.h \
     editor/completer_info.h \
     highlighter/ihighlighter.h \
     editor/document_types/pseudo_text_document.h \
-    highlighter/pseudo_highlighter.h
+    highlighter/pseudo_highlighter.h \
+    controls/debug_panel.h
 
 FORMS    += ide_window.ui
 

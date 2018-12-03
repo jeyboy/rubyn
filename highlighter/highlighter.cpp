@@ -12,7 +12,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
         disconnect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
 //        disconnect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
 //        disconnect(doc, &QTextDocument::blockCountChanged, this, &Highlighter::blockCountChanged);
-        disconnect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
+//        disconnect(_doc_wrapper, SIGNAL(enterPressed()), this, SLOT(enterPressed()));
 
         QTextCursor cursor(doc);
 
@@ -145,24 +145,6 @@ void Highlighter::setCurrentBlockState(const int & new_state) {
     current_block.setUserState(new_state);
 }
 
-void Highlighter::initBlockUserData(QTextBlock & block, BlockUserData * prev_udata, BlockUserData *& udata, const int & text_len) {
-    if (!udata) {
-        udata = new BlockUserData(
-            _tokens, _paras,
-            prev_udata ? prev_udata -> token_end : nullptr,
-            prev_udata ? prev_udata -> para_end : nullptr
-        );
-        block.setUserData(udata);
-    }
-    else {
-        udata -> para_begin -> prev = prev_udata ? prev_udata -> para_end : _paras -> rootToken();
-        udata -> token_begin -> prev = prev_udata ? prev_udata -> token_end : _tokens -> rootToken();
-    }
-
-    udata -> level = prev_udata ? prev_udata -> levelForNextBlock() : DEFAULT_LEVEL;
-    udata -> token_end -> start_pos = text_len;
-}
-
 //void Highlighter::setCurrentBlockUserData(QTextBlockUserData * data) {
 //    if (!current_block.isValid())
 //        return;
@@ -261,11 +243,9 @@ void Highlighter::reformatBlocks(int from, int chars_removed, int chars_added) {
 }
 
 void Highlighter::reformatBlock(const QTextBlock & block, int from, int chars_removed, int chars_added) {
-//    qDebug() << "reformatBlock" << block.text();
-
     current_block = block;
 
-    format_changes.fill(QTextCharFormat(), block.length() - 1);
+    initFormats(block.length() - 1);
     highlightBlock(block.text());
     applyFormatChanges(from, chars_removed, chars_added);
 
@@ -334,13 +314,3 @@ void Highlighter::applyFormatChanges(int from, int chars_removed, int chars_adde
         doc -> markContentsDirty(current_block.position(), current_block.length());
     }
 }
-
-//void Highlighter::cursorPositionChanged(const QTextCursor & cursor) {
-//    EDITOR_POS_TYPE pos = cursor.positionInBlock();
-//    EDITOR_POS_TYPE start = 0;
-//    EDITOR_POS_TYPE length = 0;
-
-//    LEXEM_TYPE lex = _doc_wrapper -> getWordBoundaries(start, length, cursor.block(), pos, false);
-
-
-//}

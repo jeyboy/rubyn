@@ -22,7 +22,6 @@ protected:
     QTextBlock current_block;
 
 //    QVector<QTextCharFormat> formats;
-    QVector<QTextCharFormat> format_changes;
 public:
     Highlighter(TextDocument * doc);
     ~Highlighter();
@@ -48,8 +47,6 @@ public:
 
 //    void setCurrentBlockUserData(QTextBlockUserData * data);
 //    QTextBlockUserData * currentBlockUserData() const;
-
-    void initBlockUserData(QTextBlock & block, BlockUserData * prev_udata, BlockUserData *& udata, const int & text_len);
 
 //    inline void clearExtraFormatForCurrBlock() {
 //        if (current_block.isValid())
