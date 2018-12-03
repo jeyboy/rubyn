@@ -18,6 +18,8 @@
 #include "controls/run_configuration.h"
 #include "controls/color_picker.h"
 #include "controls/color_button.h"
+#include "controls/debug_panel.h"
+#include "controls/breakpoints_panel.h"
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
@@ -530,7 +532,7 @@ void IDEWindow::setupToolWindows() {
         DockWidgets::obj().createWidget(
             QLatin1Literal("Color"),
             color_picker,
-            (Qt::DockWidgetAreas)(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea)
+            Qt::AllDockWidgetAreas
         );
 
     color_picker_widget -> setBehaviour((DockWidget::Features)(DockWidget::dwf_movable | DockWidget::dwf_closable));
@@ -556,6 +558,34 @@ void IDEWindow::setupToolWindows() {
         );
 
     DockWidgets::obj().append(log_widget, Qt::BottomDockWidgetArea);
+
+
+
+    DockWidget * debug_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Debug"),
+            new DebugPanel(this),
+            (Qt::DockWidgetAreas)(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea)
+        );
+
+    debug_widget -> setBehaviour(DockWidget::dwf_movable);
+
+    DockWidgets::obj().append(debug_widget, Qt::BottomDockWidgetArea);
+
+
+
+    DockWidget * breakpoints_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Breakpoints"),
+            new BreakpointsPanel(this),
+            (Qt::DockWidgetAreas)(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea)
+        );
+
+    breakpoints_widget -> setBehaviour(DockWidget::dwf_movable);
+
+    DockWidgets::obj().append(breakpoints_widget, Qt::BottomDockWidgetArea);
+
+
 
     // TOOLBARS
 

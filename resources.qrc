@@ -13,6 +13,10 @@
         <file alias="background">icons/smile.png</file>
         <file alias="grape_alt">icons/grape_alt.png</file>
         <file alias="grape_horizontal_alt">icons/grape_horizontal_alt.png</file>
+        <file alias="breakpoint_delete_all">icons/breakpoint_delete_all.png</file>
+        <file alias="breakpoint_disable_all">icons/breakpoint_disable_all.png</file>
+        <file alias="breakpoint_disabled">icons/breakpoint_disabled.png</file>
+        <file alias="breakpoint_enable_all">icons/breakpoint_all.png</file>
     </qresource>
     <qresource prefix="/doc_types">
         <file alias="folder">icons/folder.png</file>
