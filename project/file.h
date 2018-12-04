@@ -15,7 +15,7 @@ class BinaryDocument;
 class Folder;
 
 class File {
-    static bool identifyType(const QString & name, FormatType & format, const int & level = 0);
+    static bool identifyType(const QString & name, FormatType & format, const uint & level = 0);
     static bool identifyTypeByShebang(const QString & str, FormatType & format);
 protected:
     IDocument * _doc;
@@ -36,6 +36,8 @@ protected:
     const QFile::OpenMode openMode();
 
     friend class TextDocument;
+    friend class ImageDocument;
+    friend class BinaryDocument;
 public:
     enum FileOps {
         fo_none = 0,
@@ -80,7 +82,7 @@ public:
 
     inline bool isText() const { return _main_format & ft_text; }
     inline bool isImage() const { return _main_format & ft_image; }
-    inline bool isBynary() const { return _main_format & ft_text; }
+    inline bool isBinary() const { return _main_format & ft_binary; }
 
     TextDocument * asText();
     ImageDocument * asImage();

@@ -60,7 +60,7 @@ const QFile::OpenMode File::openMode() {
     return omode;
 }
 
-bool File::identifyType(const QString & name, FormatType & format, const int & level) {
+bool File::identifyType(const QString & name, FormatType & format, const uint & level) {
     QString lower_name = name.toLower();
     QStringList parts = lower_name.split('.', QString::SkipEmptyParts);
 
@@ -190,6 +190,33 @@ File::~File() {
 //    open(_name, _path, is_local);
 //}
 
-TextDocument * File::asText() { return dynamic_cast<TextDocument *>(_doc); }
-ImageDocument * File::asImage() { return dynamic_cast<ImageDocument *>(_doc); }
-BinaryDocument * File::asBinary() { return dynamic_cast<BinaryDocument *>(_doc); }
+TextDocument * File::asText() {
+    if (!isText()) return nullptr;
+
+    if (!_doc) {
+        if (!open())
+            return nullptr;
+    }
+
+    return dynamic_cast<TextDocument *>(_doc);
+}
+ImageDocument * File::asImage() {
+    if (!isImage()) return nullptr;
+
+    if (!_doc) {
+        if (!open())
+            return nullptr;
+    }
+
+    return dynamic_cast<ImageDocument *>(_doc);
+}
+BinaryDocument * File::asBinary() {
+    if (!isBinary()) return nullptr;
+
+    if (!_doc) {
+        if (!open())
+            return nullptr;
+    }
+
+    return dynamic_cast<BinaryDocument *>(_doc);
+}
