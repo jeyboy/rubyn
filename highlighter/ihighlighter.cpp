@@ -1,6 +1,9 @@
 #include "ihighlighter.h"
 
-IHighlighter::~IHighlighter() {}
+IHighlighter::~IHighlighter() {
+    delete _tokens;
+    delete _paras;
+}
 
 void IHighlighter::setFormat(const int & start, const int & count, const QTextCharFormat & format) {
     if (!fill_styles || start < 0 || start >= format_changes.count())

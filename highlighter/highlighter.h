@@ -2,8 +2,8 @@
 #define HIGHLIGHTER_H
 
 #include "highlighter/ihighlighter.h"
+#include "editor/document_types/text_document.h"
 
-#include <qtextdocument.h>
 #include <qpointer.h>
 
 class TextDocument;
@@ -16,8 +16,7 @@ protected:
     void highlightBlock(const QString & text);
     void procFlagsForLastHighlightedBlock(const QTextBlock & block);
 
-    TextDocument * _doc_wrapper;
-    QPointer<QTextDocument> doc;
+    QPointer<TextDocument> doc;
 
     QTextBlock current_block;
 

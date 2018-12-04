@@ -121,19 +121,17 @@ void CodeEditor::openDocument(File * file) {
 
         change_scroll_pos_required = wrapper -> verticalScrollPos(false) > 0;
 
-        QTextDocument * text_doc = wrapper -> toQDoc();
+//        wrapper -> setUseDesignMetrics(true);
 
-//        text_doc -> setUseDesignMetrics(true);
-
-        text_doc -> setDefaultFont(new_font);
+        wrapper -> setDefaultFont(new_font);
         setFont(new_font);
 
-        text_doc -> setUndoRedoEnabled(false);
+        wrapper -> setUndoRedoEnabled(false);
         setDocumentTitle(file -> name());
-        setDocument(text_doc);
-        text_doc -> setUndoRedoEnabled(true);
+        setDocument(wrapper);
+        wrapper -> setUndoRedoEnabled(true);
 
-        connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
+//        connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
 
         show_foldings_panel = wrapper -> canHasFoldings();
         show_breakpoints_panel = wrapper -> canHasBreakpoints();
@@ -200,14 +198,14 @@ void CodeEditor::fillBackground(QPainter * p, const QRectF & rect, QBrush brush,
     p -> restore();
 }
 
-void CodeEditor::procRevision() {
-    int doc_revision = document() -> revision();
+//void CodeEditor::procRevision() {
+//    int doc_revision = document() -> revision();
 
-    if (doc_revision != wrapper -> revision()) {
-        wrapper -> setRevision(doc_revision);
-        emit modificationChanged(true);
-    }
-}
+//    if (doc_revision != wrapper -> revision()) {
+//        wrapper -> setRevision(doc_revision);
+//        emit modificationChanged(true);
+//    }
+//}
 
 void CodeEditor::imitateClick() {
     highlightCurrentLine();
@@ -1463,7 +1461,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
                 ) || (e -> modifiers() != Qt::NoModifier && !is_shortcut)
             ) {
                 QPlainTextEdit::keyPressEvent(e);
-                procRevision();
+//                procRevision();
                 return;
             }
 
@@ -1475,7 +1473,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         }
     }
 
-    procRevision();
+//    procRevision();
 }
 
 void CodeEditor::keyReleaseEvent(QKeyEvent * e) {

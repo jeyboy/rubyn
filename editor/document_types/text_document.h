@@ -1,7 +1,6 @@
 #ifndef TEXT_DOCUMENT
 #define TEXT_DOCUMENT
 
-#include <qpointer.h>
 #include <qtextdocument.h>
 
 #include "misc/defines.h"
@@ -14,7 +13,7 @@ class Project;
 class File;
 class IHighlighter;
 
-class TextDocument : public QObject, public IDocument {
+class TextDocument : public QTextDocument, public IDocument {
     Q_OBJECT
 
     static QLatin1String tab_space;
@@ -23,12 +22,11 @@ class TextDocument : public QObject, public IDocument {
     int scroll_pos_y;
 //    int pos, removed, added;
 protected:
-    QPointer<QTextDocument> _doc;
-
     File * _file;
 
     bool identificateLexer();
     bool registerStateChangedCallback(QObject * target, const char * slot);
+    QTextObject * createObject(const QTextFormat & f);
 signals:
     void hasChanges(const QString & uid, const bool & has);
     void enterPressed();
@@ -45,11 +43,9 @@ public:
 
     const QLatin1String & tabSpace() { return tab_space; }
 
-    QTextDocument * toQDoc() { return _doc; }
-
     const QString & documentUid();
 
-    void readNextBlock();
+//    void readNextBlock();
 
     void lexicate(const QString & text, IHighlighter * highlighter);
 
@@ -66,8 +62,8 @@ public:
     bool dump(QVariant & data);
     bool restore(const QVariant & data);
 
-    inline void setRevision(const int & new_revision) { _revision = new_revision; }
-    inline int revision() { return _revision; }
+//    inline void setRevision(const int & new_revision) { _revision = new_revision; }
+//    inline int revision() { return _revision; }
 
     inline void setVerticalScrollPos(const int & pos) { scroll_pos_y = pos; }
     inline int verticalScrollPos(const bool & drop = true) {

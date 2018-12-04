@@ -11,13 +11,12 @@ class IDocument {
     bool _fully_readed;
 protected:
     bool _changed;
-    int _revision;
 
     ILexer * _lexer;
 
     inline void setFullyReaded(const bool & readed) { _fully_readed = readed; }
 public:
-    inline IDocument() : _fully_readed(false), _changed(false), _revision(-1), _lexer(nullptr) {}
+    inline IDocument() : _fully_readed(false), _changed(false), _lexer(nullptr) {}
     virtual ~IDocument();
 
     inline bool isFullyReaded() const { return _fully_readed; }

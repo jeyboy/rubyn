@@ -46,17 +46,21 @@ bool TextDocument::registerStateChangedCallback(QObject * target, const char * s
     return true;
 }
 
-TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1), removed(0), added(0)*/, _doc(nullptr), _file(file), layout(nullptr) {
+QTextObject * TextDocument::createObject(const QTextFormat & f) {
+    return TextDocument::createObject(f);
+}
+
+TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1), removed(0), added(0)*/, _file(file), layout(nullptr) {
 //    qint64 content_length = _file -> source() -> size();
 
     setFullyReaded(true);
 
     QByteArray ar = _file -> source() -> readAll();
     ar.replace('\t', TextDocument::tab_space);
-    _doc = new QTextDocument(ar);
+    setPlainText(ar);
 
     if (!identificateLexer()) {
-        QString str = _doc -> firstBlock().text();
+        QString str = firstBlock().text();
 
         if (File::identifyTypeByShebang(str, file -> _main_format))
             identificateLexer();
@@ -80,15 +84,15 @@ TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1
 
 //    connect(_doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
 
-    layout = new TextDocumentLayout(_doc);
+    layout = new TextDocumentLayout(this);
     layout -> setCursorWidth(2);
-    _doc -> setDocumentLayout(layout);
+    setDocumentLayout(layout);
 
-    setRevision(_doc -> revision());
+//    setRevision(QTextDocument::revision());
 }
 
 TextDocument::~TextDocument() {
-    delete _doc;
+
 }
 
 const QString & TextDocument::documentUid() { return _file -> uid(); }
@@ -336,7 +340,7 @@ bool TextDocument::save() {
 //        writer.setGenerateByteOrderMark(true);
 //        writer.setCodec();
 
-        writer << _doc -> toPlainText();//toRawText();
+        writer << toPlainText();//toRawText();
 
         writer.flush();
 
@@ -348,7 +352,7 @@ bool TextDocument::save() {
 
 bool TextDocument::dump(QVariant & data) {
     if (_lexer) {
-        QTextBlock blk = _doc -> begin();
+        QTextBlock blk = begin();
         int block_num = 0;
 
         QByteArray res;
@@ -358,13 +362,13 @@ bool TextDocument::dump(QVariant & data) {
             int item_state = 0;
             udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-            if (udata -> isFolded())
+            if (udata && udata -> isFolded())
                 item_state |= 1;
 
             if (!blk.isVisible())
                 item_state |= 2;
 
-            if (udata -> hasBreakpoint())
+            if (udata && udata -> hasBreakpoint())
                 item_state |= 4;
 
             if (item_state > 0) {
@@ -391,7 +395,7 @@ bool TextDocument::dump(QVariant & data) {
     return false;
 }
 bool TextDocument::restore(const QVariant & data) {
-    QTextBlock blk = _doc -> begin();
+    QTextBlock blk = begin();
 
     if (!blk.isValid())
         return false;
@@ -429,7 +433,7 @@ bool TextDocument::restore(const QVariant & data) {
         int item_data;
         int block_pos = 0;
         int block_num = 0;
-        int blocks_limit = _doc -> blockCount();
+        int blocks_limit = blockCount();
         BlockUserData * udata;
 
         for(num = 0; it != it_end; ++it, ++num) {
@@ -487,28 +491,28 @@ bool TextDocument::restore(const QVariant & data) {
     return false;
 }
 
-void TextDocument::readNextBlock() {
-    if (isFullyReaded()) return;
+//void TextDocument::readNextBlock() {
+//    if (isFullyReaded()) return;
 
-    QTextCursor * myCursor = new QTextCursor(_doc);
+//    QTextCursor * myCursor = new QTextCursor(this);
 
-//          // Insert an image
-//          QTextImageFormat imageFormat;
-//          imageFormat.setName("logo.jpg");
-//          myCursor->insertImage(imageFormat, QTextFrameFormat::InFlow);
-//          myCursor->insertText("\n");
+////          // Insert an image
+////          QTextImageFormat imageFormat;
+////          imageFormat.setName("logo.jpg");
+////          myCursor->insertImage(imageFormat, QTextFrameFormat::InFlow);
+////          myCursor->insertText("\n");
 
-    myCursor -> movePosition(QTextCursor::End);
+//    myCursor -> movePosition(QTextCursor::End);
 
-    QIODevice * source = _file -> source();
+//    QIODevice * source = _file -> source();
 
-    char * data = new char[qMin(source -> bytesAvailable(), READ_LIMIT)];
-    source -> read(data, READ_LIMIT);
-    myCursor -> insertText(QString(data));
-    delete [] data;
+//    char * data = new char[qMin(source -> bytesAvailable(), READ_LIMIT)];
+//    source -> read(data, READ_LIMIT);
+//    myCursor -> insertText(QString(data));
+//    delete [] data;
 
-    setFullyReaded(source -> atEnd());
-}
+//    setFullyReaded(source -> atEnd());
+//}
 
 //void TextDocument::changesInContent(int position, int removed_count, int added_count) {
 //    pos = position;

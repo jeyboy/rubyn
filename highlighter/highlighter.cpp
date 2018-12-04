@@ -2,7 +2,6 @@
 
 #include "misc/utils.h"
 
-#include "editor/document_types/text_document.h"
 #include "controls/logger.h"
 
 #include <qtimer.h>
@@ -25,8 +24,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     }
 
     if (new_doc) {
-        _doc_wrapper = new_doc;
-        doc = _doc_wrapper -> toQDoc();
+        doc = new_doc;
 
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);
 //        connect(doc, &QTextDocument::cursorPositionChanged, this, &Highlighter::cursorPositionChanged);
@@ -40,23 +38,21 @@ void Highlighter::setDocument(TextDocument * new_doc) {
 }
 
 bool Highlighter::toggleFolding(const QTextBlock & blk) {
-    return _doc_wrapper -> layout -> toggleFolding(blk);
+    return doc -> layout -> toggleFolding(blk);
 }
 
-Highlighter::Highlighter(TextDocument * doc) : QObject(), IHighlighter(), rehighlighting(false), _doc_wrapper(nullptr), doc(nullptr) {
+Highlighter::Highlighter(TextDocument * doc) : QObject(), IHighlighter(), rehighlighting(false), doc(nullptr) {
     setDocument(doc);
 }
 
 Highlighter::~Highlighter() {
     setDocument(nullptr);
-    delete _tokens;
-    delete _paras;
 }
 
 void Highlighter::highlightBlock(const QString & text) {
 //    qDebug() << "*** " << currentBlock().firstLineNumber() + 1;
 
-    _doc_wrapper -> lexicate(text, this);
+    doc -> lexicate(text, this);
 }
 
 void Highlighter::procFlagsForLastHighlightedBlock(const QTextBlock & block) {
