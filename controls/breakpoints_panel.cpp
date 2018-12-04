@@ -1,9 +1,16 @@
 #include "breakpoints_panel.h"
 
+#include "controls/logger.h"
+#include "project/file.h"
+
 #include <qlistwidget.h>
 #include <qlayout.h>
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
+
+QString BreakpointsPanel::buildUid(File * f, const EDITOR_POS_TYPE & line_num) {
+    return f -> uid() % ':' % QString::number(line_num);
+}
 
 BreakpointsPanel::BreakpointsPanel(QWidget * parent) : QWidget(parent), breakpoints(nullptr) {
     QHBoxLayout * l = new QHBoxLayout(this);
@@ -30,7 +37,6 @@ BreakpointsPanel::BreakpointsPanel(QWidget * parent) : QWidget(parent), breakpoi
     btn1 -> setToolTip(QLatin1Literal("Remove all"));
     control_panel -> addWidget(btn1);
 
-
     breakpoints = new QListWidget(this);
 
     l -> addWidget(control_panel, 0);
@@ -38,11 +44,25 @@ BreakpointsPanel::BreakpointsPanel(QWidget * parent) : QWidget(parent), breakpoi
 }
 
 void BreakpointsPanel::addBreakpoint(File * f, const EDITOR_POS_TYPE & line_num) {
+    emit breakpointAdded(f, line_num);
 
+    QListWidgetItem * itm = new QListWidgetItem(QIcon(QLatin1Literal(":/breakpoint")), f -> path());
+    itm -> setData(Qt::UserRole + 1, line_num);
+
+    records.insert(buildUid(f, line_num), itm);
+
+    breakpoints -> addItem(itm);
 }
-void BreakpointsPanel::moveBreakpoint(File * f, const EDITOR_POS_TYPE & line_num) {
+void BreakpointsPanel::moveBreakpoint(File * f, const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & new_line_num) {
+    emit breakpointMoved(f, old_line_num, new_line_num);
 
+    if (records.contains(f -> uid())) {
+        QListWidgetItem * itm = records[f -> uid()];
+    } else {
+        Logger::error(QLatin1Literal("moveBreakpoint"), QLatin1Literal("Can't find breakpoint for action"));
+    }
 }
 void BreakpointsPanel::removeBreakpoint(File * f, const EDITOR_POS_TYPE & line_num) {
+    emit breakpointRemoved(f, line_num);
 
 }
