@@ -4,6 +4,7 @@
 #include <qmenu.h>
 #include <qjsonobject.h>
 
+#include "project/projects.h"
 #include "tools/json/json.h"
 #include "tools/json/json_obj.h"
 #include "project_tree_item_delegate.h"
@@ -23,6 +24,7 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
 
     connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*,int)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu(const QPoint &)));
+    connect(&Projects::obj(), SIGNAL(fileIconChanged(QString, QIcon)), this, SLOT(fileIconChanged(QString, QIcon)));
 
 //    setSortingEnabled(true);
 //    sortByColumn(0, Qt::AscendingOrder);
@@ -252,8 +254,11 @@ void ProjectTree::fileAdded(const QString & /*name*/, void * /*folder*/) {
 
 }
 
-void ProjectTree::fileIconChanged(const QString & name, const QIcon & ico) {
+void ProjectTree::fileIconChanged(const QString & path, const QIcon & ico) {
+    QTreeWidgetItem * item = findByPath(path);
 
+    if (item)
+        item -> setIcon(0, ico);
 }
 
 void ProjectTree::itemDoubleClicked(QTreeWidgetItem * item, int /*column*/) {

@@ -48,7 +48,7 @@ public slots:
     void folderAdded(const QString & name);
     void fileAdded(const QString & name, void * folder);
 
-    void fileIconChanged(const QString & name, const QIcon & ico);
+    void fileIconChanged(const QString & path, const QIcon & ico);
 
     void itemDoubleClicked(QTreeWidgetItem * item, int /*column*/);
 

@@ -44,6 +44,8 @@ public:
         fo_open = 1,
     };
 
+    bool identifyTypeByShebang(const QString & str);
+
     bool open();
     void close();
     inline bool save() { return _doc && _doc -> save(); }

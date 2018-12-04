@@ -133,6 +133,15 @@ bool File::identifyTypeByShebang(const QString & str, FormatType & format) {
     return format != ft_unknown;
 }
 
+bool File::identifyTypeByShebang(const QString & str) {
+    if (identifyTypeByShebang(str, _main_format)) {
+        emit Projects::obj().fileIconChanged(_path, ico());
+        return true;
+    }
+
+    return false;
+}
+
 bool File::open() {
     if (_main_format == ft_unknown)
         if (!userAskFileType())

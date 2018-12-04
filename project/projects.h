@@ -36,6 +36,7 @@ public:
     FormatType identificateName(const QString & name);
 signals:
     void errorOccurred(QString & source, QString & info);
+    void fileIconChanged(const QString & name, const QIcon & ico);
 
     void projectAdded(void * project);
     void projectRemoved(void * project);
