@@ -29,6 +29,8 @@ public:
     QByteArray saveState();
     void restoreState(const QByteArray & state);
     void selectItem(const QString & path, const bool & ensure_visible = true);
+
+    QTreeWidgetItem * findByPath(const QString & path);
 protected:
     bool search(const QString & pattern, QTreeWidgetItem * item);
     void clearSearch(QTreeWidgetItem * item);
@@ -44,7 +46,9 @@ signals:
 public slots:
     void branchAdded(QTreeWidgetItem * item);
     void folderAdded(const QString & name);
-    void fileAdded(const QString & name, void *);
+    void fileAdded(const QString & name, void * folder);
+
+    void fileIconChanged(const QString & name, const QIcon & ico);
 
     void itemDoubleClicked(QTreeWidgetItem * item, int /*column*/);
 

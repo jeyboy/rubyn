@@ -94,6 +94,17 @@ void ProjectTree::restoreState(const QByteArray & state) {
 }
 
 void ProjectTree::selectItem(const QString & path, const bool & ensure_visible) {
+    QTreeWidgetItem * item = findByPath(path);
+
+    if (item) {
+        setCurrentItem(item);
+
+        if (ensure_visible)
+            scrollToItem(item, PositionAtCenter);
+    }
+}
+
+QTreeWidgetItem * ProjectTree::findByPath(const QString & path) {
     int items_count = topLevelItemCount();
 
     for(int i = 0; i < items_count; i++) {
@@ -123,17 +134,13 @@ void ProjectTree::selectItem(const QString & path, const bool & ensure_visible) 
             }
 
             if (satisfy && item) {
-                setCurrentItem(item);
-
-                if (ensure_visible)
-                    scrollToItem(item, PositionAtCenter);
+                return item;
             }
-
-            break;
         }
     }
-}
 
+    return nullptr;
+}
 
 bool ProjectTree::search(const QString & pattern, QTreeWidgetItem * item) {
     bool empty = pattern.isEmpty();
@@ -241,7 +248,11 @@ void ProjectTree::folderAdded(const QString & /*name*/) {
 
 }
 
-void ProjectTree::fileAdded(const QString & /*name*/, void * ) {
+void ProjectTree::fileAdded(const QString & /*name*/, void * /*folder*/) {
+
+}
+
+void ProjectTree::fileIconChanged(const QString & name, const QIcon & ico) {
 
 }
 

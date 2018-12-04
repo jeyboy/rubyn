@@ -174,25 +174,31 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
     File * _file = nullptr;
     bool is_external = false;
 
-    if (folder) {
-        IFolder * _folder = reinterpret_cast<IFolder *>(folder);
-
-        if (_folder == nullptr) {
-            Logger::error(QStringLiteral("IDE"), QStringLiteral("Cant find folder for file: '") % name % '\'');
-            return;
-        }
-
-        _file = _folder -> getFile(name);
-    } else {
-        _file = Projects::obj().findFile(QUrl::fromLocalFile(name));
-
-        if (!_file) {
-            QFileInfo finfo(name);
-            _file = new File(0, finfo.baseName(), name);
-
-            is_external = true;
-        }
+    if (!Projects::identificate(name, folder, _file, is_external)) {
+        Logger::error(QStringLiteral("IDE"), QStringLiteral("Cant find folder for file: '") % name % '\'');
+        return;
     }
+
+
+//    if (folder) {
+//        IFolder * _folder = reinterpret_cast<IFolder *>(folder);
+
+//        if (_folder == nullptr) {
+//            Logger::error(QStringLiteral("IDE"), QStringLiteral("Cant find folder for file: '") % name % '\'');
+//            return;
+//        }
+
+//        _file = _folder -> getFile(name);
+//    } else {
+//        _file = Projects::obj().findFile(QUrl::fromLocalFile(name));
+
+//        if (!_file) {
+//            QFileInfo finfo(name);
+//            _file = new File(0, finfo.baseName(), name);
+
+//            is_external = true;
+//        }
+//    }
 
     if (_file == nullptr) {
         qDebug() << "FILE IS NULL";

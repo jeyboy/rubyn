@@ -1,6 +1,10 @@
 #include "projects.h"
 #include "project.h"
 
+#include "project/ifolder.h"
+#include "project/file.h"
+
+#include <qfileinfo.h>
 #include <qpixmap.h>
 #include <qdebug.h>
 
@@ -27,6 +31,31 @@ FormatType Projects::identificateName(const QString & name) {
         return _special_files_formats[name];
     else
         return ft_unknown;
+}
+
+bool Projects::identificate(const QString & name, void * folder, File *& file, bool & is_external) {
+    is_external = false;
+
+    if (folder) {
+        IFolder * _folder = reinterpret_cast<IFolder *>(folder);
+
+        if (_folder == nullptr) {
+            return false;
+        }
+
+        file = _folder -> getFile(name);
+    } else {
+        file = obj().findFile(QUrl::fromLocalFile(name));
+
+        if (!file) {
+            QFileInfo finfo(name);
+            file = new File(0, finfo.baseName(), name);
+
+            is_external = true;
+        }
+    }
+
+    return true;
 }
 
 Projects::Projects(QObject * parent) : QObject(parent) {

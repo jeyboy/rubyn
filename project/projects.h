@@ -21,13 +21,15 @@ class Projects : public QObject, public Singleton<Projects> {
     QHash<FormatType, QIcon> _icons;
     QHash<QString, FormatType> _special_files_formats;
 public:
-    Projects(QObject * parent = 0);
+    static bool identificate(const QString & name, void * folder, File *& file, bool & is_external);
+
+    Projects(QObject * parent = nullptr);
     ~Projects();
 
     bool open(const QUrl & uri);
     File * findFile(const QUrl & uri);
 
-    inline Project * project(const QUrl & uri) { return _projects.value(uri, 0); }
+    inline Project * project(const QUrl & uri) { return _projects.value(uri, nullptr); }
 
     //TODO: need sync size with project tree
     QIcon & getIco(const FormatType & format_type, const uint & size = 22);
