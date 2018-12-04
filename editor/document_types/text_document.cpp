@@ -46,12 +46,12 @@ bool TextDocument::registerStateChangedCallback(QObject * target, const char * s
     return true;
 }
 
-QTextObject * TextDocument::createObject(const QTextFormat & f) {
-    return TextDocument::createObject(f);
-}
-
 TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1), removed(0), added(0)*/, _file(file), layout(nullptr) {
 //    qint64 content_length = _file -> source() -> size();
+
+    layout = new TextDocumentLayout(this);
+    layout -> setCursorWidth(2);
+    setDocumentLayout(layout);
 
     setFullyReaded(true);
 
@@ -83,12 +83,8 @@ TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1
 
 
 //    connect(_doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
-
-    layout = new TextDocumentLayout(this);
-    layout -> setCursorWidth(2);
-    setDocumentLayout(layout);
-
-//    setRevision(QTextDocument::revision());
+//    connect(this, &TextDocument::modificationChanged, this, &TextDocument::hasUnsavedChanges);
+    connect(this, SIGNAL(contentsChanged()), this, SLOT(hasUnsavedChanges()));
 }
 
 TextDocument::~TextDocument() {
@@ -332,7 +328,7 @@ ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE
 }
 
 bool TextDocument::save() {
-    if (!isChanged())
+    if (!isModified())
         return true;
 
     if (_file -> openDevice(QFile::WriteOnly)) {
@@ -521,6 +517,5 @@ bool TextDocument::restore(const QVariant & data) {
 //}
 
 void TextDocument::hasUnsavedChanges(const bool & has) {
-    _changed = has;
     emit hasChanges(_file -> uid(), has);
 }

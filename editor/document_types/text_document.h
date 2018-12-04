@@ -20,13 +20,11 @@ class TextDocument : public QTextDocument, public IDocument {
     static QHash<QChar, bool> word_boundary;
 
     int scroll_pos_y;
-//    int pos, removed, added;
 protected:
     File * _file;
 
     bool identificateLexer();
     bool registerStateChangedCallback(QObject * target, const char * slot);
-    QTextObject * createObject(const QTextFormat & f);
 signals:
     void hasChanges(const QString & uid, const bool & has);
     void enterPressed();
@@ -49,6 +47,7 @@ public:
 
     void lexicate(const QString & text, IHighlighter * highlighter);
 
+    bool isChanged() const { return isModified(); }
     bool isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end);
     bool isCompleterContinuable(const LEXEM_TYPE & lex, const bool & at_end);
     bool isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start);
@@ -73,7 +72,7 @@ public:
         return res;
     }
 protected slots:
-    void hasUnsavedChanges(const bool & has);
+    void hasUnsavedChanges(const bool & has = true);
 //    void changesInContent(int position, int removed_count, int added_count);
 };
 
