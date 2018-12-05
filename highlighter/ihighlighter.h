@@ -22,6 +22,8 @@ public:
     IHighlighter() : fill_styles(true), _tokens(new TokenList()), _paras(new ParaList()) {}
     virtual ~IHighlighter();
 
+    virtual void highlightBlock(const QString & text) = 0;
+
     virtual QTextBlock prevBlock() const = 0;
     virtual QTextBlock currentBlock() const = 0;
     virtual QTextBlock nextBlock() const = 0;
