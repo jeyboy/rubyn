@@ -37,10 +37,6 @@ void PseudoHighlighter::analyze(ILexer * lexer, QIODevice * file) {
     }
 }
 
-void PseudoHighlighter::highlightBlock(const QString & text) {
-
-}
-
 QTextBlock PseudoHighlighter::prevBlock() const {
     if (current_block_num - 1 > -1 && blocks.length() > current_block_num - 1)
         return blocks.at(current_block_num - 1);

@@ -17,6 +17,9 @@
         <file alias="breakpoint_disable_all">icons/breakpoint_disable_all.png</file>
         <file alias="breakpoint_disabled">icons/breakpoint_disabled.png</file>
         <file alias="breakpoint_enable_all">icons/breakpoint_all.png</file>
+        <file alias="add">icons/add.png</file>
+        <file alias="clear">icons/clear.png</file>
+        <file alias="remove">icons/remove.png</file>
     </qresource>
     <qresource prefix="/doc_types">
         <file alias="folder">icons/folder.png</file>

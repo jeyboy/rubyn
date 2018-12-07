@@ -91,7 +91,8 @@ SOURCES += main.cpp\
     editor/idocument.cpp \
     highlighter/pseudo_highlighter.cpp \
     controls/debug_panel.cpp \
-    controls/breakpoints_panel.cpp
+    controls/breakpoints_panel.cpp \
+    controls/debug_view.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -215,7 +216,8 @@ HEADERS  += ide_window.h \
     editor/document_types/pseudo_text_document.h \
     highlighter/pseudo_highlighter.h \
     controls/debug_panel.h \
-    controls/breakpoints_panel.h
+    controls/breakpoints_panel.h \
+    controls/debug_view.h
 
 FORMS    += ide_window.ui
 
