@@ -8,6 +8,8 @@
 class DebugViewItemDelegate : public QStyledItemDelegate {
     Q_OBJECT
 public:
+    static QLatin1String default_text;
+
     DebugViewItemDelegate(QObject * parent = Q_NULLPTR);
 
     void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const Q_DECL_OVERRIDE;

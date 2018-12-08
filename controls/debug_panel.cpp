@@ -8,8 +8,6 @@
 #include <qdebug.h>
 #include <qheaderview.h>
 
-const QLatin1String DebugPanel::def_val = QLatin1Literal("Evaluate...");
-
 DebugPanel::DebugPanel(QWidget * parent) : QWidget(parent), view(nullptr), new_itm(nullptr) {
     view = new DebugView(this);
     view -> setColumnCount(3);
@@ -83,7 +81,7 @@ void DebugPanel::removeRecord(const QString & record) {
 }
 
 void DebugPanel::addRecord(const QString & record) {
-    QTreeWidgetItem * itm = new QTreeWidgetItem(QStringList() << QString("") << record << def_val);
+    QTreeWidgetItem * itm = new QTreeWidgetItem(QStringList() << QString("") << record << DebugViewItemDelegate::default_text);
     itm -> setFlags(itm -> flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable | Qt::ItemIsEditable);
     itm -> setCheckState(0, Qt::Checked);
 
@@ -125,7 +123,7 @@ void DebugPanel::editorClosed(QWidget * /*editor*/, QAbstractItemDelegate::EndEd
         delete new_itm;
     }
     else {
-        new_itm -> setText(2, def_val);
+        new_itm -> setText(2, DebugViewItemDelegate::default_text);
     }
 
     new_itm = nullptr;

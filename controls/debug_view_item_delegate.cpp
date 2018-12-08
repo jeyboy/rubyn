@@ -3,25 +3,40 @@
 #include "lexer/lexers_factory.h"
 #include "lexer/ilexer.h"
 
+#include <qpainter.h>
+
+QLatin1String DebugViewItemDelegate::default_text = QLatin1Literal("Evaluate...");
+
 DebugViewItemDelegate::DebugViewItemDelegate(QObject * parent) : QStyledItemDelegate(parent) {
 
 }
 
 void DebugViewItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const {
-    if (index.column() != 1)
-        QStyledItemDelegate::paint(painter, option, index);
-
-    ILexer * lexer = LexersFactory::obj().lexerFor(ft_file_rb);
+    int column_index = index.column();
 
     QString txt = index.data().toString();
 
-    if (txt.isEmpty())
-        QStyledItemDelegate::paint(painter, option, index);
-    else {
+    bool skipable = column_index == 2 && txt == default_text;
+
+    QStyledItemDelegate::paint(painter, option, column_index == 1 || !skipable ? QModelIndex() : index);
+
+    if (column_index == 0 || skipable)
+        return;
+
+    ILexer * lexer = LexersFactory::obj().lexerFor(ft_file_rb);
+
+    if (!txt.isEmpty()) {
         PseudoHighlighter highlighter(option.font, lexer, txt);
 
         QTextLayout * tl = highlighter.block(0);
-        tl -> draw(painter, option.rect.topLeft(), QVector<QTextLayout::FormatRange>(), option.rect);
+        QRect clip_rect(option.rect);
+
+//        if (tl -> boundingRect().width() > clip_rect.width()) {
+
+//        }
+
+        painter -> setClipRect(clip_rect);
+        tl -> draw(painter, option.rect.topLeft(), QVector<QTextLayout::FormatRange>());
     }
 }
 

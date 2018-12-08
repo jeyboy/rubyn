@@ -6,8 +6,6 @@
 class DebugPanel : public QWidget {
     Q_OBJECT
 
-    static const QLatin1String def_val;
-
     DebugView * view;
     QTreeWidgetItem * new_itm;
     QHash<QString, QTreeWidgetItem *> records;
