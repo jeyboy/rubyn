@@ -1,5 +1,7 @@
 #include "debug_panel.h"
 
+#include "controls/debug_view_item_delegate.h"
+
 #include <qlayout.h>
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
@@ -23,7 +25,9 @@ DebugPanel::DebugPanel(QWidget * parent) : QWidget(parent), view(nullptr), new_i
 
     view -> header() -> setMinimumSectionSize(16);
     view -> header() -> setResizeContentsPrecision(-1);
-    view -> header() -> setSectionResizeMode(QHeaderView::ResizeToContents);
+    view -> header() -> resizeSection(1, 200);
+
+    view -> setItemDelegate(new DebugViewItemDelegate(view));
 
     QHBoxLayout * l = new QHBoxLayout(this);
     l -> setContentsMargins(0, 0, 0, 0);

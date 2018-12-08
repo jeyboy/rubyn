@@ -3,7 +3,7 @@
 #include <qpainter.h>
 //#include <qapplication.h>
 
-ProjectTreeItemDelegate::ProjectTreeItemDelegate() : ignore_back_fill(false) {}
+ProjectTreeItemDelegate::ProjectTreeItemDelegate(QObject * parent) : QStyledItemDelegate(parent), ignore_back_fill(false) {}
 
 void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const {
     if (!ignore_back_fill) {

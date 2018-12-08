@@ -6,7 +6,7 @@
 class ProjectTreeItemDelegate : public QStyledItemDelegate {
     bool ignore_back_fill;
 public:
-    ProjectTreeItemDelegate();
+    ProjectTreeItemDelegate(QObject * parent = nullptr);
 
     inline bool isFilled() { return !ignore_back_fill; }
     inline void setFill(const bool & fill) { ignore_back_fill = !fill; }

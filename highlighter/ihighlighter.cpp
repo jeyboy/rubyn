@@ -30,14 +30,14 @@ void IHighlighter::setFormat(const int & start, const int & count, const QFont &
     setFormat(start, count, format);
 }
 
-void IHighlighter::initBlockUserData(QTextBlock & block, BlockUserData * prev_udata, BlockUserData *& udata, const int & text_len) {
+void IHighlighter::initCurrentBlockUserData(BlockUserData * prev_udata, BlockUserData *& udata, const int & text_len) {
     if (!udata) {
         udata = new BlockUserData(
             _tokens, _paras,
             prev_udata ? prev_udata -> token_end : nullptr,
             prev_udata ? prev_udata -> para_end : nullptr
         );
-        block.setUserData(udata);
+        setCurrentUserData(udata);
     }
     else {
         udata -> para_begin -> prev = prev_udata ? prev_udata -> para_end : _paras -> rootToken();

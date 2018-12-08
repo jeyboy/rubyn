@@ -37,22 +37,12 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     }
 }
 
-bool Highlighter::toggleFolding(const QTextBlock & blk) {
-    return doc -> layout -> toggleFolding(blk);
-}
-
 Highlighter::Highlighter(TextDocument * doc) : QObject(), IHighlighter(), rehighlighting(false), doc(nullptr) {
     setDocument(doc);
 }
 
 Highlighter::~Highlighter() {
     setDocument(nullptr);
-}
-
-void Highlighter::highlightBlock(const QString & text) {
-//    qDebug() << "*** " << currentBlock().firstLineNumber() + 1;
-
-    doc -> lexicate(text, this);
 }
 
 void Highlighter::procFlagsForLastHighlightedBlock(const QTextBlock & block) {
@@ -95,7 +85,7 @@ QTextCharFormat Highlighter::format(const int & pos) const {
     return format_changes.at(pos);
 }
 
-int Highlighter::previousBlockState() const {
+int Highlighter::prevUserState() {
     if (!current_block.isValid())
         return -1;
 
@@ -106,14 +96,14 @@ int Highlighter::previousBlockState() const {
     return previous.userState();
 }
 
-int Highlighter::currentBlockState() const {
+int Highlighter::userState() {
     if (!current_block.isValid())
         return -1;
 
     return current_block.userState();
 }
 
-void Highlighter::setCurrentBlockState(const int & new_state) {
+void Highlighter::setUserState(const int & new_state) {
     if (!current_block.isValid())
         return;
 
@@ -220,7 +210,7 @@ void Highlighter::reformatBlocks(int from, int chars_removed, int chars_added) {
 void Highlighter::reformatBlock(const QTextBlock & block, int from, int chars_removed, int chars_added) {
     current_block = block;
 
-    initFormats(block.length() - 1);
+    initFormats(block.length());
     highlightBlock(block.text());
     applyFormatChanges(from, chars_removed, chars_added);
 
@@ -251,14 +241,13 @@ void Highlighter::applyFormatChanges(int from, int chars_removed, int chars_adde
         }
     }
 
-    QTextCharFormat empty_format;
     QTextLayout::FormatRange r;
     QVector<QTextLayout::FormatRange> new_ranges;
 
     int i = 0;
 
     while (i < format_changes.count()) {
-        while(i < format_changes.count() && format_changes.at(i) == empty_format)
+        while(i < format_changes.count() && format_changes.at(i) == default_format)
             ++i;
 
         if (i >= format_changes.count())

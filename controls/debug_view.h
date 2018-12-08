@@ -10,6 +10,10 @@ public:
 protected:
     void mouseDoubleClickEvent(QMouseEvent * event) Q_DECL_OVERRIDE;
 
+//protected slots:
+//    void modelRowsInserted(const QModelIndex &parent, int first, int last);
+//    void modelRowsRemoved(const QModelIndex &parent, int first, int last);
+
 signals:
     void newItemRequired();
 };

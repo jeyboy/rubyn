@@ -58,14 +58,14 @@ RegexpLexer::~RegexpLexer() {
 }
 
 void RegexpLexer::handle(const QString & text, IHighlighter * lighter) {
-    lighter -> setCurrentBlockState(0);
+    lighter -> setUserState(0);
 
     for(RulesList::ConstIterator it = _rules.cbegin(); it != _rules.cend(); it++) {
         const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor((*it) -> format_uid);
 
         if ((*it) -> end_pattern) {
             int start_index = 0;
-            if (lighter -> previousBlockState() != 1)
+            if (lighter -> prevUserState() != 1)
                 start_index = text.indexOf(*(*it) -> start_pattern);
 
             while (start_index >= 0) {
@@ -75,7 +75,7 @@ void RegexpLexer::handle(const QString & text, IHighlighter * lighter) {
                 int captured_length = 0;
 
                 if (end_index == -1) {
-                    lighter -> setCurrentBlockState(1);
+                    lighter -> setUserState(1);
                     captured_length = text.length() - start_index;
                 } else {
                     captured_length =
@@ -94,32 +94,4 @@ void RegexpLexer::handle(const QString & text, IHighlighter * lighter) {
             }
         }
     }
-
-//    foreach (const HighlightingRule &rule, highlightingRules) {
-//
-//        while (matchIterator.hasNext()) {
-//            QRegularExpressionMatch match = matchIterator.next();
-//            setFormat(match.capturedStart(), match.capturedLength(), rule.format);
-//        }
-//    }
-//    setCurrentBlockState(0);
-
-//    int startIndex = 0;
-//    if (previousBlockState() != 1)
-//        startIndex = text.indexOf(commentStartExpression);
-
-//    while (startIndex >= 0) {
-//        QRegularExpressionMatch match = commentEndExpression.match(text, startIndex);
-//        int endIndex = match.capturedStart();
-//        int commentLength = 0;
-//        if (endIndex == -1) {
-//            setCurrentBlockState(1);
-//            commentLength = text.length() - startIndex;
-//        } else {
-//            commentLength = endIndex - startIndex
-//                            + match.capturedLength();
-//        }
-//        setFormat(startIndex, commentLength, multiLineCommentFormat);
-//        startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
-//    }
 }

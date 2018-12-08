@@ -1585,14 +1585,11 @@ LexerFrontend::LexerFrontend() {}
 LexerFrontend::~LexerFrontend() {}
 
 void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
-    QTextBlock block = lighter -> currentBlock();
-    QTextBlock prev_block = lighter -> prevBlock();
-
-    BlockUserData * prev_udata = reinterpret_cast<BlockUserData *>(prev_block.userData());
-    BlockUserData * udata = reinterpret_cast<BlockUserData *>(block.userData());
+    BlockUserData * prev_udata = lighter -> prevUserData();
+    BlockUserData * udata = lighter -> userData();
 
     QByteArray text_val = text.toUtf8();
-    lighter -> initBlockUserData(block, prev_udata, udata, text_val.length());
+    lighter -> initCurrentBlockUserData(prev_udata, udata, text_val.length());
 
     LexerControl state(
         &Ruby::Grammar::obj(),
@@ -1611,16 +1608,16 @@ void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
 
     if (udata -> para_control && (!state.control_para || (state.control_para -> para_type != udata -> para_control -> para_type))) {
         if (udata -> isFolded()) {
-            override_status = lighter -> toggleFolding(block);
+            override_status = lighter -> toggleFolding();
         }
     }
 
     udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
 
-    int prev_state = block.userState();
+    int prev_state = lighter -> userState();
     int new_state = rubyLineState(udata, prev_state, override_status);
 
-    block.setUserState(new_state);
+    lighter -> setUserState(new_state);
 }
 
 void LexerFrontend::paraOpositionStr(const PARA_TYPE & para, QString & res) {
