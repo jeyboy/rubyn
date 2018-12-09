@@ -21,6 +21,9 @@
 #include "controls/debug_panel.h"
 #include "controls/breakpoints_panel.h"
 
+#include "debugging/debug.h"
+#include "debugging/debug_stub_interface.h"
+
 #include <qmessagebox.h>
 #include <qfiledialog.h>
 #include <qsplitter.h>
@@ -38,7 +41,7 @@
 #include "tools/data_preparer/rubydoc_parser.h"
 
 IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(nullptr), widgets_list(nullptr),
-    tree(nullptr), color_picker(nullptr), ui_dumper(new Dumper()), run_config(nullptr), pos_status(nullptr)
+    tree(nullptr), color_picker(nullptr), ui_dumper(new Dumper()), debug_panel(nullptr), breakpoints_panel(nullptr), run_config(nullptr), pos_status(nullptr)
 {
     ui -> setupUi(this);
 
@@ -81,6 +84,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
         "}"
     );
 
+    setupDebug();
     setupToolWindows();
     setupPosOutput();
     setupFileMenu();
@@ -89,6 +93,9 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
     connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
     connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
+
+//    DebugPanel * debug_panel;
+//    BreakpointsPanel * breakpoints_panel;
 
 //    openFolder(QUrl::fromLocalFile("F:/rubyn test/projects/rails 4 - RebelsMarketplace"));
 //    openFile(QUrl::fromLocalFile("F:/rubyn test/ruby/test1.rb"));
@@ -512,6 +519,11 @@ bool IDEWindow::editorInWidget(TabsBlock * editor, QWidget * target) {
     return false;
 }
 
+void IDEWindow::setupDebug() {
+    DebugStubInterface * handler = new DebugStubInterface();
+    Debug::obj().setupHandler(handler);
+}
+
 void IDEWindow::setupToolWindows() {
     DockWidgets::obj().registerContainer(this);
 
@@ -520,7 +532,7 @@ void IDEWindow::setupToolWindows() {
         DockWidgets::obj().createWidget(
             QLatin1Literal("Files"),
             tree,
-            (Qt::DockWidgetAreas)(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea)
+            Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea
         );
 
     widget -> setBehaviour(DockWidget::dwf_movable);
@@ -560,18 +572,19 @@ void IDEWindow::setupToolWindows() {
         DockWidgets::obj().createWidget(
             QLatin1Literal("Loh"),
             Logger::obj().getEditor(),
-            (Qt::DockWidgetAreas)(Qt::BottomDockWidgetArea)
+            Qt::BottomDockWidgetArea
         );
 
     DockWidgets::obj().append(log_widget, Qt::BottomDockWidgetArea);
 
 
+    debug_panel = new DebugPanel(this);
 
     DockWidget * debug_widget =
         DockWidgets::obj().createWidget(
             QLatin1Literal("Debug"),
-            new DebugPanel(this),
-            (Qt::DockWidgetAreas)(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea)
+            debug_panel,
+            Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
         );
 
     debug_widget -> setBehaviour(DockWidget::dwf_movable);
@@ -579,12 +592,13 @@ void IDEWindow::setupToolWindows() {
     DockWidgets::obj().append(debug_widget, Qt::BottomDockWidgetArea);
 
 
+    breakpoints_panel = new BreakpointsPanel(this);
 
     DockWidget * breakpoints_widget =
         DockWidgets::obj().createWidget(
             QLatin1Literal("Breakpoints"),
-            new BreakpointsPanel(this),
-            (Qt::DockWidgetAreas)(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea)
+            breakpoints_panel,
+            Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
         );
 
     breakpoints_widget -> setBehaviour(DockWidget::dwf_movable);

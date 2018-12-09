@@ -2,10 +2,12 @@
 
 #include <qpainter.h>
 #include <qapplication.h>
+#include <qevent.h>
+#include <qpushbutton.h>
 
 //TODO: fill all except icon zone - icon should output in white circle
 
-TabBarItemDelegate::TabBarItemDelegate(QObject * parent) : QStyledItemDelegate(parent) {
+TabBarItemDelegate::TabBarItemDelegate(QObject * parent) : BaseItemDelegate(parent) {
     int _close_btn_width = QApplication::style() -> pixelMetric(QStyle::PM_TabCloseIndicatorWidth, nullptr);
     int _close_btn_height = QApplication::style() -> pixelMetric(QStyle::PM_TabCloseIndicatorHeight, nullptr);
     int _close_btn_padd = 10;

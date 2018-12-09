@@ -22,6 +22,9 @@ class QDropEvent;
 class File;
 class Dumper;
 class RunConfiguration;
+class DebugPanel;
+class BreakpointsPanel;
+
 
 namespace Ui { class IDEWindow; }
 
@@ -36,6 +39,9 @@ class IDEWindow : public QMainWindow {
     ProjectTree * tree;
     ColorPicker * color_picker;
     Dumper * ui_dumper;
+
+    DebugPanel * debug_panel;
+    BreakpointsPanel * breakpoints_panel;
 
     RunConfiguration * run_config;
 
@@ -57,6 +63,7 @@ class IDEWindow : public QMainWindow {
 
     friend class Dumper;
 protected:
+    void setupDebug();
     void setupToolWindows();
     QWidget * findEditor(QSplitter * active_table);
 

@@ -5,6 +5,7 @@
 
 #include <qscrollbar.h>
 #include <qmimedata.h>
+#include <qevent.h>
 #include <qdebug.h>
 
 TabBar::TabBar(QWidget * parent) : QListWidget(parent), hscroll_range(-1), _internal_move(false) {

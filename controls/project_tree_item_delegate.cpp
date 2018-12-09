@@ -1,9 +1,12 @@
 #include "project_tree_item_delegate.h"
 
 #include <qpainter.h>
+#include <qmath.h>
 //#include <qapplication.h>
 
-ProjectTreeItemDelegate::ProjectTreeItemDelegate(QObject * parent) : QStyledItemDelegate(parent), ignore_back_fill(false) {}
+ProjectTreeItemDelegate::ProjectTreeItemDelegate(QObject * parent) : BaseItemDelegate(parent), ignore_back_fill(false) {
+    wave = generateWavyPixmap(2, QPen(Qt::red, 2));
+}
 
 void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const {
     if (!ignore_back_fill) {
@@ -66,6 +69,18 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
         painter -> drawRoundedRect(option.rect.adjusted(1, 1, -1, -1), 3, 3);
         painter -> restore();
     }
+
+    QVariant has_error_subline = index.data(Qt::UserRole + 21);
+    if (has_error_subline.isValid() && has_error_subline.toBool()) {
+        int sx = option.rect.left() + option.decorationSize.width() + 10;
+        int wy = 5;
+        int sy = option.rect.bottom() - wy;
+        int wx = option.rect.right() - sx;
+
+        painter -> setBrushOrigin(sx, sy);
+        painter -> setClipRect(sx, sy, wx, wave.height());
+        painter -> fillRect(sx, sy, wx, wy, wave);
+    }
 }
 
 //QSize ProjectTreeItemDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const {
@@ -80,5 +95,3 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
 
 //    return QStyledItemDelegate::sizeHint(option, index);
 //}
-
-

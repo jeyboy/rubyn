@@ -121,7 +121,7 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _comple
     setupCompleter();
 
     connect(_bar, SIGNAL(currentRowChanged(int)), this, SLOT(currentTabIndexChanged(int)));
-    connect(_bar, SIGNAL(tabCloseRequested(QListWidgetItem*)), this, SLOT(tabRemoved(QListWidgetItem*)));
+    connect(_bar, SIGNAL(tabCloseRequested(QListWidgetItem*)), this, SLOT(removeTab(QListWidgetItem*)));
     connect(_bar, SIGNAL(itemsCountChanged(int)), this, SLOT(tabsCountChanged(int)));
     connect(_bar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(showTabsContextMenu(const QPoint &)));
     connect(_bar, SIGNAL(scrollsRequired(bool)), this, SLOT(scrollsVisiabilityChange(bool)));
@@ -348,7 +348,14 @@ void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
         _bar -> setCurrentItem(tab);
 }
 
-void TabsBlock::tabRemoved(QListWidgetItem * tab) {
+void TabsBlock::clear() {
+    int tabs_count = _bar -> count();
+
+    for(int i = 0; i < tabs_count;i++)
+        removeTab(_bar -> item(i));
+}
+
+void TabsBlock::removeTab(QListWidgetItem * tab) {
     File * file = _bar -> tabFile(tab);
 
     if (file) {
@@ -365,6 +372,13 @@ void TabsBlock::tabRemoved(QListWidgetItem * tab) {
     _bar -> removeTab(tab);
 }
 
+void TabsBlock::removeCurrentTab() {
+
+}
+void TabsBlock::removeExceptCurrentTab() {
+
+}
+
 void TabsBlock::showTabsContextMenu(const QPoint & point) {
     if (point.isNull())
         return;
@@ -378,7 +392,17 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
 
         File * file = _bar -> tabFile(tab);
 
-        QAction * action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_horizontal")), tr("Split"), this, SLOT(newTabsBlockRequest()));
+        QAction * action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_horizontal")), tr("Remove"), this, SLOT(removeCurrentTab()));
+        action -> setProperty("uid", file -> uid());
+
+        action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_horizontal")), tr("Remove other"), this, SLOT(removeExceptCurrentTab()));
+        action -> setProperty("uid", file -> uid());
+
+        action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_horizontal")), tr("Remove all"), this, SLOT(clear()));
+
+        menu.addSeparator();
+
+        action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_horizontal")), tr("Split"), this, SLOT(newTabsBlockRequest()));
         action -> setProperty("uid", file -> uid());
         action -> setProperty("vertical", false);
 

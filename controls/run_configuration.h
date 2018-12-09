@@ -17,7 +17,7 @@ class RunConfiguration : public QObject {
     QAction * _debbug;
     QToolButton * _console_btn;
 public:
-    RunConfiguration(QObject * parent = 0);
+    RunConfiguration(QObject * parent = nullptr);
 
     void buildPanel(QToolBar * bar);
 

@@ -70,6 +70,7 @@ public slots:
     void saveFiles();
     void currentTabChanged(QListWidgetItem * tab);
     void currentTabIndexChanged(const int & index);
+    void clear();
 
 protected slots:
     inline void resourceDrop(const QUrl & url) { emit resourceDropped(this, url); }
@@ -79,7 +80,9 @@ protected slots:
     void fileListClicked();
     void tabsCountChanged(const int & correction);
     void scrollsVisiabilityChange(const bool & show);
-    void tabRemoved(QListWidgetItem * tab);
+    void removeTab(QListWidgetItem * tab);
+    void removeCurrentTab();
+    void removeExceptCurrentTab();
     void showTabsContextMenu(const QPoint &);
 
     void newTabsBlockRequest();

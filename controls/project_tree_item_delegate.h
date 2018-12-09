@@ -1,10 +1,11 @@
 #ifndef PROJECT_TREE_ITEM_DELEGATE_H
 #define PROJECT_TREE_ITEM_DELEGATE_H
 
-#include <qstyleditemdelegate.h>
+#include "controls/base_item_delegate.h"
 
-class ProjectTreeItemDelegate : public QStyledItemDelegate {
+class ProjectTreeItemDelegate : public BaseItemDelegate {
     bool ignore_back_fill;
+    QPixmap wave;
 public:
     ProjectTreeItemDelegate(QObject * parent = nullptr);
 

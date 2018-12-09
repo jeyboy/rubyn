@@ -1,12 +1,9 @@
 #ifndef TAB_BAR_ITEM_DELEGATE_H
 #define TAB_BAR_ITEM_DELEGATE_H
 
-#include <qstyleditemdelegate.h>
-#include <qpushbutton.h>
-#include <qdebug.h>
-#include <qevent.h>
+#include "controls/base_item_delegate.h"
 
-class TabBarItemDelegate  : public QStyledItemDelegate {
+class TabBarItemDelegate  : public BaseItemDelegate {
     Q_OBJECT
 
     int _close_btn_area_width;
