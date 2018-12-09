@@ -53,6 +53,8 @@ protected:
 
     void registerBreakpointLineFormat();
 
+    void registerBreakpointActiveLineFormat();
+
     void registerCharsLimiterLineFormat();
 
     void registerErrorFormat();

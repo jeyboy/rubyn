@@ -100,7 +100,8 @@ class CodeEditorCache {
     OVERLAY_POS_TYPE show_overlays;
 
     friend struct CodeEditorCacheCell;
-public:   
+public:
+    int debug_active_block_number;
     int top_block_number;
     int bottom_block_number;
     int fill_bottom;

@@ -50,7 +50,6 @@ QWidget * DebugViewItemDelegate::createEditor(QWidget * parent, const QStyleOpti
     return res;
 }
 
-
 //void ModelItemDelegate::drawCheckbox(bool is_container, QVariant & checkable, QPainter * painter, const QStyleOptionViewItem& option) const {
 //    QStyleOptionButton checkboxstyle;
 //    QRect rect = option.rect;

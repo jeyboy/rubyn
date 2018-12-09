@@ -349,6 +349,11 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
             const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_line);
             painter.fillRect(breakpoint_offset_x, block_top, extra_zone_width, block_bottom - block_top, breakpoint_line_format.background());
         }
+
+        if (cache -> block_number == display_cacher -> debug_active_block_number) {
+            const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_active_line);
+            painter.fillRect(breakpoint_offset_x, block_top, extra_zone_width, block_bottom - block_top, breakpoint_line_format.background());
+        }
     }
 
     if (show_foldings_panel && para_info.containsBlockNumber(cache -> block_number)) {
@@ -391,6 +396,11 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
                 QPoint(breakpoint_offset_x, paint_top + (line_number_height - ICO_WIDTH) / 2),
                 icons[BlockUserData::udf_has_breakpoint]
             );
+        }
+
+        if (block_num == display_cacher -> debug_active_block_number) {
+            const QTextCharFormat & breakpoint_line_format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_active_line);
+            painter.fillRect(breakpoint_offset_x, block_top, extra_zone_width, block_bottom - block_top, breakpoint_line_format.background());
         }
     }
 
@@ -1036,6 +1046,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     forever {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
+        bool is_active_debug_line = display_cacher -> debug_active_block_number == cache_cell -> block_number;
 
         if (show_folding_scope_lines)
             cache_cell -> setUserData(TextDocumentLayout::getUserDataForBlock(block));
@@ -1056,13 +1067,21 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         cache_cell -> block_length = block.length();
 
         if (cache_cell -> bounding_rect.bottom() >= er.top() && cache_cell -> bounding_rect.top() <= er.bottom()) {
-            QTextBlockFormat blockFormat = block.blockFormat();
-            QBrush bg = blockFormat.background();
 
-            if (bg != Qt::NoBrush) {
+            if (is_active_debug_line) {
                 QRectF contents_rect = cache_cell -> bounding_rect;
                 contents_rect.setWidth(qMax(cache_cell -> bounding_rect.width(), max_width));
-                fillBackground(&painter, contents_rect, bg);
+                const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_breakpoint_active_line);
+                painter.fillRect(contents_rect, format.background());
+            } else {
+                QTextBlockFormat block_format = block.blockFormat();
+                QBrush bg = block_format.background();
+
+                if (bg != Qt::NoBrush) {
+                    QRectF contents_rect = cache_cell -> bounding_rect;
+                    contents_rect.setWidth(qMax(cache_cell -> bounding_rect.width(), max_width));
+                    fillBackground(&painter, contents_rect, bg);
+                }
             }
 
             if (show_folding_scope_lines && display_cacher -> hasLevels()) {
@@ -1181,15 +1200,14 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
             bool is_breakpoint_line = cache_cell -> user_data && cache_cell -> user_data -> hasBreakpoint();
             bool is_current_line = cache_cell -> block_number == curr_block_number;
 
-            if (is_current_line || is_breakpoint_line) {
+            if (!is_active_debug_line && (is_current_line || is_breakpoint_line)) {
                 QRect r(0, offset.ry(), max_x, cache_cell -> bounding_rect.height());
 
                 if (is_breakpoint_line)
                     painter.fillRect(r, breakpoint_line_format.background());
 
-                if (is_current_line) {
+                if (is_current_line)
                     painter.fillRect(r, current_line_format.background());
-                }
             }
         }
 

@@ -93,7 +93,9 @@ SOURCES += main.cpp\
     controls/debug_panel.cpp \
     controls/breakpoints_panel.cpp \
     controls/debug_view.cpp \
-    controls/debug_view_item_delegate.cpp
+    controls/debug_view_item_delegate.cpp \
+    debugging/debug.cpp \
+    debugging/idebug_interface.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -219,7 +221,9 @@ HEADERS  += ide_window.h \
     controls/debug_panel.h \
     controls/breakpoints_panel.h \
     controls/debug_view.h \
-    controls/debug_view_item_delegate.h
+    controls/debug_view_item_delegate.h \
+    debugging/idebug_interface.h \
+    debugging/debug.h
 
 FORMS    += ide_window.ui
 

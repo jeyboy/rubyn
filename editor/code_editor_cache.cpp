@@ -101,7 +101,7 @@ void CodeEditorCacheCell::initLevels(const QTextBlock & block) {
     }
 }
 
-CodeEditorCache::CodeEditorCache() : root(nullptr), last(nullptr), length(0), show_overlays(false), top_block_number(NO_INFO), bottom_block_number(NO_INFO), partialy_filled(false) {
+CodeEditorCache::CodeEditorCache() : root(nullptr), last(nullptr), length(0), show_overlays(false), debug_active_block_number(NO_INFO), top_block_number(NO_INFO), bottom_block_number(NO_INFO), partialy_filled(false) {
     block_offsets.reserve(10);
 
     root = new CodeEditorCacheCell(this, NO_INFO);

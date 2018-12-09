@@ -156,6 +156,12 @@ void HighlightFormatFactory::registerBreakpointLineFormat() {
     _formats.insert(hid_breakpoint_line, format);
 }
 
+void HighlightFormatFactory::registerBreakpointActiveLineFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(0, 255, 0, 64));
+    _formats.insert(hid_breakpoint_active_line, format);
+}
+
 void HighlightFormatFactory::registerCharsLimiterLineFormat() {
     QTextCharFormat format;
     format.setBackground(QColor::fromRgb(255, 0, 0, 64));
@@ -380,6 +386,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerParaHoverOverlayFormat();
     registerBreakpointsRangeFormat();
     registerBreakpointLineFormat();
+    registerBreakpointActiveLineFormat();
     registerCharsLimiterLineFormat();
     registerFoldedSelectedOverlayFormat();
 
