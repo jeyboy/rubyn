@@ -80,9 +80,9 @@ protected slots:
     void fileListClicked();
     void tabsCountChanged(const int & correction);
     void scrollsVisiabilityChange(const bool & show);
-    void removeTab(QListWidgetItem * tab);
-    void removeCurrentTab();
-    void removeExceptCurrentTab();
+    void closeTab(QListWidgetItem * tab);
+    void closeCurrentTab();
+    void closeExceptCurrentTab();
     void showTabsContextMenu(const QPoint &);
 
     void newTabsBlockRequest();
