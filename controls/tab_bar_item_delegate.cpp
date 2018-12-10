@@ -4,10 +4,13 @@
 #include <qapplication.h>
 #include <qevent.h>
 #include <qpushbutton.h>
+#include <qdebug.h>
 
 //TODO: fill all except icon zone - icon should output in white circle
 
 TabBarItemDelegate::TabBarItemDelegate(QObject * parent) : BaseItemDelegate(parent) {
+    wave = generateWavyPixmap(2, QPen(Qt::red, 2));
+
     int _close_btn_width = QApplication::style() -> pixelMetric(QStyle::PM_TabCloseIndicatorWidth, nullptr);
     int _close_btn_height = QApplication::style() -> pixelMetric(QStyle::PM_TabCloseIndicatorHeight, nullptr);
     int _close_btn_padd = 10;
@@ -60,6 +63,20 @@ void TabBarItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & 
     QApplication::style() -> drawPrimitive(QStyle::PE_IndicatorTabClose, &opt, painter);
 
     painter -> drawLine(option.rect.topRight(), option.rect.bottomRight());
+
+    QVariant has_error_subline = index.data(Qt::UserRole + 21);
+    if (has_error_subline.isValid() && has_error_subline.toBool()) {
+        painter -> save();
+        int sx = option.rect.left() + option.decorationSize.width() + 10;
+        int wy = 6;
+        int sy = option.rect.bottom() - wy;
+        int wx = option.rect.right() - _close_btn_area_width - 2 - sx;
+
+        painter -> setBrushOrigin(sx, sy);
+        painter -> setClipRect(sx, sy, wx, wave.height());
+        painter -> fillRect(sx, sy, wx, wy, wave);
+        painter -> restore();
+    }
 }
 
 bool TabBarItemDelegate::editorEvent(QEvent * event, QAbstractItemModel * model, const QStyleOptionViewItem & option, const QModelIndex & index) {

@@ -8,6 +8,7 @@ class TabBarItemDelegate  : public BaseItemDelegate {
 
     int _close_btn_area_width;
     QRect close_btn_rect;
+    QPixmap wave;
 public:
     TabBarItemDelegate(QObject * parent);
 
