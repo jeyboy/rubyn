@@ -97,7 +97,8 @@ SOURCES += main.cpp\
     debugging/debug.cpp \
     debugging/idebug_interface.cpp \
     debugging/debug_stub_interface.cpp \
-    controls/base_item_delegate.cpp
+    controls/base_item_delegate.cpp \
+    editor/editor_search.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -228,7 +229,8 @@ HEADERS  += ide_window.h \
     debugging/debug.h \
     debugging/debug_stub_interface.h \
     debugging/debug_breakpoint.h \
-    controls/base_item_delegate.h
+    controls/base_item_delegate.h \
+    editor/editor_search.h
 
 FORMS    += ide_window.ui
 

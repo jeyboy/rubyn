@@ -7,6 +7,7 @@
 
 #include "project/file.h"
 
+#include "editor/editor_search.h"
 #include "editor/code_editor.h"
 #include "editor/document_types/text_document.h"
 
@@ -88,6 +89,9 @@ void TabsBlock::setupLayout() {
     _editor -> setFont(font);
 
     col_layout -> addWidget(_editor, 1);
+
+    EditorSearch * search = new EditorSearch(this);
+    col_layout -> addWidget(search, 0);
 }
 
 void TabsBlock::setupCompleter() {
