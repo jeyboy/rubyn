@@ -21,6 +21,7 @@
         <file alias="clear">icons/clear.png</file>
         <file alias="remove">icons/remove.png</file>
         <file alias="search_btn">icons/search_btn.png</file>
+        <file alias="search_replace_btn">icons/search_replace_btn.png</file>
     </qresource>
     <qresource prefix="/doc_types">
         <file alias="folder">icons/folder.png</file>
