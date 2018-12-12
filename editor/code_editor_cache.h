@@ -66,8 +66,6 @@ struct CodeEditorCacheCell {
 
             prev -> next = this;
         }
-
-        procSearch();
     }
 
     ~CodeEditorCacheCell() {
@@ -97,7 +95,7 @@ struct CodeEditorCacheCell {
 class CodeEditorCache {
     bool in_search;
     QRegularExpression search_regex;
-    QHash<EDITOR_POS_TYPE, QList<EDITOR_POS_TYPE>> search_mappings;
+    QHash<EDITOR_POS_TYPE, QList<QPair<EDITOR_POS_TYPE, EDITOR_POS_TYPE>>> search_mappings;
 
     CodeEditorCacheCell * root, * last;
     QVector<qint16> block_offsets;

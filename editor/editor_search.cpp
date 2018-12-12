@@ -11,7 +11,27 @@
 
 #include <qdebug.h>
 
-EditorSearch::EditorSearch(QWidget * parent) : QWidget(parent), result_count(0) {
+EditorSearchFlags EditorSearch::flags() {
+    int res = esf_none;
+
+    if (flag_case_sensitive -> isChecked())
+        res |= esf_match_case;
+
+    if (flag_whole_word_only -> isChecked())
+        res |= esf_words_only;
+
+    if (flag_reg_exp -> isChecked())
+        res |= esf_regex;
+
+    if (flag_unicode -> isChecked())
+        res |= esf_unicode;
+
+    return (EditorSearchFlags)res;
+}
+
+EditorSearch::EditorSearch(QWidget * parent) : QWidget(parent), result_count(0), predicate(nullptr), replace_predicate(nullptr),
+    flag_case_sensitive(nullptr), flag_whole_word_only(nullptr), flag_reg_exp(nullptr), flag_unicode(nullptr)
+{
     QVBoxLayout * main_layout = new QVBoxLayout(this);
 
     QHBoxLayout * search_layout = new QHBoxLayout();
@@ -19,7 +39,7 @@ EditorSearch::EditorSearch(QWidget * parent) : QWidget(parent), result_count(0) 
 
     QLabel * l2 = new QLabel(QLatin1Literal("Replace with:"), this);
     replace_layout -> addWidget(l2, 0);
-    QLineEdit * replace_predicate = new QLineEdit(this);
+    replace_predicate = new QLineEdit(this);
     replace_predicate -> setPlaceholderText(QLatin1Literal("Replacement"));
     replace_predicate -> setMinimumWidth(100);
     replace_layout -> addWidget(replace_predicate, 1);
@@ -65,10 +85,13 @@ EditorSearch::EditorSearch(QWidget * parent) : QWidget(parent), result_count(0) 
     QLabel * l1 = new QLabel(QLatin1Literal("Search:"), this);
     l1 -> setFixedWidth(l2 -> sizeHint().rwidth());
     search_layout -> addWidget(l1, 0);
-    QLineEdit * predicate = new QLineEdit(this);
+    predicate = new QLineEdit(this);
     predicate -> setMinimumWidth(100);
     predicate -> setPlaceholderText(QLatin1Literal("Search"));
     search_layout -> addWidget(predicate, 1);
+    connect(predicate, &QLineEdit::textChanged, [=](const QString & text) { emit find(text, flags()); });
+
+
 
 
     QMenu * menu = new QMenu(this);
@@ -106,20 +129,30 @@ EditorSearch::EditorSearch(QWidget * parent) : QWidget(parent), result_count(0) 
     connect(move_next_btn, &QWidgetAction::triggered, [=]() {});
 
 
-    QCheckBox * flag_case_sensitive = new QCheckBox(QLatin1Literal("Match Case"), menu);
+    flag_case_sensitive = new QCheckBox(QLatin1Literal("Match Case"), menu);
     QWidgetAction * flag_case_sensitive_action = new QWidgetAction(menu);
     flag_case_sensitive_action -> setDefaultWidget(flag_case_sensitive);
     menu -> addAction(flag_case_sensitive_action);
+    connect(flag_case_sensitive, &QCheckBox::clicked, [=](bool) { emit find(predicate -> text(), flags()); });
 
-    QCheckBox * flag_whole_word_only = new QCheckBox(QLatin1Literal("Words"), menu);
+    flag_whole_word_only = new QCheckBox(QLatin1Literal("Words"), menu);
     QWidgetAction * flag_whole_word_only_action = new QWidgetAction(menu);
     flag_whole_word_only_action -> setDefaultWidget(flag_whole_word_only);
     menu -> addAction(flag_whole_word_only_action);
+    connect(flag_whole_word_only, &QCheckBox::clicked, [=](bool) { emit find(predicate -> text(), flags()); });
 
-    QCheckBox * flag_reg_exp = new QCheckBox(QLatin1Literal("Regex"), menu);
+    flag_reg_exp = new QCheckBox(QLatin1Literal("Regex"), menu);
     QWidgetAction * flag_reg_exp_action = new QWidgetAction(menu);
     flag_reg_exp_action -> setDefaultWidget(flag_reg_exp);
     menu -> addAction(flag_reg_exp_action);
+    connect(flag_reg_exp, &QCheckBox::clicked, [=](bool) { emit find(predicate -> text(), flags()); });
+
+    flag_unicode = new QCheckBox(QLatin1Literal("Unicode"), menu);
+    QWidgetAction * flag_unicode_action = new QWidgetAction(menu);
+    flag_unicode_action -> setDefaultWidget(flag_unicode);
+    menu -> addAction(flag_unicode_action);
+    connect(flag_unicode, &QCheckBox::clicked, [=](bool) { emit find(predicate -> text(), flags()); });
+
 
     main_layout -> addLayout(search_layout);
     main_layout -> addLayout(replace_layout);

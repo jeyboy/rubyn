@@ -479,6 +479,7 @@ protected:
 
     void drawParaOverlays(QPainter & painter);
     void drawFoldingOverlays(QPainter & painter, const QRect & target_rect);
+    void drawSearchOverlays(QPainter & painter);
     void drawCharsLimiter(QPainter & painter);
     void drawAdditionalCarets(QPainter & painter);
 

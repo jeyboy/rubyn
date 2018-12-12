@@ -90,8 +90,8 @@ void TabsBlock::setupLayout() {
 
     col_layout -> addWidget(_editor, 1);
 
-    EditorSearch * search = new EditorSearch(this);
-    col_layout -> addWidget(search, 0);
+    _search_bar = new EditorSearch(this);
+    col_layout -> addWidget(_search_bar, 0);
 }
 
 void TabsBlock::setupCompleter() {
@@ -132,6 +132,8 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _comple
 
     connect(_scroll_left_btn, SIGNAL(clicked()), _bar, SLOT(scrollBackward()));
     connect(_scroll_right_btn, SIGNAL(clicked()), _bar, SLOT(scrollForward()));
+
+    connect(_search_bar, SIGNAL(find(const QString &, const EditorSearchFlags &)), _editor, SLOT(searchInitiated(const QString &, const EditorSearchFlags &)));
 
     connect(_editor, SIGNAL(inFocus()), this, SLOT(inFocus()));
     connect(_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(resourceDrop(QUrl)));

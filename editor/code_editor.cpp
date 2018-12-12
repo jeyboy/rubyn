@@ -469,6 +469,37 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
     }
 }
 
+void CodeEditor::drawSearchOverlays(QPainter & painter) {
+    if (!display_cacher -> inSearch())
+        return;
+
+    for (CodeEditorCacheCell * it = display_cacher -> begin(); !it -> is_service; it = it -> next) {
+        if (!it -> is_visible || (!show_folding_content_on_hover_overlay && it -> bounding_rect.bottom() < target_top)) {
+            continue;
+        }
+
+        if (!show_folding_content_on_hover_overlay && it -> bounding_rect.top() > target_bottom) {
+            break;
+        }
+
+        if (it -> user_data && it -> user_data -> isFolded()) {
+            if (it -> folding_overlay_text.isNull()) {
+                wrapper -> paraOpositionStr(it -> user_data -> para_control -> para_type, it -> folding_overlay_text);
+                it -> folding_overlay_text = QLatin1Literal("...") % it -> folding_overlay_text;
+            }
+
+            EDITOR_POS_TYPE text_pos = it -> block_length - 1;
+            it -> folding_description_rect = textRect(it, text_pos, 1);
+            it -> folding_description_rect.adjust(3, 0, it -> folding_overlay_text.length() * symbol_width + 10, 0);
+
+            drawTextOverlay(it -> is_folding_selected ? hid_folded_selected_overlay : hid_folded_overlay, painter, it -> folding_description_rect);
+
+            painter.setPen(QColor::fromRgb(0, 0, 0));
+            painter.drawText(it -> folding_description_rect, Qt::AlignCenter, it -> folding_overlay_text);
+        }
+    }
+}
+
 void CodeEditor::drawCharsLimiter(QPainter & painter) {
 // TODO: optimize me: return if 'x' not on the screen
 
@@ -1046,6 +1077,8 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     forever {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
+        cache_cell -> procSearch();
+
         bool is_active_debug_line = display_cacher -> debug_active_block_number == cache_cell -> block_number;
 
         if (show_folding_scope_lines)
@@ -1368,6 +1401,8 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
     drawParaOverlays(painter);
 
     drawAdditionalCarets(painter);
+
+    drawSearchOverlays(painter);
 
     e -> accept();
 
@@ -1755,6 +1790,8 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
 
 
 void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlags & flags) {
+    qDebug() << "SEARCH" << pattern;
+
     if (pattern.isEmpty()) {
         if (!display_cacher -> inSearch())
             return;

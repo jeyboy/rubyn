@@ -18,12 +18,14 @@ class QMenu;
 class QListWidgetItem;
 class Completer;
 class QScrollBar;
+class EditorSearch;
 
 class TabsBlock : public QWidget {
     Q_OBJECT
 
     TabBar * _bar;
     Completer * _completer;
+    EditorSearch * _search_bar;
 
     QToolButton * _active_btn;
     QToolButton * _list_btn;

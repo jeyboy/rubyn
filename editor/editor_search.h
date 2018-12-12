@@ -6,6 +6,7 @@
 #include "editor/editor_search_flags.h"
 
 class QLineEdit;
+class QCheckBox;
 
 class EditorSearch : public QWidget {
     Q_OBJECT
@@ -13,6 +14,13 @@ class EditorSearch : public QWidget {
     int result_count;
     QLineEdit * predicate;
     QLineEdit * replace_predicate;
+
+    QCheckBox * flag_case_sensitive;
+    QCheckBox * flag_whole_word_only;
+    QCheckBox * flag_reg_exp;
+    QCheckBox * flag_unicode;
+
+    EditorSearchFlags flags();
 public:
     EditorSearch(QWidget * parent = nullptr);
 signals:
