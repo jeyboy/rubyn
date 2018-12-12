@@ -45,6 +45,12 @@ void HighlightFormatFactory::registerProjectTreeAppRangeFormat() {
 
 
 
+void HighlightFormatFactory::registerSearchOverlayFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(255, 255, 0, 64));
+    _formats.insert(hid_search_overlay, format);
+}
+
 
 void HighlightFormatFactory::registerExtraIconsRangeFormat() {
     QTextCharFormat format;
@@ -370,6 +376,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerProjectTreeAppRangeFormat();
 
     registerExtraIconsRangeFormat();
+    registerSearchOverlayFormat();
     registerSelectionFormat();
     registerCurrentLineFormat();
     registerFoldingLevelLineFormat();

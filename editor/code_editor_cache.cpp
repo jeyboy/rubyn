@@ -101,7 +101,20 @@ void CodeEditorCacheCell::initLevels(const QTextBlock & block) {
     }
 }
 
-CodeEditorCache::CodeEditorCache() : root(nullptr), last(nullptr), length(0), show_overlays(false), debug_active_block_number(NO_INFO), top_block_number(NO_INFO), bottom_block_number(NO_INFO), partialy_filled(false) {
+void CodeEditorCacheCell::procSearch() {
+    if (parent -> in_search) {
+        if (!parent -> search_mappings.contains(block_number)) {
+            QList<EDITOR_POS_TYPE> res;
+
+            QString txt = layout -> text();
+
+
+            parent -> search_mappings.insert(block_number, res);
+        }
+    }
+}
+
+CodeEditorCache::CodeEditorCache() : in_search(false), root(nullptr), last(nullptr), length(0), show_overlays(false), debug_active_block_number(NO_INFO), top_block_number(NO_INFO), bottom_block_number(NO_INFO), partialy_filled(false) {
     block_offsets.reserve(10);
 
     root = new CodeEditorCacheCell(this, NO_INFO);
@@ -140,4 +153,10 @@ void CodeEditorCache::clear() {
     }
 
     length = 0;
+}
+
+void CodeEditorCache::reset() {
+    clear();
+    in_search = false;
+    search_mappings.clear();
 }

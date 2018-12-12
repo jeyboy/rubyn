@@ -19,6 +19,8 @@ protected:
     void registerProjectTreeAppRangeFormat();
 
 
+    void registerSearchOverlayFormat();
+
     void registerExtraIconsRangeFormat();
 
     void registerSelectionFormat();

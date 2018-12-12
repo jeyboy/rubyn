@@ -35,7 +35,7 @@ bool TextDocument::identificateLexer() {
 
     _lexer = LexersFactory::obj().lexerFor(format);
     if (_lexer)
-        new Highlighter(this);
+        highlighter = new Highlighter(this);
 
     return _lexer != nullptr;
 }
@@ -46,7 +46,7 @@ bool TextDocument::registerStateChangedCallback(QObject * target, const char * s
     return true;
 }
 
-TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1), removed(0), added(0)*/, _file(file), layout(nullptr) {
+TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0), in_search(false), highlighter(nullptr), _file(file), layout(nullptr) {
 //    qint64 content_length = _file -> source() -> size();
 
     layout = new TextDocumentLayout(this);
@@ -82,7 +82,12 @@ TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0)/*, pos(-1
 
 
 
-//    connect(_doc, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
+    if (!highlighter)
+        connect(this, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
+    else
+        connect(this, SIGNAL(highlightingComplete()), this, SLOT(highlighterFinished()));
+
+
 //    connect(this, &TextDocument::modificationChanged, this, &TextDocument::hasUnsavedChanges);
     connect(this, SIGNAL(contentsChanged()), this, SLOT(hasUnsavedChanges()));
 }
@@ -510,12 +515,14 @@ bool TextDocument::restore(const QVariant & data) {
 //    setFullyReaded(source -> atEnd());
 //}
 
-//void TextDocument::changesInContent(int position, int removed_count, int added_count) {
-//    pos = position;
-//    removed = removed_count;
-//    added = added_count;
-//}
-
 void TextDocument::hasUnsavedChanges(const bool & has) {
     emit hasChanges(_file -> uid(), has);
+}
+
+void TextDocument::changesInContent(int position, int removed_count, int added_count) {
+
+}
+
+void TextDocument::highlighterFinished() {
+
 }

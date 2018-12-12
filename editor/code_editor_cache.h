@@ -3,6 +3,8 @@
 
 #include <qrect.h>
 #include <qvector.h>
+#include <qregularexpression.h>
+
 #include "misc/defines.h"
 
 class BlockUserData;
@@ -64,6 +66,8 @@ struct CodeEditorCacheCell {
 
             prev -> next = this;
         }
+
+        procSearch();
     }
 
     ~CodeEditorCacheCell() {
@@ -86,9 +90,15 @@ struct CodeEditorCacheCell {
         else
             scope_offsets.clear();
     }
+
+    void procSearch();
 };
 
 class CodeEditorCache {
+    bool in_search;
+    QRegularExpression search_regex;
+    QHash<EDITOR_POS_TYPE, QList<EDITOR_POS_TYPE>> search_mappings;
+
     CodeEditorCacheCell * root, * last;
     QVector<qint16> block_offsets;
 //    QHash<EDITOR_POS_TYPE, > scope_offsets;
@@ -111,6 +121,18 @@ public:
 
     ~CodeEditorCache();
 
+    bool inSearch() { return in_search; }
+
+    void openSearch(const QRegularExpression & predicate) {
+        in_search = true;
+        search_regex = predicate;
+    }
+
+    void closeSearch() {
+        search_mappings.clear();
+        in_search = false;
+    }
+
     void mapOverlayState(const OVERLAY_POS_TYPE & overlay_pos, const bool & show) {
         if (show)
             show_overlays = show_overlays | overlay_pos;
@@ -121,6 +143,7 @@ public:
     bool isShowOverlay() { return show_overlays; }
 
     void clear();
+    void reset();
 
     void setTab(const QLatin1String & tab_str, const qreal & def_symbol_width) {
         tab_length = tab_str.size();

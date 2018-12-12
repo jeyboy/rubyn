@@ -10,6 +10,7 @@
 #include "editor/active_para_info.h"
 #include "editor/active_folding_info.h"
 #include "editor/completer_info.h"
+#include "editor/editor_search_flags.h"
 
 class QPaintEvent;
 class QResizeEvent;
@@ -549,6 +550,9 @@ signals:
     void inFocus();
     void fileDropped(const QUrl & uri/*, bool multiple*/); // Multiple files are dropped?
     void cursorPosChanged(const QString & pos_coords);
+
+public slots:
+    void searchInitiated(const QString & pattern, const EditorSearchFlags & flags);
 
 private slots:
     void overlayHidden(const OVERLAY_POS_TYPE & uid);

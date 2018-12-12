@@ -5,6 +5,7 @@
 
 #include "misc/defines.h"
 #include "editor/idocument.h"
+#include "editor/editor_search_flags.h"
 #include "editor/text_document_layout.h"
 
 #define READ_LIMIT 512000LL // ~512 kb
@@ -20,6 +21,8 @@ class TextDocument : public QTextDocument, public IDocument {
     static QHash<QChar, bool> word_boundary;
 
     int scroll_pos_y;
+    bool in_search;
+    IHighlighter * highlighter;
 protected:
     File * _file;
 
@@ -29,6 +32,7 @@ signals:
     void hasChanges(const QString & uid, const bool & has);
     void enterPressed();
     void wordHovered(const QPoint & point, const int & start, const int & end);
+    void highlightingComplete();
 public:
     TextDocumentLayout * layout;
 
@@ -73,7 +77,8 @@ public:
     }
 protected slots:
     void hasUnsavedChanges(const bool & has = true);
-//    void changesInContent(int position, int removed_count, int added_count);
+    void changesInContent(int position, int removed_count, int added_count);
+    void highlighterFinished();
 };
 
 #endif // TEXT_DOCUMENT

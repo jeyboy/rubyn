@@ -16,6 +16,7 @@ enum Identifier : UID_TYPE {
     hid_project_tree_config_range = -65,
     hid_project_tree_app_range = -64,
 
+    hid_search_overlay = -20,
     hid_extra_icons_range = -19,
     hid_para_hover_line = -18,
     hid_para_content_popup = -17,

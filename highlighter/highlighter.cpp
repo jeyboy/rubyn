@@ -205,6 +205,8 @@ void Highlighter::reformatBlocks(int from, int chars_removed, int chars_added) {
     procFlagsForLastHighlightedBlock(block);
 
     format_changes.clear();
+
+    emit doc -> highlightingComplete();
 }
 
 void Highlighter::reformatBlock(const QTextBlock & block, int from, int chars_removed, int chars_added) {

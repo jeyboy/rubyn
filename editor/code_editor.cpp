@@ -1753,6 +1753,39 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
     return initiated;
 }
 
+
+void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlags & flags) {
+    if (pattern.isEmpty()) {
+        if (!display_cacher -> inSearch())
+            return;
+    } else {
+        QString val = pattern;
+
+        QRegularExpression::PatternOptions options = QRegularExpression::DotMatchesEverythingOption;
+
+        if (flags ^ esf_match_case)
+            options |= QRegularExpression::CaseInsensitiveOption;
+
+        if (flags & esf_unicode)
+            options |= QRegularExpression::UseUnicodePropertiesOption;
+
+        val = val.remove(QRegularExpression(QLatin1Literal("/r|/n|<br>|<br/>")));
+
+        if (pattern.length() != val.length())
+            options |= QRegularExpression::MultilineOption;
+
+        if (flags ^ esf_regex)
+            val = QRegularExpression::escape(val);
+
+        QRegularExpression regex(pattern, options);
+        regex.optimize();
+
+        display_cacher -> openSearch(regex);
+    }
+    viewport() -> update();
+}
+
+
 void CodeEditor::overlayHidden(const OVERLAY_POS_TYPE & uid) {
     display_cacher -> mapOverlayState(uid, false);
     restoreDefaultMouseCursor();
