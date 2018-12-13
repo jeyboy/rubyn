@@ -33,15 +33,19 @@ EditorSearch::EditorSearch(QWidget * parent) : QWidget(parent), result_count(0),
     flag_case_sensitive(nullptr), flag_whole_word_only(nullptr), flag_reg_exp(nullptr), flag_unicode(nullptr)
 {
     QVBoxLayout * main_layout = new QVBoxLayout(this);
+    main_layout -> setContentsMargins(1, 1, 1, 1);
+    main_layout -> setSpacing(3);
 
     QHBoxLayout * search_layout = new QHBoxLayout();
+    search_layout -> setContentsMargins(0, 0, 0, 0);
     QHBoxLayout * replace_layout = new QHBoxLayout();
+    replace_layout -> setContentsMargins(0, 0, 0, 0);
 
     QLabel * l2 = new QLabel(QLatin1Literal("Replace with:"), this);
     replace_layout -> addWidget(l2, 0);
     replace_predicate = new QLineEdit(this);
     replace_predicate -> setPlaceholderText(QLatin1Literal("Replacement"));
-    replace_predicate -> setMinimumWidth(100);
+    replace_predicate -> setMinimumWidth(150);
     replace_layout -> addWidget(replace_predicate, 1);
 
 
@@ -86,7 +90,7 @@ EditorSearch::EditorSearch(QWidget * parent) : QWidget(parent), result_count(0),
     l1 -> setFixedWidth(l2 -> sizeHint().rwidth());
     search_layout -> addWidget(l1, 0);
     predicate = new QLineEdit(this);
-    predicate -> setMinimumWidth(100);
+    predicate -> setMinimumWidth(150);
     predicate -> setPlaceholderText(QLatin1Literal("Search"));
     search_layout -> addWidget(predicate, 1);
     connect(predicate, &QLineEdit::textChanged, [=](const QString & text) { emit find(text, flags()); });
