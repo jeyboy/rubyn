@@ -484,7 +484,7 @@ protected:
     void drawAdditionalCarets(QPainter & painter);
 
     void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
-    void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRect & fold_rect);
+    void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRectF & fold_rect);
 
     void showFoldingContentPopup(const QTextBlock & block);
 
@@ -500,9 +500,9 @@ protected:
     inline QRectF blockRect(const QTextBlock & block) { return blockBoundingGeometry(block).translated(contentOffset());  }
 
 //    QString blockText(const EDITOR_POS_TYPE & block_num, const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & length = -1);   
-    QRect textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
-    QRect textRect(CodeEditorCacheCell * cache, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
-    QRect textRect(QRectF & block_rect, const QTextLine & line, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
+    QRectF textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
+    QRectF textRect(CodeEditorCacheCell * cache, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
+    QRectF textRect(QRectF & block_rect, const QTextLine & line, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length = 1);
 
 
     QString wordUnderCursor(QTextCursor & tc, const WordUnderCursorOps & flags = wuco_full);

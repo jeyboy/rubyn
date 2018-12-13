@@ -101,18 +101,20 @@ void CodeEditorCacheCell::initLevels(const QTextBlock & block) {
     }
 }
 
-void CodeEditorCacheCell::procSearch() {
+void CodeEditorCacheCell::procSearch(const QTextBlock & blk) {
     if (parent -> in_search) {
         if (!parent -> search_mappings.contains(block_number)) {
-            QList<QPair<EDITOR_POS_TYPE, EDITOR_POS_TYPE>> res;
+            PairList res;
 
 //            QRegularExpressionMatch matches = parent -> search_regex.match(layout -> text());
 
-            QRegularExpressionMatchIterator i = parent -> search_regex.globalMatch(layout -> text());
+            QString txt = blk.text();
+            QRegularExpressionMatchIterator i = parent -> search_regex.globalMatch(txt);
+
             while (i.hasNext()) {
                 QRegularExpressionMatch match = i.next();
 
-                res << QPair<EDITOR_POS_TYPE, EDITOR_POS_TYPE>(match.capturedStart(), match.capturedLength());
+                res << Pair(match.capturedStart(), match.capturedLength());
             }
 
             parent -> search_mappings.insert(block_number, res);

@@ -7,6 +7,9 @@
 
 #include "misc/defines.h"
 
+typedef QPair<EDITOR_POS_TYPE, EDITOR_POS_TYPE> Pair;
+typedef QList<Pair> PairList;
+
 class BlockUserData;
 class QTextLayout;
 
@@ -49,7 +52,7 @@ struct CodeEditorCacheCell {
     QTextLayout * layout;
 
     QRectF bounding_rect;
-    QRect folding_description_rect;
+    QRectF folding_description_rect;
     QString folding_overlay_text;
 
     bool is_service;
@@ -89,13 +92,13 @@ struct CodeEditorCacheCell {
             scope_offsets.clear();
     }
 
-    void procSearch();
+    void procSearch(const QTextBlock & blk);
 };
 
 class CodeEditorCache {
     bool in_search;
     QRegularExpression search_regex;
-    QHash<EDITOR_POS_TYPE, QList<QPair<EDITOR_POS_TYPE, EDITOR_POS_TYPE>>> search_mappings;
+    QHash<EDITOR_POS_TYPE, PairList> search_mappings;
 
     CodeEditorCacheCell * root, * last;
     QVector<qint16> block_offsets;
@@ -120,16 +123,16 @@ public:
     ~CodeEditorCache();
 
     bool inSearch() { return in_search; }
-
     void openSearch(const QRegularExpression & predicate) {
+        search_mappings.clear();
         in_search = true;
         search_regex = predicate;
     }
-
     void closeSearch() {
         search_mappings.clear();
         in_search = false;
     }
+    inline const PairList & searchResultsFor(const EDITOR_POS_TYPE & row) { return search_mappings[row]; }
 
     void mapOverlayState(const OVERLAY_POS_TYPE & overlay_pos, const bool & show) {
         if (show)

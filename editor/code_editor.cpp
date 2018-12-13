@@ -474,28 +474,21 @@ void CodeEditor::drawSearchOverlays(QPainter & painter) {
         return;
 
     for (CodeEditorCacheCell * it = display_cacher -> begin(); !it -> is_service; it = it -> next) {
-        if (!it -> is_visible || (!show_folding_content_on_hover_overlay && it -> bounding_rect.bottom() < target_top)) {
+        if (!it -> is_visible)
             continue;
-        }
 
-        if (!show_folding_content_on_hover_overlay && it -> bounding_rect.top() > target_bottom) {
-            break;
-        }
+        const PairList & indexes = display_cacher -> searchResultsFor(it -> block_number);
 
-        if (it -> user_data && it -> user_data -> isFolded()) {
-            if (it -> folding_overlay_text.isNull()) {
-                wrapper -> paraOpositionStr(it -> user_data -> para_control -> para_type, it -> folding_overlay_text);
-                it -> folding_overlay_text = QLatin1Literal("...") % it -> folding_overlay_text;
-            }
+        if (indexes.isEmpty())
+            continue;
 
-            EDITOR_POS_TYPE text_pos = it -> block_length - 1;
-            it -> folding_description_rect = textRect(it, text_pos, 1);
-            it -> folding_description_rect.adjust(3, 0, it -> folding_overlay_text.length() * symbol_width + 10, 0);
+        PairList::ConstIterator index_it = indexes.constBegin();
 
-            drawTextOverlay(it -> is_folding_selected ? hid_folded_selected_overlay : hid_folded_overlay, painter, it -> folding_description_rect);
+        for(; index_it != indexes.constEnd(); index_it++) {
+            QRectF r = textRect(it, (*index_it).first, (*index_it).second);
+            r.adjust(2, 0, 2, 0);
 
-            painter.setPen(QColor::fromRgb(0, 0, 0));
-            painter.drawText(it -> folding_description_rect, Qt::AlignCenter, it -> folding_overlay_text);
+            drawTextOverlay(hid_search_overlay, painter, r);
         }
     }
 }
@@ -543,7 +536,7 @@ void CodeEditor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, 
     drawTextOverlay(draw_uid, painter, textRect(block, pos, length));
 }
 
-void CodeEditor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRect & fold_rect) {
+void CodeEditor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRectF & fold_rect) {
     painter.save();
     painter.setCompositionMode(QPainter::CompositionMode_Multiply);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -726,7 +719,7 @@ bool CodeEditor::rectOnScreen(const QRect & r) {
 //    else return QString();
 //}
 
-QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+QRectF CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
     if (!block.isValid() || !block.isVisible())
         return QRect();
 
@@ -740,7 +733,7 @@ QRect CodeEditor::textRect(const QTextBlock & block, const EDITOR_POS_TYPE & pos
     return textRect(rect, line, pos, length);
 }
 
-QRect CodeEditor::textRect(CodeEditorCacheCell * cache, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+QRectF CodeEditor::textRect(CodeEditorCacheCell * cache, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
     if (cache -> is_service || !cache -> is_visible)
         return QRect();
 
@@ -750,7 +743,7 @@ QRect CodeEditor::textRect(CodeEditorCacheCell * cache, const EDITOR_POS_TYPE & 
     return textRect(rect, line, pos, length);
 }
 
-QRect CodeEditor::textRect(QRectF & block_rect, const QTextLine & line, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+QRectF CodeEditor::textRect(QRectF & block_rect, const QTextLine & line, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
     if (!line.isValid())
         return QRect();
 
@@ -758,7 +751,7 @@ QRect CodeEditor::textRect(QRectF & block_rect, const QTextLine & line, const ED
     block_rect.setLeft(line.cursorToX(pos) + x_offset);
     block_rect.setRight(line.cursorToX(pos + length) + x_offset);
 
-    return block_rect.toRect();
+    return block_rect;
 }
 
 
@@ -1077,7 +1070,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     forever {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
-        cache_cell -> procSearch();
+        cache_cell -> procSearch(block);
 
         bool is_active_debug_line = display_cacher -> debug_active_block_number == cache_cell -> block_number;
 
@@ -1790,8 +1783,6 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
 
 
 void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlags & flags) {
-    qDebug() << "SEARCH" << pattern;
-
     if (pattern.isEmpty()) {
         if (!display_cacher -> inSearch())
             return;
@@ -1814,7 +1805,10 @@ void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlag
         if (flags ^ esf_regex)
             val = QRegularExpression::escape(val);
 
-        QRegularExpression regex(pattern, options);
+        if (flags & esf_words_only)
+            val = QLatin1Literal("\\b") % val % QLatin1Literal("\\b");
+
+        QRegularExpression regex(val, options);
         regex.optimize();
 
         display_cacher -> openSearch(regex);
