@@ -1782,8 +1782,7 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
 
 void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlags & flags) {
     if (pattern.isEmpty()) {
-        if (!display_cacher -> inSearch())
-            return;
+        display_cacher -> closeSearch();
     } else {
         QString val = pattern;
 

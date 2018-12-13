@@ -140,7 +140,7 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _comple
     connect(_search_bar,  &EditorSearch::find, _editor, &CodeEditor::searchInitiated);
     connect(_search_bar,  &EditorSearch::toNextResult, _editor, &CodeEditor::searchNextResult);
     connect(_search_bar,  &EditorSearch::toPrevResult, _editor, &CodeEditor::searchPrevResult);
-    connect(_search_bar,  &EditorSearch::repaceAll, _editor, &CodeEditor::searchRepaceAll);
+    connect(_search_bar,  &EditorSearch::replaceAll, _editor, &CodeEditor::searchRepaceAll);
     connect(_search_bar,  &EditorSearch::close, _editor, &CodeEditor::searchClosed);
 
 

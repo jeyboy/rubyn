@@ -31,7 +31,7 @@ signals:
     void find(const QString & pattern, const EditorSearchFlags & flags);
     void toNextResult(const bool & replace_current);
     void toPrevResult(const bool & replace_current);
-    void repaceAll();
+    void replaceAll();
     void close();
 public slots:
     void predicateIsCorrect();
