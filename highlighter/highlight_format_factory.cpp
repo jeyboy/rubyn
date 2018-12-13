@@ -44,9 +44,16 @@ void HighlightFormatFactory::registerProjectTreeAppRangeFormat() {
 
 
 
+void HighlightFormatFactory::registerSearchActiveOverlayFormat() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(0, 0, 0, 224));
+    format.setBackground(QColor::fromRgb(255, 255, 0, 128));
+    _formats.insert(hid_search_active_overlay, format);
+}
 
 void HighlightFormatFactory::registerSearchOverlayFormat() {
     QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(0, 0, 0, 92));
     format.setBackground(QColor::fromRgb(255, 255, 0, 64));
     _formats.insert(hid_search_overlay, format);
 }
@@ -116,12 +123,12 @@ void HighlightFormatFactory::registerFoldedSelectedOverlayFormat() {
     _formats.insert(hid_folded_selected_overlay, format);
 }
 
-void HighlightFormatFactory::registerSearchResultsOverlayFormat() {
-    QTextCharFormat format;
-    format.setForeground(QColor::fromRgb(218, 206, 26, 224));
-    format.setBackground(QColor::fromRgb(255, 239, 11, 192));
-    _formats.insert(hid_search_results_overlay, format);
-}
+//void HighlightFormatFactory::registerSearchResultsOverlayFormat() {
+//    QTextCharFormat format;
+//    format.setForeground(QColor::fromRgb(218, 206, 26, 224));
+//    format.setBackground(QColor::fromRgb(255, 239, 11, 192));
+//    _formats.insert(hid_search_results_overlay, format);
+//}
 
 void HighlightFormatFactory::registerParaHoverLineFormat() {
     QTextCharFormat format;
@@ -376,6 +383,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerProjectTreeAppRangeFormat();
 
     registerExtraIconsRangeFormat();
+    registerSearchActiveOverlayFormat();
     registerSearchOverlayFormat();
     registerSelectionFormat();
     registerCurrentLineFormat();
@@ -388,7 +396,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerParaContentPopupFormat();
     registerParaHoverLineFormat();
     registerFoldedOverlayFormat();
-    registerSearchResultsOverlayFormat();
+//    registerSearchResultsOverlayFormat();
     registerParaHoverOverlay2Format();
     registerParaHoverOverlayFormat();
     registerBreakpointsRangeFormat();

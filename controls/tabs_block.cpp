@@ -90,7 +90,7 @@ void TabsBlock::setupLayout() {
 
     col_layout -> addWidget(_editor, 1);
 
-    _search_bar = new EditorSearch(this);
+    _search_bar = new EditorSearch(true, this);
     col_layout -> addWidget(_search_bar, 0);
 }
 
@@ -133,7 +133,17 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _comple
     connect(_scroll_left_btn, SIGNAL(clicked()), _bar, SLOT(scrollBackward()));
     connect(_scroll_right_btn, SIGNAL(clicked()), _bar, SLOT(scrollForward()));
 
-    connect(_search_bar, SIGNAL(find(const QString &, const EditorSearchFlags &)), _editor, SLOT(searchInitiated(const QString &, const EditorSearchFlags &)));
+    connect(_editor, &CodeEditor::searchResultsFinded, _search_bar, &EditorSearch::finded);
+    connect(_editor, &CodeEditor::searchWrongPattern, _search_bar, &EditorSearch::predicateHasError);
+    connect(_editor, &CodeEditor::searchCorrectPattern, _search_bar, &EditorSearch::predicateIsCorrect);
+
+    connect(_search_bar,  &EditorSearch::find, _editor, &CodeEditor::searchInitiated);
+    connect(_search_bar,  &EditorSearch::toNextResult, _editor, &CodeEditor::searchNextResult);
+    connect(_search_bar,  &EditorSearch::toPrevResult, _editor, &CodeEditor::searchPrevResult);
+    connect(_search_bar,  &EditorSearch::repaceAll, _editor, &CodeEditor::searchRepaceAll);
+    connect(_search_bar,  &EditorSearch::close, _editor, &CodeEditor::searchClosed);
+
+
 
     connect(_editor, SIGNAL(inFocus()), this, SLOT(inFocus()));
     connect(_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(resourceDrop(QUrl)));

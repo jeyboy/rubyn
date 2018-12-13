@@ -18,6 +18,7 @@ protected:
     void registerProjectTreeConfigRangeFormat();
     void registerProjectTreeAppRangeFormat();
 
+    void registerSearchActiveOverlayFormat();
 
     void registerSearchOverlayFormat();
 
@@ -41,7 +42,7 @@ protected:
 
     void registerFoldedOverlayFormat();
 
-    void registerSearchResultsOverlayFormat();
+//    void registerSearchResultsOverlayFormat();
 
     void registerParaHoverLineFormat();
 

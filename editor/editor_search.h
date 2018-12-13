@@ -7,6 +7,7 @@
 
 class QLineEdit;
 class QCheckBox;
+class QLabel;
 
 class EditorSearch : public QWidget {
     Q_OBJECT
@@ -15,6 +16,9 @@ class EditorSearch : public QWidget {
     QLineEdit * predicate;
     QLineEdit * replace_predicate;
 
+    QLabel * l1;
+    QLabel * l2;
+
     QCheckBox * flag_case_sensitive;
     QCheckBox * flag_whole_word_only;
     QCheckBox * flag_reg_exp;
@@ -22,7 +26,7 @@ class EditorSearch : public QWidget {
 
     EditorSearchFlags flags();
 public:
-    EditorSearch(QWidget * parent = nullptr);
+    EditorSearch(const bool & has_replace, QWidget * parent = nullptr);
 signals:
     void find(const QString & pattern, const EditorSearchFlags & flags);
     void toNextResult(const bool & replace_current);
@@ -30,6 +34,8 @@ signals:
     void repaceAll();
     void close();
 public slots:
+    void predicateIsCorrect();
+    void predicateHasError(const QString & error);
     void finded(const int & count);
 };
 

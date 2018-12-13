@@ -29,65 +29,70 @@ EditorSearchFlags EditorSearch::flags() {
     return (EditorSearchFlags)res;
 }
 
-EditorSearch::EditorSearch(QWidget * parent) : QWidget(parent), result_count(0), predicate(nullptr), replace_predicate(nullptr),
-    flag_case_sensitive(nullptr), flag_whole_word_only(nullptr), flag_reg_exp(nullptr), flag_unicode(nullptr)
+EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget(parent), result_count(0), predicate(nullptr), replace_predicate(nullptr),
+    l1(nullptr), l2(nullptr), flag_case_sensitive(nullptr), flag_whole_word_only(nullptr), flag_reg_exp(nullptr), flag_unicode(nullptr)
 {
-    QVBoxLayout * main_layout = new QVBoxLayout(this);
-    main_layout -> setContentsMargins(1, 1, 1, 1);
-    main_layout -> setSpacing(3);
+    QToolButton * btn = nullptr;
 
     QHBoxLayout * search_layout = new QHBoxLayout();
     search_layout -> setContentsMargins(0, 0, 0, 0);
-    QHBoxLayout * replace_layout = new QHBoxLayout();
-    replace_layout -> setContentsMargins(0, 0, 0, 0);
 
-    QLabel * l2 = new QLabel(QLatin1Literal("Replace with:"), this);
-    replace_layout -> addWidget(l2, 0);
-    replace_predicate = new QLineEdit(this);
-    replace_predicate -> setPlaceholderText(QLatin1Literal("Replacement"));
-    replace_predicate -> setMinimumWidth(150);
-    replace_layout -> addWidget(replace_predicate, 1);
+    if (has_replace) {
+        QVBoxLayout * main_layout = new QVBoxLayout(this);
+        main_layout -> setContentsMargins(1, 1, 1, 1);
+        main_layout -> setSpacing(3);
 
+        QHBoxLayout * replace_layout = new QHBoxLayout();
+        replace_layout -> setContentsMargins(0, 0, 0, 0);
 
-    QWidgetAction * replace_all_btn = new QWidgetAction(this);
-    QToolButton * btn = new QToolButton(this);
-    btn -> setIcon(QPixmap(":/search_replace_btn").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    btn -> setCursor(QCursor(Qt::PointingHandCursor));
-    replace_all_btn -> setDefaultWidget(btn);
-    btn -> setToolTip(QLatin1Literal("Replace all"));
-    replace_predicate -> addAction(replace_all_btn, QLineEdit::TrailingPosition);
-    connect(replace_all_btn, &QWidgetAction::triggered, [=]() {});
+        main_layout -> addLayout(search_layout);
+        main_layout -> addLayout(replace_layout);
 
-
-    QWidgetAction * replace_prev_btn = new QWidgetAction(this);
-    btn = new QToolButton(this);
-    btn -> setIcon(QPixmap(":/row_right").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    btn -> setCursor(QCursor(Qt::PointingHandCursor));
-    replace_prev_btn -> setDefaultWidget(btn);
-    btn -> setToolTip(QLatin1Literal("Replace current and move to next"));
-    replace_predicate -> addAction(replace_prev_btn, QLineEdit::TrailingPosition);
-    connect(replace_prev_btn, &QWidgetAction::triggered, [=]() {});
+        l2 = new QLabel(QLatin1Literal("Replace with:"), this);
+        replace_layout -> addWidget(l2, 0);
+        replace_predicate = new QLineEdit(this);
+        replace_predicate -> setPlaceholderText(QLatin1Literal("Replacement"));
+        replace_predicate -> setMinimumWidth(150);
+        replace_layout -> addWidget(replace_predicate, 1);
 
 
-    QWidgetAction * replace_next_btn = new QWidgetAction(this);
-    btn = new QToolButton(this);
-    btn -> setIcon(QPixmap(":/row_left").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    btn -> setCursor(QCursor(Qt::PointingHandCursor));
-    replace_next_btn -> setDefaultWidget(btn);
-    btn -> setToolTip(QLatin1Literal("Replace current and move to prev"));
-    replace_predicate -> addAction(replace_next_btn, QLineEdit::TrailingPosition);
-    connect(replace_next_btn, &QWidgetAction::triggered, [=]() {});
+        QWidgetAction * replace_all_btn = new QWidgetAction(this);
+        btn = new QToolButton(this);
+        btn -> setIcon(QPixmap(":/search_replace_btn").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        btn -> setCursor(QCursor(Qt::PointingHandCursor));
+        replace_all_btn -> setDefaultWidget(btn);
+        btn -> setToolTip(QLatin1Literal("Replace all"));
+        replace_predicate -> addAction(replace_all_btn, QLineEdit::TrailingPosition);
+        connect(replace_all_btn, &QWidgetAction::triggered, [=]() {});
 
 
+        QWidgetAction * replace_prev_btn = new QWidgetAction(this);
+        btn = new QToolButton(this);
+        btn -> setIcon(QPixmap(":/row_right").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        btn -> setCursor(QCursor(Qt::PointingHandCursor));
+        replace_prev_btn -> setDefaultWidget(btn);
+        btn -> setToolTip(QLatin1Literal("Replace current and move to next"));
+        replace_predicate -> addAction(replace_prev_btn, QLineEdit::TrailingPosition);
+        connect(replace_prev_btn, &QWidgetAction::triggered, [=]() {});
 
 
+        QWidgetAction * replace_next_btn = new QWidgetAction(this);
+        btn = new QToolButton(this);
+        btn -> setIcon(QPixmap(":/row_left").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        btn -> setCursor(QCursor(Qt::PointingHandCursor));
+        replace_next_btn -> setDefaultWidget(btn);
+        btn -> setToolTip(QLatin1Literal("Replace current and move to prev"));
+        replace_predicate -> addAction(replace_next_btn, QLineEdit::TrailingPosition);
+        connect(replace_next_btn, &QWidgetAction::triggered, [=]() {});
+    }
+    else setLayout(search_layout);
 
 
+    l1 = new QLabel(QLatin1Literal("Search:"), this);
 
+    if (l2)
+        l1 -> setFixedWidth(l2 -> sizeHint().rwidth());
 
-
-    QLabel * l1 = new QLabel(QLatin1Literal("Search:"), this);
-    l1 -> setFixedWidth(l2 -> sizeHint().rwidth());
     search_layout -> addWidget(l1, 0);
     predicate = new QLineEdit(this);
     predicate -> setMinimumWidth(150);
@@ -156,10 +161,13 @@ EditorSearch::EditorSearch(QWidget * parent) : QWidget(parent), result_count(0),
     flag_unicode_action -> setDefaultWidget(flag_unicode);
     menu -> addAction(flag_unicode_action);
     connect(flag_unicode, &QCheckBox::clicked, [=](bool) { emit find(predicate -> text(), flags()); });
+}
 
+void EditorSearch::predicateIsCorrect() {
 
-    main_layout -> addLayout(search_layout);
-    main_layout -> addLayout(replace_layout);
+}
+void EditorSearch::predicateHasError(const QString & error) {
+
 }
 
 void EditorSearch::finded(const int & count) {

@@ -486,8 +486,6 @@ void CodeEditor::drawSearchOverlays(QPainter & painter) {
 
         for(; index_it != indexes.constEnd(); index_it++) {
             QRectF r = textRect(it, (*index_it).first, (*index_it).second);
-            r.adjust(2, 0, 2, 0);
-
             drawTextOverlay(hid_search_overlay, painter, r);
         }
     }
@@ -748,8 +746,8 @@ QRectF CodeEditor::textRect(QRectF & block_rect, const QTextLine & line, const E
         return QRect();
 
     qreal x_offset = -horizontalScrollBar() -> value();
-    block_rect.setLeft(line.cursorToX(pos) + x_offset);
-    block_rect.setRight(line.cursorToX(pos + length) + x_offset);
+    block_rect.setLeft(line.cursorToX(pos) + x_offset - 1);
+    block_rect.setRight(line.cursorToX(pos + length) + x_offset + 2);
 
     return block_rect;
 }
@@ -1809,11 +1807,30 @@ void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlag
             val = QLatin1Literal("\\b") % val % QLatin1Literal("\\b");
 
         QRegularExpression regex(val, options);
-        regex.optimize();
+
+        if (regex.isValid())
+            regex.optimize();
+        else {
+            emit searchWrongPattern(regex.errorString());
+            return;
+        }
 
         display_cacher -> openSearch(regex);
     }
     viewport() -> update();
+}
+
+void CodeEditor::searchNextResult(const bool & replace_current) {
+
+}
+void CodeEditor::searchPrevResult(const bool & replace_current) {
+
+}
+void CodeEditor::searchRepaceAll() {
+
+}
+void CodeEditor::searchClosed() {
+
 }
 
 
