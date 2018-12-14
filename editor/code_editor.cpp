@@ -1893,6 +1893,7 @@ void CodeEditor::searchRepaceAll(const QString & replace) {
 //    EDITOR_POS_TYPE block_num = cursor.blockNumber();
 //    EDITOR_POS_TYPE pos = cursor.positionInBlock();
 
+    cursor.beginEditBlock();
 
     for(int i = blockCount() - 1; i >= 0; --i) {
         const PairList & indexes = display_cacher -> searchResultsFor(i);
@@ -1908,6 +1909,8 @@ void CodeEditor::searchRepaceAll(const QString & replace) {
             cursor.insertText(replace);
         }
     }
+
+    cursor.endEditBlock();
 }
 void CodeEditor::searchClosed() {
     display_cacher -> closeSearch();
