@@ -552,11 +552,14 @@ signals:
     void fileDropped(const QUrl & uri/*, bool multiple*/); // Multiple files are dropped?
     void cursorPosChanged(const QString & pos_coords);
 
+    void searchRequired(const bool & show = true);
+    void searchRequestRequired(const QString & pattern);
     void searchResultsFinded(const int & count);
     void searchWrongPattern(const QString & error);
     void searchCorrectPattern(const QString & error);
 
 public slots:
+    void searchIsShow(const bool & show);
     void searchInitiated(const QString & pattern, const EditorSearchFlags & flags);
     void searchNextResult(QString * replace = nullptr);
     void searchPrevResult(QString * replace = nullptr);

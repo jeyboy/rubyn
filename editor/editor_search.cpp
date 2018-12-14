@@ -8,6 +8,10 @@
 #include <qwidgetaction.h>
 #include <qmenu.h>
 #include <qlayout.h>
+#include <qevent.h>
+#include <qstyle.h>
+#include <qstyleoption.h>
+#include <qpainter.h>
 
 #include <qdebug.h>
 
@@ -29,9 +33,32 @@ EditorSearchFlags EditorSearch::flags() {
     return (EditorSearchFlags)res;
 }
 
+void EditorSearch::paintEvent(QPaintEvent * event) {
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style() -> drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+    QWidget::paintEvent(event);
+}
+
 EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget(parent), result_count(0), predicate(nullptr), replace_predicate(nullptr),
     l1(nullptr), l2(nullptr), flag_case_sensitive(nullptr), flag_whole_word_only(nullptr), flag_reg_exp(nullptr), flag_unicode(nullptr)
 {
+    setStyleSheet(
+        QLatin1Literal(
+            "EditorSearch {"
+            "   background-color: #555;"
+            "}"
+
+            "EditorSearch QLabel {"
+            "   color: #fff;"
+            "   background-color: #555;"
+            "}"
+        )
+    );
+
+
     QToolButton * btn = nullptr;
 
     QHBoxLayout * search_layout = new QHBoxLayout();
@@ -39,7 +66,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
 
     if (has_replace) {
         QVBoxLayout * main_layout = new QVBoxLayout(this);
-        main_layout -> setContentsMargins(1, 1, 1, 1);
+        main_layout -> setContentsMargins(2, 1, 1, 1);
         main_layout -> setSpacing(3);
 
         QHBoxLayout * replace_layout = new QHBoxLayout();
@@ -49,6 +76,11 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
         main_layout -> addLayout(replace_layout);
 
         l2 = new QLabel(QLatin1Literal("Replace with:"), this);
+        QFont f = l2 -> font();
+        f.setBold(true);
+        f.setKerning(true);
+        l2 -> setFont(f);
+
         replace_layout -> addWidget(l2, 0);
         replace_predicate = new QLineEdit(this);
         replace_predicate -> setPlaceholderText(QLatin1Literal("Replacement"));
@@ -85,13 +117,21 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
         replace_predicate -> addAction(replace_next_btn, QLineEdit::TrailingPosition);
         connect(btn, &QToolButton::clicked, [=]() { emit toPrevResult(new QString(replace_predicate -> text())); });
     }
-    else setLayout(search_layout);
+    else {
+        setLayout(search_layout);
+        search_layout -> setContentsMargins(2, 1, 1, 1);
+    }
 
 
     l1 = new QLabel(QLatin1Literal("Search:"), this);
 
     if (l2)
         l1 -> setFixedWidth(l2 -> sizeHint().rwidth());
+
+    QFont f = l1 -> font();
+    f.setBold(true);
+    f.setKerning(true);
+    l1 -> setFont(f);
 
     search_layout -> addWidget(l1, 0);
     predicate = new QLineEdit(this);
@@ -101,6 +141,12 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
     connect(predicate, &QLineEdit::textChanged, [=](const QString & text) { emit find(text, flags()); });
 
 
+    btn = new QToolButton(this);
+    btn -> setIcon(QPixmap(":/tools/close").scaled(btn -> iconSize().width(), btn -> iconSize().height(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    btn -> setToolTip(QLatin1Literal("Close"));
+    btn -> setStyleSheet(QLatin1Literal("border: none;"));
+    connect(btn, &QToolButton::clicked, [=]() { hide(); emit close(); });
+    search_layout -> addWidget(btn, 0);
 
 
     QMenu * menu = new QMenu(this);
@@ -164,14 +210,20 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
 }
 
 void EditorSearch::predicateIsCorrect() {
+    qDebug() << "EditorSearch::predicateIsCorrect";
+
     predicate -> setToolTip(QLatin1Literal("Searching..."));
     predicate -> setStyleSheet(QLatin1Literal("QLineEdit { border: 1px solid green;}"));
 }
 void EditorSearch::predicateHasError(const QString & error) {
+    qDebug() << "EditorSearch::predicateHasError" << error;
+
     predicate -> setToolTip(error);
     predicate -> setStyleSheet(QLatin1Literal("QLineEdit { border: 1px solid red;}"));
 }
 
 void EditorSearch::finded(const int & count) {
+    qDebug() << "EditorSearch::finded" << count;
+
     predicate -> setToolTip(QLatin1Literal("Found ") + QString::number(count));
 }

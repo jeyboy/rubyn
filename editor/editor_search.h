@@ -25,6 +25,8 @@ class EditorSearch : public QWidget {
     QCheckBox * flag_unicode;
 
     EditorSearchFlags flags();
+protected:
+    void paintEvent(QPaintEvent * event);
 public:
     EditorSearch(const bool & has_replace, QWidget * parent = nullptr);
 signals:

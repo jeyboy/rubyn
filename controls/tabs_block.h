@@ -86,6 +86,7 @@ protected slots:
     void closeCurrentTab();
     void closeExceptCurrentTab();
     void showTabsContextMenu(const QPoint &);
+    void showSearchPanel(const bool & show = true);
 
     void newTabsBlockRequest();
 };

@@ -92,6 +92,7 @@ void TabsBlock::setupLayout() {
 
     _search_bar = new EditorSearch(true, this);
     col_layout -> addWidget(_search_bar, 0);
+//    _search_bar -> hide();
 }
 
 void TabsBlock::setupCompleter() {
@@ -133,9 +134,11 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _comple
     connect(_scroll_left_btn, SIGNAL(clicked()), _bar, SLOT(scrollBackward()));
     connect(_scroll_right_btn, SIGNAL(clicked()), _bar, SLOT(scrollForward()));
 
+
     connect(_editor, &CodeEditor::searchResultsFinded, _search_bar, &EditorSearch::finded);
     connect(_editor, &CodeEditor::searchWrongPattern, _search_bar, &EditorSearch::predicateHasError);
     connect(_editor, &CodeEditor::searchCorrectPattern, _search_bar, &EditorSearch::predicateIsCorrect);
+    connect(_editor, &CodeEditor::searchRequired, this, &TabsBlock::showSearchPanel);
     connect(_editor, SIGNAL(inFocus()), this, SLOT(inFocus()));
     connect(_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(resourceDrop(QUrl)));
 
@@ -437,6 +440,15 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
 
         menu.exec(_bar -> mapToGlobal(point));
     }
+}
+
+void TabsBlock::showSearchPanel(const bool & show) {
+    qDebug() << "TabsBlock::showSearchPanel" << show;
+
+    _search_bar -> setHidden(!show);
+
+    if (!show)
+        _editor -> searchClosed();
 }
 
 void TabsBlock::newTabsBlockRequest() {

@@ -96,6 +96,7 @@ struct CodeEditorCacheCell {
 };
 
 class CodeEditorCache {
+    bool search_is_opened;
     bool in_search;
     QRegularExpression search_regex;
     QHash<EDITOR_POS_TYPE, PairList> search_mappings;
@@ -122,15 +123,22 @@ public:
 
     ~CodeEditorCache();
 
+    bool searchIsOpened() { return search_is_opened; }
+    void openSearch() { search_is_opened = true; }
+
     bool inSearch() { return in_search; }
-    void openSearch(const QRegularExpression & predicate) {
+    void beginSearch(const QRegularExpression & predicate) {
         search_mappings.clear();
         in_search = true;
         search_regex = predicate;
     }
-    void closeSearch() {
+    void clearSearch() {
         search_mappings.clear();
         in_search = false;
+    }
+    void closeSearch() {
+        search_is_opened = false;
+        clearSearch();
     }
     inline const PairList & searchResultsFor(const EDITOR_POS_TYPE & row) { return search_mappings[row]; }
 

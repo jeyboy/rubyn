@@ -1424,6 +1424,16 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         }
     }
 
+    if (curr_key == Qt::Key_Escape && display_cacher -> searchIsOpened()) {
+        emit searchRequired(false);
+        return;
+    }
+
+    if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier && !display_cacher -> inSearch()) {
+        emit searchRequired(true);
+        return;
+    }
+
     switch (curr_key) {
         case Qt::Key_Delete: {
             para_info.clear();
@@ -1780,9 +1790,26 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
 }
 
 
+void CodeEditor::searchIsShow(const bool & show) {
+    qDebug() << "CodeEditor::searchIsShow" << show;
+
+    if (show) {
+        display_cacher -> openSearch();
+
+        QTextCursor tcursor;
+
+        if (tcursor.hasSelection()) {
+            emit searchRequestRequired(tcursor.selectedText());
+        }
+    }
+    else display_cacher -> closeSearch();
+}
+
 void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlags & flags) {
+    qDebug() << "CodeEditor::searchInitiated" << pattern;
+
     if (pattern.isEmpty()) {
-        display_cacher -> closeSearch();
+        display_cacher -> clearSearch();
     } else {
         QString val = pattern;
 
@@ -1814,12 +1841,14 @@ void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlag
             return;
         }
 
-        display_cacher -> openSearch(regex);
+        display_cacher -> beginSearch(regex);
     }
     viewport() -> update();
 }
 
 void CodeEditor::searchNextResult(QString * replace) {
+    qDebug() << "CodeEditor::searchNextResult" << replace;
+
     QTextCursor cursor = textCursor();
     bool has_selection = cursor.hasSelection();
 
@@ -1855,6 +1884,8 @@ void CodeEditor::searchNextResult(QString * replace) {
     }
 }
 void CodeEditor::searchPrevResult(QString * replace) {
+    qDebug() << "CodeEditor::searchPrevResult" << replace;
+
     QTextCursor cursor = textCursor();
     bool has_selection = cursor.hasSelection();
 
@@ -1888,6 +1919,8 @@ void CodeEditor::searchPrevResult(QString * replace) {
     }
 }
 void CodeEditor::searchRepaceAll(const QString & replace) {
+    qDebug() << "CodeEditor::searchRepaceAll" << replace;
+
     QTextCursor cursor = textCursor();
 
 //    EDITOR_POS_TYPE block_num = cursor.blockNumber();
@@ -1913,6 +1946,8 @@ void CodeEditor::searchRepaceAll(const QString & replace) {
     cursor.endEditBlock();
 }
 void CodeEditor::searchClosed() {
+    qDebug() << "CodeEditor::searchClosed";
+
     display_cacher -> closeSearch();
     viewport() -> update();
 }
