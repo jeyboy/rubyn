@@ -3,6 +3,7 @@
 #include <qevent.h>
 #include <qmenu.h>
 #include <qjsonobject.h>
+#include <qheaderview.h>
 
 #include "project/projects.h"
 #include "tools/json/json.h"
@@ -13,6 +14,14 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setHeaderHidden(true);
     setAutoScroll(false);
     setContextMenuPolicy(Qt::CustomContextMenu);
+
+    setColumnCount(1);
+
+//    setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+//    header() -> setResizeContentsPrecision(-1);
+    header() -> setSectionResizeMode(0, QHeaderView::ResizeToContents);
+
+    header() -> setStretchLastSection(false);
 
     QFont f(font());
     f.setPointSize(11);
