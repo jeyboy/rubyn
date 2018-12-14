@@ -558,9 +558,9 @@ signals:
 
 public slots:
     void searchInitiated(const QString & pattern, const EditorSearchFlags & flags);
-    void searchNextResult(const bool & replace_current);
-    void searchPrevResult(const bool & replace_current);
-    void searchRepaceAll();
+    void searchNextResult(QString * replace = nullptr);
+    void searchPrevResult(QString * replace = nullptr);
+    void searchRepaceAll(const QString & replace);
     void searchClosed();
 
 private slots:

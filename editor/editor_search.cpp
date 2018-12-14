@@ -63,7 +63,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
         replace_all_btn -> setDefaultWidget(btn);
         btn -> setToolTip(QLatin1Literal("Replace all"));
         replace_predicate -> addAction(replace_all_btn, QLineEdit::TrailingPosition);
-        connect(replace_all_btn, &QWidgetAction::triggered, [=]() { emit replaceAll(); });
+        connect(replace_all_btn, &QWidgetAction::triggered, [=]() { emit replaceAll(replace_predicate -> text()); });
 
 
         QWidgetAction * replace_prev_btn = new QWidgetAction(this);
@@ -73,7 +73,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
         replace_prev_btn -> setDefaultWidget(btn);
         btn -> setToolTip(QLatin1Literal("Replace current and move to next"));
         replace_predicate -> addAction(replace_prev_btn, QLineEdit::TrailingPosition);
-        connect(replace_prev_btn, &QWidgetAction::triggered, [=]() { emit toNextResult(true); });
+        connect(replace_prev_btn, &QWidgetAction::triggered, [=]() { emit toNextResult(new QString(replace_predicate -> text())); });
 
 
         QWidgetAction * replace_next_btn = new QWidgetAction(this);
@@ -83,7 +83,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
         replace_next_btn -> setDefaultWidget(btn);
         btn -> setToolTip(QLatin1Literal("Replace current and move to prev"));
         replace_predicate -> addAction(replace_next_btn, QLineEdit::TrailingPosition);
-        connect(replace_next_btn, &QWidgetAction::triggered, [=]() { emit toPrevResult(true); });
+        connect(replace_next_btn, &QWidgetAction::triggered, [=]() { emit toPrevResult(new QString(replace_predicate -> text())); });
     }
     else setLayout(search_layout);
 
@@ -125,7 +125,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
     move_prev_btn -> setDefaultWidget(btn);
     btn -> setToolTip(QLatin1Literal("Move to next"));
     predicate -> addAction(move_prev_btn, QLineEdit::TrailingPosition);
-    connect(move_prev_btn, &QWidgetAction::triggered, [=]() { emit toNextResult(false); });
+    connect(move_prev_btn, &QWidgetAction::triggered, [=]() { emit toNextResult(); });
 
 
     QWidgetAction * move_next_btn = new QWidgetAction(this);
@@ -135,7 +135,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
     move_next_btn -> setDefaultWidget(btn);
     btn -> setToolTip(QLatin1Literal("Move to prev"));
     predicate -> addAction(move_next_btn, QLineEdit::TrailingPosition);
-    connect(move_next_btn, &QWidgetAction::triggered, [=]() { emit toPrevResult(false); });
+    connect(move_next_btn, &QWidgetAction::triggered, [=]() { emit toPrevResult(); });
 
 
     flag_case_sensitive = new QCheckBox(QLatin1Literal("Match Case"), menu);

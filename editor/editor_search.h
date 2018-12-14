@@ -29,9 +29,9 @@ public:
     EditorSearch(const bool & has_replace, QWidget * parent = nullptr);
 signals:
     void find(const QString & pattern, const EditorSearchFlags & flags);
-    void toNextResult(const bool & replace_current);
-    void toPrevResult(const bool & replace_current);
-    void replaceAll();
+    void toNextResult(QString * replace = nullptr);
+    void toPrevResult(QString * replace = nullptr);
+    void replaceAll(const QString & replace);
     void close();
 public slots:
     void predicateIsCorrect();

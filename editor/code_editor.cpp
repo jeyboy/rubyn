@@ -1819,17 +1819,99 @@ void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlag
     viewport() -> update();
 }
 
-void CodeEditor::searchNextResult(const bool & replace_current) {
+void CodeEditor::searchNextResult(QString * replace) {
+    QTextCursor cursor = textCursor();
+    bool has_selection = cursor.hasSelection();
 
+    if (replace && has_selection) {
+        //TODO: calc count of removed lines after replace and correct search hash
+        //TODO: move indexes in target line on sub of replace and target text
+        cursor.insertText(*replace);
+        delete replace;
+    }
+
+    EDITOR_POS_TYPE block_num = cursor.blockNumber();
+    EDITOR_POS_TYPE max_block = blockCount();
+    EDITOR_POS_TYPE pos = cursor.positionInBlock();
+    bool limited = true;
+
+    for(int i = block_num; i < max_block; ++i, limited = false) {
+        const PairList & indexes = display_cacher -> searchResultsFor(i);
+
+        if (indexes.isEmpty())
+            continue;
+
+
+        PairList::ConstIterator index_it = indexes.constBegin();
+
+        for(; index_it != indexes.constEnd(); index_it++) {
+            if (!limited || (has_selection && pos <= (*index_it).first) || (pos < (*index_it).first)) {
+                cursor.setPosition((*index_it).first, QTextCursor::MoveAnchor);
+                cursor.setPosition((*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
+
+                return;
+            }
+        }
+    }
 }
-void CodeEditor::searchPrevResult(const bool & replace_current) {
+void CodeEditor::searchPrevResult(QString * replace) {
+    QTextCursor cursor = textCursor();
+    bool has_selection = cursor.hasSelection();
 
+    if (replace && has_selection) {
+        //TODO: calc count of removed lines after replace and correct search hash
+        //TODO: move indexes in target line on sub of replace and target text
+        cursor.insertText(*replace);
+        delete replace;
+    }
+
+    EDITOR_POS_TYPE block_num = cursor.blockNumber();
+    EDITOR_POS_TYPE pos = cursor.positionInBlock();
+    bool limited = true;
+
+    for(int i = block_num; i >= 0; --i, limited = false) {
+        const PairList & indexes = display_cacher -> searchResultsFor(i);
+
+        if (indexes.isEmpty())
+            continue;
+
+        PairList::const_reverse_iterator index_it = indexes.rbegin();
+
+        for(; index_it != indexes.rend(); index_it++) {
+            if (!limited || (has_selection && pos >= (*index_it).first) || (pos > (*index_it).first)) {
+                cursor.setPosition((*index_it).first, QTextCursor::MoveAnchor);
+                cursor.setPosition((*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
+
+                return;
+            }
+        }
+    }
 }
-void CodeEditor::searchRepaceAll() {
+void CodeEditor::searchRepaceAll(const QString & replace) {
+    QTextCursor cursor = textCursor();
 
+//    EDITOR_POS_TYPE block_num = cursor.blockNumber();
+//    EDITOR_POS_TYPE pos = cursor.positionInBlock();
+
+
+    for(int i = blockCount() - 1; i >= 0; --i) {
+        const PairList & indexes = display_cacher -> searchResultsFor(i);
+
+        if (indexes.isEmpty())
+            continue;
+
+        PairList::const_reverse_iterator index_it = indexes.rbegin();
+
+        for(; index_it != indexes.rend(); index_it++) {
+            cursor.setPosition((*index_it).first, QTextCursor::MoveAnchor);
+            cursor.setPosition((*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
+            cursor.insertText(replace);
+        }
+    }
 }
 void CodeEditor::searchClosed() {
-
+    display_cacher -> closeSearch();
+    viewport() -> update();
 }
 
 
