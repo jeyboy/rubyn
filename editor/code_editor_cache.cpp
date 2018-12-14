@@ -101,6 +101,26 @@ void CodeEditorCacheCell::initLevels(const QTextBlock & block) {
     }
 }
 
+void CodeEditorCacheCell::procBlockSearch(CodeEditorCache * cache, const EDITOR_POS_TYPE & block_number, const QTextBlock & blk) {
+    if (cache -> in_search) {
+        if (!cache -> search_mappings.contains(block_number)) {
+            PairList res;
+
+            QString txt = blk.text();
+            QRegularExpressionMatchIterator i = cache -> search_regex.globalMatch(txt);
+
+            while (i.hasNext()) {
+                QRegularExpressionMatch match = i.next();
+
+                res << Pair(match.capturedStart(), match.capturedLength());
+                cache -> search_results++;
+            }
+
+            cache -> search_mappings.insert(block_number, res);
+        }
+    }
+}
+
 void CodeEditorCacheCell::procSearch(const QTextBlock & blk) {
     if (parent -> in_search) {
         if (!parent -> search_mappings.contains(block_number)) {

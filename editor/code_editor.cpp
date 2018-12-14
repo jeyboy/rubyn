@@ -486,7 +486,7 @@ void CodeEditor::drawSearchOverlays(QPainter & painter) {
 
         for(; index_it != indexes.constEnd(); index_it++) {
             QRectF r = textRect(it, (*index_it).first, (*index_it).second);
-            drawTextOverlay(hid_search_overlay, painter, r);
+            drawTextOverlay(hid_search_results_overlay, painter, r);
         }
     }
 }

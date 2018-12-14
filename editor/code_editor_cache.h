@@ -92,10 +92,12 @@ struct CodeEditorCacheCell {
             scope_offsets.clear();
     }
 
+    static void procBlockSearch(CodeEditorCache * cache, const EDITOR_POS_TYPE & block_number, const QTextBlock & blk);
     void procSearch(const QTextBlock & blk);
 };
 
 class CodeEditorCache {
+    int search_results;
     bool search_is_opened;
     bool in_search;
     QRegularExpression search_regex;
@@ -128,11 +130,13 @@ public:
 
     bool inSearch() { return in_search; }
     void beginSearch(const QRegularExpression & predicate) {
+        search_results = 0;
         search_mappings.clear();
         in_search = true;
         search_regex = predicate;
     }
     void clearSearch() {
+        search_results = 0;
         search_mappings.clear();
         in_search = false;
     }
