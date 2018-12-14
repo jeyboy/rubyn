@@ -45,6 +45,14 @@ void EditorSearch::paintEvent(QPaintEvent * event) {
 EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget(parent), result_count(0), predicate(nullptr), replace_predicate(nullptr),
     l1(nullptr), l2(nullptr), flag_case_sensitive(nullptr), flag_whole_word_only(nullptr), flag_reg_exp(nullptr), flag_unicode(nullptr)
 {
+//    QPalette Pal(palette());
+
+//    // устанавливаем цвет фона
+//    Pal.setColor(QPalette::Background, Qt::black);
+//    m_pMyWidget->setAutoFillBackground(true);
+//    m_pMyWidget->setPalette(Pal);
+
+
     setStyleSheet(
         QLatin1Literal(
             "EditorSearch {"
@@ -207,6 +215,13 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
     flag_unicode_action -> setDefaultWidget(flag_unicode);
     menu -> addAction(flag_unicode_action);
     connect(flag_unicode, &QCheckBox::clicked, [=](bool) { emit find(predicate -> text(), flags()); });
+}
+
+void EditorSearch::changeVisibility(const bool & show) {
+    setHidden(!show);
+
+    if (show && !predicate -> text().isEmpty())
+        emit find(predicate -> text(), flags());
 }
 
 void EditorSearch::predicateIsCorrect() {

@@ -92,7 +92,7 @@ void TabsBlock::setupLayout() {
 
     _search_bar = new EditorSearch(true, this);
     col_layout -> addWidget(_search_bar, 0);
-//    _search_bar -> hide();
+    _search_bar -> hide();
 }
 
 void TabsBlock::setupCompleter() {
@@ -445,7 +445,7 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
 void TabsBlock::showSearchPanel(const bool & show) {
     qDebug() << "TabsBlock::showSearchPanel" << show;
 
-    _search_bar -> setHidden(!show);
+    _search_bar -> changeVisibility(show);
 
     if (!show)
         _editor -> searchClosed();

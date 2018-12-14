@@ -36,6 +36,7 @@ signals:
     void replaceAll(const QString & replace);
     void close();
 public slots:
+    void changeVisibility(const bool & show);
     void predicateIsCorrect();
     void predicateHasError(const QString & error);
     void finded(const int & count);

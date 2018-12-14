@@ -16,11 +16,7 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setContextMenuPolicy(Qt::CustomContextMenu);
 
     setColumnCount(1);
-
-//    setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-//    header() -> setResizeContentsPrecision(-1);
     header() -> setSectionResizeMode(0, QHeaderView::ResizeToContents);
-
     header() -> setStretchLastSection(false);
 
     QFont f(font());
