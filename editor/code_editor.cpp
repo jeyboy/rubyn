@@ -1812,6 +1812,7 @@ void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlag
 
     if (pattern.isEmpty()) {
         display_cacher -> clearSearch();
+        emit searchResultsFinded(0);
     } else {
         QString val = pattern;
 

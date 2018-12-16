@@ -12,6 +12,7 @@
 #include <qstyle.h>
 #include <qstyleoption.h>
 #include <qpainter.h>
+#include <qstringbuilder.h>
 
 #include <qdebug.h>
 
@@ -131,7 +132,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
     }
 
 
-    l1 = new QLabel(QLatin1Literal("Search:"), this);
+    l1 = new QLabel(SEARCH_LABEL_TEXT, this);
 
     if (l2)
         l1 -> setFixedWidth(l2 -> sizeHint().rwidth());
@@ -239,6 +240,11 @@ void EditorSearch::predicateHasError(const QString & error) {
 
 void EditorSearch::finded(const int & count) {
     qDebug() << "EditorSearch::finded" << count;
+
+    if (count > 0)
+        l1 -> setText(SEARCH_LABEL_TEXT % ' ' % '(' % QString::number(count) % ')');
+    else
+        l1 -> setText(SEARCH_LABEL_TEXT);
 
     predicate -> setToolTip(QLatin1Literal("Found ") + QString::number(count));
 }
