@@ -1857,6 +1857,11 @@ void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlag
 void CodeEditor::searchNextResult(QString * replace) {
     qDebug() << "CodeEditor::searchNextResult" << replace;
 
+    if (display_cacher -> searchResultsCount() == 0) {
+        qDebug() << "CodeEditor::searchNextResult" << "NO RESULTS";
+        return;
+    }
+
     QTextCursor cursor = textCursor();
     bool has_selection = cursor.hasSelection();
 
@@ -1865,6 +1870,7 @@ void CodeEditor::searchNextResult(QString * replace) {
         //TODO: move indexes in target line on sub of replace and target text
         cursor.insertText(*replace);
         delete replace;
+        has_selection = false;
     }
 
     QTextBlock block = cursor.block();
@@ -1879,11 +1885,10 @@ void CodeEditor::searchNextResult(QString * replace) {
         if (indexes.isEmpty())
             continue;
 
-
         PairList::ConstIterator index_it = indexes.constBegin();
 
         for(; index_it != indexes.constEnd(); index_it++) {
-            if (!limited || (has_selection && pos <= (*index_it).first) || (pos < (*index_it).first)) {
+            if (!limited || (has_selection && (cursor.selectionStart() - block.position()) < (*index_it).first) || (!has_selection && pos < (*index_it).first)) {
                 EDITOR_POS_TYPE block_pos = block.position();
 
                 cursor.setPosition(block_pos + (*index_it).first, QTextCursor::MoveAnchor);
@@ -1898,6 +1903,11 @@ void CodeEditor::searchNextResult(QString * replace) {
 void CodeEditor::searchPrevResult(QString * replace) {
     qDebug() << "CodeEditor::searchPrevResult" << replace;
 
+    if (display_cacher -> searchResultsCount() == 0) {
+        qDebug() << "CodeEditor::searchPrevResult" << "NO RESULTS";
+        return;
+    }
+
     QTextCursor cursor = textCursor();
     bool has_selection = cursor.hasSelection();
 
@@ -1906,6 +1916,7 @@ void CodeEditor::searchPrevResult(QString * replace) {
         //TODO: move indexes in target line on sub of replace and target text
         cursor.insertText(*replace);
         delete replace;
+        has_selection = false;
     }
 
     QTextBlock block = cursor.block();
@@ -1922,7 +1933,7 @@ void CodeEditor::searchPrevResult(QString * replace) {
         PairList::const_reverse_iterator index_it = indexes.rbegin();
 
         for(; index_it != indexes.rend(); index_it++) {
-            if (!limited || (has_selection && pos >= (*index_it).first) || (pos > (*index_it).first)) {
+            if (!limited || (has_selection && (cursor.selectionStart() - block.position()) > (*index_it).first) || (!has_selection && pos > (*index_it).first)) {
                 EDITOR_POS_TYPE block_pos = block.position();
 
                 cursor.setPosition(block_pos + (*index_it).first, QTextCursor::MoveAnchor);
@@ -1936,6 +1947,11 @@ void CodeEditor::searchPrevResult(QString * replace) {
 }
 void CodeEditor::searchRepaceAll(const QString & replace) {
     qDebug() << "CodeEditor::searchRepaceAll" << replace;
+
+    if (display_cacher -> searchResultsCount() == 0) {
+        qDebug() << "CodeEditor::searchRepaceAll" << "NO RESULTS";
+        return;
+    }
 
     QTextCursor cursor = textCursor();
 
@@ -1967,6 +1983,7 @@ void CodeEditor::searchClosed() {
     qDebug() << "CodeEditor::searchClosed";
 
     display_cacher -> closeSearch();
+    emit searchResultsFinded(0);
     viewport() -> update();
 }
 

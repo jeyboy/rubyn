@@ -128,6 +128,7 @@ public:
     bool searchIsOpened() { return search_is_opened; }
     void openSearch() { search_is_opened = true; }
 
+    int searchResultsCount() { return search_results; }
     bool inSearch() { return in_search; }
     void beginSearch(const QRegularExpression & predicate) {
         search_results = 0;
