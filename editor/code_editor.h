@@ -219,6 +219,8 @@ class CodeEditorCacheCell;
 class CodeEditor : public QPlainTextEdit {
     Q_OBJECT
 
+    static QString default_uid;
+
     enum WordUnderCursorOps {
         wuco_full = 0,
         wuco_before_caret_part = 1,

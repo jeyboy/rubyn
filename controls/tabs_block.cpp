@@ -379,6 +379,10 @@ void TabsBlock::closeTab(QListWidgetItem * tab) {
 
         QString file_uid = file -> uid();
         if (_external_files.contains(file_uid)) {
+            if (_bar -> currentItem() == tab) {
+                _editor -> openDocument(nullptr);
+            }
+
             delete _external_files.take(file_uid);
         }
 

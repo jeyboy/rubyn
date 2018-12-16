@@ -39,6 +39,8 @@
 //fmt.setForeground(QBrush(QColor(255,255,255)));
 //p_textEdit->mergeCurrentCharFormat(fmt);
 
+QString CodeEditor::default_uid;
+
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
     tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
@@ -99,23 +101,22 @@ void CodeEditor::setCompleter(Completer * new_completer) {
 }
 
 void CodeEditor::openDocument(File * file) {
+    if (wrapper) {
+        disconnect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
+
+        if (display_cacher -> size() > 0) {
+            QScrollBar * vscroll = verticalScrollBar();
+            wrapper -> setVerticalScrollPos(vscroll -> value());
+            if (display_cacher -> isShowOverlay())
+                hideOverlays();
+        }
+    }
+
     if (file && file -> isText()) {
         QFont new_font(font().family(), 11);
         new_font.setKerning(true);
 //        new_font.setLetterSpacing(QFont::AbsoluteSpacing, cursorWidth() - 1);
 //        new_font.setStretch(90);
-
-        QScrollBar * vscroll = verticalScrollBar();
-
-        if (wrapper) {
-            disconnect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
-
-            if (display_cacher -> size() > 0) {
-                wrapper -> setVerticalScrollPos(vscroll -> value());
-                if (display_cacher -> isShowOverlay())
-                    hideOverlays();
-            }
-        }
 
         wrapper = file -> asText();
 
@@ -127,8 +128,8 @@ void CodeEditor::openDocument(File * file) {
         setFont(new_font);
 
         wrapper -> setUndoRedoEnabled(false);
-        setDocumentTitle(file -> name());
         setDocument(wrapper);
+        setDocumentTitle(file -> name());
         wrapper -> setUndoRedoEnabled(true);
 
         display_cacher -> clearSearch();
@@ -149,11 +150,14 @@ void CodeEditor::openDocument(File * file) {
 //            //    verticalScrollBar()
 //        }
     }
+    else {
+        setDocument((wrapper = nullptr));
+    }
     // else inform user about fail
 }
 
 const QString & CodeEditor::documentUid() {
-    return wrapper -> documentUid();
+    return wrapper ? wrapper -> documentUid() : default_uid;
 }
 
 void CodeEditor::setFont(const QFont & font) {
