@@ -221,8 +221,15 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
 void EditorSearch::changeVisibility(const bool & show) {
     setHidden(!show);
 
-    if (show && !predicate -> text().isEmpty())
-        emit find(predicate -> text(), flags());
+    if (show) {
+        predicate -> setFocus();
+
+        if (!predicate -> text().isEmpty()) {
+            emit find(predicate -> text(), flags());
+
+            predicate -> selectAll();
+        }
+    }
 }
 
 void EditorSearch::predicateIsCorrect() {
