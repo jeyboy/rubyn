@@ -135,6 +135,7 @@ public:
         in_search = true;
         search_regex = predicate;
     }
+    int search(const QTextBlock & start_blk);
     void clearSearch() {
         search_results = 0;
         search_mappings.clear();

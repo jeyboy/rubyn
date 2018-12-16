@@ -131,6 +131,8 @@ void CodeEditor::openDocument(File * file) {
         setDocument(wrapper);
         wrapper -> setUndoRedoEnabled(true);
 
+        display_cacher -> clearSearch();
+
 //        connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
 
         show_foldings_panel = wrapper -> canHasFoldings();
@@ -1834,14 +1836,19 @@ void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlag
 
         QRegularExpression regex(val, options);
 
-        if (regex.isValid())
+        if (regex.isValid()) {
             regex.optimize();
-        else {
+            emit searchCorrectPattern();
+        } else {
+            display_cacher -> clearSearch();
             emit searchWrongPattern(regex.errorString());
             return;
         }
 
         display_cacher -> beginSearch(regex);
+        int amount = display_cacher -> search(wrapper -> firstBlock());
+
+        emit searchResultsFinded(amount);
     }
     viewport() -> update();
 }
@@ -1859,12 +1866,13 @@ void CodeEditor::searchNextResult(QString * replace) {
         delete replace;
     }
 
+    QTextBlock block = cursor.block();
     EDITOR_POS_TYPE block_num = cursor.blockNumber();
     EDITOR_POS_TYPE max_block = blockCount();
     EDITOR_POS_TYPE pos = cursor.positionInBlock();
     bool limited = true;
 
-    for(int i = block_num; i < max_block; ++i, limited = false) {
+    for(int i = block_num; i < max_block; ++i, limited = false, block = block.next()) {
         const PairList & indexes = display_cacher -> searchResultsFor(i);
 
         if (indexes.isEmpty())
@@ -1875,8 +1883,11 @@ void CodeEditor::searchNextResult(QString * replace) {
 
         for(; index_it != indexes.constEnd(); index_it++) {
             if (!limited || (has_selection && pos <= (*index_it).first) || (pos < (*index_it).first)) {
-                cursor.setPosition((*index_it).first, QTextCursor::MoveAnchor);
-                cursor.setPosition((*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
+                EDITOR_POS_TYPE block_pos = block.position();
+
+                cursor.setPosition(block_pos + (*index_it).first, QTextCursor::MoveAnchor);
+                cursor.setPosition(block_pos + (*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
+                setTextCursor(cursor);
 
                 return;
             }
@@ -1896,11 +1907,12 @@ void CodeEditor::searchPrevResult(QString * replace) {
         delete replace;
     }
 
+    QTextBlock block = cursor.block();
     EDITOR_POS_TYPE block_num = cursor.blockNumber();
     EDITOR_POS_TYPE pos = cursor.positionInBlock();
     bool limited = true;
 
-    for(int i = block_num; i >= 0; --i, limited = false) {
+    for(int i = block_num; i >= 0; --i, limited = false, block = block.previous()) {
         const PairList & indexes = display_cacher -> searchResultsFor(i);
 
         if (indexes.isEmpty())
@@ -1910,8 +1922,11 @@ void CodeEditor::searchPrevResult(QString * replace) {
 
         for(; index_it != indexes.rend(); index_it++) {
             if (!limited || (has_selection && pos >= (*index_it).first) || (pos > (*index_it).first)) {
-                cursor.setPosition((*index_it).first, QTextCursor::MoveAnchor);
-                cursor.setPosition((*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
+                EDITOR_POS_TYPE block_pos = block.position();
+
+                cursor.setPosition(block_pos + (*index_it).first, QTextCursor::MoveAnchor);
+                cursor.setPosition(block_pos + (*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
+                setTextCursor(cursor);
 
                 return;
             }
@@ -1927,18 +1942,20 @@ void CodeEditor::searchRepaceAll(const QString & replace) {
 //    EDITOR_POS_TYPE pos = cursor.positionInBlock();
 
     cursor.beginEditBlock();
+    QTextBlock block = wrapper -> lastBlock();
 
-    for(int i = blockCount() - 1; i >= 0; --i) {
+    for(int i = blockCount() - 1; i >= 0; --i, block = block.previous()) {
         const PairList & indexes = display_cacher -> searchResultsFor(i);
 
         if (indexes.isEmpty())
             continue;
 
         PairList::const_reverse_iterator index_it = indexes.rbegin();
+        EDITOR_POS_TYPE block_pos = block.position();
 
         for(; index_it != indexes.rend(); index_it++) {
-            cursor.setPosition((*index_it).first, QTextCursor::MoveAnchor);
-            cursor.setPosition((*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
+            cursor.setPosition(block_pos + (*index_it).first, QTextCursor::MoveAnchor);
+            cursor.setPosition(block_pos + (*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
             cursor.insertText(replace);
         }
     }

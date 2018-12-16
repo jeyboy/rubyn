@@ -556,7 +556,7 @@ signals:
     void searchRequestRequired(const QString & pattern);
     void searchResultsFinded(const int & count);
     void searchWrongPattern(const QString & error);
-    void searchCorrectPattern(const QString & error);
+    void searchCorrectPattern();
 
 public slots:
     void searchIsShow(const bool & show);

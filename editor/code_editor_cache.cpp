@@ -158,6 +158,18 @@ CodeEditorCache::~CodeEditorCache() {
     delete last;
 }
 
+int CodeEditorCache::search(const QTextBlock & start_blk) {
+    QTextBlock blk(start_blk);
+    EDITOR_POS_TYPE blk_num = blk.blockNumber();
+
+    while(blk.isValid()) {
+        CodeEditorCacheCell::procBlockSearch(this, blk_num, blk);
+        ++blk_num; blk = blk.next();
+    }
+
+    return search_results;
+}
+
 void CodeEditorCache::clear() {
     block_offsets.clear();
     partialy_filled = false;
