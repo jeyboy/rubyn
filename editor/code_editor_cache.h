@@ -24,6 +24,7 @@ class QTextLayout;
 
 class CodeEditorCache;
 class QTextBlock;
+class QTextCursor;
 
 struct CacheScopeOffset {
     EDITOR_POS_TYPE level;
@@ -93,6 +94,8 @@ struct CodeEditorCacheCell {
     }
 
     static void procBlockSearch(CodeEditorCache * cache, const EDITOR_POS_TYPE & block_number, const QTextBlock & blk);
+    static void procSearchReplace(CodeEditorCache * cache, QTextCursor & cursor, const QString & txt, const bool & back_move = false);
+    static void procSearchMod(CodeEditorCache * cache, PairList & res, int res_index, int mod_index, const QString & txt);
     void procSearch(const QTextBlock & blk);
 };
 
@@ -146,7 +149,7 @@ public:
         search_is_opened = false;
         clearSearch();
     }
-    inline const PairList & searchResultsFor(const EDITOR_POS_TYPE & row) { return search_mappings[row]; }
+    inline PairList & searchResultsFor(const EDITOR_POS_TYPE & row) { return search_mappings[row]; }
 
     void mapOverlayState(const OVERLAY_POS_TYPE & overlay_pos, const bool & show) {
         if (show)

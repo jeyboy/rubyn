@@ -333,6 +333,8 @@ ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE
 }
 
 bool TextDocument::save() {
+    return false; // TODO: remove me
+
     if (!isModified())
         return true;
 

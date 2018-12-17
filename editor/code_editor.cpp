@@ -112,6 +112,8 @@ void CodeEditor::openDocument(File * file) {
         }
     }
 
+    display_cacher -> clearSearch();
+
     if (file && file -> isText()) {
         QFont new_font(font().family(), 11);
         new_font.setKerning(true);
@@ -131,8 +133,6 @@ void CodeEditor::openDocument(File * file) {
         setDocument(wrapper);
         setDocumentTitle(file -> name());
         wrapper -> setUndoRedoEnabled(true);
-
-        display_cacher -> clearSearch();
 
 //        connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
 
@@ -1870,10 +1870,9 @@ void CodeEditor::searchNextResult(QString * replace) {
     bool has_selection = cursor.hasSelection();
 
     if (replace && has_selection) {
-        //TODO: calc count of removed lines after replace and correct search hash
-        //TODO: move indexes in target line on sub of replace and target text
-        cursor.insertText(*replace);
+        CodeEditorCacheCell::procSearchReplace(display_cacher, cursor, *replace);
         delete replace;
+
         has_selection = false;
     }
 
@@ -1916,10 +1915,9 @@ void CodeEditor::searchPrevResult(QString * replace) {
     bool has_selection = cursor.hasSelection();
 
     if (replace && has_selection) {
-        //TODO: calc count of removed lines after replace and correct search hash
-        //TODO: move indexes in target line on sub of replace and target text
-        cursor.insertText(*replace);
+        CodeEditorCacheCell::procSearchReplace(display_cacher, cursor, *replace, true);
         delete replace;
+
         has_selection = false;
     }
 

@@ -14,6 +14,7 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
 
         if (brush_var.isValid()) {
             QBrush brush = qvariant_cast<QBrush>(brush_var);
+            //TODO: wrong width if has horizontal scroll
             painter -> fillRect(option.rect.adjusted(-option.rect.left(), 0, option.widget -> width() - option.rect.width(), 0), brush);
         }
     }

@@ -4,6 +4,7 @@
 #include <qmenu.h>
 #include <qjsonobject.h>
 #include <qheaderview.h>
+#include <qscrollbar.h>
 
 #include "project/projects.h"
 #include "tools/json/json.h"
@@ -308,6 +309,9 @@ void ProjectTree::clearSearch() {
     clearSearch(invisibleRootItem());
 
     scrollToItem(currentItem(), PositionAtCenter);
+    const QRect r = visualItemRect(currentItem());
+    // TODO: fix me: here should be r.x() - width
+    horizontalScrollBar() -> setValue(r.x());
 }
 
 void ProjectTree::showContextMenu(const QPoint & point) {
