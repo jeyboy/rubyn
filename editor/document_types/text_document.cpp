@@ -60,10 +60,12 @@ TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0), in_searc
     setPlainText(ar);
 
     if (!identificateLexer()) {
-        QString str = firstBlock().text();
+        if (_file -> formatType() == ft_unknown) {
+            QString str = firstBlock().text();
 
-        if (file -> identifyTypeByShebang(str))
-            identificateLexer();
+            if (file -> identifyTypeByShebang(str))
+                identificateLexer();
+        }
     }
 
 //    timer.start();

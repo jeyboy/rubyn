@@ -68,7 +68,7 @@ CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nul
     setCharsLimiterLineAt(80);
 
 //    setCursorWidth(8);
-    setLineWrapMode(NoWrap);
+    setLineWrapMode(NoWrap); //  WidgetWidth
 
     verticalScrollBar() -> setSingleStep(2);
 
