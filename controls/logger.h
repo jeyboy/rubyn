@@ -3,6 +3,7 @@
 
 #include <qpointer.h>
 #include <qhash.h>
+#include <qstringbuilder.h>
 
 #include "misc/singleton.h"
 #include "controls/logger_window.h"

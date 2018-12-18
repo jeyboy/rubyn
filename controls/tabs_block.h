@@ -10,37 +10,31 @@
 
 class TabBar;
 class QToolButton;
-class CodeEditor;
+class UniversalEditor;
 class File;
 class QLabel;
 class QFocusEvent;
 class QMenu;
 class QListWidgetItem;
-class Completer;
 class QScrollBar;
-class EditorSearch;
 
 class TabsBlock : public QWidget {
     Q_OBJECT
 
     TabBar * _bar;
-    Completer * _completer;
-    EditorSearch * _search_bar;
 
     QToolButton * _active_btn;
     QToolButton * _list_btn;
     QToolButton * _scroll_left_btn;
     QToolButton * _scroll_right_btn;
 
-    CodeEditor * _editor;
+    UniversalEditor * _editor;
 
     QMenu * _files_list;
 
     QHash<QString, File *> _external_files;
 
     void setupLayout();
-    void setupCompleter();
-    bool openFileInEditor(File * file);
 public:
     TabsBlock(QWidget * parent = nullptr);
     ~TabsBlock();
@@ -57,10 +51,11 @@ public:
     bool tabDumpState(const int & index, QVariant & data);
     bool tabRestoreState(const int & index, QVariant & data);
 
+    int currentTabVerticalScrollPos();
     int tabVerticalScrollPos(const int & index);
     void setTabVerticalScrollPos(const int & index, const int & pos);
 
-    inline CodeEditor * editor() { return _editor; }
+//    inline UniversalEditor * editor() { return _editor; }
 
 signals:
     void resourceDropped(TabsBlock *, const QUrl &);
@@ -86,7 +81,6 @@ protected slots:
     void closeCurrentTab();
     void closeExceptCurrentTab();
     void showTabsContextMenu(const QPoint &);
-    void showSearchPanel(const bool & show = true);
 
     void newTabsBlockRequest();
 };

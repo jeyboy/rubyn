@@ -39,8 +39,6 @@
 //fmt.setForeground(QBrush(QColor(255,255,255)));
 //p_textEdit->mergeCurrentCharFormat(fmt);
 
-QString CodeEditor::default_uid;
-
 CodeEditor::CodeEditor(QWidget * parent) : QPlainTextEdit(parent), completer(nullptr), wrapper(nullptr),
     tooplip_block_num(NO_INFO), tooplip_block_pos(NO_INFO),
     can_show_folding_popup(true), folding_click(false), folding_y(NO_FOLDING), folding_overlay_y(NO_FOLDING),
@@ -157,7 +155,7 @@ void CodeEditor::openDocument(File * file) {
 }
 
 const QString & CodeEditor::documentUid() {
-    return wrapper ? wrapper -> documentUid() : default_uid;
+    return wrapper ? wrapper -> documentUid() : File::default_uid;
 }
 
 void CodeEditor::setFont(const QFont & font) {

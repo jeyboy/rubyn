@@ -18,20 +18,21 @@ enum FormatType : quint32 {
 
     // ...
 
-    ft_broken = (1 << 24),
-    ft_system = (1 << 25),
-    ft_datum = (1 << 26),
-    ft_folder = (1 << 27),
-    ft_image = (1 << 28),
-    ft_text = (1 << 29),
-    ft_binary = (1 << 30),
+    ft_broken = (1 << 23),
+    ft_system = (1 << 24),
+    ft_datum = (1 << 25),
+    ft_folder = (1 << 26),
+    ft_image = (1 << 27),
+    ft_text = (1 << 28),
+    ft_binary = (1 << 29),
+    ft_tree = (1 << 30),
 
     ft_unknown =             0,
 
     ft_file_rb =             1 | ft_text | ft_level_one,
     ft_file_sql =            2 | ft_text | ft_level_one,
     ft_file_html =           3 | ft_text | ft_level_three,
-    ft_file_css =            4 | ft_text | ft_level_one,
+    ft_file_css =            4 | ft_text | ft_level_three, // ft_level_one
     ft_file_scss =           5 | ft_text | ft_level_one,
     ft_file_sass =           6 | ft_text | ft_level_one,
     ft_file_js =             7 | ft_text | ft_level_four,
@@ -58,6 +59,7 @@ enum FormatType : quint32 {
     //        ft_vb,
 
 
+    ft_file_ctree =         94 | ft_tree | ft_level_one,
     ft_file_datum =         95 | ft_datum | ft_system | ft_level_one,
     ft_file_bin =           95 | ft_binary | ft_level_one,
     ft_file_text =          96 | ft_text | ft_level_four,
@@ -77,7 +79,7 @@ enum FormatType : quint32 {
 
     ft_user_defined =       200 | ft_level_four,
 
-    ft_base_file_types =    ft_image | ft_text | ft_binary,
+    ft_base_file_types =    ft_image | ft_text | ft_binary | ft_tree,
     ft_priority =           ft_level_one | ft_level_two | ft_level_three | ft_level_four
 };
 

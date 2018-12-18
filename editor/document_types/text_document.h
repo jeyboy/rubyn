@@ -8,8 +8,6 @@
 #include "editor/editor_search_flags.h"
 #include "editor/text_document_layout.h"
 
-#define READ_LIMIT 512000LL // ~512 kb
-
 class Project;
 class File;
 class IHighlighter;
@@ -20,8 +18,6 @@ class TextDocument : public QTextDocument, public IDocument {
     static QLatin1String tab_space;
     static QHash<QChar, bool> word_boundary;
 
-    int scroll_pos_y;
-    bool in_search;
     IHighlighter * highlighter;
 protected:
     File * _file;

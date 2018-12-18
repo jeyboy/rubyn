@@ -8,7 +8,6 @@
 #include <qfontmetrics.h>
 #include <qapplication.h>
 #include <qscrollbar.h>
-#include <qstringbuilder.h>
 #include <qelapsedtimer.h>
 
 const char * Logger::nl = "\n";

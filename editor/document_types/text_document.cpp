@@ -46,7 +46,7 @@ bool TextDocument::registerStateChangedCallback(QObject * target, const char * s
     return true;
 }
 
-TextDocument::TextDocument(File * file) : IDocument(), scroll_pos_y(0), in_search(false), highlighter(nullptr), _file(file), layout(nullptr) {
+TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _file(file), layout(nullptr) {
 //    qint64 content_length = _file -> source() -> size();
 
     layout = new TextDocumentLayout(this);

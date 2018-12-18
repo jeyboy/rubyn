@@ -1,15 +1,13 @@
 #include "tabs_block.h"
 
-#include "completer_factory.h"
 #include "tab_bar.h"
 #include "logger.h"
 #include "tab_bar_no_focus_style.h"
 
 #include "project/file.h"
 
-#include "editor/editor_search.h"
-#include "editor/code_editor.h"
-#include "editor/document_types/text_document.h"
+#include "controls/logger.h"
+#include "controls/universal_editor.h"
 
 #include <qlabel.h>
 #include <qboxlayout.h>
@@ -80,50 +78,15 @@ void TabsBlock::setupLayout() {
 
     col_layout -> addWidget(row, 0);
 
-    QFont font;
-    font.setFamily("Courier");
-    font.setFixedPitch(true);
-    font.setPointSize(11);
-
-    _editor = new CodeEditor(this);
-    _editor -> setFont(font);
+    _editor = new UniversalEditor(this);
 
     col_layout -> addWidget(_editor, 1);
-
-    _search_bar = new EditorSearch(true, this);
-    col_layout -> addWidget(_search_bar, 0);
-    _search_bar -> hide();
 }
 
-void TabsBlock::setupCompleter() {
-    _completer = new Completer(this);
-
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_const), QLatin1Literal("alpha")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_global_method), QLatin1Literal("omega")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_global_var), QLatin1Literal("omicron")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_instance_method), QLatin1Literal("zeta")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_instance_var), QLatin1Literal("instance_var")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_local_var), QLatin1Literal("local_var")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_object_method), QLatin1Literal("obj_method")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_object_var), QLatin1Literal("obj_var")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_const), QLatin1Literal("private_const")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_instance_method), QLatin1Literal("private_instance_method")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_private_obj_method), QLatin1Literal("private_obj_method")));
-
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_class), QLatin1Literal("Class")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_module), QLatin1Literal("Module")));
-
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_template), QLatin1Literal("template")));
-    _completer -> addItem(new QStandardItem(CompleterFactory::obj().ico(lmt_unknow), QLatin1Literal("unknow")));
-
-    _completer -> update();
-}
-
-TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _completer(nullptr), _active_btn(nullptr), _list_btn(nullptr), _scroll_left_btn(nullptr), _scroll_right_btn(nullptr), _files_list(nullptr) {
+TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _active_btn(nullptr), _list_btn(nullptr), _scroll_left_btn(nullptr), _scroll_right_btn(nullptr), _files_list(nullptr) {
 //    setStyleSheet("QWidget:focus {background-color: #FFFFCC;}");
 
     setupLayout();
-    setupCompleter();
 
     connect(_bar, SIGNAL(currentRowChanged(int)), this, SLOT(currentTabIndexChanged(int)));
     connect(_bar, SIGNAL(tabCloseRequested(QListWidgetItem*)), this, SLOT(closeTab(QListWidgetItem*)));
@@ -134,19 +97,8 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _comple
     connect(_scroll_left_btn, SIGNAL(clicked()), _bar, SLOT(scrollBackward()));
     connect(_scroll_right_btn, SIGNAL(clicked()), _bar, SLOT(scrollForward()));
 
-
-    connect(_editor, &CodeEditor::searchResultsFinded, _search_bar, &EditorSearch::finded);
-    connect(_editor, &CodeEditor::searchWrongPattern, _search_bar, &EditorSearch::predicateHasError);
-    connect(_editor, &CodeEditor::searchCorrectPattern, _search_bar, &EditorSearch::predicateIsCorrect);
-    connect(_editor, &CodeEditor::searchRequired, this, &TabsBlock::showSearchPanel);
     connect(_editor, SIGNAL(inFocus()), this, SLOT(inFocus()));
     connect(_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(resourceDrop(QUrl)));
-
-    connect(_search_bar,  &EditorSearch::find, _editor, &CodeEditor::searchInitiated);
-    connect(_search_bar,  &EditorSearch::toNextResult, _editor, &CodeEditor::searchNextResult);
-    connect(_search_bar,  &EditorSearch::toPrevResult, _editor, &CodeEditor::searchPrevResult);
-    connect(_search_bar,  &EditorSearch::replaceAll, _editor, &CodeEditor::searchRepaceAll);
-    connect(_search_bar,  &EditorSearch::close, _editor, &CodeEditor::searchClosed);
 
     connect(_files_list, SIGNAL(aboutToShow()), this, SLOT(buildFilesList()));
 }
@@ -171,7 +123,7 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
         return true;
     } else {
         //TODO: this block ruin normal logic: we should call openFileInEditor after _bar -> setCurrentItem
-        if (!openFileInEditor(file)) {
+        if (!_editor -> openFile(file)) {
             if (is_external)
                 delete file;
 
@@ -221,57 +173,28 @@ QString TabsBlock::currentTabFilePath() {
 
 bool TabsBlock::tabDumpState(const int & index, QVariant & data) {
     File * file = _bar -> tabFile(index);
-
-    if (file && file -> isText()) {
-        return file -> asText() -> dump(data);
-    }
-
-    return false;
+    return file ? file -> dumpState(data) : false;
 }
 
 bool TabsBlock::tabRestoreState(const int & index, QVariant & data) {
     File * file = _bar -> tabFile(index);
-
-    if (file && file -> isText()) {
-        return file -> asText() -> restore(data);
-    }
-
-    return false;
+    return file ? file -> restoreState(data) : false;
 }
 
+int TabsBlock::currentTabVerticalScrollPos() { return tabVerticalScrollPos(_bar -> currentRow()); }
 int TabsBlock::tabVerticalScrollPos(const int & index) {
-    File * file = _bar -> tabFile(index);
-
-    if (file && file -> isText()) {
-        return file -> asText() -> verticalScrollPos(false);
+    if (_bar -> currentRow() == index) {
+        return _editor -> verticalScrollBar();
     }
 
-    return 0;
+    File * file = _bar -> tabFile(index);
+    return file ? file -> verticalScrollState(false) : 0;
 }
-void TabsBlock::setTabVerticalScrollPos(const int & index, const int & pos) {
+void TabsBlock::setTabVerticalScrollPos(const int & index, const int & pos) {    
     File * file = _bar -> tabFile(index);
 
-    if (file && file -> isText()) {
-        file -> asText() -> setVerticalScrollPos(pos);
-        //TODO: need additional update for current doc
-    }
-}
-
-bool TabsBlock::openFileInEditor(File * file) {
-    switch(file -> baseFormatType()) {
-        case ft_text: {
-            _editor -> openDocument(file);
-            _editor -> setCompleter(_completer);
-        break;}
-        case ft_image: //{ emit parent() -> imageAdded(url); break;}
-        case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
-        default: {
-            Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Undefined format of file: '") % QString::number(file -> formatType()) % '\'');
-            return false;
-        }
-    };
-
-    return true;
+    if (file)
+        file -> setVerticalScrollState(pos);
 }
 
 void TabsBlock::buildFilesList() {
@@ -354,7 +277,7 @@ void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
     }
 
     if (_editor -> documentUid() != file -> uid()) {
-        if (!openFileInEditor(file)) {
+        if (!_editor -> openFile(file)) {
             Logger::error(QLatin1Literal("Editor"), QLatin1Literal("Can't open file: ") % file -> name());
             return;
         }
@@ -380,7 +303,7 @@ void TabsBlock::closeTab(QListWidgetItem * tab) {
         QString file_uid = file -> uid();
         if (_external_files.contains(file_uid)) {
             if (_bar -> currentItem() == tab) {
-                _editor -> openDocument(nullptr);
+                _editor -> openFile(nullptr);
             }
 
             delete _external_files.take(file_uid);
@@ -444,15 +367,6 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
 
         menu.exec(_bar -> mapToGlobal(point));
     }
-}
-
-void TabsBlock::showSearchPanel(const bool & show) {
-    qDebug() << "TabsBlock::showSearchPanel" << show;
-
-    _search_bar -> changeVisibility(show);
-
-    if (!show)
-        _editor -> searchClosed();
 }
 
 void TabsBlock::newTabsBlockRequest() {

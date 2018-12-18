@@ -12,6 +12,7 @@
 class TextDocument;
 class ImageDocument;
 class BinaryDocument;
+class TreeDocument;
 class Folder;
 
 class File {
@@ -39,6 +40,8 @@ protected:
     friend class ImageDocument;
     friend class BinaryDocument;
 public:
+    static QString default_uid;
+
     enum FileOps {
         fo_none = 0,
         fo_open = 1,
@@ -85,10 +88,17 @@ public:
     inline bool isText() const { return _main_format & ft_text; }
     inline bool isImage() const { return _main_format & ft_image; }
     inline bool isBinary() const { return _main_format & ft_binary; }
+    inline bool isTree() const { return _main_format & ft_tree; }
 
     TextDocument * asText();
     ImageDocument * asImage();
     BinaryDocument * asBinary();
+    TreeDocument * asTree();
+
+    bool dumpState(QVariant & data);
+    bool restoreState(QVariant & data);
+    int verticalScrollState(const bool & drop = false);
+    bool setVerticalScrollState(const int & pos);
 };
 
 #endif // FILE_H

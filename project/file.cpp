@@ -7,6 +7,8 @@
 
 #include "controls/logger.h"
 
+QString File::default_uid;
+
 bool File::userAskFileType() {
     //TODO: ask user about file type
     return false;
@@ -228,4 +230,52 @@ BinaryDocument * File::asBinary() {
     }
 
     return dynamic_cast<BinaryDocument *>(_doc);
+}
+TreeDocument * File::asTree() {
+    if (!isTree()) return nullptr;
+
+    if (!_doc) {
+        if (!open())
+            return nullptr;
+    }
+
+    return dynamic_cast<TreeDocument *>(_doc);
+}
+
+bool File::dumpState(QVariant & data) {
+    //TODO: implement dump on IDocument level
+    if (isText()) {
+        return asText() -> dump(data);
+    }
+
+    return false;
+}
+
+bool File::restoreState(QVariant & data) {
+    //TODO: implement restore on IDocument level
+    if (isText()) {
+        return asText() -> restore(data);
+    }
+
+    return false;
+}
+
+int File::verticalScrollState(const bool & drop) {
+    //TODO: implement restore on IDocument level
+    if (isText()) {
+        return asText() -> verticalScrollPos(drop);
+    }
+
+    return 0;
+}
+
+bool File::setVerticalScrollState(const int & pos) {
+    //TODO: implement restore on IDocument level
+    if (isText()) {
+        asText() -> setVerticalScrollPos(pos);
+        //TODO: need additional update for current doc
+        return true;
+    }
+
+    return false;
 }

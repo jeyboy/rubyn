@@ -5,16 +5,19 @@
 
 #include <qvariant.h>
 
+#define READ_LIMIT 512000LL // ~512 kb
+
 class ILexer;
 
 class IDocument {
     bool _fully_readed;
 protected:
     ILexer * _lexer;
+    int scroll_pos_y;
 
     inline void setFullyReaded(const bool & readed) { _fully_readed = readed; }
 public:
-    inline IDocument() : _fully_readed(false), _lexer(nullptr) {}
+    inline IDocument() : _fully_readed(false), _lexer(nullptr), scroll_pos_y(0) {}
     virtual ~IDocument();
 
     inline bool isFullyReaded() const { return _fully_readed; }

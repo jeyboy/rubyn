@@ -13,9 +13,9 @@
 #include "controls/logger.h"
 #include "controls/project_tree.h"
 #include "controls/tabs_block.h"
+//#include "controls/universal_editor.h"
 
 #include "project/ifolder.h"
-#include "editor/code_editor.h"
 
 #include <qsettings.h>
 #include <qsplitter.h>
@@ -103,10 +103,10 @@ void Dumper::saveTab(IDEWindow * w, TabsBlock * editor, QJsonObject & widget_obj
 
     widget_obj.insert(QLatin1Literal("tabs"), tabs_arr);
 
-    QScrollBar * scroll = editor -> editor() -> verticalScrollBar();
+    int vscroll_val = editor -> currentTabVerticalScrollPos();
 
-    if (scroll -> value() != 0)
-        widget_obj.insert(QLatin1Literal("scroll_y"), scroll -> value());
+    if (vscroll_val != 0)
+        widget_obj.insert(QLatin1Literal("scroll_y"), vscroll_val);
 
     if (w -> active_editor == editor)
         widget_obj.insert(QLatin1Literal("is_active"), true);

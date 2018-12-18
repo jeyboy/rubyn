@@ -99,7 +99,9 @@ SOURCES += main.cpp\
     debugging/debug_stub_interface.cpp \
     controls/base_item_delegate.cpp \
     editor/editor_search.cpp \
-    editor/code_editor_searcher.cpp
+    editor/code_editor_searcher.cpp \
+    editor/document_types/tree_document.cpp \
+    controls/universal_editor.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -233,7 +235,9 @@ HEADERS  += ide_window.h \
     controls/base_item_delegate.h \
     editor/editor_search.h \
     editor/editor_search_flags.h \
-    editor/code_editor_searcher.h
+    editor/code_editor_searcher.h \
+    editor/document_types/tree_document.h \
+    controls/universal_editor.h
 
 FORMS    += ide_window.ui
 
