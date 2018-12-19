@@ -7,13 +7,16 @@
 #include "project/file.h"
 
 #include "editor/code_editor.h"
+#include "editor/tree_editor.h"
+
+
 #include "editor/editor_search.h"
 //#include "editor/document_types/text_document.h"
 
 #include <qboxlayout.h>
 
 void UniversalEditor::setupLayout() {
-    QVBoxLayout * col_layout = new QVBoxLayout(this);
+    col_layout = new QVBoxLayout(this);
 
     col_layout -> setContentsMargins(1,1,1,1);
     col_layout -> setSpacing(1);
@@ -24,25 +27,48 @@ void UniversalEditor::setupLayout() {
     font.setFixedPitch(true);
     font.setPointSize(11);
 
-    _code_editor = new CodeEditor(this);
-    _code_editor -> setFont(font);
-
-    col_layout -> addWidget(_code_editor, 1);
+    setFont(font);
 
     _search_bar = new EditorSearch(true, this);
     col_layout -> addWidget(_search_bar, 0);
     _search_bar -> hide();
+
+
+//    void searchIsShow(const bool & show);
+//    void searchInitiated(const QString & pattern, const EditorSearchFlags & flags);
+//    void searchNextResult(QString * replace = nullptr);
+//    void searchPrevResult(QString * replace = nullptr);
+//    void searchRepaceAll(const QString & replace);
+//    void searchClosed();
+
+
+
+    connect(_search_bar, &EditorSearch::find, [=](const QString & pattern, const EditorSearchFlags & flags) {
+        if (_active_editor)
+            _active_editor -> searchInitiated(pattern, flags);
+    });
+    connect(_search_bar, &EditorSearch::toNextResult, _code_editor, &CodeEditor::searchNextResult);
+    connect(_search_bar, &EditorSearch::toPrevResult, _code_editor, &CodeEditor::searchPrevResult);
+    connect(_search_bar, &EditorSearch::replaceAll, _code_editor, &CodeEditor::searchRepaceAll);
+    connect(_search_bar, &EditorSearch::close, _code_editor, &CodeEditor::searchClosed);
+}
+
+void UniversalEditor::setupCodeEditor() {
+    _code_editor = new CodeEditor(this);
+    _code_editor -> setFont(font());
+
+    col_layout -> insertWidget(0, _code_editor, 1);
 
     connect(_code_editor, &CodeEditor::searchResultsFinded, _search_bar, &EditorSearch::finded);
     connect(_code_editor, &CodeEditor::searchWrongPattern, _search_bar, &EditorSearch::predicateHasError);
     connect(_code_editor, &CodeEditor::searchCorrectPattern, _search_bar, &EditorSearch::predicateIsCorrect);
     connect(_code_editor, &CodeEditor::searchRequired, this, &UniversalEditor::showSearchPanel);
 
-    connect(_search_bar, &EditorSearch::find, _code_editor, &CodeEditor::searchInitiated);
-    connect(_search_bar, &EditorSearch::toNextResult, _code_editor, &CodeEditor::searchNextResult);
-    connect(_search_bar, &EditorSearch::toPrevResult, _code_editor, &CodeEditor::searchPrevResult);
-    connect(_search_bar, &EditorSearch::replaceAll, _code_editor, &CodeEditor::searchRepaceAll);
-    connect(_search_bar, &EditorSearch::close, _code_editor, &CodeEditor::searchClosed);
+//    connect(_code_editor, )
+}
+
+void UniversalEditor::setupTreeEditor() {
+
 }
 
 void UniversalEditor::setupCompleter() {
@@ -69,7 +95,7 @@ void UniversalEditor::setupCompleter() {
     _completer -> update();
 }
 
-UniversalEditor::UniversalEditor(QWidget * parent) : QWidget(parent), _code_editor(nullptr), _file(nullptr), _completer(nullptr) {
+UniversalEditor::UniversalEditor(QWidget * parent) : QWidget(parent), _active_editor(nullptr), _code_editor(nullptr), _tree_editor(nullptr), _file(nullptr), _completer(nullptr) {
     setupLayout();
 
     setupCompleter();

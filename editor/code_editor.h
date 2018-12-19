@@ -6,7 +6,7 @@
 #include <qevent.h>
 #include <qmimedata.h>
 
-#include "misc/defines.h"
+#include "editor/ieditor.h"
 #include "editor/active_para_info.h"
 #include "editor/active_folding_info.h"
 #include "editor/completer_info.h"
@@ -216,7 +216,7 @@ class CodeEditorCacheCell;
 
 
 
-class CodeEditor : public QPlainTextEdit {
+class CodeEditor : public QPlainTextEdit, public IEditor {
     Q_OBJECT
 
     enum WordUnderCursorOps {
@@ -559,12 +559,12 @@ signals:
     void searchCorrectPattern();
 
 public slots:
-    void searchIsShow(const bool & show);
-    void searchInitiated(const QString & pattern, const EditorSearchFlags & flags);
-    void searchNextResult(QString * replace = nullptr);
-    void searchPrevResult(QString * replace = nullptr);
-    void searchRepaceAll(const QString & replace);
-    void searchClosed();
+    void searchIsShow(const bool & show) Q_DECL_OVERRIDE;
+    void searchInitiated(const QString & pattern, const EditorSearchFlags & flags) Q_DECL_OVERRIDE;
+    void searchNextResult(QString * replace = nullptr) Q_DECL_OVERRIDE;
+    void searchPrevResult(QString * replace = nullptr) Q_DECL_OVERRIDE;
+    void searchRepaceAll(const QString & replace) Q_DECL_OVERRIDE;
+    void searchClosed() Q_DECL_OVERRIDE;
 
 private slots:
     void overlayHidden(const OVERLAY_POS_TYPE & uid);

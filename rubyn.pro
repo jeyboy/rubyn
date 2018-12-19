@@ -101,7 +101,9 @@ SOURCES += main.cpp\
     editor/editor_search.cpp \
     editor/code_editor_searcher.cpp \
     editor/document_types/tree_document.cpp \
-    controls/universal_editor.cpp
+    controls/universal_editor.cpp \
+    editor/tree_editor.cpp \
+    editor/ieditor.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -237,7 +239,9 @@ HEADERS  += ide_window.h \
     editor/editor_search_flags.h \
     editor/code_editor_searcher.h \
     editor/document_types/tree_document.h \
-    controls/universal_editor.h
+    controls/universal_editor.h \
+    editor/tree_editor.h \
+    editor/ieditor.h
 
 FORMS    += ide_window.ui
 
