@@ -9,9 +9,7 @@
 #include "editor/code_editor.h"
 #include "editor/tree_editor.h"
 
-
 #include "editor/editor_search.h"
-//#include "editor/document_types/text_document.h"
 
 #include <qboxlayout.h>
 
@@ -128,6 +126,13 @@ UniversalEditor::UniversalEditor(QWidget * parent) : QWidget(parent), _active_ed
 }
 
 bool UniversalEditor::openFile(File * file) {
+    if (!file) {
+        if (_active_editor)
+            _active_editor -> openDocument(nullptr);
+
+        return true;
+    }
+
     switch(file -> baseFormatType()) {
         case ft_text: {
             if (!_code_editor)

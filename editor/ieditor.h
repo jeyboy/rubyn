@@ -4,10 +4,14 @@
 #include "misc/defines.h"
 #include "editor/editor_search_flags.h"
 
+class File;
+
 class IEditor {
 public:
     IEditor();
     virtual ~IEditor();
+
+    virtual void openDocument(File * file) = 0;
 
     virtual void searchIsShow(const bool & show) = 0;
     virtual void searchInitiated(const QString & pattern, const EditorSearchFlags & flags) = 0;

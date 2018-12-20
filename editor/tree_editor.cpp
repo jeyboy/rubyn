@@ -1,6 +1,12 @@
 #include "tree_editor.h"
 
+#include "project/file.h"
+
 TreeEditor::TreeEditor(QWidget * parent) : QTreeView(parent) {
+
+}
+
+void TreeEditor::openDocument(File * file) {
 
 }
 

@@ -10,6 +10,8 @@ class TreeEditor : public QTreeView, public IEditor {
 public:
     TreeEditor(QWidget * parent = Q_NULLPTR);
 
+    void openDocument(File * file) Q_DECL_OVERRIDE;
+
 public slots:
     void searchIsShow(const bool & show) Q_DECL_OVERRIDE;
     void searchInitiated(const QString & pattern, const EditorSearchFlags & flags) Q_DECL_OVERRIDE;
