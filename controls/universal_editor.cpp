@@ -138,20 +138,34 @@ bool UniversalEditor::openFile(File * file) {
             if (!_code_editor)
                 setupCodeEditor();
 
+            if (_active_editor)
+                _active_editor -> setVisible(false);
+
             _active_editor = _code_editor;
-            _code_editor -> show();
 
             _code_editor -> openDocument(file);
 //            _code_editor -> setCompleter(_completer);
         break;}
+        case ft_tree: {
+            if (!_tree_editor)
+                setupTreeEditor();
+
+            if (_active_editor)
+                _active_editor -> setVisible(false);
+
+            _active_editor = _tree_editor;
+
+            _tree_editor -> openDocument(file);
+        break;}
         case ft_image: //{ emit parent() -> imageAdded(url); break;}
         case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
-        case ft_tree: //{ emit parent() -> binaryAdded(url); break;}
         default: {
             Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Undefined format of file: '") % QString::number(file -> formatType()) % '\'');
             return false;
         }
     };
+
+    _active_editor -> setVisible(true);
 
     return true;
 }

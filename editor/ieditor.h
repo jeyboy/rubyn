@@ -11,6 +11,8 @@ public:
     IEditor();
     virtual ~IEditor();
 
+    virtual void setVisible(bool visible) = 0;
+
     virtual void openDocument(File * file) = 0;
 
     virtual void searchIsShow(const bool & show) = 0;

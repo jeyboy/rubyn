@@ -38,7 +38,7 @@ enum FormatType : quint32 {
     ft_file_js =             7 | ft_text | ft_level_four,
     ft_file_coffee =         8 | ft_text | ft_level_one,
     ft_file_xml =            9 | ft_text | ft_level_one,
-    ft_file_json =           10 | ft_text | ft_level_one,
+    ft_file_json =           10 | ft_text | ft_tree | ft_level_one,
     ft_file_erb =            11 | ft_text | ft_level_two,
     ft_file_haml =           12 | ft_text | ft_level_two,
     ft_file_slim =           13 | ft_text | ft_level_two,

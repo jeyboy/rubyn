@@ -29,8 +29,6 @@ public:
 
     ~TreeDocument();
 
-    inline bool canHasFoldings() { return _lexer != nullptr; }
-
 //    const QLatin1String & tabSpace() { return tab_space; }
 
     const QString & documentUid();

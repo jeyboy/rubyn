@@ -2,6 +2,7 @@
 #define UNIVERSAL_EDITOR_H
 
 #include <qwidget.h>
+#include <qhash.h>
 
 class IEditor;
 class CodeEditor;

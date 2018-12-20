@@ -158,6 +158,8 @@ const QString & CodeEditor::documentUid() {
     return wrapper ? wrapper -> documentUid() : File::default_uid;
 }
 
+void CodeEditor::setVisible(bool visible) { QPlainTextEdit::setVisible(visible); }
+
 void CodeEditor::setFont(const QFont & font) {
     curr_line_font = QFont(font.family(), font.pointSize());
     curr_line_font.setUnderline(true);

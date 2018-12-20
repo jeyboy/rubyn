@@ -35,7 +35,7 @@ TreeDocument::TreeDocument(File * file) : IDocument()/*, highlighter(nullptr)*/,
 //    qint64 content_length = _file -> source() -> size();
     setFullyReaded(true);
 
-    QByteArray ar = _file -> source() -> readAll();
+//    QByteArray ar = _file -> source() -> readAll();
 //    ar.replace('\t', TextDocument::tab_space);
 //    setPlainText(ar);
 

@@ -299,8 +299,10 @@ public:
     void setCompleter(Completer * new_completer);
 
     inline bool hasDocument() { return document() != nullptr; }
-    void openDocument(File * file);
+    void openDocument(File * file) Q_DECL_OVERRIDE;
     const QString & documentUid();
+
+    void setVisible(bool visible) Q_DECL_OVERRIDE;
 
 
 //    inline const QFont & font() const { return QPlainTextEdit::font(); }

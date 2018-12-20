@@ -10,6 +10,8 @@ void TreeEditor::openDocument(File * file) {
 
 }
 
+void TreeEditor::setVisible(bool visible) { QTreeView::setVisible(visible); }
+
 void TreeEditor::searchIsShow(const bool & show) {}
 void TreeEditor::searchInitiated(const QString & pattern, const EditorSearchFlags & flags) {}
 void TreeEditor::searchNextResult(QString * replace) {}

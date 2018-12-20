@@ -12,6 +12,8 @@ public:
 
     void openDocument(File * file) Q_DECL_OVERRIDE;
 
+    void setVisible(bool visible) Q_DECL_OVERRIDE;
+
 public slots:
     void searchIsShow(const bool & show) Q_DECL_OVERRIDE;
     void searchInitiated(const QString & pattern, const EditorSearchFlags & flags) Q_DECL_OVERRIDE;
