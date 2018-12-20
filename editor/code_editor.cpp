@@ -1794,7 +1794,7 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
 }
 
 
-void CodeEditor::searchIsShow(const bool & show) {
+void CodeEditor::searchIsShow(const bool & show) { //TODO: used?
     qDebug() << "CodeEditor::searchIsShow" << show;
 
     if (show) {

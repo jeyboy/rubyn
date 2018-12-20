@@ -70,9 +70,6 @@ public slots:
     void clear();
 
 protected slots:
-    inline void resourceDrop(const QUrl & url) { emit resourceDropped(this, url); }
-    inline void inFocus() { emit activated(this); }
-
     void buildFilesList();
     void fileListClicked();
     void tabsCountChanged(const int & correction);

@@ -21,7 +21,6 @@ void UniversalEditor::setupLayout() {
     col_layout -> setContentsMargins(1,1,1,1);
     col_layout -> setSpacing(1);
 
-
     QFont font;
     font.setFamily("Courier");
     font.setFixedPitch(true);
@@ -35,22 +34,27 @@ void UniversalEditor::setupLayout() {
 
 
 //    void searchIsShow(const bool & show);
-//    void searchInitiated(const QString & pattern, const EditorSearchFlags & flags);
-//    void searchNextResult(QString * replace = nullptr);
-//    void searchPrevResult(QString * replace = nullptr);
-//    void searchRepaceAll(const QString & replace);
-//    void searchClosed();
-
-
 
     connect(_search_bar, &EditorSearch::find, [=](const QString & pattern, const EditorSearchFlags & flags) {
         if (_active_editor)
             _active_editor -> searchInitiated(pattern, flags);
     });
-    connect(_search_bar, &EditorSearch::toNextResult, _code_editor, &CodeEditor::searchNextResult);
-    connect(_search_bar, &EditorSearch::toPrevResult, _code_editor, &CodeEditor::searchPrevResult);
-    connect(_search_bar, &EditorSearch::replaceAll, _code_editor, &CodeEditor::searchRepaceAll);
-    connect(_search_bar, &EditorSearch::close, _code_editor, &CodeEditor::searchClosed);
+    connect(_search_bar, &EditorSearch::toNextResult, [=](QString * replace) {
+        if (_active_editor)
+            _active_editor -> searchNextResult(replace);
+    });
+    connect(_search_bar, &EditorSearch::toPrevResult, [=](QString * replace) {
+        if (_active_editor)
+            _active_editor -> searchPrevResult(replace);
+    });
+    connect(_search_bar, &EditorSearch::replaceAll, [=](const QString & replace) {
+        if (_active_editor)
+            _active_editor -> searchRepaceAll(replace);
+    });
+    connect(_search_bar, &EditorSearch::close, [=]() {
+        if (_active_editor)
+            _active_editor -> searchClosed();
+    });
 }
 
 void UniversalEditor::setupCodeEditor() {
@@ -59,12 +63,34 @@ void UniversalEditor::setupCodeEditor() {
 
     col_layout -> insertWidget(0, _code_editor, 1);
 
-    connect(_code_editor, &CodeEditor::searchResultsFinded, _search_bar, &EditorSearch::finded);
-    connect(_code_editor, &CodeEditor::searchWrongPattern, _search_bar, &EditorSearch::predicateHasError);
-    connect(_code_editor, &CodeEditor::searchCorrectPattern, _search_bar, &EditorSearch::predicateIsCorrect);
-    connect(_code_editor, &CodeEditor::searchRequired, this, &UniversalEditor::showSearchPanel);
+    connect(_code_editor, &CodeEditor::searchResultsFinded, [=](const int & count) {
+        if (_active_editor == _code_editor)
+            _search_bar -> finded(count);
+    });
+    connect(_code_editor, &CodeEditor::searchWrongPattern, [=](const QString & error) {
+        if (_active_editor == _code_editor)
+            _search_bar -> predicateHasError(error);
+    });
+    connect(_code_editor, &CodeEditor::searchCorrectPattern, [=]() {
+        if (_active_editor == _code_editor)
+            _search_bar -> predicateIsCorrect();
+    });
+    connect(_code_editor, &CodeEditor::searchRequired, [=](const bool & show) { showSearchPanel(show); });
 
-//    connect(_code_editor, )
+    connect(_code_editor, &CodeEditor::inFocus, [=]() {
+        if (_active_editor == _code_editor)
+            emit inFocus();
+    });
+
+    connect(_code_editor, &CodeEditor::fileDropped, [=](const QUrl & uri) {
+        if (_active_editor == _code_editor)
+            emit fileDropped(uri);
+    });
+
+    connect(_code_editor, &CodeEditor::cursorPosChanged, [=](const QString & pos_coords) {
+        if (_active_editor == _code_editor)
+            emit cursorPosChanged(pos_coords);
+    });
 }
 
 void UniversalEditor::setupTreeEditor() {
@@ -104,6 +130,10 @@ UniversalEditor::UniversalEditor(QWidget * parent) : QWidget(parent), _active_ed
 bool UniversalEditor::openFile(File * file) {
     switch(file -> baseFormatType()) {
         case ft_text: {
+            if (!_code_editor)
+                setupCodeEditor();
+
+            _active_editor = _code_editor;
             _code_editor -> show();
 
             _code_editor -> openDocument(file);
@@ -135,6 +165,6 @@ void UniversalEditor::showSearchPanel(const bool & show) {
 
     _search_bar -> changeVisibility(show);
 
-    if (!show)
-        _code_editor -> searchClosed();
+    if (!show && _active_editor)
+        _active_editor  -> searchClosed();
 }

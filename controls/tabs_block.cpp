@@ -97,8 +97,8 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _active
     connect(_scroll_left_btn, SIGNAL(clicked()), _bar, SLOT(scrollBackward()));
     connect(_scroll_right_btn, SIGNAL(clicked()), _bar, SLOT(scrollForward()));
 
-    connect(_editor, SIGNAL(inFocus()), this, SLOT(inFocus()));
-    connect(_editor, SIGNAL(fileDropped(QUrl)), this, SLOT(resourceDrop(QUrl)));
+    connect(_editor, &UniversalEditor::inFocus, [=]() { emit activated(this); });
+    connect(_editor, &UniversalEditor::fileDropped, [=](const QUrl & url) { emit resourceDropped(this, url); });
 
     connect(_files_list, SIGNAL(aboutToShow()), this, SLOT(buildFilesList()));
 }
@@ -110,7 +110,7 @@ TabsBlock::~TabsBlock() {
 }
 
 void TabsBlock::registerCursorPosOutput(QLabel * output) {
-    connect(_editor, SIGNAL(cursorPosChanged(QString)), output, SLOT(setText(QString)));
+    connect(_editor, &UniversalEditor::cursorPosChanged, output, &QLabel::setText);
 }
 
 bool TabsBlock::openFile(File * file, const bool & is_external) {

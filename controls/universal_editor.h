@@ -38,9 +38,9 @@ public:
 
     int verticalScrollBar();
 signals:
-//  void cursorPosChanged(QString);
-//  void inFocus();
-//  void fileDropped(QUrl);
+  void cursorPosChanged(const QString &);
+  void inFocus();
+  void fileDropped(const QUrl &);
 
 protected slots:
     void showSearchPanel(const bool & show = true);
