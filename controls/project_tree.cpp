@@ -150,7 +150,7 @@ QTreeWidgetItem * ProjectTree::findByPath(const QString & path) {
     return nullptr;
 }
 
-bool ProjectTree::search(const QRegularExpression & regexp, QTreeWidgetItem * item) {
+bool ProjectTree::search(const QRegularExpression & regexp, QTreeWidgetItem * item, int & res) {
     bool empty = regexp.pattern().isEmpty();
     bool has_item = false;
     int items_count = item -> childCount();
@@ -166,7 +166,7 @@ bool ProjectTree::search(const QRegularExpression & regexp, QTreeWidgetItem * it
             if (child -> data(0, Qt::UserRole + 12).isNull())
                 child -> setData(0, Qt::UserRole + 12, child -> isExpanded());
 
-            valid = search(regexp, child);
+            valid = search(regexp, child, res);
 
             if (valid && !child -> isExpanded())
                 child -> setExpanded(true);
@@ -178,6 +178,7 @@ bool ProjectTree::search(const QRegularExpression & regexp, QTreeWidgetItem * it
             QRegularExpressionMatch match = regexp.match(child_text);
 
             if (match.hasMatch()) {
+                ++res;
                 valid = true;
                 child -> setData(0, Qt::UserRole + 10, match.capturedStart());
                 child -> setData(0, Qt::UserRole + 11, match.capturedLength());
@@ -290,14 +291,17 @@ bool ProjectTree::search(const QRegularExpression & regexp) {
 
     bool has_item = false;
     int items_count = topLevelItemCount();
+    int results_count = 0;
 
     for(int i = 0; i < items_count; i++) {
         QTreeWidgetItem * child = topLevelItem(i);
 
         if (child -> childCount() > 0) {
-            has_item |= search(regexp, child);
+            has_item |= search(regexp, child, results_count);
         }
     }
+
+    emit searchResultsCount(results_count);
 
     return has_item;
 }

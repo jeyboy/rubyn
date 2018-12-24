@@ -32,12 +32,13 @@ public:
 
     QTreeWidgetItem * findByPath(const QString & path);
 protected:
-    bool search(const QRegularExpression & regexp, QTreeWidgetItem * item);
+    bool search(const QRegularExpression & regexp, QTreeWidgetItem * item, int & res);
     void clearSearch(QTreeWidgetItem * item);
 
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
 signals:
     void searchRequired(const QString &);
+    void searchResultsCount(const int &);
     void closeSearch();
 
     void fileActivated(const QString & name, void * folder);

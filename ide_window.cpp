@@ -546,7 +546,7 @@ void IDEWindow::setupToolWindows() {
 
     connector.search_show_signal = SIGNAL(searchRequired(const QString &));
     connector.search_hide_signal = SIGNAL(closeSearch());
-    connector.search_amount_signal = nullptr;
+    connector.search_amount_signal = SIGNAL(searchResultsCount(const int &));
 
     connector.search_request_slot = SLOT(search(const QRegularExpression &));
     connector.search_close_slot = SLOT(clearSearch());

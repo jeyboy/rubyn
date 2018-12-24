@@ -74,7 +74,7 @@ void HeaderDockWidget::registerSearchCallbacks(const DockWidgetSearchConnector &
     connect(connector.target, connector.search_hide_signal, this, SLOT(hideSearch()));
 
     if (connector.search_amount_signal)
-        connect(connector.target, connector.search_amount_signal, search_widget, SLOT(finded(const int & count)));
+        connect(connector.target, connector.search_amount_signal, search_widget, SLOT(finded(const int &)));
 
     connect(search_widget, SIGNAL(find(const QRegularExpression &)), connector.target, connector.search_request_slot);
     connect(search_widget, SIGNAL(close()), connector.target, connector.search_close_slot);
