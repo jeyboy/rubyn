@@ -33,9 +33,9 @@ void UniversalEditor::setupLayout() {
 
 //    void searchIsShow(const bool & show);
 
-    connect(_search_bar, &EditorSearch::find, [=](const QString & pattern, const EditorSearchFlags & flags) {
+    connect(_search_bar, &EditorSearch::find, [=](const QRegularExpression & pattern) {
         if (_active_editor)
-            _active_editor -> searchInitiated(pattern, flags);
+            _active_editor -> searchInitiated(pattern);
     });
     connect(_search_bar, &EditorSearch::toNextResult, [=](QString * replace) {
         if (_active_editor)

@@ -10,7 +10,6 @@
 #include "editor/active_para_info.h"
 #include "editor/active_folding_info.h"
 #include "editor/completer_info.h"
-#include "editor/editor_search_flags.h"
 
 class QPaintEvent;
 class QResizeEvent;
@@ -562,7 +561,7 @@ signals:
 
 public slots:
     void searchIsShow(const bool & show) Q_DECL_OVERRIDE;
-    void searchInitiated(const QString & pattern, const EditorSearchFlags & flags) Q_DECL_OVERRIDE;
+    void searchInitiated(const QRegularExpression & pattern) Q_DECL_OVERRIDE;
     void searchNextResult(QString * replace = nullptr) Q_DECL_OVERRIDE;
     void searchPrevResult(QString * replace = nullptr) Q_DECL_OVERRIDE;
     void searchRepaceAll(const QString & replace) Q_DECL_OVERRIDE;

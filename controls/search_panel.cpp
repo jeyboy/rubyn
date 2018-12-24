@@ -118,6 +118,14 @@ void SearchPanel::removePrevNext() {
     move_next_btn -> deleteLater();
 }
 
+void SearchPanel::activate() {
+    if (!text().isEmpty()) {
+        emit find(buildRegex(text()));
+
+        selectAll();
+    }
+}
+
 void SearchPanel::paintEvent(QPaintEvent * event) {
     QStyleOption opt;
     opt.init(this);
@@ -165,5 +173,5 @@ void SearchPanel::predicateHasError(const QString & error) {
 void SearchPanel::finded(const int & count) {
     qDebug() << "EditorSearch::finded" << count;
 
-    setToolTip(QLatin1Literal("Found ") + QString::number(count));
+    setToolTip(QLatin1Literal("Found: ") + QString::number(count));
 }

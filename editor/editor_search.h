@@ -3,9 +3,8 @@
 
 #include <qwidget.h>
 
-#include "editor/editor_search_flags.h"
-
 class QLineEdit;
+class SearchPanel;
 class QCheckBox;
 class QLabel;
 
@@ -15,24 +14,17 @@ class EditorSearch : public QWidget {
     Q_OBJECT
 
     int result_count;
-    QLineEdit * predicate;
+    SearchPanel * predicate;
     QLineEdit * replace_predicate;
 
     QLabel * l1;
     QLabel * l2;
-
-    QCheckBox * flag_case_sensitive;
-    QCheckBox * flag_whole_word_only;
-    QCheckBox * flag_reg_exp;
-    QCheckBox * flag_unicode;
-
-    EditorSearchFlags flags();
 protected:
     void paintEvent(QPaintEvent * event);
 public:
     EditorSearch(const bool & has_replace, QWidget * parent = nullptr);
 signals:
-    void find(const QString & pattern, const EditorSearchFlags & flags);
+    void find(const QRegularExpression & pattern);
     void toNextResult(QString * replace = nullptr);
     void toPrevResult(QString * replace = nullptr);
     void replaceAll(const QString & replace);

@@ -5,7 +5,6 @@
 
 #include "misc/defines.h"
 #include "editor/idocument.h"
-#include "editor/editor_search_flags.h"
 #include "editor/text_document_layout.h"
 
 class Project;

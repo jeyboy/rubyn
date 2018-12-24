@@ -236,7 +236,6 @@ HEADERS  += ide_window.h \
     debugging/debug_breakpoint.h \
     controls/base_item_delegate.h \
     editor/editor_search.h \
-    editor/editor_search_flags.h \
     editor/code_editor_searcher.h \
     editor/document_types/tree_document.h \
     controls/universal_editor.h \

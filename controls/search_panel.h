@@ -27,6 +27,7 @@ public:
 
     inline void setInfinityPad(const bool & pad = true) { infinity_pad = pad; }
     void removePrevNext();
+    void activate();
 protected:
     void paintEvent(QPaintEvent * event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;

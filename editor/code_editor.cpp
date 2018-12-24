@@ -84,7 +84,7 @@ CodeEditor::~CodeEditor() {
 
 void CodeEditor::setCompleter(Completer * new_completer) {
     if (completer)
-        QObject::disconnect(completer, nullptr, this, nullptr);
+        disconnect(completer, nullptr, this, nullptr);
 
     completer = new_completer;
 
@@ -1811,46 +1811,22 @@ void CodeEditor::searchIsShow(const bool & show) { //TODO: used?
     else display_cacher -> closeSearch();
 }
 
-void CodeEditor::searchInitiated(const QString & pattern, const EditorSearchFlags & flags) {
+void CodeEditor::searchInitiated(const QRegularExpression & pattern) {
     qDebug() << "CodeEditor::searchInitiated" << pattern;
 
-    if (pattern.isEmpty()) {
+    if (pattern.pattern().isEmpty()) {
         display_cacher -> clearSearch();
         emit searchResultsFinded(0);
     } else {
-        QString val = pattern;
-
-        QRegularExpression::PatternOptions options = QRegularExpression::DotMatchesEverythingOption;
-
-        if (flags ^ esf_match_case)
-            options |= QRegularExpression::CaseInsensitiveOption;
-
-        if (flags & esf_unicode)
-            options |= QRegularExpression::UseUnicodePropertiesOption;
-
-        val = val.remove(QRegularExpression(QLatin1Literal("/r|/n|<br>|<br/>")));
-
-        if (pattern.length() != val.length())
-            options |= QRegularExpression::MultilineOption;
-
-        if (flags ^ esf_regex)
-            val = QRegularExpression::escape(val);
-
-        if (flags & esf_words_only)
-            val = QLatin1Literal("\\b") % val % QLatin1Literal("\\b");
-
-        QRegularExpression regex(val, options);
-
-        if (regex.isValid()) {
-            regex.optimize();
+        if (pattern.isValid()) {
             emit searchCorrectPattern();
         } else {
             display_cacher -> clearSearch();
-            emit searchWrongPattern(regex.errorString());
+            emit searchWrongPattern(pattern.errorString());
             return;
         }
 
-        display_cacher -> beginSearch(regex);
+        display_cacher -> beginSearch(pattern);
         int amount = display_cacher -> search(wrapper -> firstBlock());
 
         emit searchResultsFinded(amount);
