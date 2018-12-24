@@ -150,8 +150,8 @@ QTreeWidgetItem * ProjectTree::findByPath(const QString & path) {
     return nullptr;
 }
 
-bool ProjectTree::search(const QString & pattern, QTreeWidgetItem * item) {
-    bool empty = pattern.isEmpty();
+bool ProjectTree::search(const QRegularExpression & regexp, QTreeWidgetItem * item) {
+    bool empty = regexp.pattern().isEmpty();
     bool has_item = false;
     int items_count = item -> childCount();
 
@@ -160,12 +160,13 @@ bool ProjectTree::search(const QString & pattern, QTreeWidgetItem * item) {
         bool valid = false;
 
         child -> setData(0, Qt::UserRole + 10, property_dropper);
+        child -> setData(0, Qt::UserRole + 11, property_dropper);
 
         if (child -> childCount() > 0) {
-            if (child -> data(0, Qt::UserRole + 11).isNull())
-                child -> setData(0, Qt::UserRole + 11, child -> isExpanded());
+            if (child -> data(0, Qt::UserRole + 12).isNull())
+                child -> setData(0, Qt::UserRole + 12, child -> isExpanded());
 
-            valid = search(pattern, child);
+            valid = search(regexp, child);
 
             if (valid && !child -> isExpanded())
                 child -> setExpanded(true);
@@ -174,11 +175,12 @@ bool ProjectTree::search(const QString & pattern, QTreeWidgetItem * item) {
         if (!empty) {
             QString child_text = child -> text(0);
 
-            int pos = child_text.indexOf(pattern, 0, Qt::CaseInsensitive);
+            QRegularExpressionMatch match = regexp.match(child_text);
 
-            if (pos != -1) {
+            if (match.hasMatch()) {
                 valid = true;
-                child -> setData(0, Qt::UserRole + 10, pos);
+                child -> setData(0, Qt::UserRole + 10, match.capturedStart());
+                child -> setData(0, Qt::UserRole + 11, match.capturedLength());
             }
         }
 
@@ -202,10 +204,10 @@ void ProjectTree::clearSearch(QTreeWidgetItem * item) {
 
         child -> setHidden(false);
 
-        QVariant expand_val = child -> data(0, Qt::UserRole + 11);
+        QVariant expand_val = child -> data(0, Qt::UserRole + 12);
         if (!expand_val.isNull()) {
             child -> setExpanded(expand_val.toBool());
-            child -> setData(0, Qt::UserRole + 11, property_dropper);
+            child -> setData(0, Qt::UserRole + 12, property_dropper);
         }
     }
 }
@@ -283,11 +285,8 @@ void ProjectTree::itemDoubleClicked(QTreeWidgetItem * item, int /*column*/) {
     }
 }
 
-bool ProjectTree::search(const QString & pattern) {
-    setProperty("in_search", !pattern.isEmpty());
-    setProperty("search_len", pattern.length());
-
-    //        return search(pattern, invisibleRootItem());
+bool ProjectTree::search(const QRegularExpression & regexp) {
+    setProperty("in_search", !regexp.pattern().isEmpty());
 
     bool has_item = false;
     int items_count = topLevelItemCount();
@@ -296,7 +295,7 @@ bool ProjectTree::search(const QString & pattern) {
         QTreeWidgetItem * child = topLevelItem(i);
 
         if (child -> childCount() > 0) {
-            has_item |= search(pattern, child);
+            has_item |= search(regexp, child);
         }
     }
 
@@ -305,7 +304,6 @@ bool ProjectTree::search(const QString & pattern) {
 
 void ProjectTree::clearSearch() {
     setProperty("in_search", false);
-    setProperty("search_len", QVariant());
     clearSearch(invisibleRootItem());
 
     scrollToItem(currentItem(), PositionAtCenter);

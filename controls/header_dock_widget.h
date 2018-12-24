@@ -4,7 +4,7 @@
 #include <qwidget.h>
 
 class QLabel;
-class SearchBox;
+class SearchPanel;
 class QHBoxLayout;
 class QToolButton;
 
@@ -13,7 +13,7 @@ class HeaderDockWidget : public QWidget {
 
     QLabel * title_widget;
     QToolButton * search_btn;
-    SearchBox * search_widget;
+    SearchPanel * search_widget;
     QHBoxLayout * _layout;
 public:
     HeaderDockWidget(QWidget * parent = nullptr, const QString & title = QString());
@@ -22,7 +22,7 @@ public:
 
     void insertButton(QWidget * btn, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
     QToolButton * insertButton(const QIcon & ico, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
-    void registerSearchCallbacks(QObject * target, const char * search_show_signal, const char * search_hide_signal, const char * search_request_slot, const char * search_close_slot);
+    void registerSearchCallbacks(QObject * target, const char * search_show_signal, const char * search_hide_signal, const char * search_request_slot, const char * search_close_slot, const char * search_prev_result_slot, const char * search_next_result_slot);
     void showSearch(const bool & show = true);
 
 

@@ -541,7 +541,14 @@ void IDEWindow::setupToolWindows() {
     QToolButton * search_target_btn = widget -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 0);
     search_target_btn -> setToolTip(QLatin1Literal("Scroll to current active document"));
 
-    widget -> registerSearchCallbacks(tree, SIGNAL(searchRequired(const QString &)), SIGNAL(closeSearch()), SLOT(search(const QString &)), SLOT(clearSearch()));
+    widget -> registerSearchCallbacks(
+        tree,
+        SIGNAL(searchRequired(const QString &)),
+        SIGNAL(closeSearch()),
+        SLOT(search(const QRegularExpression &)),
+        SLOT(clearSearch()),
+        0,0
+    );
 
 
 

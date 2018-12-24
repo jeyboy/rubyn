@@ -5,6 +5,7 @@
 #include <qregularexpression.h>
 
 class QCheckBox;
+class QWidgetAction;
 
 class SearchPanel : public QLineEdit {
     Q_OBJECT
@@ -15,6 +16,9 @@ class SearchPanel : public QLineEdit {
     QCheckBox * flag_reg_exp;
     QCheckBox * flag_unicode;
 
+    QWidgetAction * move_prev_btn;
+    QWidgetAction * move_next_btn;
+
     void buildLayout();
     QRegularExpression buildRegex(QString pattern);
 public:
@@ -22,6 +26,7 @@ public:
     ~SearchPanel() Q_DECL_OVERRIDE;
 
     inline void setInfinityPad(const bool & pad = true) { infinity_pad = pad; }
+    void removePrevNext();
 protected:
     void paintEvent(QPaintEvent * event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;

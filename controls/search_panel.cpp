@@ -25,26 +25,26 @@ void SearchPanel::buildLayout() {
 //    btn -> setStyleSheet(QLatin1Literal("QToolButton { border: none; } QToolButton::menu-indicator { top: 3px; left: 3px; width: 4px, height: 4px; } "));
     options_btn -> setDefaultWidget(btn);
 
-    this -> addAction(options_btn, QLineEdit::LeadingPosition);
+    addAction(options_btn, QLineEdit::LeadingPosition);
 
 
-    QWidgetAction * move_prev_btn = new QWidgetAction(this);
+    move_prev_btn = new QWidgetAction(this);
     btn = new QToolButton(this);
     btn -> setIcon(QPixmap(":/row_right").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     btn -> setCursor(QCursor(Qt::PointingHandCursor));
     move_prev_btn -> setDefaultWidget(btn);
     btn -> setToolTip(QLatin1Literal("Move to next"));
-    this -> addAction(move_prev_btn, QLineEdit::TrailingPosition);
+    addAction(move_prev_btn, QLineEdit::TrailingPosition);
     connect(btn, &QToolButton::clicked, [=]() { emit toNextResult(); });
 
 
-    QWidgetAction * move_next_btn = new QWidgetAction(this);
+    move_next_btn = new QWidgetAction(this);
     btn = new QToolButton(this);
     btn -> setIcon(QPixmap(":/row_left").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     btn -> setCursor(QCursor(Qt::PointingHandCursor));
     move_next_btn -> setDefaultWidget(btn);
     btn -> setToolTip(QLatin1Literal("Move to prev"));
-    this -> addAction(move_next_btn, QLineEdit::TrailingPosition);
+    addAction(move_next_btn, QLineEdit::TrailingPosition);
     connect(btn, &QToolButton::clicked, [=]() { emit toPrevResult(); });
 
 
@@ -107,9 +107,16 @@ SearchPanel::SearchPanel(QWidget * parent) : QLineEdit(parent), infinity_pad(fal
 //    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     buildLayout();
+
+    connect(this, &SearchPanel::textChanged, [=](const QString & text) { emit find(buildRegex(text)); });
 }
 
 SearchPanel::~SearchPanel() {}
+
+void SearchPanel::removePrevNext() {
+    move_prev_btn -> deleteLater();
+    move_next_btn -> deleteLater();
+}
 
 void SearchPanel::paintEvent(QPaintEvent * event) {
     QStyleOption opt;
@@ -117,7 +124,7 @@ void SearchPanel::paintEvent(QPaintEvent * event) {
     QPainter p(this);
     style() -> drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
-    QWidget::paintEvent(event);
+    QLineEdit::paintEvent(event);
 }
 
 void SearchPanel::keyPressEvent(QKeyEvent * e) {

@@ -25,14 +25,14 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
         QVariant substr_start = index.data(Qt::UserRole + 10);
 
         if (substr_start.isValid()) {
+            QVariant substr_len = index.data(Qt::UserRole + 11);
             //    QRect r = QApplication::style() -> subElementRect(QStyle::SE_ItemViewItemDecoration, &option);
 
             QString item_text = index.data(Qt::DisplayRole).toString();
             int start_pos = substr_start.toInt();
-            int highlight_len = option.widget -> property("search_len").toInt();
 
             int highlight_offset = option.fontMetrics.boundingRect(item_text.mid(0, start_pos)).width();
-            int highlight_width = option.fontMetrics.boundingRect(item_text.mid(start_pos, highlight_len)).width();
+            int highlight_width = option.fontMetrics.boundingRect(item_text.mid(start_pos, substr_len.toInt())).width();
 
             int text_height = option.fontMetrics.height();
             int voffset = qMax((option.rect.height() - text_height) / 2, 0);

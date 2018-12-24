@@ -1,6 +1,6 @@
 #include "header_dock_widget.h"
 
-#include "search_box.h"
+#include "search_panel.h"
 
 #include <qlayout.h>
 #include <qlabel.h>
@@ -33,7 +33,8 @@ HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QW
     search_btn -> setToolTip(QLatin1Literal("Find files and folders <br/><b>Ctrl + F</b>")); // "Find files and folders <br/><font color='#22aaff'>Ctrl + F</font>"
     search_btn -> setVisible(false);
 
-    search_widget = new SearchBox(this);
+    search_widget = new SearchPanel(this);
+    search_widget -> setInfinityPad();
     connect(search_widget, SIGNAL(returnPressed()), this, SLOT(toggleSearch()));
 
     _layout -> addWidget(search_widget, 10, Qt::AlignLeft);
@@ -66,13 +67,20 @@ QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target
     return btn;
 }
 
-void HeaderDockWidget::registerSearchCallbacks(QObject * target, const char * search_show_signal, const char * search_hide_signal, const char * search_request_slot, const char * search_close_slot) {
+void HeaderDockWidget::registerSearchCallbacks(QObject * target, const char * search_show_signal, const char * search_hide_signal, const char * search_request_slot, const char * search_close_slot, const char * search_prev_result_slot, const char * search_next_result_slot) {
     search_btn -> setVisible(true);
 
     connect(target, search_show_signal, this, SLOT(initiateSearch(const QString &)));
     connect(target, search_hide_signal, this, SLOT(hideSearch()));
-    connect(search_widget, SIGNAL(textChanged(const QString &)), target, search_request_slot);
-    connect(search_widget, SIGNAL(hidden()), target, search_close_slot);
+    connect(search_widget, SIGNAL(find(const QRegularExpression &)), target, search_request_slot);
+    connect(search_widget, SIGNAL(close()), target, search_close_slot);
+
+    if (!search_prev_result_slot || !search_next_result_slot) {
+        search_widget -> removePrevNext();
+    } else {
+        connect(search_widget, SIGNAL(toPrevResult(QString * replace)), target, search_prev_result_slot);
+        connect(search_widget, SIGNAL(toNextResult(QString * replace)), target, search_next_result_slot);
+    }
 }
 
 

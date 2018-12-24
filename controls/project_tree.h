@@ -32,7 +32,7 @@ public:
 
     QTreeWidgetItem * findByPath(const QString & path);
 protected:
-    bool search(const QString & pattern, QTreeWidgetItem * item);
+    bool search(const QRegularExpression & regexp, QTreeWidgetItem * item);
     void clearSearch(QTreeWidgetItem * item);
 
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
@@ -52,7 +52,7 @@ public slots:
 
     void itemDoubleClicked(QTreeWidgetItem * item, int /*column*/);
 
-    bool search(const QString & pattern);
+    bool search(const QRegularExpression & regexp);
     void clearSearch();
 private slots:
     void showContextMenu(const QPoint & point);
