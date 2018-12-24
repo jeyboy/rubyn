@@ -67,6 +67,10 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
         )
     );
 
+    QFont cfont = font();
+    cfont.setBold(true);
+    cfont.setKerning(true);
+
 
     QToolButton * btn = nullptr;
 
@@ -85,10 +89,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
         main_layout -> addLayout(replace_layout);
 
         l2 = new QLabel(QLatin1Literal("Replace with:"), this);
-        QFont f = l2 -> font();
-        f.setBold(true);
-        f.setKerning(true);
-        l2 -> setFont(f);
+        l2 -> setFont(cfont);
 
         replace_layout -> addWidget(l2, 0);
         replace_predicate = new QLineEdit(this);
@@ -137,10 +138,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
     if (l2)
         l1 -> setFixedWidth(l2 -> sizeHint().rwidth());
 
-    QFont f = l1 -> font();
-    f.setBold(true);
-    f.setKerning(true);
-    l1 -> setFont(f);
+    l1 -> setFont(cfont);
 
     search_layout -> addWidget(l1, 0);
     predicate = new QLineEdit(this);

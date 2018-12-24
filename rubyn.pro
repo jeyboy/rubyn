@@ -104,7 +104,8 @@ SOURCES += main.cpp\
     controls/universal_editor.cpp \
     editor/tree_editor.cpp \
     editor/ieditor.cpp \
-    editor/document_types/pad_tree_document.cpp
+    editor/document_types/pad_tree_document.cpp \
+    controls/search_panel.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -243,7 +244,8 @@ HEADERS  += ide_window.h \
     controls/universal_editor.h \
     editor/tree_editor.h \
     editor/ieditor.h \
-    editor/document_types/pad_tree_document.h
+    editor/document_types/pad_tree_document.h \
+    controls/search_panel.h
 
 FORMS    += ide_window.ui
 
