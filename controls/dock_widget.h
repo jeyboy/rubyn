@@ -14,6 +14,7 @@
 
 class HeaderDockWidget;
 class QToolButton;
+class DockWidgetSearchConnector;
 
 class DockWidget : public QDockWidget {
     Q_OBJECT
@@ -39,7 +40,7 @@ public:
     void insertHeaderButton(QWidget * btn, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
     QToolButton * insertHeaderButton(const QIcon & ico, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
 
-    void registerSearchCallbacks(QObject * target, const char * search_show_signal, const char * search_hide_signal, const char * search_request_slot, const char * search_close_slot, const char * search_prev_result_slot, const char * search_next_result_slot);
+    void registerSearchCallbacks(const DockWidgetSearchConnector & connector);
 signals:
     void closing();
 

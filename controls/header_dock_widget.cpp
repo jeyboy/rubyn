@@ -67,19 +67,23 @@ QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target
     return btn;
 }
 
-void HeaderDockWidget::registerSearchCallbacks(QObject * target, const char * search_show_signal, const char * search_hide_signal, const char * search_request_slot, const char * search_close_slot, const char * search_prev_result_slot, const char * search_next_result_slot) {
+void HeaderDockWidget::registerSearchCallbacks(const DockWidgetSearchConnector & connector) {
     search_btn -> setVisible(true);
 
-    connect(target, search_show_signal, this, SLOT(initiateSearch(const QString &)));
-    connect(target, search_hide_signal, this, SLOT(hideSearch()));
-    connect(search_widget, SIGNAL(find(const QRegularExpression &)), target, search_request_slot);
-    connect(search_widget, SIGNAL(close()), target, search_close_slot);
+    connect(connector.target, connector.search_show_signal, this, SLOT(initiateSearch(const QString &)));
+    connect(connector.target, connector.search_hide_signal, this, SLOT(hideSearch()));
 
-    if (!search_prev_result_slot || !search_next_result_slot) {
+    if (connector.search_amount_signal)
+        connect(connector.target, connector.search_amount_signal, search_widget, SLOT(finded(const int & count)));
+
+    connect(search_widget, SIGNAL(find(const QRegularExpression &)), connector.target, connector.search_request_slot);
+    connect(search_widget, SIGNAL(close()), connector.target, connector.search_close_slot);
+
+    if (!connector.search_prev_result_slot || !connector.search_next_result_slot) {
         search_widget -> removePrevNext();
     } else {
-        connect(search_widget, SIGNAL(toPrevResult(QString * replace)), target, search_prev_result_slot);
-        connect(search_widget, SIGNAL(toNextResult(QString * replace)), target, search_next_result_slot);
+        connect(search_widget, SIGNAL(toPrevResult(QString * replace)), connector.target, connector.search_prev_result_slot);
+        connect(search_widget, SIGNAL(toNextResult(QString * replace)), connector.target, connector.search_next_result_slot);
     }
 }
 

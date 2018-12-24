@@ -20,6 +20,7 @@
 #include "controls/color_button.h"
 #include "controls/debug_panel.h"
 #include "controls/breakpoints_panel.h"
+#include "controls/dock_widget_search_connector.h"
 
 #include "debugging/debug.h"
 #include "debugging/debug_stub_interface.h"
@@ -541,14 +542,18 @@ void IDEWindow::setupToolWindows() {
     QToolButton * search_target_btn = widget -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 0);
     search_target_btn -> setToolTip(QLatin1Literal("Scroll to current active document"));
 
-    widget -> registerSearchCallbacks(
-        tree,
-        SIGNAL(searchRequired(const QString &)),
-        SIGNAL(closeSearch()),
-        SLOT(search(const QRegularExpression &)),
-        SLOT(clearSearch()),
-        0,0
-    );
+    DockWidgetSearchConnector connector(tree);
+
+    connector.search_show_signal = SIGNAL(searchRequired(const QString &));
+    connector.search_hide_signal = SIGNAL(closeSearch());
+    connector.search_amount_signal = nullptr;
+
+    connector.search_request_slot = SLOT(search(const QRegularExpression &));
+    connector.search_close_slot = SLOT(clearSearch());
+    connector.search_prev_result_slot = nullptr;
+    connector.search_next_result_slot = nullptr;
+
+    widget -> registerSearchCallbacks(connector);
 
 
 
