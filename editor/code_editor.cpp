@@ -1818,14 +1818,6 @@ void CodeEditor::searchInitiated(const QRegularExpression & pattern) {
         display_cacher -> clearSearch();
         emit searchResultsFinded(0);
     } else {
-        if (pattern.isValid()) {
-            emit searchCorrectPattern();
-        } else {
-            display_cacher -> clearSearch();
-            emit searchWrongPattern(pattern.errorString());
-            return;
-        }
-
         display_cacher -> beginSearch(pattern);
         int amount = display_cacher -> search(wrapper -> firstBlock());
 

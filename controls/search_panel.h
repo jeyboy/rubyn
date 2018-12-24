@@ -20,7 +20,7 @@ class SearchPanel : public QLineEdit {
     QWidgetAction * move_next_btn;
 
     void buildLayout();
-    QRegularExpression buildRegex(QString pattern);
+    QRegularExpression buildRegex(const QString & pattern);
 public:
     SearchPanel(QWidget * parent = nullptr);
     ~SearchPanel() Q_DECL_OVERRIDE;
@@ -34,14 +34,15 @@ protected:
     void hideEvent(QHideEvent * e) Q_DECL_OVERRIDE;
 
     QSize sizeHint() const Q_DECL_OVERRIDE;
+
+    void predicateIsCorrect();
+    void predicateHasError(const QString & error);
 signals:
     void find(const QRegularExpression & pattern);
     void toNextResult(QString * replace = nullptr);
     void toPrevResult(QString * replace = nullptr);
     void close();
 public slots:
-    void predicateIsCorrect();
-    void predicateHasError(const QString & error);
     void finded(const int & count);
 };
 

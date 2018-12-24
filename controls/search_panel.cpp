@@ -52,28 +52,44 @@ void SearchPanel::buildLayout() {
     QWidgetAction * flag_case_sensitive_action = new QWidgetAction(menu);
     flag_case_sensitive_action -> setDefaultWidget(flag_case_sensitive);
     menu -> addAction(flag_case_sensitive_action);
-    connect(flag_case_sensitive, &QCheckBox::clicked, [=](bool) { emit find(buildRegex(text())); });
+    connect(flag_case_sensitive, &QCheckBox::clicked, [=](bool) {
+        QRegularExpression regex = buildRegex(text());
+        if (regex.isValid())
+            emit find(regex);
+    });
 
     flag_whole_word_only = new QCheckBox(QLatin1Literal("Words"), menu);
     QWidgetAction * flag_whole_word_only_action = new QWidgetAction(menu);
     flag_whole_word_only_action -> setDefaultWidget(flag_whole_word_only);
     menu -> addAction(flag_whole_word_only_action);
-    connect(flag_whole_word_only, &QCheckBox::clicked, [=](bool) { emit find(buildRegex(text())); });
+    connect(flag_whole_word_only, &QCheckBox::clicked, [=](bool) {
+        QRegularExpression regex = buildRegex(text());
+        if (regex.isValid())
+            emit find(regex);
+    });
 
     flag_reg_exp = new QCheckBox(QLatin1Literal("Regex"), menu);
     QWidgetAction * flag_reg_exp_action = new QWidgetAction(menu);
     flag_reg_exp_action -> setDefaultWidget(flag_reg_exp);
     menu -> addAction(flag_reg_exp_action);
-    connect(flag_reg_exp, &QCheckBox::clicked, [=](bool) { emit find(buildRegex(text())); });
+    connect(flag_reg_exp, &QCheckBox::clicked, [=](bool) {
+        QRegularExpression regex = buildRegex(text());
+        if (regex.isValid())
+            emit find(regex);
+    });
 
     flag_unicode = new QCheckBox(QLatin1Literal("Unicode"), menu);
     QWidgetAction * flag_unicode_action = new QWidgetAction(menu);
     flag_unicode_action -> setDefaultWidget(flag_unicode);
     menu -> addAction(flag_unicode_action);
-    connect(flag_unicode, &QCheckBox::clicked, [=](bool) { emit find(buildRegex(text())); });
+    connect(flag_unicode, &QCheckBox::clicked, [=](bool) {
+        QRegularExpression regex = buildRegex(text());
+        if (regex.isValid())
+            emit find(regex);
+    });
 }
 
-QRegularExpression SearchPanel::buildRegex(QString pattern) {
+QRegularExpression SearchPanel::buildRegex(const QString & pattern) {
     QString val = pattern;
 
     QRegularExpression::PatternOptions options = QRegularExpression::DotMatchesEverythingOption;
@@ -98,6 +114,11 @@ QRegularExpression SearchPanel::buildRegex(QString pattern) {
     QRegularExpression res(val, options);
     res.optimize();
 
+    if (res.isValid())
+        predicateIsCorrect();
+    else
+        predicateHasError(res.errorString());
+
     return res;
 }
 
@@ -108,7 +129,11 @@ SearchPanel::SearchPanel(QWidget * parent) : QLineEdit(parent), infinity_pad(fal
 
     buildLayout();
 
-    connect(this, &SearchPanel::textChanged, [=](const QString & text) { emit find(buildRegex(text)); });
+    connect(this, &SearchPanel::textChanged, [=](const QString & text) {
+        QRegularExpression regex = buildRegex(text);
+        if (regex.isValid())
+            emit find(regex);
+    });
 }
 
 SearchPanel::~SearchPanel() {}
@@ -120,7 +145,9 @@ void SearchPanel::removePrevNext() {
 
 void SearchPanel::activate() {
     if (!text().isEmpty()) {
-        emit find(buildRegex(text()));
+        QRegularExpression regex = buildRegex(text());
+        if (regex.isValid())
+            emit find(regex);
 
         selectAll();
     }
@@ -158,16 +185,16 @@ QSize SearchPanel::sizeHint() const {
 }
 
 void SearchPanel::predicateIsCorrect() {
-    qDebug() << "EditorSearch::predicateIsCorrect";
+    qDebug() << "SearchPanel::predicateIsCorrect";
 
     setToolTip(QLatin1Literal("Searching..."));
-    setStyleSheet(QLatin1Literal("QLineEdit { border: 1px solid green;}"));
+    setStyleSheet(QLatin1String());
 }
 void SearchPanel::predicateHasError(const QString & error) {
-    qDebug() << "EditorSearch::predicateHasError" << error;
+    qDebug() << "SearchPanel::predicateHasError" << error;
 
     setToolTip(error);
-    setStyleSheet(QLatin1Literal("QLineEdit { border: 1px solid red;}"));
+    setStyleSheet(QLatin1Literal("SearchPanel { border: 2px solid #FF0000;}"));
 }
 
 void SearchPanel::finded(const int & count) {

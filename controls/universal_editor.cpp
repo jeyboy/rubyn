@@ -65,14 +65,6 @@ void UniversalEditor::setupCodeEditor() {
         if (_active_editor == _code_editor)
             _search_bar -> finded(count);
     });
-    connect(_code_editor, &CodeEditor::searchWrongPattern, [=](const QString & error) {
-        if (_active_editor == _code_editor)
-            _search_bar -> predicateHasError(error);
-    });
-    connect(_code_editor, &CodeEditor::searchCorrectPattern, [=]() {
-        if (_active_editor == _code_editor)
-            _search_bar -> predicateIsCorrect();
-    });
     connect(_code_editor, &CodeEditor::searchRequired, [=](const bool & show) { showSearchPanel(show); });
 
     connect(_code_editor, &CodeEditor::inFocus, [=]() {
