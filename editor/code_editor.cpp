@@ -110,7 +110,7 @@ void CodeEditor::openDocument(File * file) {
         }
     }
 
-    display_cacher -> clearSearch();
+    display_cacher -> searcher.clearSearch();
 
     if (file && file -> isText()) {
         QFont new_font(font().family(), 11);
@@ -476,14 +476,14 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
 }
 
 void CodeEditor::drawSearchOverlays(QPainter & painter) {
-    if (!display_cacher -> inSearch())
+    if (!display_cacher -> searcher.inSearch())
         return;
 
     for (CodeEditorCacheCell * it = display_cacher -> begin(); !it -> is_service; it = it -> next) {
         if (!it -> is_visible)
             continue;
 
-        const PairList & indexes = display_cacher -> searchResultsFor(it -> block_number);
+        const PairList & indexes = display_cacher -> searcher.searchResultsFor(it -> block_number);
 
         if (indexes.isEmpty())
             continue;
@@ -1430,12 +1430,12 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         }
     }
 
-    if (curr_key == Qt::Key_Escape && display_cacher -> searchIsOpened()) {
+    if (curr_key == Qt::Key_Escape && display_cacher -> searcher.isOpened()) {
         emit searchRequired(false);
         return;
     }
 
-    if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier && !display_cacher -> inSearch()) {
+    if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier && !display_cacher -> searcher.inSearch()) {
         emit searchRequired(true);
         return;
     }
@@ -1800,7 +1800,7 @@ void CodeEditor::searchIsShow(const bool & show) { //TODO: used?
     qDebug() << "CodeEditor::searchIsShow" << show;
 
     if (show) {
-        display_cacher -> openSearch();
+        display_cacher -> searcher.openSearch();
 
         QTextCursor tcursor;
 
@@ -1808,18 +1808,18 @@ void CodeEditor::searchIsShow(const bool & show) { //TODO: used?
             emit searchRequestRequired(tcursor.selectedText());
         }
     }
-    else display_cacher -> closeSearch();
+    else display_cacher -> searcher.closeSearch();
 }
 
 void CodeEditor::searchInitiated(const QRegularExpression & pattern) {
     qDebug() << "CodeEditor::searchInitiated" << pattern;
 
     if (pattern.pattern().isEmpty()) {
-        display_cacher -> clearSearch();
+        display_cacher -> searcher.clearSearch();
         emit searchResultsFinded(0);
     } else {
-        display_cacher -> beginSearch(pattern);
-        int amount = display_cacher -> search(wrapper -> firstBlock());
+        display_cacher -> searcher.beginSearch(pattern);
+        int amount = display_cacher -> searcher.search(wrapper -> firstBlock());
 
         emit searchResultsFinded(amount);
     }
@@ -1829,7 +1829,7 @@ void CodeEditor::searchInitiated(const QRegularExpression & pattern) {
 void CodeEditor::searchNextResult(QString * replace) {
     qDebug() << "CodeEditor::searchNextResult" << replace;
 
-    if (display_cacher -> searchResultsCount() == 0) {
+    if (display_cacher -> searcher.searchResultsCount() == 0) {
         qDebug() << "CodeEditor::searchNextResult" << "NO RESULTS";
         return;
     }
@@ -1838,7 +1838,7 @@ void CodeEditor::searchNextResult(QString * replace) {
     bool has_selection = cursor.hasSelection();
 
     if (replace && has_selection) {
-        CodeEditorCacheCell::procSearchReplace(display_cacher, cursor, *replace);
+        display_cacher -> searcher.procSearchReplace(cursor, *replace, false);
         delete replace;
 
         has_selection = false;
@@ -1851,7 +1851,7 @@ void CodeEditor::searchNextResult(QString * replace) {
     bool limited = true;
 
     for(int i = block_num; i < max_block; ++i, limited = false, block = block.next()) {
-        const PairList & indexes = display_cacher -> searchResultsFor(i);
+        const PairList & indexes = display_cacher -> searcher.searchResultsFor(i);
 
         if (indexes.isEmpty())
             continue;
@@ -1874,7 +1874,7 @@ void CodeEditor::searchNextResult(QString * replace) {
 void CodeEditor::searchPrevResult(QString * replace) {
     qDebug() << "CodeEditor::searchPrevResult" << replace;
 
-    if (display_cacher -> searchResultsCount() == 0) {
+    if (display_cacher -> searcher.searchResultsCount() == 0) {
         qDebug() << "CodeEditor::searchPrevResult" << "NO RESULTS";
         return;
     }
@@ -1883,7 +1883,7 @@ void CodeEditor::searchPrevResult(QString * replace) {
     bool has_selection = cursor.hasSelection();
 
     if (replace && has_selection) {
-        CodeEditorCacheCell::procSearchReplace(display_cacher, cursor, *replace, true);
+        display_cacher -> searcher.procSearchReplace(cursor, *replace, true);
         delete replace;
 
         has_selection = false;
@@ -1895,7 +1895,7 @@ void CodeEditor::searchPrevResult(QString * replace) {
     bool limited = true;
 
     for(int i = block_num; i >= 0; --i, limited = false, block = block.previous()) {
-        const PairList & indexes = display_cacher -> searchResultsFor(i);
+        const PairList & indexes = display_cacher -> searcher.searchResultsFor(i);
 
         if (indexes.isEmpty())
             continue;
@@ -1918,7 +1918,7 @@ void CodeEditor::searchPrevResult(QString * replace) {
 void CodeEditor::searchRepaceAll(const QString & replace) {
     qDebug() << "CodeEditor::searchRepaceAll" << replace;
 
-    if (display_cacher -> searchResultsCount() == 0) {
+    if (display_cacher -> searcher.searchResultsCount() == 0) {
         qDebug() << "CodeEditor::searchRepaceAll" << "NO RESULTS";
         return;
     }
@@ -1932,7 +1932,7 @@ void CodeEditor::searchRepaceAll(const QString & replace) {
     QTextBlock block = wrapper -> lastBlock();
 
     for(int i = blockCount() - 1; i >= 0; --i, block = block.previous()) {
-        const PairList & indexes = display_cacher -> searchResultsFor(i);
+        const PairList & indexes = display_cacher -> searcher.searchResultsFor(i);
 
         if (indexes.isEmpty())
             continue;
@@ -1952,7 +1952,7 @@ void CodeEditor::searchRepaceAll(const QString & replace) {
 void CodeEditor::searchClosed() {
     qDebug() << "CodeEditor::searchClosed";
 
-    display_cacher -> closeSearch();
+    display_cacher -> searcher.closeSearch();
     emit searchResultsFinded(0);
     viewport() -> update();
 }

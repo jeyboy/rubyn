@@ -6,9 +6,7 @@
 #include <qregularexpression.h>
 
 #include "misc/defines.h"
-
-typedef QPair<EDITOR_POS_TYPE, EDITOR_POS_TYPE> Pair;
-typedef QList<Pair> PairList;
+#include "editor/code_editor_searcher.h"
 
 class BlockUserData;
 class QTextLayout;
@@ -93,19 +91,10 @@ struct CodeEditorCacheCell {
             scope_offsets.clear();
     }
 
-    static void procBlockSearch(CodeEditorCache * cache, const EDITOR_POS_TYPE & block_number, const QTextBlock & blk);
-    static void procSearchReplace(CodeEditorCache * cache, QTextCursor & cursor, const QString & txt, const bool & back_move = false);
-    static void procSearchMod(CodeEditorCache * cache, PairList & res, int res_index, int mod_index, const QString & txt);
-    void procSearch(const QTextBlock & blk);
+    void procSearch(const QTextBlock & block);
 };
 
 class CodeEditorCache {
-    int search_results;
-    bool search_is_opened;
-    bool in_search;
-    QRegularExpression search_regex;
-    QHash<EDITOR_POS_TYPE, PairList> search_mappings;
-
     CodeEditorCacheCell * root, * last;
     QVector<qint16> block_offsets;
 //    QHash<EDITOR_POS_TYPE, > scope_offsets;
@@ -118,6 +107,8 @@ class CodeEditorCache {
 
     friend struct CodeEditorCacheCell;
 public:
+    CodeEditorSearcher searcher;
+
     int debug_active_block_number;
     int top_block_number;
     int bottom_block_number;
@@ -127,29 +118,6 @@ public:
     CodeEditorCache();
 
     ~CodeEditorCache();
-
-    bool searchIsOpened() { return search_is_opened; }
-    void openSearch() { search_is_opened = true; }
-
-    int searchResultsCount() { return search_results; }
-    bool inSearch() { return in_search; }
-    void beginSearch(const QRegularExpression & predicate) {
-        search_results = 0;
-        search_mappings.clear();
-        in_search = true;
-        search_regex = predicate;
-    }
-    int search(const QTextBlock & start_blk);
-    void clearSearch() {
-        search_results = 0;
-        search_mappings.clear();
-        in_search = false;
-    }
-    void closeSearch() {
-        search_is_opened = false;
-        clearSearch();
-    }
-    inline PairList & searchResultsFor(const EDITOR_POS_TYPE & row) { return search_mappings[row]; }
 
     void mapOverlayState(const OVERLAY_POS_TYPE & overlay_pos, const bool & show) {
         if (show)

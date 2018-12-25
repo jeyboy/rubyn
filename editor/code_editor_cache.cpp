@@ -101,91 +101,9 @@ void CodeEditorCacheCell::initLevels(const QTextBlock & block) {
     }
 }
 
-void CodeEditorCacheCell::procBlockSearch(CodeEditorCache * cache, const EDITOR_POS_TYPE & block_number, const QTextBlock & blk) {
-    if (cache -> in_search) {
-        if (!cache -> search_mappings.contains(block_number)) {
-            PairList res;
+void CodeEditorCacheCell::procSearch(const QTextBlock & block) { parent -> searcher.procBlockSearch(block_number, block); }
 
-            QString txt = blk.text();
-            QRegularExpressionMatchIterator i = cache -> search_regex.globalMatch(txt);
-
-            while (i.hasNext()) {
-                QRegularExpressionMatch match = i.next();
-
-                res << Pair(match.capturedStart(), match.capturedLength());
-                cache -> search_results++;
-            }
-
-            cache -> search_mappings.insert(block_number, res);
-        }
-    }
-}
-
-void CodeEditorCacheCell::procSearchReplace(CodeEditorCache * cache, QTextCursor & cursor, const QString & txt, const bool & back_move) {
-    //TODO: calc count of removed lines after replace and correct search hash
-    QTextBlock block = cursor.block();
-
-    PairList & indexes = cache -> searchResultsFor(cursor.blockNumber());
-
-    int diff = 0;
-    int res_index = 0;
-    int mod_index = cursor.selectionStart();
-
-    QMutableListIterator<Pair> it(indexes);
-    while (it.hasNext()) {
-        Pair & pair = it.next();
-
-        if ((cursor.selectionStart() - block.position()) == pair.first) {
-            diff = txt.length() - (cursor.selectionEnd() - mod_index);
-
-            it.remove();
-        }
-        else if (diff != 0) {
-            pair.first += diff;
-        }
-        else ++res_index;
-    }
-
-    cursor.insertText(txt);
-
-    if (back_move)
-        cursor.setPosition(mod_index);
-
-    CodeEditorCacheCell::procSearchMod(cache, indexes, res_index, mod_index - block.position(), txt);
-}
-
-void CodeEditorCacheCell::procSearchMod(CodeEditorCache * cache, PairList & res, int res_index, int mod_index, const QString & txt) {
-    QRegularExpressionMatchIterator i = cache -> search_regex.globalMatch(txt);
-
-    while (i.hasNext()) {
-        QRegularExpressionMatch match = i.next();
-
-        res.insert(res_index, Pair(mod_index + match.capturedStart(), match.capturedLength()));
-    }
-}
-
-void CodeEditorCacheCell::procSearch(const QTextBlock & blk) {
-    if (parent -> in_search) {
-        if (!parent -> search_mappings.contains(block_number)) {
-            PairList res;
-
-//            QRegularExpressionMatch matches = parent -> search_regex.match(layout -> text());
-
-            QString txt = blk.text();
-            QRegularExpressionMatchIterator i = parent -> search_regex.globalMatch(txt);
-
-            while (i.hasNext()) {
-                QRegularExpressionMatch match = i.next();
-
-                res << Pair(match.capturedStart(), match.capturedLength());
-            }
-
-            parent -> search_mappings.insert(block_number, res);
-        }
-    }
-}
-
-CodeEditorCache::CodeEditorCache() : in_search(false), root(nullptr), last(nullptr), length(0), show_overlays(false), debug_active_block_number(NO_INFO), top_block_number(NO_INFO), bottom_block_number(NO_INFO), partialy_filled(false) {
+CodeEditorCache::CodeEditorCache() : root(nullptr), last(nullptr), length(0), show_overlays(false), debug_active_block_number(NO_INFO), top_block_number(NO_INFO), bottom_block_number(NO_INFO), partialy_filled(false) {
     block_offsets.reserve(10);
 
     root = new CodeEditorCacheCell(this, NO_INFO);
@@ -199,18 +117,6 @@ CodeEditorCache::~CodeEditorCache() {
 
     delete root;
     delete last;
-}
-
-int CodeEditorCache::search(const QTextBlock & start_blk) {
-    QTextBlock blk(start_blk);
-    EDITOR_POS_TYPE blk_num = blk.blockNumber();
-
-    while(blk.isValid()) {
-        CodeEditorCacheCell::procBlockSearch(this, blk_num, blk);
-        ++blk_num; blk = blk.next();
-    }
-
-    return search_results;
 }
 
 void CodeEditorCache::clear() {
@@ -240,6 +146,5 @@ void CodeEditorCache::clear() {
 
 void CodeEditorCache::reset() {
     clear();
-    in_search = false;
-    search_mappings.clear();
+    searcher.clearSearch();
 }
