@@ -25,20 +25,10 @@ struct CodeEditorSearcher {
     void beginSearch(const QRegularExpression & predicate) {
         search_results = 0;
         search_mappings.clear();
-        in_search = true;
+        is_opened = true;
         search_regex = predicate;
     }
-    int search(const QTextBlock & start_blk) {
-        QTextBlock blk(start_blk);
-        EDITOR_POS_TYPE blk_num = blk.blockNumber();
-
-        while(blk.isValid()) {
-            procBlockSearch(blk_num, blk);
-            ++blk_num; blk = blk.next();
-        }
-
-        return search_results;
-    }
+    int search(const QTextBlock & start_blk);
     void clearSearch() {
         search_results = 0;
         search_mappings.clear();

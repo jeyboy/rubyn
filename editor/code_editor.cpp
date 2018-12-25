@@ -110,7 +110,8 @@ void CodeEditor::openDocument(File * file) {
         }
     }
 
-    display_cacher -> searcher.clearSearch();
+    if (display_cacher -> searcher.inSearch())
+        display_cacher -> searcher.clearSearch();
 
     if (file && file -> isText()) {
         QFont new_font(font().family(), 11);
@@ -147,6 +148,10 @@ void CodeEditor::openDocument(File * file) {
 //        if (!file -> isFullyReaded()) {
 //            //    verticalScrollBar()
 //        }
+
+        if (display_cacher -> searcher.isOpened()) {
+            searchInitiated(display_cacher -> searcher.search_regex);
+        }
     }
     else {
         setDocument((wrapper = nullptr));
@@ -1796,20 +1801,20 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
 }
 
 
-void CodeEditor::searchIsShow(const bool & show) { //TODO: used?
-    qDebug() << "CodeEditor::searchIsShow" << show;
+//void CodeEditor::searchIsShow(const bool & show) { //TODO: used?
+//    qDebug() << "CodeEditor::searchIsShow" << show;
 
-    if (show) {
-        display_cacher -> searcher.openSearch();
+//    if (show) {
+//        display_cacher -> searcher.openSearch();
 
-        QTextCursor tcursor;
+//        QTextCursor tcursor;
 
-        if (tcursor.hasSelection()) {
-            emit searchRequestRequired(tcursor.selectedText());
-        }
-    }
-    else display_cacher -> searcher.closeSearch();
-}
+//        if (tcursor.hasSelection()) {
+//            emit searchRequestRequired(tcursor.selectedText());
+//        }
+//    }
+//    else display_cacher -> searcher.closeSearch();
+//}
 
 void CodeEditor::searchInitiated(const QRegularExpression & pattern) {
     qDebug() << "CodeEditor::searchInitiated" << pattern;

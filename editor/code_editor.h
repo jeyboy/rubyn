@@ -558,7 +558,7 @@ signals:
     void searchResultsFinded(const int & count);
 
 public slots:
-    void searchIsShow(const bool & show) Q_DECL_OVERRIDE;
+//    void searchIsShow(const bool & show) Q_DECL_OVERRIDE;
     void searchInitiated(const QRegularExpression & pattern) Q_DECL_OVERRIDE;
     void searchNextResult(QString * replace = nullptr) Q_DECL_OVERRIDE;
     void searchPrevResult(QString * replace = nullptr) Q_DECL_OVERRIDE;

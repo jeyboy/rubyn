@@ -1,9 +1,21 @@
 #include "code_editor_searcher.h"
 
-CodeEditorSearcher::CodeEditorSearcher() : in_search(false), is_opened(false) {
+CodeEditorSearcher::CodeEditorSearcher() : is_opened(false), in_search(false) {
 
 }
 
+int CodeEditorSearcher::search(const QTextBlock & start_blk) {
+    in_search = true;
+    QTextBlock blk(start_blk);
+    EDITOR_POS_TYPE blk_num = blk.blockNumber();
+
+    while(blk.isValid()) {
+        procBlockSearch(blk_num, blk);
+        ++blk_num; blk = blk.next();
+    }
+
+    return search_results;
+}
 
 void CodeEditorSearcher::procBlockSearch(const EDITOR_POS_TYPE & block_number, const QTextBlock & blk) {
     if (in_search) {

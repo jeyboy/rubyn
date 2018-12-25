@@ -14,7 +14,7 @@ public:
 
     virtual void openDocument(File * file) = 0;
 
-    virtual void searchIsShow(const bool & show) = 0;
+//    virtual void searchIsShow(const bool & show) = 0;
     virtual void searchInitiated(const QRegularExpression & pattern) = 0;
     virtual void searchNextResult(QString * replace = nullptr) = 0;
     virtual void searchPrevResult(QString * replace = nullptr) = 0;
