@@ -2008,7 +2008,6 @@ void CodeEditor::highlightCurrentLine() {
 
 void CodeEditor::cursorMoved() {
     bool initiated = false;
-    bool alt_initiated = false;
 
     alt_para_info.clear();
 
@@ -2053,12 +2052,12 @@ void CodeEditor::cursorMoved() {
                 para = para -> prevInLine();
 
                 if (para && para -> pos != para_info.opener_pos && para -> pos + para -> length == pos_in_block)
-                    alt_initiated = findPara(alt_para_info, blk, para, start_pos);
+                    findPara(alt_para_info, blk, para, start_pos);
             } else if (para -> pos + para -> length == pos_in_block) {
                 para = para -> nextInLine();
 
                 if (para && para -> pos != para_info.closer_pos && para -> pos == pos_in_block)
-                    alt_initiated = findPara(alt_para_info, blk, para, start_pos);
+                    findPara(alt_para_info, blk, para, start_pos);
             }
         }
     }
@@ -2066,9 +2065,13 @@ void CodeEditor::cursorMoved() {
     if (initiated) {
         if (para_info.start_block_num < display_cacher -> top_block_number)
             showOverlay(OverlayInfo::ol_top, hid_para_content_popup, document() -> findBlockByNumber(para_info.start_block_num));
+        else
+            hideOverlay(OverlayInfo::ol_top);
 
         if (para_info.end_block_num > display_cacher -> bottom_block_number)
             showOverlay(OverlayInfo::ol_bottom, hid_para_content_popup, document() -> findBlockByNumber(para_info.end_block_num));
+        else
+            hideOverlay(OverlayInfo::ol_bottom);
 
         viewport() -> update(); // update editor marks
         update(); // update folding scope on extra area
