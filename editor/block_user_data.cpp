@@ -1,9 +1,12 @@
 #include "block_user_data.h"
 
+#include "editor/search_result.h"
+
 //#include <QtConcurrent/QtConcurrent>
 
 BlockUserData::BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev, ParaCell * para_prev, const UserDataFlags & data_flags)
-    : flags(data_flags), stack_token(nullptr), token_begin(nullptr), token_end(nullptr), para_begin(nullptr), para_end(nullptr), para_control(nullptr), level(DEFAULT_LEVEL)
+    : flags(data_flags), stack_token(nullptr), token_begin(nullptr), token_end(nullptr), para_begin(nullptr), para_end(nullptr), para_control(nullptr),
+      level(DEFAULT_LEVEL), msgs(nullptr), search(nullptr)
 {
     tokens -> registerLine(token_begin, token_end, token_prev);
     paras -> registerLine(para_begin, para_end, para_prev);
@@ -90,7 +93,15 @@ ParaCell * BlockUserData::paraForPos(const EDITOR_POS_TYPE & pos) {
 }
 
 TokenCell * BlockUserData::lineControlToken() {
-    msgs.clear();
+    if (msgs) {
+        delete msgs;
+        msgs = nullptr;
+    }
+
+    if (search) {
+        delete search;
+        search = nullptr;
+    }
 
     token_end -> prev -> next = nullptr; // detach end line
     return token_begin;
@@ -158,4 +169,11 @@ void BlockUserData::setFlag(const UserDataFlags & flag, const bool & on) {
     } else {
         flags = static_cast<UserDataFlags>(flags - flag);
     }
+}
+
+void BlockUserData::addMessage(const MsgInfo & msg) {
+    if (!msgs)
+        msgs = new QList<MsgInfo>();
+
+    msgs -> append(msg);
 }

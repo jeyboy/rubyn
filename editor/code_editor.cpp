@@ -110,7 +110,7 @@ void CodeEditor::openDocument(File * file) {
         }
     }
 
-    if (display_cacher -> searcher.inSearch())
+    if (display_cacher -> searcher.is_active)
         display_cacher -> searcher.clearSearch();
 
     if (file && file -> isText()) {
@@ -149,7 +149,7 @@ void CodeEditor::openDocument(File * file) {
 //            //    verticalScrollBar()
 //        }
 
-        if (display_cacher -> searcher.isOpened()) {
+        if (display_cacher -> searcher.is_opened) {
             searchInitiated(display_cacher -> searcher.search_regex);
         }
     }
@@ -481,14 +481,18 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
 }
 
 void CodeEditor::drawSearchOverlays(QPainter & painter) {
-    if (!display_cacher -> searcher.inSearch())
+    if (!display_cacher -> searcher.is_active)
         return;
 
     for (CodeEditorCacheCell * it = display_cacher -> begin(); !it -> is_service; it = it -> next) {
         if (!it -> is_visible)
             continue;
 
-        const PairList & indexes = display_cacher -> searcher.searchResultsFor(it -> block_number);
+        SearchResult * results = it -> user_data -> search;
+
+        if (!results) continue;
+
+        const PairList & indexes = results -> mappings;
 
         if (indexes.isEmpty())
             continue;
@@ -1041,6 +1045,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     QHash<int, bool> folding_scopes;
 
     CodeEditorCacheCell * cache_cell = nullptr;
+    CodeEditorSearcher & searcher = display_cacher -> searcher;
 
     bool editable = !isReadOnly();
     bool need_placeholder = !placeholderText().isEmpty() && document() -> isEmpty();
@@ -1079,7 +1084,9 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     forever {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
         cache_cell -> layout = block.layout();
-        cache_cell -> procSearch(block);
+
+        if (searcher.is_active)
+            cache_cell -> procSearch(block);
 
         bool is_active_debug_line = display_cacher -> debug_active_block_number == cache_cell -> block_number;
 
@@ -1295,10 +1302,10 @@ bool CodeEditor::event(QEvent * event) {
             EDITOR_POS_TYPE pos = cursor.positionInBlock();
             bool tip_is_visible = QToolTip::isVisible();
 
-            BlockUserData * udata = reinterpret_cast<BlockUserData *>(blk.userData());
-            if (udata && !udata -> msgs.isEmpty()) {
+            BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
+            if (udata && udata -> msgs) {
                 int block_num = blk.blockNumber();
-                QList<MsgInfo> msgs = udata -> msgs;
+                QList<MsgInfo> msgs = *udata -> msgs;
 
                 for(QList<MsgInfo>::Iterator msg = msgs.begin(); msg != msgs.end(); msg++) {
                     if ((*msg).pos <= pos && ((*msg).pos + (EDITOR_POS_TYPE)(*msg).length) > pos) {
@@ -1435,12 +1442,12 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         }
     }
 
-    if (curr_key == Qt::Key_Escape && display_cacher -> searcher.isOpened()) {
+    if (curr_key == Qt::Key_Escape && display_cacher -> searcher.is_opened) {
         emit searchRequired(false);
         return;
     }
 
-    if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier && !display_cacher -> searcher.inSearch()) {
+    if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier && !display_cacher -> searcher.is_active) {
         emit searchRequired(true);
         return;
     }
@@ -1849,14 +1856,16 @@ void CodeEditor::searchNextResult(QString * replace) {
         has_selection = false;
     }
 
-    QTextBlock block = cursor.block();
-    EDITOR_POS_TYPE block_num = cursor.blockNumber();
-    EDITOR_POS_TYPE max_block = blockCount();
     EDITOR_POS_TYPE pos = cursor.positionInBlock();
     bool limited = true;
 
-    for(int i = block_num; i < max_block; ++i, limited = false, block = block.next()) {
-        const PairList & indexes = display_cacher -> searcher.searchResultsFor(i);
+    for(QTextBlock block = cursor.block(); block.isValid(); limited = false, block = block.next()) {
+        SearchResult * results = display_cacher -> searcher.searchResultsFor(block);
+
+        if (!results)
+            continue;
+
+        const PairList & indexes = results -> mappings;
 
         if (indexes.isEmpty())
             continue;
@@ -1894,13 +1903,16 @@ void CodeEditor::searchPrevResult(QString * replace) {
         has_selection = false;
     }
 
-    QTextBlock block = cursor.block();
-    EDITOR_POS_TYPE block_num = cursor.blockNumber();
     EDITOR_POS_TYPE pos = cursor.positionInBlock();
     bool limited = true;
 
-    for(int i = block_num; i >= 0; --i, limited = false, block = block.previous()) {
-        const PairList & indexes = display_cacher -> searcher.searchResultsFor(i);
+    for(QTextBlock block = cursor.block(); block.isValid(); limited = false, block = block.previous()) {
+        SearchResult * results = display_cacher -> searcher.searchResultsFor(block);
+
+        if (!results)
+            continue;
+
+        const PairList & indexes = results -> mappings;
 
         if (indexes.isEmpty())
             continue;
@@ -1934,10 +1946,14 @@ void CodeEditor::searchRepaceAll(const QString & replace) {
 //    EDITOR_POS_TYPE pos = cursor.positionInBlock();
 
     cursor.beginEditBlock();
-    QTextBlock block = wrapper -> lastBlock();
 
-    for(int i = blockCount() - 1; i >= 0; --i, block = block.previous()) {
-        const PairList & indexes = display_cacher -> searcher.searchResultsFor(i);
+    for( QTextBlock block = wrapper -> lastBlock(); block.isValid(); block = block.previous()) {
+        SearchResult * results = display_cacher -> searcher.searchResultsFor(block);
+
+        if (!results)
+            continue;
+
+        const PairList & indexes = results -> mappings;
 
         if (indexes.isEmpty())
             continue;

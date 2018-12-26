@@ -101,7 +101,10 @@ void CodeEditorCacheCell::initLevels(const QTextBlock & block) {
     }
 }
 
-void CodeEditorCacheCell::procSearch(const QTextBlock & block) { parent -> searcher.procBlockSearch(block_number, block); }
+void CodeEditorCacheCell::procSearch(const QTextBlock & block) {
+    if (!user_data -> search)
+        parent -> searcher.procBlockSearch(block);
+}
 
 CodeEditorCache::CodeEditorCache() : root(nullptr), last(nullptr), length(0), show_overlays(false), debug_active_block_number(NO_INFO), top_block_number(NO_INFO), bottom_block_number(NO_INFO), partialy_filled(false) {
     block_offsets.reserve(10);

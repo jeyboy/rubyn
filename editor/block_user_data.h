@@ -11,6 +11,8 @@
 
 #define DEFAULT_LEVEL 0
 
+class SearchResult;
+
 struct BlockUserData : public QTextBlockUserData {
     enum UserDataFlags : DATA_FLAGS_TYPE {
         udf_none = 0,
@@ -30,8 +32,10 @@ struct BlockUserData : public QTextBlockUserData {
     ParaCell * para_end;
     ParaCell * para_control;
 
-    QList<MsgInfo> msgs;
     int level;
+
+    QList<MsgInfo> * msgs;
+    SearchResult * search;
 
     BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev = nullptr, ParaCell * para_prev = nullptr, const UserDataFlags & data_flags = udf_none);
 
@@ -88,6 +92,8 @@ struct BlockUserData : public QTextBlockUserData {
     }
 
     void setFlag(const UserDataFlags & flag, const bool & on);
+
+    void addMessage(const MsgInfo & msg);
 };
 
 #endif // BLOCK_USER_DATA_H

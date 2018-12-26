@@ -2,45 +2,45 @@
 #define CODE_EDITOR_SEARCHER_H
 
 #include "misc/defines.h"
+#include "editor/text_document_layout.h"
+#include "editor/search_result.h"
+
 #include <qregularexpression.h>
 #include <QTextBlock>
 
-typedef QPair<EDITOR_POS_TYPE, EDITOR_POS_TYPE> Pair;
-typedef QList<Pair> PairList;
-
 struct CodeEditorSearcher {
+    uint revision;
     int search_results;
     bool is_opened;
-    bool in_search;
+    bool is_active;
     QRegularExpression search_regex;
-    QHash<EDITOR_POS_TYPE, PairList> search_mappings;
 
     CodeEditorSearcher();
 
-    bool isOpened() { return is_opened; }
     void openSearch() { is_opened = true; }
 
     int searchResultsCount() { return search_results; }
-    bool inSearch() { return in_search; }
     void beginSearch(const QRegularExpression & predicate) {
         search_results = 0;
-        search_mappings.clear();
+
+        if (++revision > 100000)
+            revision = 0;
+
         is_opened = true;
         search_regex = predicate;
     }
     int search(const QTextBlock & start_blk);
     void clearSearch() {
         search_results = 0;
-        search_mappings.clear();
-        in_search = false;
+        is_active = false;
     }
     void closeSearch() {
         is_opened = false;
         clearSearch();
     }
-    inline PairList & searchResultsFor(const EDITOR_POS_TYPE & row) { return search_mappings[row]; }
+    inline SearchResult * searchResultsFor(const QTextBlock & blk) { return TextDocumentLayout::getUserDataForBlock(blk) -> search; }
 
-    void procBlockSearch(const EDITOR_POS_TYPE & block_number, const QTextBlock & blk);
+    void procBlockSearch(const QTextBlock & blk);
 
     void procSearchReplace(QTextCursor & cursor, const QString & txt, const bool & back_move);
 

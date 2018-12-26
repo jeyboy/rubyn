@@ -381,7 +381,7 @@ struct LexerControl {
 //                qWarning() << msg;
         }
 
-        user_data -> msgs.append(MsgInfo{lexem, last_light_pos, last_light_len, msg});
+        user_data -> addMessage(MsgInfo{lexem, last_light_pos, last_light_len, msg});
     }
 
     inline void attachPara(const ParaType & ptype, const uint & flags, const bool & closable) {

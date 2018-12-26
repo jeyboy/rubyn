@@ -243,7 +243,8 @@ HEADERS  += ide_window.h \
     editor/ieditor.h \
     editor/document_types/pad_tree_document.h \
     controls/search_panel.h \
-    controls/dock_widget_search_connector.h
+    controls/dock_widget_search_connector.h \
+    editor/search_result.h
 
 FORMS    += ide_window.ui
 

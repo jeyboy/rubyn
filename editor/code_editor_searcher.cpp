@@ -1,26 +1,28 @@
 #include "code_editor_searcher.h"
 
-CodeEditorSearcher::CodeEditorSearcher() : is_opened(false), in_search(false) {
+CodeEditorSearcher::CodeEditorSearcher() : revision(0), search_results(0), is_opened(false), is_active(false) {
 
 }
 
 int CodeEditorSearcher::search(const QTextBlock & start_blk) {
-    in_search = true;
+    is_active = true;
     QTextBlock blk(start_blk);
     EDITOR_POS_TYPE blk_num = blk.blockNumber();
 
     while(blk.isValid()) {
-        procBlockSearch(blk_num, blk);
+        procBlockSearch(blk);
         ++blk_num; blk = blk.next();
     }
 
     return search_results;
 }
 
-void CodeEditorSearcher::procBlockSearch(const EDITOR_POS_TYPE & block_number, const QTextBlock & blk) {
-    if (in_search) {
-        if (!search_mappings.contains(block_number)) {
-            PairList res;
+void CodeEditorSearcher::procBlockSearch(const QTextBlock & blk) {
+    if (is_active) {
+        BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
+
+        if (!udata -> search) {
+            udata -> search = new SearchResult(revision);
 
             QString txt = blk.text();
             QRegularExpressionMatchIterator i = search_regex.globalMatch(txt);
@@ -28,11 +30,14 @@ void CodeEditorSearcher::procBlockSearch(const EDITOR_POS_TYPE & block_number, c
             while (i.hasNext()) {
                 QRegularExpressionMatch match = i.next();
 
-                res << Pair(match.capturedStart(), match.capturedLength());
+                udata -> search -> mappings.append(Pair(match.capturedStart(), match.capturedLength()));
                 search_results++;
             }
 
-            search_mappings.insert(block_number, res);
+            if (udata -> search -> mappings.isEmpty()) {
+                delete udata -> search;
+                udata -> search = nullptr;
+            }
         }
     }
 }
@@ -41,13 +46,13 @@ void CodeEditorSearcher::procSearchReplace(QTextCursor & cursor, const QString &
     //TODO: calc count of removed lines after replace and correct search hash
     QTextBlock block = cursor.block();
 
-    PairList & indexes = searchResultsFor(cursor.blockNumber());
+    SearchResult * results = searchResultsFor(block);
 
     int diff = 0;
     int res_index = 0;
     int mod_index = cursor.selectionStart();
 
-    QMutableListIterator<Pair> it(indexes);
+    QMutableListIterator<Pair> it(results -> mappings);
     while (it.hasNext()) {
         Pair & pair = it.next();
 
@@ -67,7 +72,7 @@ void CodeEditorSearcher::procSearchReplace(QTextCursor & cursor, const QString &
     if (back_move)
         cursor.setPosition(mod_index);
 
-    procSearchMod(indexes, res_index, mod_index - block.position(), txt);
+    procSearchMod(results -> mappings, res_index, mod_index - block.position(), txt);
 }
 
 void CodeEditorSearcher::procSearchMod(PairList & res, int res_index, int mod_index, const QString & txt) {
