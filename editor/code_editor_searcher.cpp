@@ -21,8 +21,15 @@ void CodeEditorSearcher::procBlockSearch(const QTextBlock & blk) {
     if (is_active) {
         BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-        if (!udata -> search) {
-            udata -> search = new SearchResult(revision);
+        if (udata) {
+            if (!udata -> search)
+                udata -> search = new SearchResult(revision);
+            else {
+                if (udata -> search -> revision == revision)
+                    return;
+
+                udata -> search -> mappings.clear();
+            }
 
             QString txt = blk.text();
             QRegularExpressionMatchIterator i = search_regex.globalMatch(txt);

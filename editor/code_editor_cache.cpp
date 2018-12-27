@@ -102,7 +102,7 @@ void CodeEditorCacheCell::initLevels(const QTextBlock & block) {
 }
 
 void CodeEditorCacheCell::procSearch(const QTextBlock & block) {
-    if (!user_data -> search)
+    if (user_data && !user_data -> search)
         parent -> searcher.procBlockSearch(block);
 }
 
