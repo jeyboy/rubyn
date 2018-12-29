@@ -10,6 +10,8 @@
 #include "editor/active_para_info.h"
 #include "editor/active_folding_info.h"
 #include "editor/completer_info.h"
+#include "editor/code_editor_searcher.h"
+
 
 class QPaintEvent;
 class QResizeEvent;
@@ -292,6 +294,8 @@ class CodeEditor : public QPlainTextEdit, public IEditor {
 
     friend class ExtraArea;
 public:
+    CodeEditorSearcher searcher;
+
     CodeEditor(QWidget * parent = nullptr);
     ~CodeEditor() Q_DECL_OVERRIDE;
 

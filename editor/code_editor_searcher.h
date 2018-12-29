@@ -3,29 +3,28 @@
 
 #include "misc/defines.h"
 #include "editor/text_document_layout.h"
-#include "editor/search_result.h"
 
 #include <qregularexpression.h>
 #include <QTextBlock>
 
 struct CodeEditorSearcher {
-    uint revision;
-    int search_results;
+    static PairList default_mappings;
+
     bool is_opened;
     bool is_active;
+    int search_results;
     QRegularExpression search_regex;
+
+    QHash<BlockUserData *, PairList> mappings;
 
     CodeEditorSearcher();
 
     void openSearch() { is_opened = true; }
 
-    int searchResultsCount() { return search_results; }
+    inline bool hasResults() { return search_results > 0; }
+    inline int searchResultsCount() { return search_results; }
     void beginSearch(const QRegularExpression & predicate) {
         search_results = 0;
-
-        if (++revision > 100000)
-            revision = 0;
-
         is_opened = true;
         search_regex = predicate;
     }
@@ -38,7 +37,19 @@ struct CodeEditorSearcher {
         is_opened = false;
         clearSearch();
     }
-    inline SearchResult * searchResultsFor(const QTextBlock & blk) { return TextDocumentLayout::getUserDataForBlock(blk) -> search; }
+    inline PairList & searchResultsFor(const QTextBlock & blk) {
+        BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
+        return searchResultsFor(udata);
+    }
+    inline PairList & searchResultsFor(BlockUserData * udata) {
+        if (!udata || !mappings.contains(udata)) {
+            qDebug() << "NO UDATA";
+            return default_mappings;
+        }
+
+        return mappings[udata];
+    }
+
 
     void procBlockSearch(const QTextBlock & blk);
 

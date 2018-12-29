@@ -3,10 +3,8 @@
 
 #include <qrect.h>
 #include <qvector.h>
-#include <qregularexpression.h>
 
 #include "misc/defines.h"
-#include "editor/code_editor_searcher.h"
 
 class BlockUserData;
 class QTextLayout;
@@ -90,8 +88,6 @@ struct CodeEditorCacheCell {
         else
             scope_offsets.clear();
     }
-
-    void procSearch(const QTextBlock & block);
 };
 
 class CodeEditorCache {
@@ -107,8 +103,6 @@ class CodeEditorCache {
 
     friend struct CodeEditorCacheCell;
 public:
-    CodeEditorSearcher searcher;
-
     int debug_active_block_number;
     int top_block_number;
     int bottom_block_number;
@@ -129,7 +123,6 @@ public:
     bool isShowOverlay() { return show_overlays; }
 
     void clear();
-    void reset();
 
     void setTab(const QLatin1String & tab_str, const qreal & def_symbol_width) {
         tab_length = tab_str.size();

@@ -110,8 +110,8 @@ void CodeEditor::openDocument(File * file) {
         }
     }
 
-    if (display_cacher -> searcher.is_active)
-        display_cacher -> searcher.clearSearch();
+    if (searcher.is_active)
+        searcher.clearSearch();
 
     if (file && file -> isText()) {
         QFont new_font(font().family(), 11);
@@ -149,8 +149,8 @@ void CodeEditor::openDocument(File * file) {
 //            //    verticalScrollBar()
 //        }
 
-        if (display_cacher -> searcher.is_opened) {
-            searchInitiated(display_cacher -> searcher.search_regex);
+        if (searcher.is_opened) {
+            searchInitiated(searcher.search_regex);
         }
     }
     else {
@@ -481,25 +481,20 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
 }
 
 void CodeEditor::drawSearchOverlays(QPainter & painter) {
-    if (!display_cacher -> searcher.is_active)
+    if (!searcher.is_active)
         return;
 
     for (CodeEditorCacheCell * it = display_cacher -> begin(); !it -> is_service; it = it -> next) {
-        if (!it -> is_visible)
+        if (!it -> is_visible || !it -> user_data)
             continue;
 
-        SearchResult * results = it -> user_data -> search;
+        PairList & mappings = searcher.searchResultsFor(it -> user_data);
 
-        if (!results) continue;
+        if (mappings.isEmpty()) continue;
 
-        const PairList & indexes = results -> mappings;
+        PairList::Iterator index_it = mappings.begin();
 
-        if (indexes.isEmpty())
-            continue;
-
-        PairList::ConstIterator index_it = indexes.constBegin();
-
-        for(; index_it != indexes.constEnd(); index_it++) {
+        for(; index_it != mappings.end(); index_it++) {
             QRectF r = textRect(it, (*index_it).first, (*index_it).second);
             drawTextOverlay(hid_search_results_overlay, painter, r);
         }
@@ -1045,7 +1040,6 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     QHash<int, bool> folding_scopes;
 
     CodeEditorCacheCell * cache_cell = nullptr;
-    CodeEditorSearcher & searcher = display_cacher -> searcher;
 
     bool editable = !isReadOnly();
     bool need_placeholder = !placeholderText().isEmpty() && document() -> isEmpty();
@@ -1086,7 +1080,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         cache_cell -> layout = block.layout();
 
         if (searcher.is_active)
-            cache_cell -> procSearch(block);
+            searcher.procBlockSearch(block);
 
         bool is_active_debug_line = display_cacher -> debug_active_block_number == cache_cell -> block_number;
 
@@ -1442,12 +1436,12 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         }
     }
 
-    if (curr_key == Qt::Key_Escape && display_cacher -> searcher.is_opened) {
+    if (curr_key == Qt::Key_Escape &&  searcher.is_opened) {
         emit searchRequired(false);
         return;
     }
 
-    if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier && !display_cacher -> searcher.is_active) {
+    if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier && !searcher.is_active) {
         emit searchRequired(true);
         return;
     }
@@ -1827,11 +1821,11 @@ void CodeEditor::searchInitiated(const QRegularExpression & pattern) {
     qDebug() << "CodeEditor::searchInitiated" << pattern;
 
     if (pattern.pattern().isEmpty()) {
-        display_cacher -> searcher.clearSearch();
+        searcher.clearSearch();
         emit searchResultsFinded(0);
     } else {
-        display_cacher -> searcher.beginSearch(pattern);
-        int amount = display_cacher -> searcher.search(wrapper -> firstBlock());
+        searcher.beginSearch(pattern);
+        int amount = searcher.search(wrapper -> firstBlock());
 
         emit searchResultsFinded(amount);
     }
@@ -1841,7 +1835,7 @@ void CodeEditor::searchInitiated(const QRegularExpression & pattern) {
 void CodeEditor::searchNextResult(QString * replace) {
     qDebug() << "CodeEditor::searchNextResult" << replace;
 
-    if (display_cacher -> searcher.searchResultsCount() == 0) {
+    if (searcher.searchResultsCount() == 0) {
         qDebug() << "CodeEditor::searchNextResult" << "NO RESULTS";
         return;
     }
@@ -1850,7 +1844,7 @@ void CodeEditor::searchNextResult(QString * replace) {
     bool has_selection = cursor.hasSelection();
 
     if (replace && has_selection) {
-        display_cacher -> searcher.procSearchReplace(cursor, *replace, false);
+        searcher.procSearchReplace(cursor, *replace, false);
         delete replace;
 
         has_selection = false;
@@ -1860,19 +1854,14 @@ void CodeEditor::searchNextResult(QString * replace) {
     bool limited = true;
 
     for(QTextBlock block = cursor.block(); block.isValid(); limited = false, block = block.next()) {
-        SearchResult * results = display_cacher -> searcher.searchResultsFor(block);
+        PairList & mappings = searcher.searchResultsFor(block);
 
-        if (!results)
+        if (mappings.isEmpty())
             continue;
 
-        const PairList & indexes = results -> mappings;
+        PairList::ConstIterator index_it = mappings.constBegin();
 
-        if (indexes.isEmpty())
-            continue;
-
-        PairList::ConstIterator index_it = indexes.constBegin();
-
-        for(; index_it != indexes.constEnd(); index_it++) {
+        for(; index_it != mappings.constEnd(); index_it++) {
             if (!limited || (has_selection && (cursor.selectionStart() - block.position()) < (*index_it).first) || (!has_selection && pos < (*index_it).first)) {
                 EDITOR_POS_TYPE block_pos = block.position();
 
@@ -1888,7 +1877,7 @@ void CodeEditor::searchNextResult(QString * replace) {
 void CodeEditor::searchPrevResult(QString * replace) {
     qDebug() << "CodeEditor::searchPrevResult" << replace;
 
-    if (display_cacher -> searcher.searchResultsCount() == 0) {
+    if (searcher.hasResults()) {
         qDebug() << "CodeEditor::searchPrevResult" << "NO RESULTS";
         return;
     }
@@ -1897,7 +1886,7 @@ void CodeEditor::searchPrevResult(QString * replace) {
     bool has_selection = cursor.hasSelection();
 
     if (replace && has_selection) {
-        display_cacher -> searcher.procSearchReplace(cursor, *replace, true);
+        searcher.procSearchReplace(cursor, *replace, true);
         delete replace;
 
         has_selection = false;
@@ -1907,19 +1896,14 @@ void CodeEditor::searchPrevResult(QString * replace) {
     bool limited = true;
 
     for(QTextBlock block = cursor.block(); block.isValid(); limited = false, block = block.previous()) {
-        SearchResult * results = display_cacher -> searcher.searchResultsFor(block);
+        PairList & mappings = searcher.searchResultsFor(block);
 
-        if (!results)
+        if (mappings.isEmpty())
             continue;
 
-        const PairList & indexes = results -> mappings;
+        PairList::const_reverse_iterator index_it = mappings.rbegin();
 
-        if (indexes.isEmpty())
-            continue;
-
-        PairList::const_reverse_iterator index_it = indexes.rbegin();
-
-        for(; index_it != indexes.rend(); index_it++) {
+        for(; index_it != mappings.rend(); index_it++) {
             if (!limited || (has_selection && (cursor.selectionStart() - block.position()) > (*index_it).first) || (!has_selection && pos > (*index_it).first)) {
                 EDITOR_POS_TYPE block_pos = block.position();
 
@@ -1935,7 +1919,7 @@ void CodeEditor::searchPrevResult(QString * replace) {
 void CodeEditor::searchRepaceAll(const QString & replace) {
     qDebug() << "CodeEditor::searchRepaceAll" << replace;
 
-    if (display_cacher -> searcher.searchResultsCount() == 0) {
+    if (searcher.hasResults()) {
         qDebug() << "CodeEditor::searchRepaceAll" << "NO RESULTS";
         return;
     }
@@ -1948,20 +1932,15 @@ void CodeEditor::searchRepaceAll(const QString & replace) {
     cursor.beginEditBlock();
 
     for( QTextBlock block = wrapper -> lastBlock(); block.isValid(); block = block.previous()) {
-        SearchResult * results = display_cacher -> searcher.searchResultsFor(block);
+        PairList & mappings = searcher.searchResultsFor(block);
 
-        if (!results)
+        if (mappings.isEmpty())
             continue;
 
-        const PairList & indexes = results -> mappings;
-
-        if (indexes.isEmpty())
-            continue;
-
-        PairList::const_reverse_iterator index_it = indexes.rbegin();
+        PairList::const_reverse_iterator index_it = mappings.rbegin();
         EDITOR_POS_TYPE block_pos = block.position();
 
-        for(; index_it != indexes.rend(); index_it++) {
+        for(; index_it != mappings.rend(); index_it++) {
             cursor.setPosition(block_pos + (*index_it).first, QTextCursor::MoveAnchor);
             cursor.setPosition(block_pos + (*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
             cursor.insertText(replace);
@@ -1973,7 +1952,7 @@ void CodeEditor::searchRepaceAll(const QString & replace) {
 void CodeEditor::searchClosed() {
     qDebug() << "CodeEditor::searchClosed";
 
-    display_cacher -> searcher.closeSearch();
+    searcher.closeSearch();
     emit searchResultsFinded(0);
     viewport() -> update();
 }

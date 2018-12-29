@@ -185,6 +185,8 @@ void Highlighter::reformatBlocks(int from, int chars_removed, int chars_added) {
     QTextBlock last_block = doc -> findBlock(from + chars_added + (chars_removed > 0 ? 1 : 0));
     int end_position;
 
+//    qDebug() << "reformatBlocks" << '(' << from << chars_added << chars_removed << ')' << block.blockNumber() << last_block.blockNumber();
+
     if (last_block.isValid())
         end_position = last_block.position() + last_block.length();
     else

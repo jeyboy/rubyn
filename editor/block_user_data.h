@@ -35,7 +35,6 @@ struct BlockUserData : public QTextBlockUserData {
     int level;
 
     QList<MsgInfo> * msgs;
-    SearchResult * search;
 
     BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev = nullptr, ParaCell * para_prev = nullptr, const UserDataFlags & data_flags = udf_none);
 
