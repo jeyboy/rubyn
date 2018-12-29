@@ -16,7 +16,7 @@ public:
 
 public slots:
 //    void searchIsShow(const bool & show) Q_DECL_OVERRIDE;
-    void searchInitiated(const QRegularExpression & pattern) Q_DECL_OVERRIDE;
+    void searchInitiated(const QRegularExpression & pattern, const bool & scroll = true) Q_DECL_OVERRIDE;
     void searchNextResult(QString * replace = nullptr) Q_DECL_OVERRIDE;
     void searchPrevResult(QString * replace = nullptr) Q_DECL_OVERRIDE;
     void searchRepaceAll(const QString & replace) Q_DECL_OVERRIDE;

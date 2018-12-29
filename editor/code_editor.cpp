@@ -150,7 +150,7 @@ void CodeEditor::openDocument(File * file) {
 //        }
 
         if (searcher.is_opened) {
-            searchInitiated(searcher.search_regex);
+            searchInitiated(searcher.search_regex, false);
         }
     }
     else {
@@ -1817,7 +1817,7 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
 //    else display_cacher -> searcher.closeSearch();
 //}
 
-void CodeEditor::searchInitiated(const QRegularExpression & pattern) {
+void CodeEditor::searchInitiated(const QRegularExpression & pattern, const bool & scroll) {
     qDebug() << "CodeEditor::searchInitiated" << pattern;
 
     if (pattern.pattern().isEmpty()) {
@@ -1825,9 +1825,17 @@ void CodeEditor::searchInitiated(const QRegularExpression & pattern) {
         emit searchResultsFinded(0);
     } else {
         searcher.beginSearch(pattern);
-        int amount = searcher.search(wrapper -> firstBlock());
+        Pair match = searcher.search(wrapper -> firstBlock());
 
-        emit searchResultsFinded(amount);
+        if (scroll && match.first != NO_INFO) {
+            QTextCursor c = textCursor();
+            c.setPosition(match.first);
+
+            setTextCursor(c);
+            ensureCursorVisible();
+        }
+
+        emit searchResultsFinded(searcher.search_results);
     }
     viewport() -> update();
 }

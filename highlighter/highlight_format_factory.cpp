@@ -71,7 +71,7 @@ void HighlightFormatFactory::registerCurrentLineFormat() {
 
 void HighlightFormatFactory::registerFoldingLevelLineFormat() {
     QTextCharFormat format;
-    format.setForeground(QColor::fromRgb(64, 64, 64, 92));
+    format.setForeground(QColor::fromRgb(64, 64, 64, 32));
     _formats.insert(hid_folding_level_line, format);
 }
 

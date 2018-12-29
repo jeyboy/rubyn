@@ -6,22 +6,32 @@ CodeEditorSearcher::CodeEditorSearcher() : is_opened(false), is_active(false), s
 
 }
 
-int CodeEditorSearcher::search(const QTextBlock & start_blk) {
+Pair CodeEditorSearcher::search(const QTextBlock & start_blk) {
+    Pair first_match(NO_INFO, NO_INFO);
     is_opened = is_active = true;
+    bool has_mapping = false;
+
     mappings.clear();
 
     QTextBlock blk(start_blk);
     EDITOR_POS_TYPE blk_num = blk.blockNumber();
 
     while(blk.isValid()) {
-        procBlockSearch(blk);
+        PairList * mappings = procBlockSearch(blk);
+
+        if (!has_mapping && mappings) {
+            first_match = Pair(mappings -> first());
+            first_match.first += blk.position();
+            has_mapping = true;
+        }
+
         ++blk_num; blk = blk.next();
     }
 
-    return search_results;
+    return first_match;
 }
 
-void CodeEditorSearcher::procBlockSearch(const QTextBlock & blk) {
+PairList * CodeEditorSearcher::procBlockSearch(const QTextBlock & blk) {
     if (is_active) {
         BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
@@ -38,10 +48,14 @@ void CodeEditorSearcher::procBlockSearch(const QTextBlock & blk) {
                 search_results++;
             }
 
-            if (!row_mappings.isEmpty())
+            if (!row_mappings.isEmpty()) {
                 mappings[udata] = row_mappings;
+                return &mappings[udata];
+            }
         }
     }
+
+    return nullptr;
 }
 
 void CodeEditorSearcher::procSearchReplace(QTextCursor & cursor, const QString & txt, const bool & back_move) {

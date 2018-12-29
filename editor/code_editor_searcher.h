@@ -28,7 +28,7 @@ struct CodeEditorSearcher {
         is_opened = true;
         search_regex = predicate;
     }
-    int search(const QTextBlock & start_blk);
+    Pair search(const QTextBlock & start_blk);
     void clearSearch() {
         search_results = 0;
         is_active = false;
@@ -51,7 +51,7 @@ struct CodeEditorSearcher {
     }
 
 
-    void procBlockSearch(const QTextBlock & blk);
+    PairList * procBlockSearch(const QTextBlock & blk);
 
     void procSearchReplace(QTextCursor & cursor, const QString & txt, const bool & back_move);
 
