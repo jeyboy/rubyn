@@ -30,10 +30,11 @@ signals:
     void replaceAll(const QString & replace);
     void close();
 public slots:
+    void initiateSearch(const QString & pattern = QString());
     void changeVisibility(const bool & show);
     void predicateIsCorrect();
     void predicateHasError(const QString & error);
-    void finded(const int & count);
+    void finded(const int & count); 
 };
 
 #endif // EDITOR_SEARCH_H

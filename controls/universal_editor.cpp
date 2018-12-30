@@ -67,6 +67,11 @@ void UniversalEditor::setupCodeEditor() {
     });
     connect(_code_editor, &CodeEditor::searchRequired, [=](const bool & show) { showSearchPanel(show); });
 
+    connect(_code_editor, &CodeEditor::searchRequestRequired, [=](const QString & pattern) {
+        if (_active_editor == _code_editor)
+            _search_bar -> initiateSearch(pattern);
+    });
+
     connect(_code_editor, &CodeEditor::inFocus, [=]() {
         if (_active_editor == _code_editor)
             emit inFocus();

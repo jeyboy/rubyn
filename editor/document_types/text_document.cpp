@@ -524,9 +524,9 @@ void TextDocument::hasUnsavedChanges(const bool & has) {
 }
 
 void TextDocument::changesInContent(int position, int removed_count, int added_count) {
-
+    qDebug() << "changesInContent" << position << removed_count << added_count;
 }
 
 void TextDocument::highlighterFinished() {
-
+    qDebug() << "highlighterFinished";
 }

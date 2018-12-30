@@ -570,6 +570,7 @@ public slots:
     void searchClosed() Q_DECL_OVERRIDE;
 
 private slots:
+    void blocksLayoutChanged(const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount);
     void overlayHidden(const OVERLAY_POS_TYPE & uid);
     void applyCompletion(const QString & completion);
 

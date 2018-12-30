@@ -314,6 +314,7 @@ void ProjectTree::clearSearch() {
     const QRect r = visualItemRect(currentItem());
     // TODO: fix me: here should be r.x() - width
     horizontalScrollBar() -> setValue(r.x());
+    setFocus();
 }
 
 void ProjectTree::showContextMenu(const QPoint & point) {

@@ -59,7 +59,6 @@ PairList * CodeEditorSearcher::procBlockSearch(const QTextBlock & blk) {
 }
 
 void CodeEditorSearcher::procSearchReplace(QTextCursor & cursor, const QString & txt, const bool & back_move) {
-    //TODO: calc count of removed lines after replace and correct search hash
     QTextBlock block = cursor.block();
 
     PairList & mappings = searchResultsFor(block);
@@ -67,14 +66,17 @@ void CodeEditorSearcher::procSearchReplace(QTextCursor & cursor, const QString &
     int diff = 0;
     int res_index = 0;
     int mod_index = cursor.selectionStart();
+    EDITOR_POS_TYPE block_pos = block.position();
+
 
     QMutableListIterator<Pair> it(mappings);
     while (it.hasNext()) {
         Pair & pair = it.next();
 
-        if ((cursor.selectionStart() - block.position()) == pair.first) {
+        if ((mod_index - block_pos) == pair.first) {
             diff = txt.length() - (cursor.selectionEnd() - mod_index);
 
+            --search_results;
             it.remove();
         }
         else if (diff != 0) {
@@ -88,7 +90,7 @@ void CodeEditorSearcher::procSearchReplace(QTextCursor & cursor, const QString &
     if (back_move)
         cursor.setPosition(mod_index);
 
-    procSearchMod(mappings, res_index, mod_index - block.position(), txt);
+    procSearchMod(mappings, res_index, mod_index - block_pos, txt);
 }
 
 void CodeEditorSearcher::procSearchMod(PairList & res, int res_index, int mod_index, const QString & txt) {
@@ -97,6 +99,7 @@ void CodeEditorSearcher::procSearchMod(PairList & res, int res_index, int mod_in
     while (i.hasNext()) {
         QRegularExpressionMatch match = i.next();
 
+        ++search_results;
         res.insert(res_index, Pair(mod_index + match.capturedStart(), match.capturedLength()));
     }
 }

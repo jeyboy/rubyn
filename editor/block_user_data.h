@@ -11,7 +11,7 @@
 
 #define DEFAULT_LEVEL 0
 
-class SearchResult;
+class QTextBlock;
 
 struct BlockUserData : public QTextBlockUserData {
     enum UserDataFlags : DATA_FLAGS_TYPE {

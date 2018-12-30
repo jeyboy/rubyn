@@ -12,6 +12,7 @@ class Highlighter : public QObject, public IHighlighter {
     Q_OBJECT
 
     bool rehighlighting;
+    EDITOR_POS_TYPE old_amount;
 protected:
     inline void highlightBlock(const QString & text) { doc -> lexicate(text, this); }
     void procFlagsForLastHighlightedBlock(const QTextBlock & block);

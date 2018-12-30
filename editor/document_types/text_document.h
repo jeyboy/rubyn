@@ -70,6 +70,10 @@ public:
             scroll_pos_y = 0;
         return res;
     }
+
+signals:
+    void blocksLayoutChange(const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount);
+
 protected slots:
     void hasUnsavedChanges(const bool & has = true);
     void changesInContent(int position, int removed_count, int added_count);

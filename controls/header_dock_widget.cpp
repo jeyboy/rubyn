@@ -89,16 +89,16 @@ void HeaderDockWidget::registerSearchCallbacks(const DockWidgetSearchConnector &
 
 
 void HeaderDockWidget::showSearch(const bool & show) {
-    blockSignals(true);
+//    blockSignals(true);
 
     if (search_widget -> isVisible() != show)
         search_widget -> setText(QLatin1String());
 
-    if (!show) //INFO: monkey patch: focus out call toggleSearch second time. We shoul remove focus manually and block signal
-        parentWidget() -> setFocus();
+//    if (!show) //INFO: monkey patch: focus out call toggleSearch second time. We shoul remove focus manually and block signal
+//        parentWidget() -> setFocus();
 
     search_widget -> setVisible(show);
-    blockSignals(false);
+//    blockSignals(false);
 
     if (show && !search_widget -> hasFocus())
         search_widget -> setFocus();

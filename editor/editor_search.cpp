@@ -140,6 +140,11 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
     search_layout -> addWidget(btn, 0);
 }
 
+void EditorSearch::initiateSearch(const QString & pattern) {
+    predicate -> setText(pattern);
+    changeVisibility(true);
+}
+
 void EditorSearch::changeVisibility(const bool & show) {
     setHidden(!show);
 

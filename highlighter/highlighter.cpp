@@ -37,7 +37,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     }
 }
 
-Highlighter::Highlighter(TextDocument * doc) : QObject(), IHighlighter(), rehighlighting(false), doc(nullptr) {
+Highlighter::Highlighter(TextDocument * doc) : QObject(), IHighlighter(), rehighlighting(false), old_amount(0), doc(nullptr) {
     setDocument(doc);
 }
 
@@ -63,6 +63,7 @@ void Highlighter::rehighlight() {
         return;
 
     rehighlighting = true;
+    old_amount = doc -> blockCount();
 
     QTextCursor cursor(doc);
     rehighlight(cursor, QTextCursor::End);
@@ -182,6 +183,11 @@ void Highlighter::reformatBlocks(int from, int chars_removed, int chars_added) {
     if (!block.isValid())
         return;
 
+    int diff_count = doc -> blockCount() - old_amount;
+
+    if (diff_count != 0)
+        doc -> blocksLayoutChange(block.blockNumber(), diff_count);
+
     QTextBlock last_block = doc -> findBlock(from + chars_added + (chars_removed > 0 ? 1 : 0));
     int end_position;
 
@@ -209,6 +215,7 @@ void Highlighter::reformatBlocks(int from, int chars_removed, int chars_added) {
     format_changes.clear();
 
     emit doc -> highlightingComplete();
+    old_amount = doc -> blockCount();
 }
 
 void Highlighter::reformatBlock(const QTextBlock & block, int from, int chars_removed, int chars_added) {

@@ -101,6 +101,7 @@ void CodeEditor::setCompleter(Completer * new_completer) {
 void CodeEditor::openDocument(File * file) {
     if (wrapper) {
         disconnect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
+        disconnect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
 
         if (display_cacher -> size() > 0) {
             QScrollBar * vscroll = verticalScrollBar();
@@ -133,6 +134,7 @@ void CodeEditor::openDocument(File * file) {
         setDocumentTitle(file -> name());
         wrapper -> setUndoRedoEnabled(true);
 
+        connect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
 //        connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
 
         show_foldings_panel = wrapper -> canHasFoldings();
@@ -1441,8 +1443,12 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         return;
     }
 
-    if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier && !searcher.is_active) {
-        emit searchRequired(true);
+    if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier) { // && !searcher.is_active
+        QTextCursor cursor = textCursor();
+
+        if (cursor.hasSelection())
+            emit searchRequestRequired(cursor.selectedText());
+        else emit searchRequired(true);
         return;
     }
 
@@ -1881,6 +1887,8 @@ void CodeEditor::searchNextResult(QString * replace) {
             }
         }
     }
+
+    emit searchResultsFinded(searcher.search_results);
 }
 void CodeEditor::searchPrevResult(QString * replace) {
     qDebug() << "CodeEditor::searchPrevResult" << replace;
@@ -1923,6 +1931,8 @@ void CodeEditor::searchPrevResult(QString * replace) {
             }
         }
     }
+
+    emit searchResultsFinded(searcher.search_results);
 }
 void CodeEditor::searchRepaceAll(const QString & replace) {
     qDebug() << "CodeEditor::searchRepaceAll" << replace;
@@ -1956,6 +1966,8 @@ void CodeEditor::searchRepaceAll(const QString & replace) {
     }
 
     cursor.endEditBlock();
+
+    emit searchResultsFinded(searcher.search_results);
 }
 void CodeEditor::searchClosed() {
     qDebug() << "CodeEditor::searchClosed";
@@ -1965,6 +1977,10 @@ void CodeEditor::searchClosed() {
     viewport() -> update();
 }
 
+
+void CodeEditor::blocksLayoutChanged(const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount) {
+    qDebug() << "blocksLayoutChanged" << pos << amount;
+}
 
 void CodeEditor::overlayHidden(const OVERLAY_POS_TYPE & uid) {
     display_cacher -> mapOverlayState(uid, false);
