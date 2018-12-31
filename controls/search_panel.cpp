@@ -91,6 +91,7 @@ void SearchPanel::buildLayout() {
 
 QRegularExpression SearchPanel::buildRegex(const QString & pattern) {
     QString val = pattern;
+    bool is_multiline = false;
 
     QRegularExpression::PatternOptions options = QRegularExpression::DotMatchesEverythingOption;
 
@@ -100,12 +101,11 @@ QRegularExpression SearchPanel::buildRegex(const QString & pattern) {
     if (flag_unicode -> isChecked())
         options |= QRegularExpression::UseUnicodePropertiesOption;
 
-    val = val.remove(QRegularExpression(QLatin1Literal("/r|/n|<br>|<br/>")));
+    val = val.replace(QRegularExpression(QLatin1Literal("\r|\n")), QLatin1Literal("|"));
 
-    if (pattern.length() != val.length())
-        options |= QRegularExpression::MultilineOption;
+    is_multiline = val != pattern;
 
-    if (!flag_reg_exp -> isChecked())
+    if (!flag_reg_exp -> isChecked() && !is_multiline)
         val = QRegularExpression::escape(val);
 
     if (flag_whole_word_only -> isChecked())

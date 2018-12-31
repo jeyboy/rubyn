@@ -1446,8 +1446,13 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
     if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier) { // && !searcher.is_active
         QTextCursor cursor = textCursor();
 
-        if (cursor.hasSelection())
-            emit searchRequestRequired(cursor.selectedText());
+        if (cursor.hasSelection()) {
+            QString str = cursor.selectedText();
+
+            str.replace(QChar(8233), char(13));
+
+            emit searchRequestRequired(str);
+        }
         else emit searchRequired(true);
         return;
     }
