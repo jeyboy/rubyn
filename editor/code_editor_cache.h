@@ -93,7 +93,6 @@ struct CodeEditorCacheCell {
 class CodeEditorCache {
     CodeEditorCacheCell * root, * last;
     QVector<qint16> block_offsets;
-//    QHash<EDITOR_POS_TYPE, > scope_offsets;
 
     qreal symbol_width;
     int tab_length;

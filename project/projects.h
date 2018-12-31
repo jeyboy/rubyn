@@ -35,6 +35,9 @@ public:
     QIcon & getIco(const FormatType & format_type, const uint & size = 22);
     FormatType identificateName(const QString & name);
 signals:
+    void breakpointAdded(const QString & path, const int & line_num);
+    void breakpointRemoved(const QString & path, const int & line_num);
+
     void errorOccurred(QString & source, QString & info);
     void fileIconChanged(const QString & name, const QIcon & ico);
 
@@ -47,6 +50,13 @@ signals:
 //    void fileAdded(File *);
 //    void fileRemoved(File *);
 //    void fileRenamed(File *, const QString & from, const QString & to);
+public slots:
+    void breakpointAddCatch(const QString & path, const int & line_num) {
+
+    }
+    void breakpointRemoveCatch(const QString & path, const int & line_num) {
+
+    }
 };
 
 #endif // PROJECTS_H

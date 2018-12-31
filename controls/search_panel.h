@@ -41,7 +41,6 @@ signals:
     void find(const QRegularExpression & pattern);
     void toNextResult(QString * replace = nullptr);
     void toPrevResult(QString * replace = nullptr);
-    void close();
 public slots:
     void finded(const int & count);
 };
