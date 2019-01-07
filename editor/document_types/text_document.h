@@ -23,11 +23,6 @@ protected:
 
     bool identificateLexer();
     bool registerStateChangedCallback(QObject * target, const char * slot);
-signals:
-    void hasChanges(const QString & uid, const bool & has);
-    void enterPressed();
-    void wordHovered(const QPoint & point, const int & start, const int & end);
-    void highlightingComplete();
 public:
     TextDocumentLayout * layout;
 
@@ -71,8 +66,24 @@ public:
         return res;
     }
 
+    void emitBreakpointAdded(const EDITOR_POS_TYPE & line_num);
+    void emitBreakpointRemoved(const EDITOR_POS_TYPE & line_num);
+    void emitBreakpointMoved(const EDITOR_POS_TYPE & line_num);
+
 signals:
+    void rowRedrawRequired(const EDITOR_POS_TYPE & pos);
     void blocksLayoutChange(const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount);
+    void hasChanges(const QString & uid, const bool & has);
+    void enterPressed();
+    void wordHovered(const QPoint & point, const int & start, const int & end);
+    void highlightingComplete();
+
+    void breakpointAdded(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointMoved(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointRemoved(const QString & path, const EDITOR_POS_TYPE & line_num);
+
+public slots:
+    void removeBreakpoint(const EDITOR_POS_TYPE & line_num);
 
 protected slots:
     void hasUnsavedChanges(const bool & has = true);

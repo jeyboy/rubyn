@@ -103,6 +103,10 @@ void CodeEditor::openDocument(File * file) {
         disconnect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
         disconnect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
 
+        void rowRedrawRequired(const EDITOR_POS_TYPE & pos);
+
+
+
         if (display_cacher -> size() > 0) {
             QScrollBar * vscroll = verticalScrollBar();
             wrapper -> setVerticalScrollPos(vscroll -> value());
@@ -938,6 +942,11 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
                                 if (udata) {
                                     udata -> invertBreakpointState();
                                     invalidation_required = true;
+
+                                    if (udata -> hasBreakpoint())
+                                        wrapper -> emitBreakpointAdded(blk.blockNumber());
+                                    else
+                                        wrapper -> emitBreakpointRemoved(blk.blockNumber());
 
                                     QRect r(blockRect(blk).toRect());
                                     r.setWidth(r.width() + 50);
@@ -1813,6 +1822,7 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
 }
 
 
+
 //void CodeEditor::searchIsShow(const bool & show) { //TODO: used?
 //    qDebug() << "CodeEditor::searchIsShow" << show;
 
@@ -1982,6 +1992,12 @@ void CodeEditor::searchClosed() {
     viewport() -> update();
 }
 
+
+void CodeEditor::redrawRow(const EDITOR_POS_TYPE & line_num) {
+    if (line_num >= display_cacher -> top_block_number && line_num <= display_cacher -> bottom_block_number) {
+        viewport() -> update();
+    }
+}
 
 void CodeEditor::blocksLayoutChanged(const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount) {
     qDebug() << "blocksLayoutChanged" << pos << amount;

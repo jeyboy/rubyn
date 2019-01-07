@@ -481,6 +481,7 @@ bool TextDocument::restore(const QVariant & data) {
                                 }
 
                                 if (item_data & 4) {
+                                    emitBreakpointAdded(block_num);
                                     udata -> setBreakpoint(true);
                                 }
                             }
@@ -495,6 +496,10 @@ bool TextDocument::restore(const QVariant & data) {
 
     return false;
 }
+
+void TextDocument::emitBreakpointAdded(const EDITOR_POS_TYPE & line_num) { emit breakpointAdded(_file -> path(), line_num); }
+void TextDocument::emitBreakpointRemoved(const EDITOR_POS_TYPE & line_num)  { emit breakpointRemoved(_file -> path(), line_num); }
+void TextDocument::emitBreakpointMoved(const EDITOR_POS_TYPE & line_num)  { emit breakpointMoved(_file -> path(), line_num); }
 
 //void TextDocument::readNextBlock() {
 //    if (isFullyReaded()) return;
@@ -518,6 +523,17 @@ bool TextDocument::restore(const QVariant & data) {
 
 //    setFullyReaded(source -> atEnd());
 //}
+
+void TextDocument::removeBreakpoint(const EDITOR_POS_TYPE & line_num) {
+    QTextBlock block = findBlockByNumber(line_num);
+
+    if (block.isValid()) {
+        BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(block);
+
+        udata -> setBreakpoint(false);
+        emit contentsChanged();
+    }
+}
 
 void TextDocument::hasUnsavedChanges(const bool & has) {
     emit hasChanges(_file -> uid(), has);

@@ -561,10 +561,6 @@ signals:
     void searchRequestRequired(const QString & pattern);
     void searchResultsFinded(const int & count);
 
-    void breakpointAdded(const EDITOR_POS_TYPE & line_num);
-    void breakpointMoved(const EDITOR_POS_TYPE & line_num);
-    void breakpointRemoved(const EDITOR_POS_TYPE & line_num);
-
 public slots:
 //    void searchIsShow(const bool & show) Q_DECL_OVERRIDE;
     void searchInitiated(const QRegularExpression & pattern, const bool & scroll = true) Q_DECL_OVERRIDE;
@@ -574,6 +570,7 @@ public slots:
     void searchClosed() Q_DECL_OVERRIDE;
 
 private slots:
+    void redrawRow(const EDITOR_POS_TYPE & line_num);
     void blocksLayoutChanged(const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount);
     void overlayHidden(const OVERLAY_POS_TYPE & uid);
     void applyCompletion(const QString & completion);

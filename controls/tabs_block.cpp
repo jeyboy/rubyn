@@ -83,7 +83,9 @@ void TabsBlock::setupLayout() {
     col_layout -> addWidget(_editor, 1);
 }
 
-TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _active_btn(nullptr), _list_btn(nullptr), _scroll_left_btn(nullptr), _scroll_right_btn(nullptr), _files_list(nullptr) {
+TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _active_btn(nullptr), _list_btn(nullptr), _scroll_left_btn(nullptr),
+    _scroll_right_btn(nullptr), _editor(nullptr), _breakpoints(nullptr), _files_list(nullptr)
+{
 //    setStyleSheet("QWidget:focus {background-color: #FFFFCC;}");
 
     setupLayout();

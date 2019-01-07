@@ -18,7 +18,8 @@ void DebugViewItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem
 
     bool skipable = column_index == 2 && txt == default_text;
 
-    QStyledItemDelegate::paint(painter, option, column_index == 1 || !skipable ? QModelIndex() : index);
+    if (!(column_index == 1 || !skipable))
+        QStyledItemDelegate::paint(painter, option, index);
 
     if (column_index == 0 || skipable)
         return;

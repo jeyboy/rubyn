@@ -17,6 +17,7 @@ class QFocusEvent;
 class QMenu;
 class QListWidgetItem;
 class QScrollBar;
+class BreakpointsPanel;
 
 class TabsBlock : public QWidget {
     Q_OBJECT
@@ -29,6 +30,7 @@ class TabsBlock : public QWidget {
     QToolButton * _scroll_right_btn;
 
     UniversalEditor * _editor;
+    BreakpointsPanel * _breakpoints;
 
     QMenu * _files_list;
 
@@ -41,6 +43,7 @@ public:
 
     void activate(const bool & act = true);
     void registerCursorPosOutput(QLabel * output);
+    void registerBreakpointsPanel(BreakpointsPanel * panel);
 
     bool openFile(File * file, const bool & is_external = false);
 
