@@ -27,7 +27,6 @@ public:
     void registerSearchCallbacks(const DockWidgetSearchConnector & connector);
     void showSearch(const bool & show = true);
 
-
 public slots:
     void initiateSearch(const QString & pattern = QString());
 

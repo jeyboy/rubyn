@@ -5,6 +5,8 @@
 #include "lexer/ilexer.h"
 #include "lexer/lexers_factory.h"
 
+#include "editor/breakpoints_controller.h"
+
 #include "highlighter/highlighter.h"
 
 #include <qdebug.h>
@@ -92,6 +94,21 @@ TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _fi
 
 //    connect(this, &TextDocument::modificationChanged, this, &TextDocument::hasUnsavedChanges);
     connect(this, SIGNAL(contentsChanged()), this, SLOT(hasUnsavedChanges()));
+
+
+    connect(this, &TextDocument::breakpointAdded, &BreakpointsController::obj(), &BreakpointsController::breakpointAdded);
+    connect(this, &TextDocument::breakpointMoved, &BreakpointsController::obj(), &BreakpointsController::breakpointMoved);
+    connect(this, &TextDocument::breakpointRemoved, &BreakpointsController::obj(), &BreakpointsController::breakpointRemoved);
+
+    connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, [=](const QString & path, const EDITOR_POS_TYPE & line_num) {
+        if (_file -> path() == path)
+            activateBreakpoint(line_num);
+    });
+
+    connect(&BreakpointsController::obj(), &BreakpointsController::removeBreakpoint, [=](const QString & path, const EDITOR_POS_TYPE & line_num) {
+        if (_file -> path() == path)
+            removeBreakpoint(line_num);
+    });
 }
 
 TextDocument::~TextDocument() {
@@ -499,7 +516,7 @@ bool TextDocument::restore(const QVariant & data) {
 
 void TextDocument::emitBreakpointAdded(const EDITOR_POS_TYPE & line_num) { emit breakpointAdded(_file -> path(), line_num); }
 void TextDocument::emitBreakpointRemoved(const EDITOR_POS_TYPE & line_num)  { emit breakpointRemoved(_file -> path(), line_num); }
-void TextDocument::emitBreakpointMoved(const EDITOR_POS_TYPE & line_num)  { emit breakpointMoved(_file -> path(), line_num); }
+void TextDocument::emitBreakpointMoved(const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & line_num)  { emit breakpointMoved(_file -> path(), old_line_num, line_num); }
 
 //void TextDocument::readNextBlock() {
 //    if (isFullyReaded()) return;
@@ -523,6 +540,10 @@ void TextDocument::emitBreakpointMoved(const EDITOR_POS_TYPE & line_num)  { emit
 
 //    setFullyReaded(source -> atEnd());
 //}
+
+void TextDocument:: activateBreakpoint(const EDITOR_POS_TYPE & line_num) {
+
+}
 
 void TextDocument::removeBreakpoint(const EDITOR_POS_TYPE & line_num) {
     QTextBlock block = findBlockByNumber(line_num);

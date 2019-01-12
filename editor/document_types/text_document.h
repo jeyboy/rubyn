@@ -68,7 +68,7 @@ public:
 
     void emitBreakpointAdded(const EDITOR_POS_TYPE & line_num);
     void emitBreakpointRemoved(const EDITOR_POS_TYPE & line_num);
-    void emitBreakpointMoved(const EDITOR_POS_TYPE & line_num);
+    void emitBreakpointMoved(const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & line_num);
 
 signals:
     void rowRedrawRequired(const EDITOR_POS_TYPE & pos);
@@ -79,10 +79,11 @@ signals:
     void highlightingComplete();
 
     void breakpointAdded(const QString & path, const EDITOR_POS_TYPE & line_num);
-    void breakpointMoved(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointMoved(const QString & path, const EDITOR_POS_TYPE & prev_line_num, const EDITOR_POS_TYPE & line_num);
     void breakpointRemoved(const QString & path, const EDITOR_POS_TYPE & line_num);
 
 public slots:
+    void activateBreakpoint(const EDITOR_POS_TYPE & line_num);
     void removeBreakpoint(const EDITOR_POS_TYPE & line_num);
 
 protected slots:

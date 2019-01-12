@@ -130,7 +130,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
     connect(predicate, &SearchPanel::find, [=](const QRegularExpression & pattern) { emit find(pattern); });
     connect(predicate, &SearchPanel::toNextResult, [=](QString * replace) { emit toNextResult(replace); });
     connect(predicate, &SearchPanel::toPrevResult, [=](QString * replace) { emit toPrevResult(replace); });
-    connect(predicate, &SearchPanel::close, [=]() { emit close(); });
+    connect(predicate, &SearchPanel::closed, [=]() { emit close(); });
 
     btn = new QToolButton(this);
     btn -> setIcon(QPixmap(":/tools/close").scaled(btn -> iconSize().width(), btn -> iconSize().height(), Qt::KeepAspectRatio, Qt::SmoothTransformation));

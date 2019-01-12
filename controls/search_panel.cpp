@@ -171,7 +171,7 @@ void SearchPanel::keyPressEvent(QKeyEvent * e) {
 }
 
 void SearchPanel::hideEvent(QHideEvent * e) {
-    emit close();
+    emit closed();
     QLineEdit::hideEvent(e);
 }
 

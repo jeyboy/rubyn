@@ -77,7 +77,7 @@ void HeaderDockWidget::registerSearchCallbacks(const DockWidgetSearchConnector &
         connect(connector.target, connector.search_amount_signal, search_widget, SLOT(finded(const int &)));
 
     connect(search_widget, SIGNAL(find(const QRegularExpression &)), connector.target, connector.search_request_slot);
-    connect(search_widget, SIGNAL(close()), connector.target, connector.search_close_slot);
+    connect(search_widget, SIGNAL(closed()), connector.target, connector.search_close_slot);
 
     if (!connector.search_prev_result_slot || !connector.search_next_result_slot) {
         search_widget -> removePrevNext();

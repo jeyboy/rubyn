@@ -38,6 +38,7 @@ protected:
     void predicateIsCorrect();
     void predicateHasError(const QString & error);
 signals:
+    void closed();
     void find(const QRegularExpression & pattern);
     void toNextResult(QString * replace = nullptr);
     void toPrevResult(QString * replace = nullptr);

@@ -2,6 +2,7 @@
 #include "ui_ide_window.h"
 
 #include "editor/document_types/text_document.h"
+#include "editor/breakpoints_controller.h"
 
 #include "project/projects.h"
 #include "project/project.h"
@@ -605,6 +606,7 @@ void IDEWindow::setupToolWindows() {
 
 
     breakpoints_panel = new BreakpointsPanel(this);
+    BreakpointsController::obj().setPanel(breakpoints_panel);
 
     DockWidget * breakpoints_widget =
         DockWidgets::obj().createWidget(
