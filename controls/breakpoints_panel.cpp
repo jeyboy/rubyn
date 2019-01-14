@@ -95,8 +95,8 @@ void BreakpointsPanel::removeBreakpoint(const QString & path, const EDITOR_POS_T
     if (!lines.contains(line_num))
         return;
 
+    delete lines.take(line_num);
     emit breakpointRemoved(path, line_num);
-    delete lines[line_num];
 }
 
 void BreakpointsPanel::deleteBreakpointItem() {

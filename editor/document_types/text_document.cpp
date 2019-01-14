@@ -541,18 +541,20 @@ void TextDocument::emitBreakpointMoved(const EDITOR_POS_TYPE & old_line_num, con
 //    setFullyReaded(source -> atEnd());
 //}
 
-void TextDocument:: activateBreakpoint(const EDITOR_POS_TYPE & line_num) {
-
+void TextDocument::activateBreakpoint(const EDITOR_POS_TYPE & line_num) {
+    qDebug() << "TextDocument::activateBreakpoint" << line_num;
 }
 
 void TextDocument::removeBreakpoint(const EDITOR_POS_TYPE & line_num) {
+    qDebug() << "TextDocument::removeBreakpoint" << line_num;
+
     QTextBlock block = findBlockByNumber(line_num);
 
     if (block.isValid()) {
         BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(block);
 
         udata -> setBreakpoint(false);
-        emit contentsChanged();
+        emit rowRedrawRequired(line_num);
     }
 }
 

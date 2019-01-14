@@ -102,10 +102,7 @@ void CodeEditor::openDocument(File * file) {
     if (wrapper) {
         disconnect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
         disconnect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
-
-        void rowRedrawRequired(const EDITOR_POS_TYPE & pos);
-
-
+        disconnect(wrapper, &TextDocument::rowRedrawRequired, this, &CodeEditor::redrawRow);
 
         if (display_cacher -> size() > 0) {
             QScrollBar * vscroll = verticalScrollBar();
@@ -139,6 +136,7 @@ void CodeEditor::openDocument(File * file) {
         wrapper -> setUndoRedoEnabled(true);
 
         connect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
+        connect(wrapper, &TextDocument::rowRedrawRequired, this, &CodeEditor::redrawRow);
 //        connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
 
         show_foldings_panel = wrapper -> canHasFoldings();
@@ -1996,6 +1994,7 @@ void CodeEditor::searchClosed() {
 void CodeEditor::redrawRow(const EDITOR_POS_TYPE & line_num) {
     if (line_num >= display_cacher -> top_block_number && line_num <= display_cacher -> bottom_block_number) {
         viewport() -> update();
+        extra_area -> update();
     }
 }
 
