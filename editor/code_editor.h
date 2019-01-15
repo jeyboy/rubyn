@@ -571,7 +571,6 @@ public slots:
 
 private slots:
     void redrawRow(const EDITOR_POS_TYPE & line_num);
-    void blocksLayoutChanged(const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount);
     void overlayHidden(const OVERLAY_POS_TYPE & uid);
     void applyCompletion(const QString & completion);
 

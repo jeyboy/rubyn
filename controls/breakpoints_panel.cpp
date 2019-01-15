@@ -80,10 +80,19 @@ void BreakpointsPanel::moveBreakpoint(const QString & path, const EDITOR_POS_TYP
 
     QHash<EDITOR_POS_TYPE, QListWidgetItem * > & lines = records[path];
 
-    if (lines.contains(old_line_num)) {
-        QListWidgetItem * itm = lines.take(old_line_num);
-        itm -> setText(buildName(path, new_line_num));
-        itm -> setData(Qt::UserRole + 2, new_line_num);
+    QList<EDITOR_POS_TYPE> nums = lines.keys();
+
+    EDITOR_POS_TYPE diff = new_line_num - old_line_num;
+
+    for(QList<EDITOR_POS_TYPE>::Iterator it = nums.begin(); it != nums.end(); it++) {
+        if (*it > old_line_num) {
+            EDITOR_POS_TYPE new_pos = *it + diff;
+
+            QListWidgetItem * itm = lines.take(*it);
+            itm -> setText(buildName(path, new_pos));
+            itm -> setData(Qt::UserRole + 2, new_pos);
+            lines[new_pos] = itm;
+        }
     }
 }
 void BreakpointsPanel::removeBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num) {

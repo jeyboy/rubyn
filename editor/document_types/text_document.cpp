@@ -109,6 +109,10 @@ TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _fi
         if (_file -> path() == path)
             removeBreakpoint(line_num);
     });
+
+    connect(this, &TextDocument::blocksLayoutChange, [=](const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount) {
+        BreakpointsController::obj().breakpointMoved(_file -> path(), pos, pos + amount);
+    });
 }
 
 TextDocument::~TextDocument() {

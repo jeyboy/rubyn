@@ -101,7 +101,7 @@ void CodeEditor::setCompleter(Completer * new_completer) {
 void CodeEditor::openDocument(File * file) {
     if (wrapper) {
         disconnect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
-        disconnect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
+//        disconnect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
         disconnect(wrapper, &TextDocument::rowRedrawRequired, this, &CodeEditor::redrawRow);
 
         if (display_cacher -> size() > 0) {
@@ -135,7 +135,7 @@ void CodeEditor::openDocument(File * file) {
         setDocumentTitle(file -> name());
         wrapper -> setUndoRedoEnabled(true);
 
-        connect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
+//        connect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
         connect(wrapper, &TextDocument::rowRedrawRequired, this, &CodeEditor::redrawRow);
 //        connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
 
@@ -1996,10 +1996,6 @@ void CodeEditor::redrawRow(const EDITOR_POS_TYPE & line_num) {
         viewport() -> update();
         extra_area -> update();
     }
-}
-
-void CodeEditor::blocksLayoutChanged(const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount) {
-    qDebug() << "blocksLayoutChanged" << pos << amount;
 }
 
 void CodeEditor::overlayHidden(const OVERLAY_POS_TYPE & uid) {
