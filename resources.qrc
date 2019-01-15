@@ -76,6 +76,9 @@
         <file alias="show_target">icons/show_target.png</file>
         <file alias="transparency">icons/transparency.png</file>
         <file alias="close">icons/close.png</file>
+        <file alias="step_into">icons/step_into.png</file>
+        <file alias="step_out">icons/step_out.png</file>
+        <file alias="step_over">icons/step_over.png</file>
     </qresource>
     <qresource prefix="/completer">
         <file alias="const">icons/completer/comp_const.png</file>

@@ -579,6 +579,45 @@ void IDEWindow::setupToolWindows() {
 
 
 
+
+
+
+
+    QToolBar * debug_bar = Toolbars::obj().createWidget(QLatin1Literal("Debug"));
+    debug_bar -> setOrientation(Qt::Vertical);
+    debug_bar -> setIconSize(QSize(16, 16));
+
+    QAction * run_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/run")), QLatin1Literal());
+//    connect(_color_picker, &QAction::triggered, [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); _color_picker -> setChecked(color_picker_widget -> isVisible()); });
+
+    QAction * run_debug_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/debug")), QLatin1Literal());
+
+    debug_bar -> addSeparator();
+
+    QAction * debug_step_into_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_into")), QLatin1Literal());
+    QAction * debug_step_out_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_out")), QLatin1Literal());
+    QAction * debug_step_over_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_over")), QLatin1Literal());
+
+
+    DockWidget * debug_controls_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Debug Controls"),
+            debug_bar,
+            Qt::BottomDockWidgetArea
+        );
+
+    debug_controls_widget -> setBehaviour(DockWidget::dwf_movable);
+    debug_controls_widget -> setTitleBarWidget(new QWidget(this));
+
+    DockWidgets::obj().append(debug_controls_widget);
+
+
+
+
+
+
+
+
     Logger::obj().initiate(QLatin1Literal("loh.txt"), true);
 
     DockWidget * log_widget =
@@ -588,10 +627,16 @@ void IDEWindow::setupToolWindows() {
             Qt::BottomDockWidgetArea
         );
 
+    log_widget -> setBehaviour(DockWidget::dwf_movable);
     DockWidgets::obj().append(log_widget, Qt::BottomDockWidgetArea);
 
 
+
     debug_panel = new DebugPanel(this);
+
+    connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, debug_panel, &DebugPanel::activate);
+    connect(&BreakpointsController::obj(), &BreakpointsController::deactivate, debug_panel, &DebugPanel::deactivate);
+
 
     DockWidget * debug_widget =
         DockWidgets::obj().createWidget(

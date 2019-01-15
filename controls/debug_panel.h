@@ -1,6 +1,7 @@
 #ifndef DEBUG_PANEL_H
 #define DEBUG_PANEL_H
 
+#include "misc/defines.h"
 #include "controls/debug_view.h"
 
 class DebugPanel : public QWidget {
@@ -13,6 +14,9 @@ public:
     DebugPanel(QWidget * parent = nullptr);
 
 public slots:
+    void activate(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void deactivate();
+
     void openNewRecord();
     void removeRecord(const QString & record);
 

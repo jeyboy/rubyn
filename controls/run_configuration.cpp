@@ -3,6 +3,8 @@
 #include <qtoolbar.h>
 #include <qcombobox.h>
 #include <qtoolbutton.h>
+#include <qlayout.h>
+#include <qdebug.h>
 
 RunConfiguration::RunConfiguration(QObject * parent) : QObject(parent), _config_list(nullptr), _run(nullptr), _debbug(nullptr) {
 
@@ -36,6 +38,13 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
 
     QAction * bla = bar -> addWidget(_console_btn);
     bla -> setDisabled(true);
+
+    QLayout * lay = bar -> layout();
+    for(int i = 0; i < lay -> count(); ++i) {
+        QLayoutItem * it = lay -> itemAt(i);
+        qDebug() << it -> widget() << it -> alignment();
+//        it -> setAlignment(Qt::AlignCenter);
+    }
 }
 
 void RunConfiguration::configSelectionChanged(int index) {

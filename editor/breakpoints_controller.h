@@ -14,9 +14,14 @@ class BreakpointsController : public QObject, public Singleton<BreakpointsContro
 public:
     void setPanel(BreakpointsPanel * panel);
 
-signals:
+signals:   
     void activateBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num);
     void removeBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num);
+
+    void deactivate();
+    void stepOver();
+    void stepInto();
+    void stepOut();
 
 public slots:
     void pathRemoved(const QString & path);

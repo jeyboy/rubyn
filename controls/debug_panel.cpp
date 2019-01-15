@@ -63,6 +63,14 @@ DebugPanel::DebugPanel(QWidget * parent) : QWidget(parent), view(nullptr), new_i
 //    void itemChanged(QTreeWidgetItem *item, int column);
 }
 
+void DebugPanel::activate(const QString & /*path*/, const EDITOR_POS_TYPE & /*line_num*/) {
+    qDebug() << "DebugPanel::activate";
+}
+
+void DebugPanel::deactivate() {
+    qDebug() << "DebugPanel::deactivate";
+}
+
 void DebugPanel::openNewRecord() {
     if (!new_itm) {
         new_itm = new QTreeWidgetItem(QStringList() << QString() << QString("") << QString(""));
