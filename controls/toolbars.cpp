@@ -16,8 +16,8 @@ QToolBar * Toolbars::createWidget(const QString & name, const Qt::ToolBarArea & 
             "   border-radius: 6px;"
             "}"
 
-            "QToolBar * {"
-            "   border: 2px solid #aaa;"
+            "QToolBar QToolButton {"
+            "   border: 1px solid #aaa;"
             "   background-color: #fff;"
             "   border-radius: 6px;"
             "}"

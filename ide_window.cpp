@@ -594,10 +594,14 @@ void IDEWindow::setupToolWindows() {
 
     debug_bar -> addSeparator();
 
-    QAction * debug_step_into_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_into")), QLatin1Literal());
-    QAction * debug_step_out_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_out")), QLatin1Literal());
     QAction * debug_step_over_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_over")), QLatin1Literal());
+    debug_step_over_btn -> setToolTip(QLatin1Literal("Step to next line"));
 
+    QAction * debug_step_into_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_into")), QLatin1Literal());
+    debug_step_into_btn -> setToolTip(QLatin1Literal("Step into object"));
+
+    QAction * debug_step_out_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_out")), QLatin1Literal());
+    debug_step_out_btn -> setToolTip(QLatin1Literal("Step out from object"));
 
     DockWidget * debug_controls_widget =
         DockWidgets::obj().createWidget(
