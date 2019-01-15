@@ -90,12 +90,28 @@ void BreakpointsPanel::removeBreakpoint(const QString & path, const EDITOR_POS_T
     if (!records.contains(path))
         return;
 
+    if (line_num == NO_INFO) {
+        if (active_breakpoint) {
+            QString active_path = active_breakpoint -> data(Qt::UserRole + 1).toString();
+
+            if (path == active_path)
+                active_breakpoint = nullptr;
+        }
+
+        qDeleteAll(records.take(path));
+    }
+
     QHash<EDITOR_POS_TYPE, QListWidgetItem * > & lines = records[path];
 
     if (!lines.contains(line_num))
         return;
 
-    delete lines.take(line_num);
+    QListWidgetItem * item = lines.take(line_num);
+
+    if (item == active_breakpoint)
+        active_breakpoint = nullptr;
+
+    delete item;
     emit breakpointRemoved(path, line_num);
 }
 
@@ -103,9 +119,6 @@ void BreakpointsPanel::deleteBreakpointItem() {
     qDebug() << "deleteBreakpointItem";
 
     QListWidgetItem * item = breakpoints -> currentItem();
-
-    if (item == active_breakpoint)
-        active_breakpoint = nullptr;
 
     QString path = item -> data(Qt::UserRole + 1).toString();
     EDITOR_POS_TYPE line_num = item -> data(Qt::UserRole + 2).toInt();
