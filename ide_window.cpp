@@ -618,7 +618,7 @@ void IDEWindow::setupToolWindows() {
     debug_controls_widget -> setBehaviour(DockWidget::dwf_movable);
     debug_controls_widget -> setTitleBarWidget(new QWidget(this));
 
-    DockWidgets::obj().append(debug_controls_widget);
+    DockWidgets::obj().append(debug_controls_widget, Qt::BottomDockWidgetArea);
 
 
 
@@ -641,6 +641,21 @@ void IDEWindow::setupToolWindows() {
 
 
 
+    breakpoints_panel = new BreakpointsPanel(this);
+    BreakpointsController::obj().setPanel(breakpoints_panel);
+
+    DockWidget * breakpoints_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Breakpoints"),
+            breakpoints_panel,
+            Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
+        );
+
+    breakpoints_widget -> setBehaviour(DockWidget::dwf_movable);
+
+    DockWidgets::obj().append(breakpoints_widget, Qt::BottomDockWidgetArea);
+
+
     debug_panel = new DebugPanel(this);
 
     connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, debug_panel, &DebugPanel::activate);
@@ -656,23 +671,7 @@ void IDEWindow::setupToolWindows() {
 
     debug_widget -> setBehaviour(DockWidget::dwf_movable);
 
-    DockWidgets::obj().append(debug_widget, Qt::BottomDockWidgetArea);
-
-
-    breakpoints_panel = new BreakpointsPanel(this);
-    BreakpointsController::obj().setPanel(breakpoints_panel);
-
-    DockWidget * breakpoints_widget =
-        DockWidgets::obj().createWidget(
-            QLatin1Literal("Breakpoints"),
-            breakpoints_panel,
-            Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
-        );
-
-    breakpoints_widget -> setBehaviour(DockWidget::dwf_movable);
-
-    DockWidgets::obj().append(breakpoints_widget, Qt::BottomDockWidgetArea);
-
+    DockWidgets::obj().insert(breakpoints_widget, debug_widget);
 
 
     // TOOLBARS
