@@ -42,8 +42,10 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
     QLayout * lay = bar -> layout();
     for(int i = 0; i < lay -> count(); ++i) {
         QLayoutItem * it = lay -> itemAt(i);
-        qDebug() << it -> widget() << it -> alignment();
-//        it -> setAlignment(Qt::AlignCenter);
+        QToolButton * btn = qobject_cast<QToolButton *>(it -> widget());
+
+        if (btn)
+            it -> setAlignment(Qt::AlignJustify);
     }
 }
 

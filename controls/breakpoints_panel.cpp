@@ -18,21 +18,30 @@ BreakpointsPanel::BreakpointsPanel(QWidget * parent) : QWidget(parent), breakpoi
     control_panel -> setOrientation(Qt::Vertical);
     control_panel -> setIconSize(QSize(18, 18));
 
+
     QToolButton * btn0 = new QToolButton(control_panel);
+    btn0 -> setIconSize(QSize(16, 16));
+    btn0 -> setIcon(QIcon(QLatin1Literal(":/breakpoint_disabled")));
+    btn0 -> setToolTip(QLatin1Literal("Disable selected"));
+    control_panel -> addWidget(btn0);
+
+
+    QToolButton * btn1 = new QToolButton(control_panel);
     QIcon ico;
 
     ico.addPixmap(QPixmap(QLatin1Literal(":/breakpoint_disable_all")), QIcon::Normal, QIcon::Off);
     ico.addPixmap(QPixmap(QLatin1Literal(":/breakpoint_enable_all")), QIcon::Normal, QIcon::On);
 
-    btn0 -> setIcon(ico);
-    btn0 -> setToolTip(QLatin1Literal("Disable all"));
-    btn0 -> setCheckable(true);
-    control_panel -> addWidget(btn0);
-
-    QToolButton * btn1 = new QToolButton(control_panel);
-    btn1 -> setIcon(QIcon(QLatin1Literal(":/breakpoint_delete_all")));
-    btn1 -> setToolTip(QLatin1Literal("Remove all"));
+    btn1 -> setIcon(ico);
+    btn1 -> setToolTip(QLatin1Literal("Disable all"));
+    btn1 -> setCheckable(true);
     control_panel -> addWidget(btn1);
+
+
+    QToolButton * btn2 = new QToolButton(control_panel);
+    btn2 -> setIcon(QIcon(QLatin1Literal(":/breakpoint_delete_all")));
+    btn2 -> setToolTip(QLatin1Literal("Remove all"));
+    control_panel -> addWidget(btn2);
 
     breakpoints = new QListWidget(this);
 

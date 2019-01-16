@@ -6,6 +6,7 @@ void BreakpointsController::setPanel(BreakpointsPanel * panel) {
     if (_panel) {
         connect(this, &BreakpointsController::activateBreakpoint, _panel, &BreakpointsPanel::activateBreakpoint);
         connect(_panel, &BreakpointsPanel::breakpointRemoved, this, &BreakpointsController::breakpointRemoved);
+        connect(_panel, &BreakpointsPanel::breakpointDisabled, this, &BreakpointsController::breakpointDisabled);
     }
 }
 
@@ -26,4 +27,8 @@ void BreakpointsController::breakpointMoved(const QString & path, const EDITOR_P
 void BreakpointsController::breakpointRemoved(const QString & path, const EDITOR_POS_TYPE & line_num) {
     _panel -> removeBreakpoint(path, line_num);
     emit removeBreakpoint(path, line_num);
+}
+
+void BreakpointsController::breakpointDisabled(const QString & path, const EDITOR_POS_TYPE & line_num) {
+    qDebug() << "BreakpointsController::breakpointDisabled" << path << line_num;
 }

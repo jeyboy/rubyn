@@ -25,6 +25,7 @@ public:
 
 signals:
     void breakpointRemoved(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointDisabled(const QString & path, const EDITOR_POS_TYPE & line_num);
 
 public slots:
     void activateBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num);

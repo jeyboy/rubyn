@@ -588,20 +588,25 @@ void IDEWindow::setupToolWindows() {
     debug_bar -> setIconSize(QSize(16, 16));
 
     QAction * run_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/run")), QLatin1Literal());
+    run_btn -> setEnabled(false);
 //    connect(_color_picker, &QAction::triggered, [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); _color_picker -> setChecked(color_picker_widget -> isVisible()); });
 
     QAction * run_debug_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/debug")), QLatin1Literal());
+    run_debug_btn -> setEnabled(false);
 
     debug_bar -> addSeparator();
 
     QAction * debug_step_over_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_over")), QLatin1Literal());
     debug_step_over_btn -> setToolTip(QLatin1Literal("Step to next line"));
+    debug_step_over_btn -> setEnabled(false);
 
     QAction * debug_step_into_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_into")), QLatin1Literal());
     debug_step_into_btn -> setToolTip(QLatin1Literal("Step into object"));
+    debug_step_into_btn -> setEnabled(false);
 
     QAction * debug_step_out_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_out")), QLatin1Literal());
     debug_step_out_btn -> setToolTip(QLatin1Literal("Step out from object"));
+    debug_step_out_btn -> setEnabled(false);
 
     DockWidget * debug_controls_widget =
         DockWidgets::obj().createWidget(

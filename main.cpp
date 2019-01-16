@@ -1,6 +1,9 @@
 #include "ide_window.h"
 #include <QApplication>
 
+//https://xdebug.org/docs/index.php?action=index // php debug
+
+
 //https://www.rubyguides.com/2015/08/static-analysis-in-ruby/
 //https://www.rubyguides.com/2017/01/spy-on-your-ruby-methods/
 

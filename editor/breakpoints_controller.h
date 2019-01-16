@@ -30,6 +30,7 @@ public slots:
     void breakpointAdded(const QString & path, const EDITOR_POS_TYPE & line_num);
     void breakpointMoved(const QString & path, const EDITOR_POS_TYPE & prev_line_num, const EDITOR_POS_TYPE & line_num);
     void breakpointRemoved(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointDisabled(const QString & path, const EDITOR_POS_TYPE & line_num);
 };
 
 #endif // BREAKPOINTS_CONTROLLER_H
