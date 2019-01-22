@@ -330,6 +330,18 @@ void ProjectTree::showContextMenu(const QPoint & point) {
 
     menu.addSeparator();
 
+    if (curr_item && !curr_item -> parent()) {
+        QAction * console_action = new QAction(QIcon(QLatin1Literal(":/tools/console")), "Open sys console", this);
+        connect(console_action, &QAction::triggered, [=]() {
+            QString project_path = currentItem() -> data(0, Qt::UserRole + 2).toString();
+            emit consoleRequired(project_path);
+        });
+        menu.addAction(console_action);
+
+        menu.addSeparator();
+    }
+
+
     QAction action1(QIcon(QLatin1Literal(":/menu/collapse_all")), "Collapse All", this);
     connect(&action1, SIGNAL(triggered()), this, SLOT(collapseAll()));
     menu.addAction(&action1);

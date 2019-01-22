@@ -22,6 +22,7 @@
 #include "controls/debug_panel.h"
 #include "controls/breakpoints_panel.h"
 #include "controls/dock_widget_search_connector.h"
+#include "controls/console_widget.h"
 
 #include "debugging/debug.h"
 #include "debugging/debug_stub_interface.h"
@@ -96,9 +97,6 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
     connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
 
-//    DebugPanel * debug_panel;
-//    BreakpointsPanel * breakpoints_panel;
-
 //    openFolder(QUrl::fromLocalFile("F:/rubyn test/projects/rails 4 - RebelsMarketplace"));
 //    openFile(QUrl::fromLocalFile("F:/rubyn test/ruby/test1.rb"));
 
@@ -151,6 +149,22 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 IDEWindow::~IDEWindow() {
     delete ui;
     delete ui_dumper;
+}
+
+
+void IDEWindow::setupConsole(const QString & path) {
+    ConsoleWidget * console = new ConsoleWidget(path, this);
+
+    DockWidget * console_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Sys Console"),
+            console,
+            Qt::AllDockWidgetAreas
+        );
+
+    console_widget -> setBehaviour((DockWidget::Features)(DockWidget::dwf_movable | DockWidget::dwf_closable));
+
+    DockWidgets::obj().append(console_widget, Qt::BottomDockWidgetArea);
 }
 
 void IDEWindow::splitterMoved(int /*pos*/, int index) {
@@ -399,6 +413,7 @@ void IDEWindow::saveAll() {
         saveEditor(*it);
 }
 
+
 void IDEWindow::setupPosOutput() {
     pos_status = new QLabel();
     pos_status -> setStyleSheet("border: 1px solid gray; border-radius: 6px;");
@@ -542,6 +557,8 @@ void IDEWindow::setupToolWindows() {
     DockWidgets::obj().append(widget);
     QToolButton * search_target_btn = widget -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 0);
     search_target_btn -> setToolTip(QLatin1Literal("Scroll to current active document"));
+
+    connect(tree, &ProjectTree::consoleRequired, this, &IDEWindow::setupConsole);
 
     DockWidgetSearchConnector connector(tree);
 

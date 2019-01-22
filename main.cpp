@@ -82,9 +82,6 @@
 //https://www.linux.org.ru/forum/development/12255845
 
 
-//http://doc.qt.io/qt-5/qprocess.html
-//http://doc.qt.io/qt-5/qprocessenvironment.html#systemEnvironment
-
 //http://doc.qt.io/qt-5/qtwidgets-widgets-tooltips-example.html
 
 // TODO:

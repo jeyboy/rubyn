@@ -105,7 +105,9 @@ SOURCES += main.cpp\
     editor/ieditor.cpp \
     editor/document_types/pad_tree_document.cpp \
     controls/search_panel.cpp \
-    editor/breakpoints_controller.cpp
+    editor/breakpoints_controller.cpp \
+    tools/process.cpp \
+    controls/console_widget.cpp
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
@@ -245,7 +247,9 @@ HEADERS  += ide_window.h \
     editor/document_types/pad_tree_document.h \
     controls/search_panel.h \
     controls/dock_widget_search_connector.h \
-    editor/breakpoints_controller.h
+    editor/breakpoints_controller.h \
+    tools/process.h \
+    controls/console_widget.h
 
 FORMS    += ide_window.ui
 

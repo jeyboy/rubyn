@@ -40,6 +40,7 @@ signals:
     void searchRequired(const QString &);
     void searchResultsCount(const int &);
     void closeSearch();
+    void consoleRequired(const QString & path);
 
     void fileActivated(const QString & name, void * folder);
 //    void fileDeleted(void * folder, const QString & name);
