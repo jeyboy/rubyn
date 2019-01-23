@@ -4,8 +4,8 @@
 #include <qtextobject.h>
 #include <qscrollbar.h>
 
-ConsoleWidget::ConsoleWidget(const QString & path, QWidget * parent) : QPlainTextEdit(parent), is_locked(false), history(new QStringList), history_pos(0) {
-    prompt = path + QLatin1Literal("> ");
+ConsoleWidget::ConsoleWidget(const QString & path, const QString & def_prompt, QWidget * parent) : QPlainTextEdit(parent), cmd_path(path), is_locked(false), history(new QStringList), history_pos(0) {
+    prompt = def_prompt + QLatin1Literal("> ");
 
     QPalette p = palette();
     p.setColor(QPalette::Base, Qt::black);
@@ -28,7 +28,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent * e) {
     if(key == Qt::Key_Backspace && mods == Qt::NoModifier && textCursor().positionInBlock() > prompt.length())
         QPlainTextEdit::keyPressEvent(e);
 
-    if(key == Qt::Key_Return && key == Qt::NoModifier)
+    if(key == Qt::Key_Return && mods == Qt::NoModifier)
         onEnter();
 
     if(key == Qt::Key_Up && mods == Qt::NoModifier)
@@ -46,7 +46,14 @@ void ConsoleWidget::mousePressEvent(QMouseEvent *) {
 }
 
 void ConsoleWidget::mouseDoubleClickEvent(QMouseEvent * e) {
-    QPlainTextEdit::mouseDoubleClickEvent(e);
+//    int pos = textCursor().position();
+
+//    QPlainTextEdit::mouseDoubleClickEvent(e);
+
+//    QTextCursor c = textCursor();
+//    c.setPosition(pos);
+
+//    setTextCursor(c);
 }
 
 void ConsoleWidget::contextMenuEvent(QContextMenuEvent *) {
@@ -54,17 +61,17 @@ void ConsoleWidget::contextMenuEvent(QContextMenuEvent *) {
 }
 
 void ConsoleWidget::onEnter() {
-    if(textCursor().positionInBlock() == prompt.length()) {
-        insertPrompt();
-        return;
+    QString cmd = textCursor().block().text().mid(prompt.length());
+
+    if (!cmd.isEmpty()) {
+        is_locked = true;
+
+        historyAdd(cmd);
+
+        emit onCommand(cmd);
     }
 
-    QString cmd = textCursor().block().text().mid(prompt.length());
-    is_locked = true;
-
-    historyAdd(cmd);
-
-    emit onCommand(cmd);
+    insertPrompt();
 }
 
 void ConsoleWidget::output(const QString & txt) {

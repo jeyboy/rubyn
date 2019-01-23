@@ -153,7 +153,7 @@ IDEWindow::~IDEWindow() {
 
 
 void IDEWindow::setupConsole(const QString & path) {
-    ConsoleWidget * console = new ConsoleWidget(path, this);
+    ConsoleWidget * console = new ConsoleWidget(path, QLatin1Literal("#"), this);
 
     DockWidget * console_widget =
         DockWidgets::obj().createWidget(

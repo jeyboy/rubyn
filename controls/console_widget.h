@@ -6,7 +6,7 @@
 class ConsoleWidget : public QPlainTextEdit {
     Q_OBJECT
 public:
-    explicit ConsoleWidget(const QString & path, QWidget * parent = nullptr);
+    explicit ConsoleWidget(const QString & path, const QString & def_prompt, QWidget * parent = nullptr);
     void output(const QString & txt);
     void scrollDown();
 protected:
@@ -15,6 +15,7 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent * e);
     void contextMenuEvent(QContextMenuEvent * e);
 private:
+    QString cmd_path;
     QString prompt;
     bool is_locked;
     QStringList * history;
