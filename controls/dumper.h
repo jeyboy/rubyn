@@ -18,6 +18,7 @@ class Dumper : public QObject {
     void loadTabs(IDEWindow * w, JsonObj & json);
     void saveTabs(IDEWindow * w, JsonObj & json);
     void saveTab(IDEWindow * w, TabsBlock * editor, QJsonObject & widget_obj);
+
     void saveSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj);
     void loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, TabsBlock *& active);
 

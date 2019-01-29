@@ -3,9 +3,11 @@
 #include <qevent.h>
 #include <qtextobject.h>
 #include <qscrollbar.h>
+#include <qjsonobject.h>
 
-ConsoleWidget::ConsoleWidget(const QString & path, const QString & def_prompt, QWidget * parent) : QPlainTextEdit(parent), cmd_path(path), is_locked(false), history(new QStringList), history_pos(0) {
+ConsoleWidget::ConsoleWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QWidget * parent, QStringList * history_list) : QPlainTextEdit(parent), process(new Process(this)), is_read_only(read_only), cmd_command(cmd), cmd_path(path), is_locked(false), history_pos(0) {
     prompt = def_prompt + QLatin1Literal("> ");
+    history = history_list ? history_list : read_only ? nullptr : new QStringList;
 
     QPalette p = palette();
     p.setColor(QPalette::Base, Qt::black);
@@ -13,6 +15,8 @@ ConsoleWidget::ConsoleWidget(const QString & path, const QString & def_prompt, Q
     setPalette(p);
 
     insertPrompt(false);
+
+    onCommand(cmd);
 }
 
 void ConsoleWidget::keyPressEvent(QKeyEvent * e) {
@@ -101,7 +105,20 @@ void ConsoleWidget::insertPrompt(const bool & insert_new_block) {
 
 void ConsoleWidget::scrollDown() {
     QScrollBar * vbar = verticalScrollBar();
-    vbar->setValue(vbar->maximum());
+    vbar -> setValue(vbar -> maximum());
+}
+
+QJsonObject ConsoleWidget::save() {
+    QJsonObject res;
+
+    res.insert(QLatin1Literal("read_only"), is_read_only);
+    res.insert(QLatin1Literal("cmd_command"), cmd_command);
+    res.insert(QLatin1Literal("cmd_path"), cmd_path);
+    res.insert(QLatin1Literal("prompt"), prompt);
+
+    res.insert(QLatin1Literal("history"), QJsonValue::fromVariant(*history));
+
+    return res;
 }
 
 void ConsoleWidget::historyAdd(const QString & cmd) {
@@ -136,4 +153,12 @@ void ConsoleWidget::historyForward() {
         cursor.insertText(prompt + history -> at(+history_pos));
 
     setTextCursor(cursor);
+}
+
+void ConsoleWidget::onCommand(const QString & cmd) {
+    if (process -> state() == QProcess::NotRunning) {
+        process -> start(cmd_path + '/' + cmd);
+    } else {
+        queue.append(cmd_path + '/' + cmd);
+    }
 }
