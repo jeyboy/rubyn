@@ -24,6 +24,7 @@ class Dumper;
 class RunConfiguration;
 class DebugPanel;
 class BreakpointsPanel;
+class ConsoleWidget;
 
 
 namespace Ui { class IDEWindow; }
@@ -73,12 +74,15 @@ protected:
     void keyPressEvent(QKeyEvent *);
 
     void closeEvent(QCloseEvent *);
+
+    ConsoleWidget * createConsole(const QString & path, const bool & read_only = false);
 public:
     explicit IDEWindow(QWidget * parent = nullptr);
     ~IDEWindow();
 
 protected slots:
-    void setupConsole(const QString & path);
+    void setupConsole(ConsoleWidget * console, const QString & header = QLatin1Literal("Sys Console"));
+    void setupConsole(const QString & path, const QString & header = QLatin1Literal("Sys Console"));
     void splitterMoved(int pos, int index);
     void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false, const bool & vertical = true, const int & scroll_pos_y = 0);
     void newEditorRequired(File * file, const bool & vertical, const bool & is_external = false);

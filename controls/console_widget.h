@@ -10,12 +10,15 @@ class ConsoleWidget : public QPlainTextEdit {
 
     Process * process;
 public:
+    ConsoleWidget(const QJsonObject & json);
     explicit ConsoleWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd = QString(), QWidget * parent = nullptr, QStringList * history_list = nullptr);
     void output(const QString & txt);
     void scrollDown();
 
     QJsonObject save();
 protected:
+    void setup(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QStringList * history_list);
+
     void keyPressEvent(QKeyEvent * e);
     void mousePressEvent(QMouseEvent * e);
     void mouseDoubleClickEvent(QMouseEvent * e);

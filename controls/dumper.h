@@ -22,6 +22,9 @@ class Dumper : public QObject {
     void saveSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj);
     void loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, TabsBlock *& active);
 
+    void loadConsoles(IDEWindow * w, JsonObj & json);
+    void saveConsoles(IDEWindow * w, JsonObj & json);
+
     QString intArrToStr(const QList<int> & arr);
     QList<int> strToIntArr(const QString & str);
 public:

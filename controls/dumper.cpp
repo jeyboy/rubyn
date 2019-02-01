@@ -14,6 +14,8 @@
 #include "controls/project_tree.h"
 #include "controls/tabs_block.h"
 //#include "controls/universal_editor.h"
+#include "controls/dock_widget.h"
+#include "controls/console_widget.h"
 
 #include "project/ifolder.h"
 
@@ -24,9 +26,8 @@
 void Dumper::loadTree(IDEWindow * w, JsonObj & json) {
     JsonArr arr = json.arr(QLatin1Literal("tree"));
 
-    if (arr.isEmpty()) {
+    if (arr.isEmpty())
         return;
-    }
 
     for(JsonArr::Iterator it = arr.begin(); it != arr.end(); it++)
         w -> openFolder(QUrl::fromLocalFile((*it).toString()));
@@ -198,6 +199,32 @@ void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, Ta
     list -> setSizes(strToIntArr(obj.value(QLatin1Literal("sizes")).toString()));
 }
 
+void Dumper::loadConsoles(IDEWindow * w, JsonObj & json) {
+    QJsonArray consoles = json.arr(QLatin1Literal("consoles"));
+
+    if (consoles.isEmpty())
+        return;
+
+    for(JsonArr::Iterator it = consoles.begin(); it != consoles.end(); it++)
+        w -> setupConsole(new ConsoleWidget((*it).toObject()));
+}
+
+void Dumper::saveConsoles(IDEWindow * w, JsonObj & json) {
+    QList<DockWidget *> dock_widgets = w -> findChildren<DockWidget *>();
+
+    QJsonArray ar;
+
+    for(QList<DockWidget *>::Iterator it = dock_widgets.begin(); it != dock_widgets.end(); it++) {
+        ConsoleWidget * console = qobject_cast<ConsoleWidget *>((*it) -> widget());
+
+        if (console)
+            ar << console -> save();
+    }
+
+    if (ar.size() > 0)
+        json.insert(QLatin1Literal("consoles"), ar);
+}
+
 
 QString Dumper::intArrToStr(const QList<int> & arr) {
     QString res;
@@ -235,6 +262,7 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
 
         loadTree(w, obj);
         loadTabs(w, obj);
+        loadConsoles(w, obj);
     }
 
     QVariant geometry_state = settings.value(QLatin1Literal("geometry"));
@@ -294,6 +322,7 @@ void Dumper::save(IDEWindow * w, const QString & settings_filename) {
 
     saveTree(w, obj);
     saveTabs(w, obj);
+    saveConsoles(w, obj);
 
     settings.setValue(QLatin1Literal("data"), obj.toJsonStr());
     settings.setValue(QLatin1Literal("geometry"), w -> saveGeometry());

@@ -152,12 +152,14 @@ IDEWindow::~IDEWindow() {
 }
 
 
-void IDEWindow::setupConsole(const QString & path) {
-    ConsoleWidget * console = new ConsoleWidget(false, path, QLatin1Literal("#"), QString(), this);
+ConsoleWidget * IDEWindow::createConsole(const QString & path, const bool & read_only) {
+    return new ConsoleWidget(read_only, path, QLatin1Literal("#"), QString(), this);
+}
 
+void IDEWindow::setupConsole(ConsoleWidget * console, const QString & header) {
     DockWidget * console_widget =
         DockWidgets::obj().createWidget(
-            QLatin1Literal("Sys Console"),
+            header,
             console,
             Qt::AllDockWidgetAreas
         );
@@ -165,6 +167,12 @@ void IDEWindow::setupConsole(const QString & path) {
     console_widget -> setBehaviour((DockWidget::Features)(DockWidget::dwf_movable | DockWidget::dwf_closable));
 
     DockWidgets::obj().append(console_widget, Qt::BottomDockWidgetArea);
+}
+
+void IDEWindow::setupConsole(const QString & path, const QString & header) {
+    ConsoleWidget * console = createConsole(path);
+
+    setupConsole(console, header);
 }
 
 void IDEWindow::splitterMoved(int /*pos*/, int index) {
@@ -558,7 +566,7 @@ void IDEWindow::setupToolWindows() {
     QToolButton * search_target_btn = widget -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 0);
     search_target_btn -> setToolTip(QLatin1Literal("Scroll to current active document"));
 
-    connect(tree, &ProjectTree::consoleRequired, this, &IDEWindow::setupConsole);
+    connect(tree, SIGNAL(consoleRequired(const QString &)), this, SLOT(setupConsole(const QString &)));
 
     DockWidgetSearchConnector connector(tree);
 

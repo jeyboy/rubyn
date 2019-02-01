@@ -5,7 +5,23 @@
 #include <qscrollbar.h>
 #include <qjsonobject.h>
 
-ConsoleWidget::ConsoleWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QWidget * parent, QStringList * history_list) : QPlainTextEdit(parent), process(new Process(this)), is_read_only(read_only), cmd_command(cmd), cmd_path(path), is_locked(false), history_pos(0) {
+ConsoleWidget::ConsoleWidget(const QJsonObject & json) : is_locked(false), history_pos(0) {
+    bool read_only = json.value(QLatin1Literal("read_only")).toBool();
+    QString cmd = json.value(QLatin1Literal("cmd_command")).toString();
+    QString path = json.value(QLatin1Literal("cmd_path")).toString();
+    QString def_prompt = json.value(QLatin1Literal("prompt")).toString();
+    QStringList * history_list = new QStringList(json.value(QLatin1Literal("history")).toVariant().toStringList());
+
+    setup(read_only, path, def_prompt, cmd, history_list);
+}
+
+ConsoleWidget::ConsoleWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QWidget * parent, QStringList * history_list) : QPlainTextEdit(parent), process(nullptr), is_read_only(read_only), cmd_command(cmd), cmd_path(path), is_locked(false), history_pos(0) {
+    setup(read_only, path, def_prompt, cmd, history_list);
+}
+
+void ConsoleWidget::setup(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QStringList * history_list) {
+    process = new Process(this);
+
     prompt = def_prompt + QLatin1Literal("> ");
     history = history_list ? history_list : read_only ? nullptr : new QStringList;
 
@@ -114,7 +130,7 @@ QJsonObject ConsoleWidget::save() {
     res.insert(QLatin1Literal("read_only"), is_read_only);
     res.insert(QLatin1Literal("cmd_command"), cmd_command);
     res.insert(QLatin1Literal("cmd_path"), cmd_path);
-    res.insert(QLatin1Literal("prompt"), prompt);
+    res.insert(QLatin1Literal("prompt"), prompt.mid(0, prompt.length() - 2));
 
     res.insert(QLatin1Literal("history"), QJsonValue::fromVariant(*history));
 
