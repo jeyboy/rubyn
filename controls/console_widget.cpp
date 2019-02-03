@@ -30,6 +30,9 @@ void ConsoleWidget::setup(const bool & read_only, const QString & path, const QS
     p.setColor(QPalette::Text, Qt::green);
     setPalette(p);
 
+    if (history)
+        history_pos = history -> length();
+
     insertPrompt(false);
 
     onCommand(cmd);
