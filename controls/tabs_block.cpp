@@ -349,13 +349,13 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
 
         File * file = _bar -> tabFile(tab);
 
-        QAction * action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_horizontal")), tr("Close"), this, SLOT(closeCurrentTab()));
+        QAction * action = menu.addAction(QIcon(QLatin1Literal(":/menu/close")), tr("Close"), this, SLOT(closeCurrentTab()));
         action -> setProperty("uid", file -> uid());
 
-        action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_horizontal")), tr("Close other"), this, SLOT(closeExceptCurrentTab()));
+        action = menu.addAction(QIcon(QLatin1Literal(":/menu/close_other")), tr("Close other"), this, SLOT(closeExceptCurrentTab()));
         action -> setProperty("uid", file -> uid());
 
-        action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_horizontal")), tr("Close all"), this, SLOT(clear()));
+        action = menu.addAction(QIcon(QLatin1Literal(":/menu/close_all")), tr("Close all"), this, SLOT(clear()));
 
         menu.addSeparator();
 

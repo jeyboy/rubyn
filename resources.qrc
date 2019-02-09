@@ -105,5 +105,8 @@
         <file alias="palette">icons/palette.png</file>
         <file alias="break_horizontal">icons/break_horizontal.png</file>
         <file alias="break_vertical">icons/break_vertical.png</file>
+        <file alias="close">icons/close.png</file>
+        <file alias="close_all">icons/close_all.png</file>
+        <file alias="close_other">icons/close_other.png</file>
     </qresource>
 </RCC>
