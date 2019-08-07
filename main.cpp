@@ -1,6 +1,13 @@
 #include "ide_window.h"
 #include <QApplication>
 
+
+// https://javascript-minifier.com/
+// has api for online minify
+// POST https://javascript-minifier.com/raw?input=...
+// curl -X POST -s --data-urlencode 'input=console.log( 1 );' https://javascript-minifier.com/raw
+
+
 //https://xdebug.org/docs/index.php?action=index // php debug
 
 
