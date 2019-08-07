@@ -106,21 +106,35 @@ bool Archive::save(const QString & name, const QByteArray & buf) {
 
 void Archive::begin() {
 //    QProcess * obj = (QProcess *)sender();
-
     emit started();
 }
 void Archive::errorOccurred(QProcess::ProcessError error) {
 //    QProcess * obj = (QProcess *)sender();
+    hasStatusData(errToString(error), ot_error);
+    emit finished(false);
 }
 void Archive::hasError() {
-//    QProcess * obj = (QProcess *)sender();
+    QProcess * obj = (QProcess *)sender();
+    hasStatusData(obj -> readAllStandardError(), ot_error);
 }
 void Archive::hasOutput() {
-//    QProcess * obj = (QProcess *)sender();
+    QProcess * obj = (QProcess *)sender();
+    hasStatusData(obj -> readAllStandardOutput(), ot_data);
 }
 void Archive::done(int status) {
 //    QProcess * obj = (QProcess *)sender();
-
-
     emit finished(status == 0);
+}
+
+QByteArray errToString(const QProcess::ProcessError & error) {
+    switch(error) {
+        case QProcess::FailedToStart: return QByteArray("Failed to start");
+        case QProcess::Crashed: return QByteArray("Crshed");
+        case QProcess::Timedout: return QByteArray("Timedout");
+        case QProcess::ReadError: return QByteArray("Read error");
+        case QProcess::WriteError: return QByteArray("Write error");
+        case QProcess::UnknownError: return QByteArray("Unknown error");
+    };
+
+    return QByteArray("Super unknown error");
 }

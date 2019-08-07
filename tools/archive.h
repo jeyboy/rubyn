@@ -13,6 +13,8 @@ protected:
     Archive();
 
     static const QString & storePath();
+    QByteArray errToString(const QProcess::ProcessError & error);
+
 protected slots:
     void begin();
     void errorOccurred(QProcess::ProcessError error);

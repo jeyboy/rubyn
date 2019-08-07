@@ -103,6 +103,22 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
     loadSettings();
 
+
+
+
+    VersionUrls urls;
+
+    urls.core_url = "F://rubyn test//ruby_2_5_1_core_rdocs.tgz";
+    urls.stdlib_url = "F://rubyn test//ruby_2_5_1_stdlib_rdocs.tgz";
+
+    RubyDocPreparer().parseRubyPack(urls);
+
+
+    int y = 0;
+
+
+
+
     // TESTS // REMOVE LATER
 
 //    DocsList res;
