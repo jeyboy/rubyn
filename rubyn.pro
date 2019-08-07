@@ -111,6 +111,7 @@ SOURCES += main.cpp\
 
 HEADERS  += ide_window.h \
     controls/dock_widgets.h \
+    controls/project_tree_style.h \
     editor/idocument.h \
     editor/document_types/binary_document.h \
     editor/document_types/documents_types.h \

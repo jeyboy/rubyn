@@ -10,6 +10,7 @@
 #include "tools/json/json.h"
 #include "tools/json/json_obj.h"
 #include "project_tree_item_delegate.h"
+#include "project_tree_style.h"
 
 ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setHeaderHidden(true);
@@ -28,12 +29,22 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     //TODO: need to set double font size
     setIconSize(QSize(22, 22));
 
+    setStyle(new ProjectTreeStyle());
+
     connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*,int)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu(const QPoint &)));
+
+//    connect(this, &QTreeWidget::itemClicked, [](QTreeWidgetItem * item, int column) {
+//        item -> setExpanded(!item -> isExpanded());
+//    });
+
     connect(&Projects::obj(), SIGNAL(fileIconChanged(QString, QIcon)), this, SLOT(fileIconChanged(QString, QIcon)));
 
 //    setSortingEnabled(true);
 //    sortByColumn(0, Qt::AscendingOrder);
+
+    setEditTriggers(QAbstractItemView::NoEditTriggers);
+//    setExpandsOnDoubleClick(false);
 
     item_delegate = new ProjectTreeItemDelegate();
     setItemDelegate(item_delegate);
