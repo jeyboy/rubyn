@@ -278,8 +278,6 @@ class CodeEditor : public QPlainTextEdit, public IEditor {
     int line_number_height;
     int line_number_width;
 
-    QFont curr_line_font;
-
     QHash<DATA_FLAGS_TYPE, QPixmap> icons;
     QHash<OVERLAY_POS_TYPE, OverlayInfo *> overlays;
 

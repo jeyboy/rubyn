@@ -170,10 +170,6 @@ const QString & CodeEditor::documentUid() {
 void CodeEditor::setVisible(bool visible) { QPlainTextEdit::setVisible(visible); }
 
 void CodeEditor::setFont(const QFont & font) {
-    curr_line_font = QFont(font.family(), font.pointSize());
-    curr_line_font.setUnderline(true);
-    curr_line_font.setBold(true);
-
     QPlainTextEdit::setFont(font);
 
     line_number_height = fontMetrics().height();
@@ -376,9 +372,24 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
         painter.fillRect(folding_scope_offset_x, block_top, folding_scope_width, block_bottom - block_top, scope_format.background());
     }
 
-    painter.setFont(is_current ? curr_line_font : font());
+    const QTextCharFormat & line_number_format = HighlightFormatFactory::obj().getFormatFor(hid_line_number);
+    QFont number_font = line_number_format.font();
+
+    const int cur_font_size = font().pointSize();
+
+    if (is_current) {
+        number_font.setUnderline(true);
+        number_font.setBold(true);
+        number_font.setPointSize(cur_font_size);
+    } else {
+        number_font.setPointSize(cur_font_size - 1);
+    }
+
+    painter.setPen(line_number_format.foreground().color());
+    painter.setFont(number_font);
+
     painter.drawText(
-        line_number_offset_x, block_top, line_number_width, line_number_height, Qt::AlignRight, QString::number(cache -> block_number + 1)
+        line_number_offset_x, block_top + (cur_font_size - number_font.pointSize()) / 2, line_number_width, line_number_height, Qt::AlignRight, QString::number(cache -> block_number + 1)
     );
 }
 

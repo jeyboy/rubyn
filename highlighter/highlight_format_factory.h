@@ -20,6 +20,8 @@ protected:
 
     void registerSearchOverlayFormat();
 
+    void registerLineNumberFormat();
+
     void registerExtraIconsRangeFormat();
 
     void registerSelectionFormat();

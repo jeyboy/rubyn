@@ -12,3 +12,4 @@ pngcrush -n -q *.png
 
 
 ./icons//pngcrush_1_8_11_w64.exe -ow -rem alib -reduce ./icons/help.png
+./pngcrush_1_8_11_w64.exe -ow -rem alib -reduce ./help.png

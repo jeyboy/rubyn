@@ -58,8 +58,9 @@ class RubydocParser : public QObject {
 
     void dumpDescription(QStringList & desc, QTextStream & out, const QByteArray & level_padding);
     void dumpObject(DataObj & data_obj, QTextStream & out);
+
 public:
-    RubydocParser(QObject * parent = 0);
+    RubydocParser(QObject * parent = nullptr);
     ~RubydocParser();
 
     bool parse(const QString & inpath);

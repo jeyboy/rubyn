@@ -51,6 +51,13 @@ void HighlightFormatFactory::registerSearchOverlayFormat() {
 }
 
 
+void HighlightFormatFactory::registerLineNumberFormat() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(128, 128, 128, 255));
+    _formats.insert(hid_line_number, format);
+}
+
+
 void HighlightFormatFactory::registerExtraIconsRangeFormat() {
     QTextCharFormat format;
     format.setBackground(QColor::fromRgb(92, 157, 192, 64));
@@ -367,6 +374,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerProjectTreeConfigRangeFormat();
     registerProjectTreeAppRangeFormat();
 
+    registerLineNumberFormat();
     registerExtraIconsRangeFormat();
     registerSearchOverlayFormat();
     registerSelectionFormat();
