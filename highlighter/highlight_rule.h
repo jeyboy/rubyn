@@ -10,9 +10,9 @@ struct HighlightingRule {
     QRegularExpression * end_pattern;
     Identifier format_uid;
 
-    HighlightingRule() : start_pattern(0), end_pattern(0), format_uid(hid_none) {}
+    HighlightingRule() : start_pattern(nullptr), end_pattern(nullptr), format_uid(hid_none) {}
 
-    HighlightingRule(QRegularExpression * spattern, const Identifier & uid, QRegularExpression * epattern = 0)
+    HighlightingRule(QRegularExpression * spattern, const Identifier & uid, QRegularExpression * epattern = nullptr)
         : start_pattern(spattern), end_pattern(epattern), format_uid(uid) { }
 
     ~HighlightingRule() {

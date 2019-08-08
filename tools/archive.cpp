@@ -5,10 +5,12 @@
 #include "tools/files_proc_manager.h"
 #include "controls/logger.h"
 
+#include <qregularexpression.h>
 #include <qstringbuilder.h>
 #include <qfile.h>
 
 QString Archive::store_ext = QLatin1Literal("pup");
+QStringList Archive::supported_formats;
 
 bool Archive::prepareUniqFolderName(QString & name) {
     name = FilesProcManager::obj().generateRandomName();
@@ -25,101 +27,146 @@ bool Archive::prepareUniqFolderName(QString & name) {
     }
 }
 
-Archive::Archive() {}
+Archive::Archive() {
+    if (Archive::supported_formats.isEmpty())
+        Archive::supported_formats = supportedUncompressFormats();
+}
 
 const QString & Archive::storePath() {
     return FilesProcManager::obj().dataPath();
 }
 
-bool Archive::decompress(const QString & path, const bool & async) {
+QString Archive::buildAvailableFormatsCmd() {
+    #ifdef Q_OS_WIN
+        return FilesProcManager::obj().toolPath(LStr("7za.exe")) % LStr(" i");
+    #else
+
+    #endif
+}
+
+QString Archive::buildDecompressCmd(const QString & path, const QString & target_folder) {
+    #ifdef Q_OS_WIN
+    //        http://rus-linux.net/MyLDP/consol/7z-command-switches.html
+
+    //        7z x archive.zip -o[how/to/forge] //Extract with full paths
+    //        7z t archive.zip *.doc -r // tests *.doc files in archive archive.zip. // use * for all files testing
+    //               -ai (Include archives)
+    //               -an (Disable parsing of archive_name)
+    //               -ao (Overwrite mode)
+    //               -ax (Exclude archives)
+    //               -i (Include)
+    //               -m (Method)
+    //               -o (Set Output Directory)
+    //               -p (Set Password)
+    //               -r (Recurse)
+    //               -si (use StdIn)
+    //               -sni (Store NT security information)
+    //               -sns (Store NTFS alternate Streams)
+    //               -so (use StdOut)
+    //               -spf (Use fully qualified file paths)
+    //               -t (Type of archive)
+    //               -x (Exclude)
+    //               -y (Assume Yes on all queries)
+
+    //        7z i // info about supported formats
+    //        7z l archive.zip // list of files in archive
+    //               -ai (Include archives)
+    //               -an (Disable parsing of archive_name)
+    //               -ax (Exclude archives)
+    //               -i (Include)
+    //               -slt (Show technical information)
+    //               -sns (Store NTFS alternate Streams)
+    //               -p (Set Password)
+    //               -r (Recurse)
+    //               -t (Type of archive)
+    //               -x (Exclude)
+
+
+    return FilesProcManager::obj().toolPath(LStr("7za.exe")) %
+            LStr(" e \"") % path % LStr("\" -y -o\"") %
+            FilesProcManager::obj().tempPath(target_folder) % LStr("\"");
+    #else
+
+    #endif
+}
+
+QStringList Archive::supportedUncompressFormats() {
+    QString output;
+    QStringList list;
+
+    if (runCmd(buildAvailableFormatsCmd(), output)) {
+        QStringList lines = output.split(LStr("\r\n"));
+        bool in_list = false;
+
+        QRegularExpression regex(QLatin1Literal("\\b([a-z.()]+)\\b"));
+
+        for(QStringList::Iterator entry = lines.begin(); entry != lines.end(); entry++) {
+            if (in_list) {
+                if ((*entry).isEmpty())
+                    break;
+
+
+
+                QRegularExpressionMatchIterator match_it = regex.globalMatch((*entry));
+
+                while (match_it.hasNext()) {
+                    QRegularExpressionMatch match = match_it.next();
+                    QString captured = match.captured(1);
+                    int y = 0;
+                }
+            } else {
+                in_list = (*entry) == LStr("Formats:");
+            }
+        }
+    }
+
+    return list;
+}
+
+bool Archive::runCmd(const QString & cmd, QString & output) {
+    QProcess * proc = new QProcess(qApp);
+
+//    connect(proc, SIGNAL(started()), this, SLOT(begin()));
+//    connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(hasError()));
+//    connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(hasOutput()));
+//    connect(proc, SIGNAL(finished(int)), this, SLOT(done(int)));
+//    connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(errorOccurred(QProcess::ProcessError)));
+
+    Logger::info(LStr("Archive"), LStr("Run proc: ") % cmd);
+
+    proc -> start(cmd);
+
+    if (proc -> state() != QProcess::NotRunning) {
+        QEventLoop loop;
+        connect(proc, SIGNAL(finished(int)), &loop, SLOT(quit()));
+        connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)), &loop, SLOT(quit()));
+        loop.exec();
+    }
+
+    output = QString(proc -> readAllStandardOutput());
+
+    return proc -> exitStatus() == QProcess::NormalExit;
+}
+
+bool Archive::decompress(const QString & path) {
     Logger::info(LStr("Archive"), LStr("Start unpack: ") % path);
 
+    QString output;
     QString target_folder;
     if (!prepareUniqFolderName(target_folder)) {
         Logger::error(LStr("Archive"), LStr("Can't prepare uniq folder for: ") % path);
         return false;
     }
 
-    QProcess * proc = new QProcess(qApp);
-    proc -> setProperty("proc_path", path);
-    proc -> setProperty("folder_name", target_folder);
+    QString cmd = buildDecompressCmd(path, target_folder);
 
-    connect(proc, SIGNAL(started()), this, SLOT(begin()));
-    connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(hasError()));
-    connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(hasOutput()));
-    connect(proc, SIGNAL(finished(int)), this, SLOT(done(int)));
-    connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(errorOccurred(QProcess::ProcessError)));
-
-    QString cmd;
-
-    #ifdef Q_OS_WIN
-//        http://rus-linux.net/MyLDP/consol/7z-command-switches.html
-
-//        7z x archive.zip -o[how/to/forge] //Extract with full paths
-//        7z t archive.zip *.doc -r // tests *.doc files in archive archive.zip. // use * for all files testing
-//               -ai (Include archives)
-//               -an (Disable parsing of archive_name)
-//               -ao (Overwrite mode)
-//               -ax (Exclude archives)
-//               -i (Include)
-//               -m (Method)
-//               -o (Set Output Directory)
-//               -p (Set Password)
-//               -r (Recurse)
-//               -si (use StdIn)
-//               -sni (Store NT security information)
-//               -sns (Store NTFS alternate Streams)
-//               -so (use StdOut)
-//               -spf (Use fully qualified file paths)
-//               -t (Type of archive)
-//               -x (Exclude)
-//               -y (Assume Yes on all queries)
-
-//        7z i // info about supported formats
-//        7z l archive.zip // list of files in archive
-//               -ai (Include archives)
-//               -an (Disable parsing of archive_name)
-//               -ax (Exclude archives)
-//               -i (Include)
-//               -slt (Show technical information)
-//               -sns (Store NTFS alternate Streams)
-//               -p (Set Password)
-//               -r (Recurse)
-//               -t (Type of archive)
-//               -x (Exclude)
-
-
-        cmd = FilesProcManager::obj().toolPath(QLatin1Literal("7za.exe"))
-                 % QLatin1Literal(" e \"") % path % QLatin1Literal("\" -y -o\"") % FilesProcManager::obj().tempPath(target_folder) % QLatin1Literal("\"");
-    #else
-
-    #endif
-
-    Logger::info(LStr("Archive"), LStr("Run proc: ") % cmd);
-
-    if (!async) {
-        proc -> start(cmd);
-
-        if (proc -> state() != QProcess::NotRunning) {
-            QEventLoop loop;
-            connect(proc, SIGNAL(finished(int)), &loop, SLOT(quit()));
-            connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)), &loop, SLOT(quit()));
-            loop.exec();
-        }
-
-        return proc -> exitStatus() == QProcess::NormalExit;
-    }
-    else {
-        proc -> start(cmd);
-    }
+    runCmd(cmd, output);
 
     //        ThreadUtils::obj().run(
     //            this, &ImageBank::procImageCall,
     //            QUrl(orders.takeLast()),
     //            new Func(this, SLOT(pixmapDownloaded(Response*)))
     //        );
-
-    return true;
 }
 
 bool Archive::load(const QString & name, QByteArray & buf) {

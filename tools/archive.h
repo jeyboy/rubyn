@@ -9,11 +9,17 @@ class Archive : public QObject {
     Q_OBJECT
 
     static QString store_ext;
+    static QStringList supported_formats;
 
     bool prepareUniqFolderName(QString & name);
 protected:
     static const QString & storePath();
     static QByteArray errToString(const QProcess::ProcessError & error);
+
+    QString buildAvailableFormatsCmd();
+    QString buildDecompressCmd(const QString & path, const QString & target_folder);
+    bool runCmd(const QString & cmd, QString & output);
+    QStringList supportedUncompressFormats();
 
 protected slots:
     void begin();
@@ -28,7 +34,7 @@ public:
         ot_data = 1
     };
 
-    bool decompress(const QString & path, const bool & async = true);
+    bool decompress(const QString & path);
 
     static bool load(const QString & name, QByteArray & buf);
     static bool save(const QString & name, const QByteArray & buf);
