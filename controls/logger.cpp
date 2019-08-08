@@ -13,7 +13,7 @@
 const char * Logger::nl = "\n";
 
 void Logger::dump(const QByteArray & content) {
-    QString p = QCoreApplication::applicationDirPath() % '/' % QDateTime::currentDateTime().toString("yyyy.MM.dd_hh.mm.ss.zzz") % QLatin1String(".html");
+    QString p = QCoreApplication::applicationDirPath() % '/' % QDateTime::currentDateTime().toString("yyyy.MM.dd_hh.mm.ss.zzz") % LStr(".html");
     QFile f(p);
     if (f.open(QFile::WriteOnly)) {
         f.write(content);
@@ -126,12 +126,12 @@ void Logger::startMark() { timer -> start(); }
 void Logger::endMark(const bool & append_to_average, const QString & initiator, const QString & value) {
     qint64 elapsed = timer -> nsecsElapsed();
 
-    QString str = QString::number(timer -> elapsed()) % QLatin1String(" ms (") % Info::paddedNumber(elapsed) % QLatin1String(" ns)");
+    QString str = QString::number(timer -> elapsed()) % LStr(" ms (") % Info::paddedNumber(elapsed) % LStr(" ns)");
 
     if (append_to_average) {
         quint64 average = mark_averages[initiator].appendAndAverage(elapsed);
 
-        str = str % QLatin1String("(~") % Info::paddedNumber(average) % QLatin1String(" ns)");
+        str = str % LStr("(~") % Info::paddedNumber(average) % LStr(" ns)");
     }
 
     write(initiator, value, str);
@@ -169,12 +169,12 @@ void Logger::toEditor(const QString & initiator, const QString & value, const in
         ///////////////////////////////////////
 
         text = text %
-            QLatin1String("<span style='background-color:") %
+            LStr("<span style='background-color:") %
             backColor(level) %
-            QLatin1String("'>") %
+            LStr("'>") %
             (m_showDate ? QStringLiteral("<b>") % TIME_MARK % QStringLiteral("</b>") : QStringLiteral("")) %
             cval %
-            QLatin1String("</span>");
+            LStr("</span>");
 
         bool at_end = m_editor -> verticalScrollBar() -> maximum() - m_editor -> verticalScrollBar() -> value() < 10;
         m_editor -> appendHtml(text);
@@ -190,7 +190,7 @@ QLatin1String Logger::textColor(const int & level) {
         case log_info: return QLatin1Literal("blue");
         case log_success: return QLatin1Literal("green");
 
-        default: return QLatin1String();
+        default: return LStr();
     }
 }
 QLatin1String Logger::backColor(const int & level) {
@@ -199,7 +199,7 @@ QLatin1String Logger::backColor(const int & level) {
         case log_info: return QLatin1Literal("rgba(0, 0, 255, .1)");
         case log_success: return QLatin1Literal("rgba(0, 255, 0, .1)");
 
-        default: return QLatin1String();
+        default: return LStr();
     }
 }
 

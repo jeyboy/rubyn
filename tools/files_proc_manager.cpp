@@ -32,7 +32,7 @@ QString FilesProcManager::appPath(const QString & name) {
 }
 
 void FilesProcManager::cleanerProc() {
-    QDirIterator files_it(temp_path, QDir::Files | QDir::Dirs | QDir::Hidden);
+    QDirIterator files_it(temp_path, QDir::Files | QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
 
     while(files_it.hasNext()) {
         QString path = files_it.next();

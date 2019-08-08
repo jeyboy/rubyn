@@ -3,6 +3,7 @@
 #include "misc/dir.h"
 #include "tools/thread_utils.h"
 #include "tools/files_proc_manager.h"
+#include "controls/logger.h"
 
 #include <qstringbuilder.h>
 #include <qfile.h>
@@ -31,11 +32,16 @@ const QString & Archive::storePath() {
 }
 
 bool Archive::decompress(const QString & path, const bool & async) {
+    Logger::info(LStr("Archive"), LStr("Start unpack: ") % path);
+
     QString target_folder;
-    if (!prepareUniqFolderName(target_folder))
+    if (!prepareUniqFolderName(target_folder)) {
+        Logger::error(LStr("Archive"), LStr("Can't prepare uniq folder for: ") % path);
         return false;
+    }
 
     QProcess * proc = new QProcess(qApp);
+    proc -> setProperty("proc_path", path);
     proc -> setProperty("folder_name", target_folder);
 
     connect(proc, SIGNAL(started()), this, SLOT(begin()));
@@ -84,12 +90,12 @@ bool Archive::decompress(const QString & path, const bool & async) {
 
 
         cmd = FilesProcManager::obj().toolPath(QLatin1Literal("7za.exe"))
-                 % QLatin1Literal(" e \"") % path % QLatin1Literal("\" -y -o \"") % FilesProcManager::obj().tempPath(target_folder) % QLatin1Literal("\"");
+                 % QLatin1Literal(" e \"") % path % QLatin1Literal("\" -y -o\"") % FilesProcManager::obj().tempPath(target_folder) % QLatin1Literal("\"");
     #else
 
     #endif
 
-    qDebug() << cmd;
+    Logger::info(LStr("Archive"), LStr("Run proc: ") % cmd);
 
     if (!async) {
         proc -> start(cmd);
@@ -147,36 +153,54 @@ bool Archive::save(const QString & name, const QByteArray & buf) {
 
 
 void Archive::begin() {
-//    QProcess * obj = (QProcess *)sender();
+    QProcess * obj = (QProcess *)sender();
     emit started();
+
+    Logger::info(LStr("Archive"), LStr("Proc is started for ") % obj -> program());
 }
 void Archive::errorOccurred(QProcess::ProcessError error) {
-//    QProcess * obj = (QProcess *)sender();
-    hasStatusData(errToString(error), ot_error);
+    QProcess * obj = (QProcess *)sender();
+    QByteArray err_msg = obj -> errorString().toUtf8();
+    hasStatusData(err_msg, ot_error);
     emit finished(false);
+
+    Logger::error(LStr("Archive"), LStr("Proc has error for ") % obj -> program() % LStr(" ") % err_msg);
 }
 void Archive::hasError() {
     QProcess * obj = (QProcess *)sender();
-    hasStatusData(obj -> readAllStandardError(), ot_error);
+    QByteArray err_msg = obj -> errorString().toUtf8();
+    hasStatusData(err_msg, ot_error);
+
+    Logger::error(LStr("Archive"), LStr("Proc has error for ") % obj -> program() % LStr(" ") % err_msg);
 }
 void Archive::hasOutput() {
     QProcess * obj = (QProcess *)sender();
     hasStatusData(obj -> readAllStandardOutput(), ot_data);
 }
 void Archive::done(int status) {
-//    QProcess * obj = (QProcess *)sender();
+    QProcess * obj = (QProcess *)sender();
     emit finished(status == 0);
+
+    if (status == 0) {
+        Logger::success(LStr("Archive"), LStr("Proc is complete for ") % obj -> program());
+    } else {
+        QByteArray err_msg = obj -> readAllStandardError();
+        if (err_msg.isEmpty())
+            err_msg = obj -> errorString().toUtf8();
+
+        Logger::error(LStr("Archive"), LStr("Proc status failed for ") % obj -> program() % LStr(" Reason: ") % err_msg);
+    }
 }
 
-QByteArray Archive::errToString(const QProcess::ProcessError & error) {
-    switch(error) {
-        case QProcess::FailedToStart: return QByteArray("Failed to start");
-        case QProcess::Crashed: return QByteArray("Crshed");
-        case QProcess::Timedout: return QByteArray("Timedout");
-        case QProcess::ReadError: return QByteArray("Read error");
-        case QProcess::WriteError: return QByteArray("Write error");
-        case QProcess::UnknownError: return QByteArray("Unknown error");
-    };
+//QByteArray Archive::errToString(const QProcess::ProcessError & error) {
+//    switch(error) {
+//        case QProcess::FailedToStart: return QByteArray("Failed to start");
+//        case QProcess::Crashed: return QByteArray("Crshed");
+//        case QProcess::Timedout: return QByteArray("Timedout");
+//        case QProcess::ReadError: return QByteArray("Read error");
+//        case QProcess::WriteError: return QByteArray("Write error");
+//        case QProcess::UnknownError: return QByteArray("Unknown error");
+//    };
 
-    return QByteArray("Super unknown error");
-}
+//    return QByteArray("Super unknown error");
+//}

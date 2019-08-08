@@ -10,6 +10,8 @@
 
 #define TIME_MARK QDateTime::currentDateTime().toString(QLatin1String("dd.MM.yyyy hh:mm:ss "))
 
+typedef QLatin1Literal LStr;
+
 class QFile;
 class QTextStream;
 class QFontMetrics;
@@ -24,6 +26,8 @@ struct TimeMark {
     void append(const quint64 & part) {
         sum += part;
         ++quantity;
+
+        QStringLiteral();
     }
 
     quint64 average() {
