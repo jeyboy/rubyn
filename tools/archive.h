@@ -9,11 +9,11 @@ class Archive : public QObject {
     Q_OBJECT
 
     static QString store_ext;
-protected:
-    Archive();
 
+    bool prepareUniqFolderName(QString & name);
+protected:
     static const QString & storePath();
-    QByteArray errToString(const QProcess::ProcessError & error);
+    static QByteArray errToString(const QProcess::ProcessError & error);
 
 protected slots:
     void begin();
@@ -22,14 +22,13 @@ protected slots:
     void hasOutput();
     void done(int status);
 public:
+    Archive();
     enum OutputType : quint8 {
         ot_error = 0,
         ot_data = 1
     };
 
-    static void init();
-
-    void decompress(const QString & path);
+    bool decompress(const QString & path, const bool & async = true);
 
     static bool load(const QString & name, QByteArray & buf);
     static bool save(const QString & name, const QByteArray & buf);

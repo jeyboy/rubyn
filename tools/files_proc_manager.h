@@ -13,6 +13,7 @@ class FilesProcManager : public QObject, public Singleton<FilesProcManager> {
 
     static QString temp_path;
     static QString data_path;
+    static QString tools_path;
 protected:
     FilesProcManager();
     ~FilesProcManager() { _proc_files.clear(); }
@@ -24,7 +25,11 @@ public:
         ps_failed = 2
     };
 
+    static QString generateRandomName();
+
     static const QString & tempPath() { return temp_path; }
+    static QString tempPath(const QString & path);
+    static QString toolPath(const QString & tool_name);
     static const QString & dataPath() { return data_path; }
     static QString appPath(const QString & name = QString());
 

@@ -3,6 +3,16 @@
 #include <qapplication.h>
 #include <qdir.h>
 
+bool Dir::hasEntry(const QString & path, const QString & name, const bool & is_folder) {
+    if (is_folder) {
+        QDir dir(concatPaths(path, name));
+        return dir.exists();
+    } else {
+        QDir dir(path);
+        return dir.exists(name);
+    }
+}
+
 bool Dir::createFolder(const QString & path, const QString & name) {
     QDir dir(path);
 
@@ -25,4 +35,8 @@ QString Dir::appPath(const QString & name, const bool & invalidate) {
     }
 
     return res;
+}
+
+QString Dir::concatPaths(const QString & path, const QString & name) {
+    return path % '/' % name;
 }

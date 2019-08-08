@@ -1,5 +1,6 @@
 #include "archive.h"
 
+#include "misc/dir.h"
 #include "tools/thread_utils.h"
 #include "tools/files_proc_manager.h"
 
@@ -8,23 +9,47 @@
 
 QString Archive::store_ext = QLatin1Literal("pup");
 
+bool Archive::prepareUniqFolderName(QString & name) {
+    name = FilesProcManager::obj().generateRandomName();
+    int counter = 0;
+
+    while(true) {
+        if (!Dir::hasEntry(FilesProcManager::obj().tempPath(), name, true))
+            return true;
+
+        if (++counter > 100)
+            return false;
+
+        name = FilesProcManager::obj().generateRandomName();
+    }
+}
+
 Archive::Archive() {}
 
 const QString & Archive::storePath() {
     return FilesProcManager::obj().dataPath();
 }
 
-void Archive::decompress(const QString & path) {
+bool Archive::decompress(const QString & path, const bool & async) {
+    QString target_folder;
+    if (!prepareUniqFolderName(target_folder))
+        return false;
+
+    QProcess * proc = new QProcess(qApp);
+    proc -> setProperty("folder_name", target_folder);
+
+    connect(proc, SIGNAL(started()), this, SLOT(begin()));
+    connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(hasError()));
+    connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(hasOutput()));
+    connect(proc, SIGNAL(finished(int)), this, SLOT(done(int)));
+    connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(errorOccurred(QProcess::ProcessError)));
+
+    QString cmd;
+
     #ifdef Q_OS_WIN
-        QProcess * proc = new QProcess(qApp);
+//        http://rus-linux.net/MyLDP/consol/7z-command-switches.html
 
-        connect(proc, SIGNAL(started()), this, SLOT(begin()));
-        connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(hasError()));
-        connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(hasOutput()));
-        connect(proc, SIGNAL(finished(int)), this, SLOT(done(int)));
-        connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(errorOccurred(QProcess::ProcessError)));
-
-//        7z x archive.zip  //Extract with full paths
+//        7z x archive.zip -o[how/to/forge] //Extract with full paths
 //        7z t archive.zip *.doc -r // tests *.doc files in archive archive.zip. // use * for all files testing
 //               -ai (Include archives)
 //               -an (Disable parsing of archive_name)
@@ -57,21 +82,38 @@ void Archive::decompress(const QString & path) {
 //               -t (Type of archive)
 //               -x (Exclude)
 
-        QString cmd = FilesProcManager::obj().appPath(QLatin1Literal("tools/7za.exe"));
 
-        proc -> start(cmd % QLatin1Literal(" e \"") % path % QLatin1Literal("\" -y "));
-
-
-
-//        ThreadUtils::obj().run(
-//            this, &ImageBank::procImageCall,
-//            QUrl(orders.takeLast()),
-//            new Func(this, SLOT(pixmapDownloaded(Response*)))
-//        );
-
+        cmd = FilesProcManager::obj().toolPath(QLatin1Literal("7za.exe"))
+                 % QLatin1Literal(" e \"") % path % QLatin1Literal("\" -y -o \"") % FilesProcManager::obj().tempPath(target_folder) % QLatin1Literal("\"");
     #else
 
     #endif
+
+    qDebug() << cmd;
+
+    if (!async) {
+        proc -> start(cmd);
+
+        if (proc -> state() != QProcess::NotRunning) {
+            QEventLoop loop;
+            connect(proc, SIGNAL(finished(int)), &loop, SLOT(quit()));
+            connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)), &loop, SLOT(quit()));
+            loop.exec();
+        }
+
+        return proc -> exitStatus() == QProcess::NormalExit;
+    }
+    else {
+        proc -> start(cmd);
+    }
+
+    //        ThreadUtils::obj().run(
+    //            this, &ImageBank::procImageCall,
+    //            QUrl(orders.takeLast()),
+    //            new Func(this, SLOT(pixmapDownloaded(Response*)))
+    //        );
+
+    return true;
 }
 
 bool Archive::load(const QString & name, QByteArray & buf) {
@@ -126,7 +168,7 @@ void Archive::done(int status) {
     emit finished(status == 0);
 }
 
-QByteArray errToString(const QProcess::ProcessError & error) {
+QByteArray Archive::errToString(const QProcess::ProcessError & error) {
     switch(error) {
         case QProcess::FailedToStart: return QByteArray("Failed to start");
         case QProcess::Crashed: return QByteArray("Crshed");
