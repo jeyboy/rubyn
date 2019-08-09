@@ -4,12 +4,14 @@
 #include <qobject.h>
 #include <qbytearray.h>
 #include <qprocess.h>
+#include <qregularexpression.h>
 
 class Archive : public QObject {
     Q_OBJECT
 
     static QString store_ext;
-    static QStringList supported_formats;
+    static QRegularExpression supported_formats_reg_exp;
+    static QHash<QString, bool> all_formats;
 
     bool prepareUniqFolderName(QString & name);
 protected:
@@ -17,9 +19,9 @@ protected:
     static QByteArray errToString(const QProcess::ProcessError & error);
 
     QString buildAvailableFormatsCmd();
-    QString buildDecompressCmd(const QString & path, const QString & target_folder);
+    QString buildDecompressCmd(const QString & path, const QString & result_path);
     bool runCmd(const QString & cmd, QString & output);
-    QStringList supportedUncompressFormats();
+    QRegularExpression supportedUncompressFormats();
 
 protected slots:
     void begin();
@@ -34,7 +36,7 @@ public:
         ot_data = 1
     };
 
-    bool decompress(const QString & path);
+    bool decompress(const QString & path, QString & result_path);
 
     static bool load(const QString & name, QByteArray & buf);
     static bool save(const QString & name, const QByteArray & buf);

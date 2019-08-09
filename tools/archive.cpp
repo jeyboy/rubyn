@@ -5,12 +5,30 @@
 #include "tools/files_proc_manager.h"
 #include "controls/logger.h"
 
-#include <qregularexpression.h>
 #include <qstringbuilder.h>
 #include <qfile.h>
+#include <qdiriterator.h>
 
 QString Archive::store_ext = QLatin1Literal("pup");
-QStringList Archive::supported_formats;
+QRegularExpression Archive::supported_formats_reg_exp;
+QHash<QString, bool> Archive::all_formats = {
+    { "7z", true }, { "bz2", true }, { "bzip2", true }, { "tbz2", true }, { "tbz", true }, { "gz", true },
+    { "gzip", true }, { "tgz", true }, { "tar", true }, { "xz", true }, { "txz", true }, { "zip", true },
+    { "zipx", true }, { "lzh", true }, { "lha", true }, { "lzma", true },  { "rar", true }, { "r00", true },
+
+//    { "wim", true }, { "swm", true }, { "esd", true }, { "jar", true }, { "xpi", true },  { "rpm", true },
+//    { "odt", true }, { "ods", true }, { "docx", true }, { "xlsx", true }, { "epub", true }, { "apm", true },
+//    { "ar", true }, { "a", true }, { "deb", true }, { "lib", true }, { "arj", true }, { "cab", true },
+//    { "chm", true }, { "chw", true }, { "chi", true }, { "chq", true }, { "msi", true }, { "msp", true },
+//    { "doc", true }, { "xls", true }, { "ppt", true }, { "cpio", true }, { "cramfs", true }, { "dmg", true },
+//    { "ext", true }, { "ext2", true }, { "ext3", true }, { "ext4", true }, { "img", true }, { "fat", true },
+//    { "img", true }, { "hfs", true }, { "hfsx", true }, { "hxs", true }, { "hxi", true }, { "hxr", true },
+//    { "hxq", true }, { "hxw", true }, { "lit", true }, { "ihex", true }, { "iso", true }, { "img", true },
+//    { "mbr", true }, { "mslz", true }, { "mub", true }, { "nsis", true }, { "ntfs", true }, { "img", true },
+//    { "ppmd", true }, { "qcow", true }, { "qcow2", true }, { "qcow2c", true }, { "squashfs", true },
+//    { "udf", true }, { "iso", true }, { "img", true }, { "scap", true }, { "uefif", true }, { "vdi", true },
+//    { "vhd", true }, { "vmdk", true }, { "xar", true }, { "pkg", true }, { "z", true }, { "taz", true }
+};
 
 bool Archive::prepareUniqFolderName(QString & name) {
     name = FilesProcManager::obj().generateRandomName();
@@ -28,8 +46,8 @@ bool Archive::prepareUniqFolderName(QString & name) {
 }
 
 Archive::Archive() {
-    if (Archive::supported_formats.isEmpty())
-        Archive::supported_formats = supportedUncompressFormats();
+    if (Archive::supported_formats_reg_exp.pattern().isEmpty())
+        Archive::supported_formats_reg_exp = supportedUncompressFormats();
 }
 
 const QString & Archive::storePath() {
@@ -44,7 +62,7 @@ QString Archive::buildAvailableFormatsCmd() {
     #endif
 }
 
-QString Archive::buildDecompressCmd(const QString & path, const QString & target_folder) {
+QString Archive::buildDecompressCmd(const QString & path, const QString & result_path) {
     #ifdef Q_OS_WIN
     //        http://rus-linux.net/MyLDP/consol/7z-command-switches.html
 
@@ -83,36 +101,36 @@ QString Archive::buildDecompressCmd(const QString & path, const QString & target
 
 
     return FilesProcManager::obj().toolPath(LStr("7za.exe")) %
-            LStr(" e \"") % path % LStr("\" -y -o\"") %
-            FilesProcManager::obj().tempPath(target_folder) % LStr("\"");
+            LStr(" e \"") % path % LStr("\" -y -o\"") % result_path % LStr("\"");
     #else
 
     #endif
 }
 
-QStringList Archive::supportedUncompressFormats() {
+QRegularExpression Archive::supportedUncompressFormats() {
     QString output;
-    QStringList list;
+    QHash<QString, bool> list;
 
     if (runCmd(buildAvailableFormatsCmd(), output)) {
         QStringList lines = output.split(LStr("\r\n"));
         bool in_list = false;
 
-        QRegularExpression regex(QLatin1Literal("\\b([a-z.()]+)\\b"));
+        QRegularExpression regex(QLatin1Literal("\\b([a-z0-9.()]+)\\b"));
 
         for(QStringList::Iterator entry = lines.begin(); entry != lines.end(); entry++) {
             if (in_list) {
                 if ((*entry).isEmpty())
                     break;
 
-
-
                 QRegularExpressionMatchIterator match_it = regex.globalMatch((*entry));
 
                 while (match_it.hasNext()) {
                     QRegularExpressionMatch match = match_it.next();
                     QString captured = match.captured(1);
-                    int y = 0;
+
+                    if (all_formats.contains(captured)) {
+                        list.insert(captured, true);
+                    }
                 }
             } else {
                 in_list = (*entry) == LStr("Formats:");
@@ -120,21 +138,28 @@ QStringList Archive::supportedUncompressFormats() {
         }
     }
 
-    return list;
+    return QRegularExpression(LStr("\\.(") % list.keys().join('|') % LStr(")"), QRegularExpression::CaseInsensitiveOption);
 }
 
 bool Archive::runCmd(const QString & cmd, QString & output) {
     QProcess * proc = new QProcess(qApp);
+    proc -> setProperty("cmd", cmd);
 
-//    connect(proc, SIGNAL(started()), this, SLOT(begin()));
-//    connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(hasError()));
+    connect(proc, SIGNAL(started()), this, SLOT(begin()));
+    connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(hasError()));
 //    connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(hasOutput()));
-//    connect(proc, SIGNAL(finished(int)), this, SLOT(done(int)));
-//    connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(errorOccurred(QProcess::ProcessError)));
+    connect(proc, SIGNAL(finished(int)), this, SLOT(done(int)));
+    connect(proc, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(errorOccurred(QProcess::ProcessError)));
 
     Logger::info(LStr("Archive"), LStr("Run proc: ") % cmd);
 
     proc -> start(cmd);
+
+    //        ThreadUtils::obj().run(
+    //            this, &ImageBank::procImageCall,
+    //            QUrl(orders.takeLast()),
+    //            new Func(this, SLOT(pixmapDownloaded(Response*)))
+    //        );
 
     if (proc -> state() != QProcess::NotRunning) {
         QEventLoop loop;
@@ -148,25 +173,51 @@ bool Archive::runCmd(const QString & cmd, QString & output) {
     return proc -> exitStatus() == QProcess::NormalExit;
 }
 
-bool Archive::decompress(const QString & path) {
+bool Archive::decompress(const QString & path, QString & result_path) {
     Logger::info(LStr("Archive"), LStr("Start unpack: ") % path);
 
     QString output;
-    QString target_folder;
-    if (!prepareUniqFolderName(target_folder)) {
-        Logger::error(LStr("Archive"), LStr("Can't prepare uniq folder for: ") % path);
-        return false;
+
+    if (result_path.isEmpty()) {
+        QString target_folder;
+
+        if (!prepareUniqFolderName(target_folder)) {
+            Logger::error(LStr("Archive"), LStr("Can't prepare uniq folder for: ") % path);
+            return false;
+        }
+        result_path = FilesProcManager::obj().tempPath(target_folder);
     }
 
-    QString cmd = buildDecompressCmd(path, target_folder);
+    QHash<QString, QString> proc_files { { buildDecompressCmd(path, result_path), path } };
+    bool in_inner_loop = false;
 
-    runCmd(cmd, output);
+    while (!proc_files.isEmpty()) {
+        QString key = proc_files.keys().first();
+        QString origin_file = proc_files.take(key);
 
-    //        ThreadUtils::obj().run(
-    //            this, &ImageBank::procImageCall,
-    //            QUrl(orders.takeLast()),
-    //            new Func(this, SLOT(pixmapDownloaded(Response*)))
-    //        );
+        if (runCmd(key, output)) {
+            if (in_inner_loop) {
+                QFile(origin_file).remove();
+            }
+
+            in_inner_loop = true;
+            QDirIterator files_it(result_path, QDir::Files | QDir::NoDotAndDotDot);
+
+            while(files_it.hasNext()) {
+                QString file_path = files_it.next();
+
+                if (file_path.contains(supported_formats_reg_exp)) {
+                    proc_files.insert(buildDecompressCmd(file_path, result_path), file_path);
+                }
+            }
+        }
+        else {
+            if (!in_inner_loop)
+                return false;
+        }
+    }
+
+    return true;
 }
 
 bool Archive::load(const QString & name, QByteArray & buf) {
@@ -200,54 +251,41 @@ bool Archive::save(const QString & name, const QByteArray & buf) {
 
 
 void Archive::begin() {
-    QProcess * obj = (QProcess *)sender();
+    QProcess * obj = static_cast<QProcess *>(sender());
     emit started();
 
-    Logger::info(LStr("Archive"), LStr("Proc is started for ") % obj -> program());
+    Logger::info(LStr("Archive"), LStr("Proc is started for ") % obj -> property("cmd").toByteArray());
 }
-void Archive::errorOccurred(QProcess::ProcessError error) {
-    QProcess * obj = (QProcess *)sender();
+void Archive::errorOccurred(QProcess::ProcessError) {
+    QProcess * obj = static_cast<QProcess *>(sender());
     QByteArray err_msg = obj -> errorString().toUtf8();
     hasStatusData(err_msg, ot_error);
     emit finished(false);
 
-    Logger::error(LStr("Archive"), LStr("Proc has error for ") % obj -> program() % LStr(" ") % err_msg);
+    Logger::error(LStr("Archive"), LStr("Proc has error for ") % obj -> property("cmd").toByteArray() % LStr(" ") % err_msg);
 }
 void Archive::hasError() {
-    QProcess * obj = (QProcess *)sender();
+    QProcess * obj = static_cast<QProcess *>(sender());
     QByteArray err_msg = obj -> errorString().toUtf8();
     hasStatusData(err_msg, ot_error);
 
-    Logger::error(LStr("Archive"), LStr("Proc has error for ") % obj -> program() % LStr(" ") % err_msg);
+    Logger::error(LStr("Archive"), LStr("Proc has error for ") % obj -> property("cmd").toByteArray() % LStr(" ") % err_msg);
 }
 void Archive::hasOutput() {
-    QProcess * obj = (QProcess *)sender();
+    QProcess * obj = static_cast<QProcess *>(sender());
     hasStatusData(obj -> readAllStandardOutput(), ot_data);
 }
 void Archive::done(int status) {
-    QProcess * obj = (QProcess *)sender();
+    QProcess * obj = static_cast<QProcess *>(sender());
     emit finished(status == 0);
 
     if (status == 0) {
-        Logger::success(LStr("Archive"), LStr("Proc is complete for ") % obj -> program());
+        Logger::success(LStr("Archive"), LStr("Proc is complete for ") % obj -> property("cmd").toByteArray());
     } else {
         QByteArray err_msg = obj -> readAllStandardError();
         if (err_msg.isEmpty())
             err_msg = obj -> errorString().toUtf8();
 
-        Logger::error(LStr("Archive"), LStr("Proc status failed for ") % obj -> program() % LStr(" Reason: ") % err_msg);
+        Logger::error(LStr("Archive"), LStr("Proc status failed for ") % obj -> property("cmd").toByteArray() % LStr(" Reason: ") % err_msg);
     }
 }
-
-//QByteArray Archive::errToString(const QProcess::ProcessError & error) {
-//    switch(error) {
-//        case QProcess::FailedToStart: return QByteArray("Failed to start");
-//        case QProcess::Crashed: return QByteArray("Crshed");
-//        case QProcess::Timedout: return QByteArray("Timedout");
-//        case QProcess::ReadError: return QByteArray("Read error");
-//        case QProcess::WriteError: return QByteArray("Write error");
-//        case QProcess::UnknownError: return QByteArray("Unknown error");
-//    };
-
-//    return QByteArray("Super unknown error");
-//}

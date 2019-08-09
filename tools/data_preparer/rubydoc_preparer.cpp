@@ -148,8 +148,11 @@ void RubyDocPreparer::prepare(const QString & version) {
 void RubyDocPreparer::parseRubyPack(const VersionUrls & urls) {
     Archive ar;
 
-    ar.decompress(urls.core_url);
-    ar.decompress(urls.stdlib_url);
+    QString result_path;
+    ar.decompress(urls.core_url, result_path);
+
+    QString result_path2;
+    ar.decompress(urls.stdlib_url, result_path2);
 }
 
 void RubyDocPreparer::downloadRubyPacks(const VersionUrls & urls) {
