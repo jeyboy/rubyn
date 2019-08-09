@@ -733,6 +733,7 @@ void IDEWindow::setupToolWindows() {
     DockWidgets::obj().insert(breakpoints_widget, debug_widget);
 
 
+
     // TOOLBARS
 
     run_config = new RunConfiguration(this);

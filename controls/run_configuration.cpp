@@ -11,6 +11,13 @@ RunConfiguration::RunConfiguration(QObject * parent) : QObject(parent), _config_
 }
 
 void RunConfiguration::buildPanel(QToolBar * bar) {
+    auto addExtraSeparator = [](QToolBar * bar) {
+        QWidget * empty = new QWidget(bar);
+        empty -> setFixedSize(3, 3);
+        bar -> addWidget(empty);
+    };
+
+
     _config_list = new QComboBox(bar);
 
     _config_list -> addItem(QLatin1Literal("None"));
@@ -19,18 +26,22 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
     connect(_config_list, SIGNAL(currentIndexChanged(int)), this, SLOT(configSelectionChanged(int)));
 
     bar -> addWidget(_config_list);
+    addExtraSeparator(bar);
 
     _run = bar -> addAction(QIcon(QLatin1Literal(":/tools/run")), QLatin1Literal());
     _run -> setDisabled(true);
+    addExtraSeparator(bar);
 
     _debbug = bar -> addAction(QIcon(QLatin1Literal(":/tools/debug")), QLatin1Literal());
     _debbug -> setDisabled(true);
+    addExtraSeparator(bar);
 
     bar -> addSeparator();
 
     _console_btn = new QToolButton(bar);
     _console_btn -> setIcon(QIcon(QLatin1Literal(":/tools/console")));
     _console_btn -> setPopupMode(QToolButton::InstantPopup);
+    _console_btn -> setContentsMargins(2,2,2,2);
 
     QAction * console_btn_cfg = new QAction(QIcon(QLatin1Literal(":/tools/run_config")), "Configure", bar);
 
@@ -39,14 +50,14 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
     QAction * bla = bar -> addWidget(_console_btn);
     bla -> setDisabled(true);
 
-//    QLayout * lay = bar -> layout();
-//    for(int i = 0; i < lay -> count(); ++i) {
-//        QLayoutItem * it = lay -> itemAt(i);
-//        QToolButton * btn = qobject_cast<QToolButton *>(it -> widget());
+    QLayout * lay = bar -> layout();
+    for(int i = 0; i < lay -> count(); ++i) {
+        QLayoutItem * it = lay -> itemAt(i);
+        QToolButton * btn = qobject_cast<QToolButton *>(it -> widget());
 
-//        if (btn)
-//            it -> setAlignment(Qt::AlignJustify);
-//    }
+        if (btn)
+            it -> setAlignment(Qt::AlignJustify);
+    }
 }
 
 void RunConfiguration::configSelectionChanged(int index) {
