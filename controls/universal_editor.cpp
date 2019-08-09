@@ -141,7 +141,7 @@ bool UniversalEditor::openFile(File * file) {
             _active_editor = _code_editor;
 
             _code_editor -> openDocument(file);
-//            _code_editor -> setCompleter(_completer);
+            _code_editor -> setCompleter(_completer);
         break;}
         case ft_tree: {
             if (!_tree_editor)

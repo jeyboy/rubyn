@@ -37,6 +37,7 @@
 #include <qtoolbutton.h>
 #include <qevent.h>
 #include <qmimedata.h>
+#include <qlayout.h>
 
 /////////////// TEST
 #include "tools/html/html_page.h"
@@ -106,15 +107,15 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 
 
-    VersionUrls urls;
+//    VersionUrls urls;
 
-    urls.core_url = "F://rubyn test//ruby_2_5_1_core_rdocs.tgz";
-    urls.stdlib_url = "F://rubyn test//ruby_2_5_1_stdlib_rdocs.tgz";
+//    urls.core_url = "F://rubyn test//ruby_2_5_1_core_rdocs.tgz";
+//    urls.stdlib_url = "F://rubyn test//ruby_2_5_1_stdlib_rdocs.tgz";
 
-    RubyDocPreparer().parseRubyPack(urls);
+//    RubyDocPreparer().parseRubyPack(urls);
 
 
-    int y = 0;
+//    int y = 0;
 
 
 
@@ -567,6 +568,9 @@ void IDEWindow::setupDebug() {
 
 void IDEWindow::setupToolWindows() {
     DockWidgets::obj().registerContainer(this);
+    Toolbars::obj().registerContainer(this);
+
+
 
     tree = new ProjectTree(this);
     DockWidget * widget =
@@ -624,15 +628,26 @@ void IDEWindow::setupToolWindows() {
 
 
 
+    auto addExtraSeparator = [](QToolBar * bar) {
+        QWidget * empty = new QWidget(bar);
+        empty -> setFixedSize(3, 3);
+        bar -> addWidget(empty);
+    };
+
     QToolBar * debug_bar = Toolbars::obj().createWidget(QLatin1Literal("Debug"));
     debug_bar -> setOrientation(Qt::Vertical);
-    debug_bar -> setIconSize(QSize(16, 16));
+    debug_bar -> setIconSize(QSize(20, 20));
+    debug_bar -> setFixedWidth(34);
+//    debug_bar -> setContentsMargins(1, 1, 1, 1);
 
     QAction * run_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/run")), QLatin1Literal());
     run_btn -> setEnabled(false);
+    addExtraSeparator(debug_bar);
+
 //    connect(_color_picker, &QAction::triggered, [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); _color_picker -> setChecked(color_picker_widget -> isVisible()); });
 
     QAction * run_debug_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/debug")), QLatin1Literal());
+//    debug_bar -> widgetForAction(run_debug_btn) -> setContentsMargins(2,2,2,2);
     run_debug_btn -> setEnabled(false);
 
     debug_bar -> addSeparator();
@@ -640,14 +655,17 @@ void IDEWindow::setupToolWindows() {
     QAction * debug_step_over_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_over")), QLatin1Literal());
     debug_step_over_btn -> setToolTip(QLatin1Literal("Step to next line"));
     debug_step_over_btn -> setEnabled(false);
+    addExtraSeparator(debug_bar);
 
     QAction * debug_step_into_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_into")), QLatin1Literal());
     debug_step_into_btn -> setToolTip(QLatin1Literal("Step into object"));
     debug_step_into_btn -> setEnabled(false);
+    addExtraSeparator(debug_bar);
 
     QAction * debug_step_out_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_out")), QLatin1Literal());
     debug_step_out_btn -> setToolTip(QLatin1Literal("Step out from object"));
     debug_step_out_btn -> setEnabled(false);
+    addExtraSeparator(debug_bar);
 
     DockWidget * debug_controls_widget =
         DockWidgets::obj().createWidget(
@@ -717,8 +735,6 @@ void IDEWindow::setupToolWindows() {
 
     // TOOLBARS
 
-    Toolbars::obj().registerContainer(this);
-
     run_config = new RunConfiguration(this);
 
     QToolBar * control_bar = Toolbars::obj().createWidget(QLatin1Literal("Controls"));
@@ -736,6 +752,8 @@ void IDEWindow::setupToolWindows() {
 
     QAction * _save_doc = control_bar -> addAction(QIcon(QLatin1Literal(":/tools/save")), QLatin1Literal());
     connect(_save_doc, SIGNAL(triggered()), this, SLOT(saveEditor()));
+
+    control_bar -> layout();
 
     Toolbars::obj().append(control_bar, Qt::TopToolBarArea);
 }
