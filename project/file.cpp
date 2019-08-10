@@ -156,8 +156,12 @@ bool File::open() {
         _doc = new TextDocument(this);
         return true;
     }
+    else if (_main_format & ft_tree) {
+        _doc = new TreeDocument(this);
+        return true;
+    }
     else if (_main_format & ft_binary) {
-
+        qDebug() << "ft_binary";
     }
     else if (_main_format & ft_image) {
         //_doc = new ImageDocument(_path, _name, device, project, f);

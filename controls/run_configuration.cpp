@@ -41,23 +41,27 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
     _console_btn = new QToolButton(bar);
     _console_btn -> setIcon(QIcon(QLatin1Literal(":/tools/console")));
     _console_btn -> setPopupMode(QToolButton::InstantPopup);
-    _console_btn -> setContentsMargins(2,2,2,2);
+
 
     QAction * console_btn_cfg = new QAction(QIcon(QLatin1Literal(":/tools/run_config")), "Configure", bar);
-
     _console_btn -> addAction(console_btn_cfg);
 
     QAction * bla = bar -> addWidget(_console_btn);
     bla -> setDisabled(true);
 
-    QLayout * lay = bar -> layout();
-    for(int i = 0; i < lay -> count(); ++i) {
-        QLayoutItem * it = lay -> itemAt(i);
-        QToolButton * btn = qobject_cast<QToolButton *>(it -> widget());
 
-        if (btn)
-            it -> setAlignment(Qt::AlignJustify);
-    }
+
+
+    bar -> layout() -> itemAt(bar -> layout() -> count() - 1) -> setAlignment(Qt::AlignJustify);
+
+//    QLayout * lay = bar -> layout();
+//    for(int i = 0; i < lay -> count(); ++i) {
+//        QLayoutItem * it = lay -> itemAt(i);
+//        QToolButton * btn = qobject_cast<QToolButton *>(it -> widget());
+
+//        if (btn)
+//            it -> setAlignment(Qt::AlignJustify);
+//    }
 }
 
 void RunConfiguration::configSelectionChanged(int index) {

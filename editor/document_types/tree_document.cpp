@@ -56,10 +56,6 @@ TreeDocument::TreeDocument(File * file) : IDocument()/*, highlighter(nullptr)*/,
 //    connect(this, SIGNAL(contentsChanged()), this, SLOT(hasUnsavedChanges()));
 }
 
-TreeDocument::~TreeDocument() {
-
-}
-
 const QString & TreeDocument::documentUid() { return _file -> uid(); }
 
 //void TextDocument::lexicate(const QString & text, IHighlighter * highlighter) {
@@ -467,5 +463,310 @@ bool TreeDocument::restore(const QVariant & data) {
 //}
 
 //void TextDocument::highlighterFinished() {
+
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TreeItem * TreeItem::load(const QJsonValue & value, TreeItem * parent) {
+    TreeItem * rootItem = new TreeItem(parent);
+    rootItem -> setKey("root");
+
+//    if ( value.isObject())     {
+
+//        //Get all QJsonValue childs
+//        for (QString key : value.toObject().keys()){
+//            QJsonValue v = value.toObject().value(key);
+//            TreeItem * child = load(v,rootItem);
+//            child->setKey(key);
+//            child->setType(v.type());
+//            rootItem->appendChild(child);
+
+//        }
+
+//    } else if (value.isArray()) {
+//        //Get all QJsonValue childs
+//        int index = 0;
+//        for (QJsonValue v : value.toArray()){
+
+//            TreeItem * child = load(v,rootItem);
+//            child->setKey(QString::number(index));
+//            child->setType(v.type());
+//            rootItem->appendChild(child);
+//            ++index;
+//        }
+//    }
+//    else {
+//        rootItem -> setValue(value.toVariant().toString());
+//        rootItem -> setType(value.type());
+//    }
+
+    return rootItem;
+}
+
+
+TreeItem::TreeItem(TreeItem * parent) {
+    mParent = parent;
+}
+
+TreeItem::~TreeItem() {
+    qDeleteAll(mChilds);
+}
+
+void TreeItem::appendChild(TreeItem * item) {
+    mChilds.append(item);
+}
+
+TreeItem * TreeItem::child(int row) {
+    return mChilds.value(row);
+}
+
+TreeItem * TreeItem::parent() {
+    return mParent;
+}
+
+int TreeItem::childCount() const {
+    return mChilds.count();
+}
+
+int TreeItem::row() const {
+    if (mParent)
+        return mParent -> mChilds.indexOf(const_cast<TreeItem *>(this));
+
+    return 0;
+}
+
+QString TreeItem::key() const {
+    return mKey;
+}
+
+void TreeItem::setKey(const QString & key) {
+    mKey = key;
+}
+
+QString TreeItem::value() const {
+    return mValue;
+}
+
+void TreeItem::setValue(const QString & value) {
+    mValue = value;
+}
+
+//QJsonValue::Type TreeItem::type() const
+//{
+//    return mType;
+//}
+
+//void TreeItem::setType(const QJsonValue::Type &type)
+//{
+//    mType = type;
+//}
+
+
+
+////=========================================================================
+
+//QJsonModel::QJsonModel(QObject *parent)
+//    : QAbstractItemModel(parent)
+//    , mRootItem{new TreeItem}
+//{
+//    mHeaders.append("key");
+//    mHeaders.append("value");
+//}
+
+TreeDocument::~TreeDocument() {
+    delete mRootItem;
+}
+
+//bool QJsonModel::loadJson(const QByteArray & json)
+//{
+//    auto const& jdoc = QJsonDocument::fromJson(json);
+
+//    if (!jdoc.isNull())
+//    {
+//        beginResetModel();
+//        delete mRootItem;
+//        if (jdoc.isArray()) {
+//            mRootItem = TreeItem::load(QJsonValue(jdoc.array()));
+//            mRootItem->setType(QJsonValue::Array);
+
+//        } else {
+//            mRootItem = TreeItem::load(QJsonValue(jdoc.object()));
+//            mRootItem->setType(QJsonValue::Object);
+//        }
+//        endResetModel();
+//        return true;
+//    }
+
+//    qDebug()<<Q_FUNC_INFO<<"cannot load json";
+//    return false;
+//}
+
+
+QVariant TreeDocument::data(const QModelIndex & index, int role) const {
+    if (!index.isValid())
+        return QVariant();
+
+    TreeItem * item =
+        static_cast<TreeItem*>(index.internalPointer());
+
+
+    if (role == Qt::DisplayRole) {
+        if (index.column() == 0)
+            return QString("%1").arg(item -> key());
+
+        if (index.column() == 1)
+            return QString("%1").arg(item -> value());
+    } else if (Qt::EditRole == role) {
+        if (index.column() == 1) {
+            return QString("%1").arg(item -> value());
+        }
+    }
+
+    return QVariant();
+}
+
+bool TreeDocument::setData(const QModelIndex & index, const QVariant & value, int role) {
+    int col = index.column();
+    if (Qt::EditRole == role) {
+        if (col == 1) {
+            TreeItem * item = static_cast<TreeItem *>(index.internalPointer());
+                item -> setValue(value.toString());
+                emit dataChanged(index, index, {Qt::EditRole});
+                return true;
+        }
+    }
+
+    return false;
+}
+
+QVariant TreeDocument::headerData(int section, Qt::Orientation orientation, int role) const {
+    if (role != Qt::DisplayRole)
+        return QVariant();
+
+    if (orientation == Qt::Horizontal) {
+        return mHeaders.value(section);
+    }
+
+    return QVariant();
+}
+
+QModelIndex TreeDocument::index(int row, int column, const QModelIndex & parent) const {
+    if (!hasIndex(row, column, parent))
+        return QModelIndex();
+
+    TreeItem * parentItem;
+
+    if (!parent.isValid())
+        parentItem = mRootItem;
+    else
+        parentItem = static_cast<TreeItem *>(parent.internalPointer());
+
+    TreeItem * childItem = parentItem -> child(row);
+    if (childItem)
+        return createIndex(row, column, childItem);
+    else
+        return QModelIndex();
+}
+
+QModelIndex TreeDocument::parent(const QModelIndex &index) const {
+    if (!index.isValid())
+        return QModelIndex();
+
+    TreeItem * childItem = static_cast<TreeItem *>(index.internalPointer());
+    TreeItem * parentItem = childItem->parent();
+
+    if (parentItem == mRootItem)
+        return QModelIndex();
+
+    return createIndex(parentItem -> row(), 0, parentItem);
+}
+
+int TreeDocument::rowCount(const QModelIndex &parent) const {
+    TreeItem * parentItem;
+
+    if (parent.column() > 0)
+        return 0;
+
+    if (!parent.isValid())
+        parentItem = mRootItem;
+    else
+        parentItem = static_cast<TreeItem *>(parent.internalPointer());
+
+    return parentItem -> childCount();
+}
+
+int TreeDocument::columnCount(const QModelIndex & parent) const {
+    Q_UNUSED(parent)
+    return 2;
+}
+
+Qt::ItemFlags TreeDocument::flags(const QModelIndex &index) const {
+    int col = index.column();
+    auto item = static_cast<TreeItem *>(index.internalPointer());
+
+    auto isArray = QJsonValue::Array == item -> type();
+    auto isObject = QJsonValue::Object == item -> type();
+
+    if ((col == 1) && !(isArray || isObject)) {
+        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    } else {
+        return QAbstractItemModel::flags(index);
+    }
+}
+
+QByteArray TreeDocument::text() const {
+//    auto v = genJson(mRootItem);
+//    QJsonDocument doc;
+
+//    if (v.isObject()) {
+//        doc = QJsonDocument(v.toObject());
+//    } else {
+//        doc = QJsonDocument(v.toArray());
+//    }
+
+//    return doc;
+}
+
+//QJsonValue  TreeDocument::genJson(TreeItem * item) const
+//{
+//    auto type   = item->type();
+//    int  nchild = item->childCount();
+
+//    if (QJsonValue::Object == type) {
+//        QJsonObject jo;
+//        for (int i = 0; i < nchild; ++i) {
+//            auto ch = item->child(i);
+//            auto key = ch->key();
+//            jo.insert(key, genJson(ch));
+//        }
+//        return  jo;
+//    } else if (QJsonValue::Array == type) {
+//        QJsonArray arr;
+//        for (int i = 0; i < nchild; ++i) {
+//            auto ch = item->child(i);
+//            arr.append(genJson(ch));
+//        }
+//        return arr;
+//    } else {
+//        QJsonValue va(item->value());
+//        return va;
+//    }
 
 //}
