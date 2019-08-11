@@ -494,7 +494,7 @@ QVariant TreeDocument::data(const QModelIndex & index, int role) const {
 
     if (role == Qt::DisplayRole || Qt::EditRole == role) {
         TreeItem * item =
-            static_cast<TreeItem*>(index.internalPointer());
+            static_cast<TreeItem *>(index.internalPointer());
 
         switch(index.column()) {
             case 0: return QString("%1").arg(item -> key());;
