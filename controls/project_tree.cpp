@@ -9,8 +9,8 @@
 #include "project/projects.h"
 #include "tools/json/json.h"
 #include "tools/json/json_obj.h"
-#include "project_tree_item_delegate.h"
-#include "click_fix_style.h"
+#include "delegates/project_tree_item_delegate.h"
+#include "styles/click_fix_style.h"
 
 ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setHeaderHidden(true);

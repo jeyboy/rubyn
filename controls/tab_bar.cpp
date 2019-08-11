@@ -1,6 +1,6 @@
 #include "tab_bar.h"
 
-#include "tab_bar_item_delegate.h"
+#include "delegates/tab_bar_item_delegate.h"
 #include "project/file.h"
 
 #include <qscrollbar.h>

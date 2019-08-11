@@ -1,6 +1,6 @@
 #include "debug_panel.h"
 
-#include "controls/debug_view_item_delegate.h"
+#include "delegates/debug_view_item_delegate.h"
 
 #include <qlayout.h>
 #include <qtoolbar.h>

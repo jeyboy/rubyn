@@ -4,7 +4,7 @@
 #include <qvariant.h>
 #include <qdebug.h>
 
-#include "jslider_style.h"
+#include "styles/jslider_style.h"
 #include "misc/color.h"
 
 ColorSlider::ColorSlider(QWidget * parent) : QSlider(parent) {

@@ -32,7 +32,7 @@ SOURCES += main.cpp\
     lexer/ab_lexer.cpp \
     controls/tabs_block.cpp \
     controls/tab_bar.cpp \
-    controls/tab_bar_item_delegate.cpp \
+    delegates/tab_bar_item_delegate.cpp \
     controls/completer.cpp \
     misc/variant_convertor.cpp \
     misc/country.cpp \
@@ -76,12 +76,12 @@ SOURCES += main.cpp\
     editor/code_editor_cache.cpp \
     editor/active_para_info.cpp \
     controls/header_dock_widget.cpp \
-    controls/project_tree_item_delegate.cpp \
+    delegates/project_tree_item_delegate.cpp \
     controls/color_picker.cpp \
     controls/color_grabber.cpp \
     controls/color_picker_property.cpp \
     controls/color_button.cpp \
-    controls/jslider_style.cpp \
+    styles/jslider_style.cpp \
     controls/color_slider.cpp \
     misc/color.cpp \
     tools/filesystem_watcher/watcher.cpp \
@@ -92,11 +92,11 @@ SOURCES += main.cpp\
     controls/debug_panel.cpp \
     controls/breakpoints_panel.cpp \
     controls/debug_view.cpp \
-    controls/debug_view_item_delegate.cpp \
+    delegates/debug_view_item_delegate.cpp \
     debugging/debug.cpp \
     debugging/idebug_interface.cpp \
     debugging/debug_stub_interface.cpp \
-    controls/base_item_delegate.cpp \
+    delegates/base_item_delegate.cpp \
     editor/editor_search.cpp \
     editor/code_editor_searcher.cpp \
     editor/document_types/tree_document.cpp \
@@ -110,7 +110,7 @@ SOURCES += main.cpp\
     controls/console_widget.cpp
 
 HEADERS  += ide_window.h \
-    controls/click_fix_style.h \
+    styles/click_fix_style.h \
     controls/dock_widgets.h \
     editor/idocument.h \
     editor/document_types/binary_document.h \
@@ -148,8 +148,8 @@ HEADERS  += ide_window.h \
     highlighter/highlight_rule.h \
     controls/tabs_block.h \
     controls/tab_bar.h \
-    controls/tab_bar_item_delegate.h \
-    controls/tab_bar_no_focus_style.h \
+    delegates/tab_bar_item_delegate.h \
+    styles/tab_bar_no_focus_style.h \
     controls/completer.h \
     misc/func.h \
     misc/variant_convertor.h \
@@ -217,12 +217,12 @@ HEADERS  += ide_window.h \
     editor/active_para_info.h \
     editor/active_folding_info.h \
     controls/header_dock_widget.h \
-    controls/project_tree_item_delegate.h \
+    delegates/project_tree_item_delegate.h \
     controls/color_picker.h \
     controls/color_grabber.h \
     controls/color_picker_property.h \
     controls/color_button.h \
-    controls/jslider_style.h \
+    styles/jslider_style.h \
     controls/color_slider.h \
     misc/color.h \
     tools/filesystem_watcher/watcher.h \
@@ -233,12 +233,12 @@ HEADERS  += ide_window.h \
     controls/debug_panel.h \
     controls/breakpoints_panel.h \
     controls/debug_view.h \
-    controls/debug_view_item_delegate.h \
+    delegates/debug_view_item_delegate.h \
     debugging/idebug_interface.h \
     debugging/debug.h \
     debugging/debug_stub_interface.h \
     debugging/debug_breakpoint.h \
-    controls/base_item_delegate.h \
+    delegates/base_item_delegate.h \
     editor/editor_search.h \
     editor/code_editor_searcher.h \
     editor/document_types/tree_document.h \

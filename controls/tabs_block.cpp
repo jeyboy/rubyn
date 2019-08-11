@@ -2,7 +2,7 @@
 
 #include "tab_bar.h"
 #include "logger.h"
-#include "tab_bar_no_focus_style.h"
+#include "styles/tab_bar_no_focus_style.h"
 
 #include "project/file.h"
 
