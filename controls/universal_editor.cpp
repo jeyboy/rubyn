@@ -196,7 +196,7 @@ const QString & UniversalEditor::documentUid() {
 }
 
 int UniversalEditor::verticalScrollBar() {
-    QScrollBar * scroll = _code_editor -> verticalScrollBar();
+    QScrollBar * scroll = _active_editor -> verticalScrollBar();
     return scroll -> value();
 }
 

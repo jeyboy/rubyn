@@ -18,6 +18,8 @@ public:
 
     void setVisible(bool visible) Q_DECL_OVERRIDE;
 
+    QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
+
     void focusInEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
 
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
