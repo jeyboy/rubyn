@@ -7,9 +7,13 @@ TreeEditor::TreeEditor(QWidget * parent) : QTreeView(parent), searcher_is_opened
 
 }
 
-void TreeEditor::openDocument(File * file) {
+void TreeEditor::openDocument(File * file) {   
     QAbstractItemModel * mdl = file -> asTree();
+
     setModel(mdl);
+
+    resizeColumnToContents(0);
+    expandAll();
 }
 
 //bool TreeEditor::search(const QString & pattern, QTreeWidgetItem * item) {

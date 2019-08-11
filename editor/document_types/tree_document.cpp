@@ -309,70 +309,6 @@ const QString & TreeDocument::documentUid() { return _file -> uid(); }
 //        res.clear();
 //}
 
-//LEXEM_TYPE TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_TYPE & length, const QTextBlock & block, const EDITOR_POS_TYPE & pos, const bool & global_offset) {
-//    BlockUserData * udata = static_cast<BlockUserData *>(block.userData());
-
-//    start = global_offset ? block.position() : 0;
-
-//    if (udata) {
-//        TokenCell * tkn = udata -> tokenForPos(pos);
-
-//        if (tkn) {
-//            switch(tkn -> lexem) {
-//                case lex_blanks: {
-//                    start += pos;
-//                    length = 1;
-//                    return lex_blank;
-//                }
-//                case lex_tabs: {
-//                    start += pos;
-//                    length = 1;
-//                    return lex_tab;
-//                }
-
-//                default: {
-//                    start += tkn -> start_pos;
-//                    length = static_cast<int>(tkn -> length);
-//                    return tkn -> lexem;
-//                }
-//            }
-//        }
-//    }
-
-//    const QString block_text = block.text();
-
-//    if (block_text.isEmpty()) {
-//        length = 0;
-//        return lex_none;
-//    }
-
-//    int offset = 0;
-//    for(int iter = pos - 1; iter >= 0; --iter, ++offset) {
-//        if (word_boundary.contains(block_text[iter]))
-//            break;
-//    }
-
-//    start += pos - offset;
-
-//    if (length != -1) {
-//        const int end_pos = block.length() - 1;
-//        length = offset;
-
-//        for(int iter = pos; iter < end_pos; ++iter, ++length) {
-//            if (word_boundary.contains(block_text[iter]))
-//                break;
-//        }
-//    }
-
-//    return lex_undefined;
-//}
-
-//ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE & pos) {
-//    BlockUserData * udata = static_cast<BlockUserData *>(block.userData());
-
-//    return udata ? udata -> paraForPos(pos) : nullptr;
-//}
-
 bool TreeDocument::save() {
     return false; // TODO: remove me
 
@@ -667,68 +603,67 @@ Qt::ItemFlags TreeDocument::flags(const QModelIndex & index) const {
 }
 
 bool TreeDocument::setText(const QByteArray & new_data, const FormatType & ftype) {
-    qDebug() << (ftype == ft_file_json);
+    switch(ftype) {
+        case ft_file_json: {
+            auto const & jdoc = QJsonDocument::fromJson(new_data);
 
-    auto const & jdoc = QJsonDocument::fromJson(new_data);
+            if (!jdoc.isNull()) {
+                beginResetModel();
+                delete mRootItem;
 
-    if (!jdoc.isNull()) {
-        beginResetModel();
-        delete mRootItem;
+                if (jdoc.isArray()) {
+                    mRootItem = TreeItem::load(QJsonValue(jdoc.array()));
+                    mRootItem -> setType(TreeItem::Array);
 
-        if (jdoc.isArray()) {
-            mRootItem = TreeItem::load(QJsonValue(jdoc.array()));
-            mRootItem -> setType(TreeItem::Array);
+                } else {
+                    mRootItem = TreeItem::load(QJsonValue(jdoc.object()));
+                    mRootItem -> setType(TreeItem::Object);
+                }
+                endResetModel();
+                return true;
+            }
+        break;}
 
-        } else {
-            mRootItem = TreeItem::load(QJsonValue(jdoc.object()));
-            mRootItem -> setType(TreeItem::Object);
-        }
-        endResetModel();
-        return true;
+        default:;
     }
 
-    qDebug()<<Q_FUNC_INFO<<"cannot load json";
     return false;
-
-
-//    new_data
-
-    return true;
 }
 
 QByteArray TreeDocument::text() const {
     switch(_file -> formatType()) {
-        case ft_file_json: return QByteArray();
+        case ft_file_json: {
+            auto v = genJson(mRootItem);
+            QJsonDocument doc;
+
+            if (v.isObject()) {
+                doc = QJsonDocument(v.toObject());
+            } else {
+                doc = QJsonDocument(v.toArray());
+            }
+
+            return doc.toJson();
+        }
+
         case ft_file_yml: return QByteArray();
+
         default: return QByteArray();
     }
-
-
-//    auto v = genJson(mRootItem);
-//    QJsonDocument doc;
-
-//    if (v.isObject()) {
-//        doc = QJsonDocument(v.toObject());
-//    } else {
-//        doc = QJsonDocument(v.toArray());
-//    }
-
-//    return doc;
 }
 
 QJsonValue TreeDocument::genJson(TreeItem * item) const {
     auto type = item -> type();
     int nchild = item -> childCount();
 
-    if (QJsonValue::Object == type) {
+    if (TreeItem::Object == type) {
         QJsonObject jo;
         for (int i = 0; i < nchild; ++i) {
             auto ch = item -> child(i);
             auto key = ch -> key();
             jo.insert(key, genJson(ch));
         }
-        return  jo;
-    } else if (QJsonValue::Array == type) {
+        return jo;
+    } else if (TreeItem::Array == type) {
         QJsonArray arr;
         for (int i = 0; i < nchild; ++i) {
             auto ch = item -> child(i);
