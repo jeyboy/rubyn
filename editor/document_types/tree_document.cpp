@@ -31,29 +31,14 @@ bool TreeDocument::registerStateChangedCallback(QObject * target, const char * s
     return true;
 }
 
-TreeDocument::TreeDocument(File * file) : IDocument()/*, highlighter(nullptr)*/, _file(file) {
-//    qint64 content_length = _file -> source() -> size();
+TreeDocument::TreeDocument(File * file, QObject * parent) : QAbstractItemModel(parent), IDocument()/*, highlighter(nullptr)*/, _file(file), mRootItem{new TreeItem} {
     setFullyReaded(true);
 
-//    QByteArray ar = _file -> source() -> readAll();
-//    ar.replace('\t', TextDocument::tab_space);
-//    setPlainText(ar);
+    mHeaders.append("key");
+    mHeaders.append("value");
 
-//    if (!identificateLexer()) {
-//        if (_file -> formatType() == ft_unknown) {
-//            QString str = firstBlock().text();
-
-//            if (file -> identifyTypeByShebang(str))
-//                identificateLexer();
-//        }
-//    }
-
-//    if (!highlighter)
-//        connect(this, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
-//    else
-//        connect(this, SIGNAL(highlightingComplete()), this, SLOT(highlighterFinished()));
-
-//    connect(this, SIGNAL(contentsChanged()), this, SLOT(hasUnsavedChanges()));
+    QByteArray ar = _file -> source() -> readAll();
+    setText(ar, _file -> formatType());
 }
 
 const QString & TreeDocument::documentUid() { return _file -> uid(); }
@@ -488,34 +473,34 @@ TreeItem * TreeItem::load(const QJsonValue & value, TreeItem * parent) {
     TreeItem * rootItem = new TreeItem(parent);
     rootItem -> setKey("root");
 
-//    if ( value.isObject())     {
+    if ( value.isObject())     {
 
-//        //Get all QJsonValue childs
-//        for (QString key : value.toObject().keys()){
-//            QJsonValue v = value.toObject().value(key);
-//            TreeItem * child = load(v,rootItem);
-//            child->setKey(key);
-//            child->setType(v.type());
-//            rootItem->appendChild(child);
+        //Get all QJsonValue childs
+        for (QString key : value.toObject().keys()){
+            QJsonValue v = value.toObject().value(key);
+            TreeItem * child = load(v, rootItem);
+            child -> setKey(key);
+            child -> setType((TreeItem::Type)v.type());
+            rootItem -> appendChild(child);
 
-//        }
+        }
 
-//    } else if (value.isArray()) {
-//        //Get all QJsonValue childs
-//        int index = 0;
-//        for (QJsonValue v : value.toArray()){
+    } else if (value.isArray()) {
+        //Get all QJsonValue childs
+        int index = 0;
+        for (QJsonValue v : value.toArray()){
 
-//            TreeItem * child = load(v,rootItem);
-//            child->setKey(QString::number(index));
-//            child->setType(v.type());
-//            rootItem->appendChild(child);
-//            ++index;
-//        }
-//    }
-//    else {
-//        rootItem -> setValue(value.toVariant().toString());
-//        rootItem -> setType(value.type());
-//    }
+            TreeItem * child = load(v,rootItem);
+            child -> setKey(QString::number(index));
+            child -> setType((TreeItem::Type)v.type());
+            rootItem -> appendChild(child);
+            ++index;
+        }
+    }
+    else {
+        rootItem -> setValue(value.toVariant().toString());
+        rootItem -> setType((TreeItem::Type)value.type());
+    }
 
     return rootItem;
 }
@@ -568,56 +553,21 @@ void TreeItem::setValue(const QString & value) {
     mValue = value;
 }
 
-//QJsonValue::Type TreeItem::type() const
-//{
-//    return mType;
-//}
+TreeItem::Type TreeItem::type() const {
+    return mType;
+}
 
-//void TreeItem::setType(const QJsonValue::Type &type)
-//{
-//    mType = type;
-//}
+void TreeItem::setType(const TreeItem::Type & type) {
+    mType = type;
+}
 
 
 
 ////=========================================================================
 
-//QJsonModel::QJsonModel(QObject *parent)
-//    : QAbstractItemModel(parent)
-//    , mRootItem{new TreeItem}
-//{
-//    mHeaders.append("key");
-//    mHeaders.append("value");
-//}
-
 TreeDocument::~TreeDocument() {
     delete mRootItem;
 }
-
-//bool QJsonModel::loadJson(const QByteArray & json)
-//{
-//    auto const& jdoc = QJsonDocument::fromJson(json);
-
-//    if (!jdoc.isNull())
-//    {
-//        beginResetModel();
-//        delete mRootItem;
-//        if (jdoc.isArray()) {
-//            mRootItem = TreeItem::load(QJsonValue(jdoc.array()));
-//            mRootItem->setType(QJsonValue::Array);
-
-//        } else {
-//            mRootItem = TreeItem::load(QJsonValue(jdoc.object()));
-//            mRootItem->setType(QJsonValue::Object);
-//        }
-//        endResetModel();
-//        return true;
-//    }
-
-//    qDebug()<<Q_FUNC_INFO<<"cannot load json";
-//    return false;
-//}
-
 
 QVariant TreeDocument::data(const QModelIndex & index, int role) const {
     if (!index.isValid())
@@ -717,21 +667,60 @@ int TreeDocument::columnCount(const QModelIndex & parent) const {
     return 2;
 }
 
-Qt::ItemFlags TreeDocument::flags(const QModelIndex &index) const {
-    int col = index.column();
-    auto item = static_cast<TreeItem *>(index.internalPointer());
+Qt::ItemFlags TreeDocument::flags(const QModelIndex & index) const {
+    return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 
-    auto isArray = QJsonValue::Array == item -> type();
-    auto isObject = QJsonValue::Object == item -> type();
+//    int col = index.column();
+//    auto item = static_cast<TreeItem *>(index.internalPointer());
 
-    if ((col == 1) && !(isArray || isObject)) {
-        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
-    } else {
-        return QAbstractItemModel::flags(index);
+//    auto isArray = QJsonValue::Array == item -> type();
+//    auto isObject = QJsonValue::Object == item -> type();
+
+//    if ((col == 1) && !(isArray || isObject)) {
+//        return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+//    } else {
+//        return QAbstractItemModel::flags(index);
+//    }
+}
+
+bool TreeDocument::setText(const QByteArray & new_data, const FormatType & ftype) {
+    qDebug() << (ftype == ft_file_json);
+
+    auto const & jdoc = QJsonDocument::fromJson(new_data);
+
+    if (!jdoc.isNull()) {
+        beginResetModel();
+        delete mRootItem;
+
+        if (jdoc.isArray()) {
+            mRootItem = TreeItem::load(QJsonValue(jdoc.array()));
+            mRootItem -> setType(TreeItem::Array);
+
+        } else {
+            mRootItem = TreeItem::load(QJsonValue(jdoc.object()));
+            mRootItem -> setType(TreeItem::Object);
+        }
+        endResetModel();
+        return true;
     }
+
+    qDebug()<<Q_FUNC_INFO<<"cannot load json";
+    return false;
+
+
+//    new_data
+
+    return true;
 }
 
 QByteArray TreeDocument::text() const {
+    switch(_file -> formatType()) {
+        case ft_file_json: return QByteArray();
+        case ft_file_yml: return QByteArray();
+        default: return QByteArray();
+    }
+
+
 //    auto v = genJson(mRootItem);
 //    QJsonDocument doc;
 
@@ -744,29 +733,28 @@ QByteArray TreeDocument::text() const {
 //    return doc;
 }
 
-//QJsonValue  TreeDocument::genJson(TreeItem * item) const
-//{
-//    auto type   = item->type();
-//    int  nchild = item->childCount();
+QJsonValue TreeDocument::genJson(TreeItem * item) const {
+    auto type = item -> type();
+    int nchild = item -> childCount();
 
-//    if (QJsonValue::Object == type) {
-//        QJsonObject jo;
-//        for (int i = 0; i < nchild; ++i) {
-//            auto ch = item->child(i);
-//            auto key = ch->key();
-//            jo.insert(key, genJson(ch));
-//        }
-//        return  jo;
-//    } else if (QJsonValue::Array == type) {
-//        QJsonArray arr;
-//        for (int i = 0; i < nchild; ++i) {
-//            auto ch = item->child(i);
-//            arr.append(genJson(ch));
-//        }
-//        return arr;
-//    } else {
-//        QJsonValue va(item->value());
-//        return va;
-//    }
+    if (QJsonValue::Object == type) {
+        QJsonObject jo;
+        for (int i = 0; i < nchild; ++i) {
+            auto ch = item -> child(i);
+            auto key = ch -> key();
+            jo.insert(key, genJson(ch));
+        }
+        return  jo;
+    } else if (QJsonValue::Array == type) {
+        QJsonArray arr;
+        for (int i = 0; i < nchild; ++i) {
+            auto ch = item -> child(i);
+            arr.append(genJson(ch));
+        }
+        return arr;
+    } else {
+        QJsonValue va(item -> value());
+        return va;
+    }
 
-//}
+}

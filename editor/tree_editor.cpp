@@ -2,7 +2,7 @@
 
 #include "project/file.h"
 
-TreeEditor::TreeEditor(QWidget * parent) : QTreeView(parent) {
+TreeEditor::TreeEditor(QWidget * parent) : QTreeView(parent), searcher_is_opened(false) {
 
 }
 
@@ -71,8 +71,64 @@ void TreeEditor::openDocument(File * file) {
 
 void TreeEditor::setVisible(bool visible) { QTreeView::setVisible(visible); }
 
+QScrollBar * TreeEditor::verticalScrollBar() { return QTreeView::verticalScrollBar(); }
+
+void TreeEditor::focusInEvent(QFocusEvent * e) {
+    emit inFocus();
+
+    QTreeView::focusInEvent(e);
+}
+
+void TreeEditor::keyPressEvent(QKeyEvent * e) {
+    int curr_key = e -> key();
+
+    if (curr_key == Qt::Key_Escape && searcher_is_opened) {
+        emit searchRequired(false);
+        return;
+    }
+
+    if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier) {
+//        QTextCursor cursor = textCursor();
+
+//        if (cursor.hasSelection()) {
+//            QString str = cursor.selectedText();
+
+//            str.replace(QChar(8233), char(13));
+
+//            emit searchRequestRequired(str);
+//        }
+//        else emit searchRequired(true);
+
+        emit searchRequired(true);
+        return;
+    }
+
+    QTreeView::keyPressEvent(e);
+}
+
 //void TreeEditor::searchIsShow(const bool & show) {}
-void TreeEditor::searchInitiated(const QRegularExpression & pattern, const bool & scroll) {}
+void TreeEditor::searchInitiated(const QRegularExpression & pattern, const bool & scroll) {
+    qDebug() << "TreeEditor::searchInitiated" << pattern;
+
+//    if (pattern.pattern().isEmpty()) {
+//        searcher.clearSearch();
+//        emit searchResultsFinded(0);
+//    } else {
+//        searcher.beginSearch(pattern);
+//        Pair match = searcher.search(wrapper -> firstBlock());
+
+//        if (scroll && match.first != NO_INFO) {
+//            QTextCursor c = textCursor();
+//            c.setPosition(match.first);
+
+//            setTextCursor(c);
+//            ensureCursorVisible();
+//        }
+
+//        emit searchResultsFinded(searcher.search_results);
+//    }
+    viewport() -> update();
+}
 void TreeEditor::searchNextResult(QString * replace) {}
 void TreeEditor::searchPrevResult(QString * replace) {}
 void TreeEditor::searchRepaceAll(const QString & replace) {}

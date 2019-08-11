@@ -304,7 +304,7 @@ public:
     const QString & documentUid();
 
     void setVisible(bool visible) Q_DECL_OVERRIDE;
-
+    QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
 
 //    inline const QFont & font() const { return QPlainTextEdit::font(); }
     void setFont(const QFont & font);
@@ -546,7 +546,7 @@ protected:
                 );
         }
         else QPlainTextEdit::insertFromMimeData(source);
-}
+    }
 
     void procCompleterForCursor(QTextCursor & tc, const bool & initiate_popup = true);
     bool findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para, int start_pos);

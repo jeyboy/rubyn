@@ -2,6 +2,28 @@
 #include <QApplication>
 
 
+//Version manager   Executable path
+
+//RVM
+
+
+//Single-user mode: /home/jetbrains/.rvm/bin/rvm (for the jetbrains user)
+
+//Multi-user mode: /usr/local/rvm/bin/rvm
+
+//Mixed mode: /usr/share/rvm/bin/rvm
+
+//rbenv
+
+
+///home/jetbrains/.rbenv/bin/rbenv (for the jetbrains user)
+///usr/bin/rbenv
+
+//chruby
+//	/usr/local/share/chruby/chruby.sh
+
+
+
 // https://javascript-minifier.com/
 // has api for online minify
 // POST https://javascript-minifier.com/raw?input=...

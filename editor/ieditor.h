@@ -4,11 +4,14 @@
 #include "misc/defines.h"
 
 class File;
+class QScrollBar;
 
 class IEditor {
 public:
     IEditor();
     virtual ~IEditor();
+
+    virtual QScrollBar * verticalScrollBar();
 
     virtual void setVisible(bool visible) = 0;
 

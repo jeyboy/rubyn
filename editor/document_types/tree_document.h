@@ -3,6 +3,12 @@
 
 #include <qabstractitemmodel.h>
 
+#include <QJsonDocument>
+#include <QJsonValue>
+#include <QJsonArray>
+#include <QJsonObject>
+
+
 #include "misc/defines.h"
 #include "editor/idocument.h"
 
@@ -13,6 +19,17 @@ class File;
 
 class TreeItem {
 public:
+    enum Type {
+        Null =  0x0,
+        Bool = 0x1,
+        Double = 0x2,
+        String = 0x3,
+        Array = 0x4,
+        Object = 0x5,
+        Int = 0x6,
+        Undefined = 0x80
+    };
+
     static TreeItem * load(const QJsonValue & value, TreeItem * parent = nullptr);
 
     TreeItem(TreeItem * parent = nullptr);
@@ -27,8 +44,8 @@ public:
     void setKey(const QString & key);
     QString value() const;
     void setValue(const QString & value);
-//    QJsonValue::Type type() const;
-//    void setType(const QJsonValue::Type& type);
+    TreeItem::Type type() const;
+    void setType(const TreeItem::Type & type);
 
 protected:
 
@@ -36,11 +53,9 @@ protected:
 private:
     QString mKey;
     QString mValue;
-//    QJsonValue::Type mType;
+    TreeItem::Type mType;
     QList<TreeItem *> mChilds;
     TreeItem * mParent;
-
-
 };
 
 
@@ -49,7 +64,7 @@ class TreeDocument : public QAbstractItemModel, public IDocument {
 
 //    IHighlighter * highlighter;
 
-//    QJsonValue genJson(TreeItem *) const;
+    QJsonValue genJson(TreeItem *) const;
 protected:
     File * _file;
     TreeItem * mRootItem;
@@ -62,7 +77,7 @@ signals:
 //    void wordHovered(const QPoint & point, const int & start, const int & end);
 //    void highlightingComplete();
 public:
-    TreeDocument(File * file);
+    TreeDocument(File * file, QObject * parent = nullptr);
 
     ~TreeDocument() Q_DECL_OVERRIDE;
 
@@ -110,6 +125,7 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
 
+    bool setText(const QByteArray & new_data, const FormatType & ftype);
     QByteArray text() const;
 
 

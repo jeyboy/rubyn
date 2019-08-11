@@ -89,7 +89,31 @@ void UniversalEditor::setupCodeEditor() {
 }
 
 void UniversalEditor::setupTreeEditor() {
+    _tree_editor = new TreeEditor(this);
+    _tree_editor -> setFont(font());
 
+    col_layout -> insertWidget(0, _tree_editor, 1);
+
+    connect(_tree_editor, &TreeEditor::searchResultsFinded, [=](const int & count) {
+        if (_active_editor == _tree_editor)
+            _search_bar -> finded(count);
+    });
+    connect(_tree_editor, &TreeEditor::searchRequired, [=](const bool & show) { showSearchPanel(show); });
+
+    connect(_tree_editor, &TreeEditor::searchRequestRequired, [=](const QString & pattern) {
+        if (_active_editor == _tree_editor)
+            _search_bar -> initiateSearch(pattern);
+    });
+
+    connect(_tree_editor, &TreeEditor::inFocus, [=]() {
+        if (_active_editor == _tree_editor)
+            emit inFocus();
+    });
+
+    connect(_tree_editor, &TreeEditor::fileDropped, [=](const QUrl & uri) {
+        if (_active_editor == _tree_editor)
+            emit fileDropped(uri);
+    });
 }
 
 void UniversalEditor::setupCompleter() {

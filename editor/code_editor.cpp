@@ -169,6 +169,8 @@ const QString & CodeEditor::documentUid() {
 
 void CodeEditor::setVisible(bool visible) { QPlainTextEdit::setVisible(visible); }
 
+QScrollBar * CodeEditor::verticalScrollBar() { return QPlainTextEdit::verticalScrollBar(); }
+
 void CodeEditor::setFont(const QFont & font) {
     QPlainTextEdit::setFont(font);
 
