@@ -15,6 +15,102 @@
 //#include <qjsonarray.h>
 
 
+
+TreeItem * TreeItem::load(const QJsonValue & value, TreeItem * parent) {
+    TreeItem * rootItem = new TreeItem(parent);
+    rootItem -> setKey("root");
+
+    if (value.isObject()) {
+        //Get all QJsonValue childs
+        for (QString key : value.toObject().keys()){
+            QJsonValue v = value.toObject().value(key);
+            TreeItem * child = load(v, rootItem);
+            child -> setKey(key);
+            child -> setType((TreeItem::Type)v.type());
+            rootItem -> appendChild(child);
+        }
+
+    } else if (value.isArray()) {
+        //Get all QJsonValue childs
+        int index = 0;
+        for (QJsonValue v : value.toArray()){
+            TreeItem * child = load(v, rootItem);
+            child -> setKey(QString::number(index));
+            child -> setType((TreeItem::Type)v.type());
+            rootItem -> appendChild(child);
+            ++index;
+        }
+    }
+    else {
+        rootItem -> setValue(value.toVariant().toString());
+        rootItem -> setType((TreeItem::Type)value.type());
+    }
+
+    return rootItem;
+}
+
+
+TreeItem::TreeItem(TreeItem * parent) {
+    mParent = parent;
+}
+
+TreeItem::~TreeItem() {
+    qDeleteAll(mChilds);
+}
+
+void TreeItem::appendChild(TreeItem * item) {
+    mChilds.append(item);
+}
+
+TreeItem * TreeItem::child(int row) {
+    return mChilds.value(row);
+}
+
+TreeItem * TreeItem::parent() {
+    return mParent;
+}
+
+int TreeItem::childCount() const {
+    return mChilds.count();
+}
+
+int TreeItem::row() const {
+    if (mParent)
+        return mParent -> mChilds.indexOf(const_cast<TreeItem *>(this));
+
+    return 0;
+}
+
+QString TreeItem::key() const {
+    return mKey;
+}
+
+void TreeItem::setKey(const QString & key) {
+    mKey = key;
+}
+
+QString TreeItem::value() const {
+    return mValue;
+}
+
+void TreeItem::setValue(const QString & value) {
+    mValue = value;
+}
+
+TreeItem::Type TreeItem::type() const {
+    return mType;
+}
+
+void TreeItem::setType(const TreeItem::Type & type) {
+    mType = type;
+}
+
+
+
+////=========================================================================
+
+
+
 //bool TextDocument::identificateLexer() {
 //    FormatType format = _file -> formatType();
 
@@ -451,119 +547,6 @@ bool TreeDocument::restore(const QVariant & data) {
 
 //}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-TreeItem * TreeItem::load(const QJsonValue & value, TreeItem * parent) {
-    TreeItem * rootItem = new TreeItem(parent);
-    rootItem -> setKey("root");
-
-    if ( value.isObject())     {
-
-        //Get all QJsonValue childs
-        for (QString key : value.toObject().keys()){
-            QJsonValue v = value.toObject().value(key);
-            TreeItem * child = load(v, rootItem);
-            child -> setKey(key);
-            child -> setType((TreeItem::Type)v.type());
-            rootItem -> appendChild(child);
-
-        }
-
-    } else if (value.isArray()) {
-        //Get all QJsonValue childs
-        int index = 0;
-        for (QJsonValue v : value.toArray()){
-
-            TreeItem * child = load(v,rootItem);
-            child -> setKey(QString::number(index));
-            child -> setType((TreeItem::Type)v.type());
-            rootItem -> appendChild(child);
-            ++index;
-        }
-    }
-    else {
-        rootItem -> setValue(value.toVariant().toString());
-        rootItem -> setType((TreeItem::Type)value.type());
-    }
-
-    return rootItem;
-}
-
-
-TreeItem::TreeItem(TreeItem * parent) {
-    mParent = parent;
-}
-
-TreeItem::~TreeItem() {
-    qDeleteAll(mChilds);
-}
-
-void TreeItem::appendChild(TreeItem * item) {
-    mChilds.append(item);
-}
-
-TreeItem * TreeItem::child(int row) {
-    return mChilds.value(row);
-}
-
-TreeItem * TreeItem::parent() {
-    return mParent;
-}
-
-int TreeItem::childCount() const {
-    return mChilds.count();
-}
-
-int TreeItem::row() const {
-    if (mParent)
-        return mParent -> mChilds.indexOf(const_cast<TreeItem *>(this));
-
-    return 0;
-}
-
-QString TreeItem::key() const {
-    return mKey;
-}
-
-void TreeItem::setKey(const QString & key) {
-    mKey = key;
-}
-
-QString TreeItem::value() const {
-    return mValue;
-}
-
-void TreeItem::setValue(const QString & value) {
-    mValue = value;
-}
-
-TreeItem::Type TreeItem::type() const {
-    return mType;
-}
-
-void TreeItem::setType(const TreeItem::Type & type) {
-    mType = type;
-}
-
-
-
-////=========================================================================
 
 TreeDocument::~TreeDocument() {
     delete mRootItem;

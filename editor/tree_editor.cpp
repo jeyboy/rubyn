@@ -1,13 +1,15 @@
 #include "tree_editor.h"
 
 #include "project/file.h"
+#include "editor/document_types/tree_document.h"
 
 TreeEditor::TreeEditor(QWidget * parent) : QTreeView(parent), searcher_is_opened(false) {
 
 }
 
 void TreeEditor::openDocument(File * file) {
-
+    QAbstractItemModel * mdl = file -> asTree();
+    setModel(mdl);
 }
 
 //bool TreeEditor::search(const QString & pattern, QTreeWidgetItem * item) {
