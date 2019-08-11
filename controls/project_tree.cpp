@@ -10,7 +10,7 @@
 #include "tools/json/json.h"
 #include "tools/json/json_obj.h"
 #include "project_tree_item_delegate.h"
-#include "project_tree_style.h"
+#include "click_fix_style.h"
 
 ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setHeaderHidden(true);
@@ -29,7 +29,7 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     //TODO: need to set double font size
     setIconSize(QSize(22, 22));
 
-    setStyle(new ProjectTreeStyle());
+    setStyle(new ClickFixStyle());
 
     connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*,int)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu(const QPoint &)));

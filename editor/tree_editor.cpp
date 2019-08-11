@@ -2,9 +2,10 @@
 
 #include "project/file.h"
 #include "editor/document_types/tree_document.h"
+#include "controls/click_fix_style.h"
 
 TreeEditor::TreeEditor(QWidget * parent) : QTreeView(parent), searcher_is_opened(false) {
-
+    setStyle(new ClickFixStyle());
 }
 
 void TreeEditor::openDocument(File * file) {   

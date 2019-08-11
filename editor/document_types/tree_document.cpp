@@ -492,19 +492,14 @@ QVariant TreeDocument::data(const QModelIndex & index, int role) const {
     if (!index.isValid())
         return QVariant();
 
-    TreeItem * item =
-        static_cast<TreeItem*>(index.internalPointer());
+    if (role == Qt::DisplayRole || Qt::EditRole == role) {
+        TreeItem * item =
+            static_cast<TreeItem*>(index.internalPointer());
 
-
-    if (role == Qt::DisplayRole) {
-        if (index.column() == 0)
-            return QString("%1").arg(item -> key());
-
-        if (index.column() == 1)
-            return QString("%1").arg(item -> value());
-    } else if (Qt::EditRole == role) {
-        if (index.column() == 1) {
-            return QString("%1").arg(item -> value());
+        switch(index.column()) {
+            case 0: return QString("%1").arg(item -> key());;
+            case 1: return QString("%1").arg(item -> value());
+            default: QVariant();
         }
     }
 

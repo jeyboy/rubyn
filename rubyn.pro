@@ -110,8 +110,8 @@ SOURCES += main.cpp\
     controls/console_widget.cpp
 
 HEADERS  += ide_window.h \
+    controls/click_fix_style.h \
     controls/dock_widgets.h \
-    controls/project_tree_style.h \
     editor/idocument.h \
     editor/document_types/binary_document.h \
     editor/document_types/documents_types.h \
