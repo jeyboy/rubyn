@@ -12,6 +12,7 @@ TARGET = rubyn
 TEMPLATE = app
 
 SOURCES += main.cpp\
+    delegates/tree_view_item_delegate.cpp \
     ide_window.cpp \
     editor/document_types/text_document.cpp \
     editor/parts/body_overlay_info.cpp \
@@ -110,6 +111,7 @@ SOURCES += main.cpp\
     controls/console_widget.cpp
 
 HEADERS  += ide_window.h \
+    delegates/tree_view_item_delegate.h \
     styles/click_fix_style.h \
     controls/dock_widgets.h \
     editor/idocument.h \

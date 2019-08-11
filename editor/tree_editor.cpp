@@ -3,6 +3,7 @@
 #include "project/file.h"
 #include "editor/document_types/tree_document.h"
 #include "styles/click_fix_style.h"
+#include "delegates/tree_view_item_delegate.h"
 
 TreeEditor::TreeEditor(QWidget * parent) : QTreeView(parent), searcher_is_opened(false) {
     setStyle(new ClickFixStyle());
@@ -10,6 +11,8 @@ TreeEditor::TreeEditor(QWidget * parent) : QTreeView(parent), searcher_is_opened
 
 void TreeEditor::openDocument(File * file) {   
     QAbstractItemModel * mdl = file -> asTree();
+
+    setItemDelegate(new TreeViewItemDelegate(this));
 
     setModel(mdl);
 
