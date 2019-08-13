@@ -63,7 +63,7 @@ TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _fi
 
     identificateLexer();
 
-    force_word_wrap = _file -> firstStr().length() > 10000;
+    force_word_wrap = _file -> firstStr().length() > 10000 || _file -> size() > 4999999;
 
     if (!highlighter)
         connect(this, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
