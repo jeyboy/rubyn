@@ -48,7 +48,7 @@ bool TextDocument::registerStateChangedCallback(QObject * target, const char * s
     return true;
 }
 
-TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _file(file), layout(nullptr) {
+TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _file(file), layout(nullptr), force_word_wrap(false) {
 //    qint64 content_length = _file -> source() -> size();
 
     layout = new TextDocumentLayout(this);
@@ -61,10 +61,23 @@ TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _fi
     ar.replace('\t', TextDocument::tab_space);
     setPlainText(ar);
 
+
+    QTextBlock blk = firstBlock();
+    QString str;
+
+    while(blk.isValid()) {
+        blk = blk.next();
+
+        str = blk.text();
+
+        if (!str.isEmpty())
+            break;
+    }
+
+    force_word_wrap = str.length() > 10000;
+
     if (!identificateLexer()) {
         if (_file -> formatType() == ft_unknown) {
-            QString str = firstBlock().text();
-
             if (file -> identifyTypeByShebang(str))
                 identificateLexer();
         }

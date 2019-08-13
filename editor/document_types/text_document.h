@@ -25,6 +25,7 @@ protected:
     bool registerStateChangedCallback(QObject * target, const char * slot);
 public:
     TextDocumentLayout * layout;
+    bool force_word_wrap;
 
     TextDocument(File * file);
 

@@ -123,6 +123,8 @@ void CodeEditor::openDocument(File * file) {
 
         wrapper = file -> asText();
 
+        setLineWrapMode(wrapper -> force_word_wrap ? WidgetWidth : NoWrap);
+
         change_scroll_pos_required = wrapper -> verticalScrollPos(false) > 0;
 
 //        wrapper -> setUseDesignMetrics(true);
@@ -1515,7 +1517,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
             if (curr_key == Qt::Key_Right && pos_in_block == blk.length() - 1) {
                 BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-                if (udata -> isFolded()) {
+                if (udata && udata -> isFolded()) {
                     wrapper -> layout -> toggleFolding(blk);
                 }
             }
