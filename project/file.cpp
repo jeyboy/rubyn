@@ -141,23 +141,30 @@ bool File::identifyTypeByShebang(const QString & str) {
     return false;
 }
 
+const QString & File::firstStr() {
+    if (first_non_null_str.isEmpty()) {
+        QTextStream in(_device);
+        while (!in.atEnd()) {
+          first_non_null_str = in.readLine();
+          if (!first_non_null_str.isEmpty())
+            break;
+        }
+
+        if (first_non_null_str.isEmpty())
+            first_non_null_str.append(' ');
+
+        _device -> reset();
+    }
+
+    return first_non_null_str;
+}
+
 bool File::open() {
     if (!openDevice())
         return false;
 
     if (_main_format == ft_unknown) {
-        {
-            QTextStream in(_device);
-            while (!in.atEnd()) {
-              first_non_null_str = in.readLine();
-              if (!first_non_null_str.isEmpty())
-                break;
-            }
-        }
-
-        _device -> reset();
-
-        if (!identifyTypeByShebang(first_non_null_str)) {
+        if (!identifyTypeByShebang(firstStr())) {
             if (!userAskFileType())
                 _main_format = ft_text;
 //                return false;

@@ -67,6 +67,8 @@ public:
     inline const QString & path() { return _path; }
     inline const QString & uid() { return _uid; }
 
+    const QString & firstStr();
+
     FormatType icoType() { return _main_format; }
     QIcon ico() {
         if (_main_format == ft_file_ico) {

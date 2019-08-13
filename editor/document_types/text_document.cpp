@@ -61,20 +61,9 @@ TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _fi
     ar.replace('\t', TextDocument::tab_space);
     setPlainText(ar);
 
+    identificateLexer();
 
-    QString str;
-    QTextBlock blk = firstBlock();
-
-    while(blk.isValid()) {
-        blk = blk.next();
-
-        str = blk.text();
-
-        if (!str.isEmpty())
-            break;
-    }
-
-    force_word_wrap = str.length() > 10000;
+    force_word_wrap = _file -> firstStr().length() > 10000;
 
     if (!highlighter)
         connect(this, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
