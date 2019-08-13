@@ -62,8 +62,8 @@ TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _fi
     setPlainText(ar);
 
 
-    QTextBlock blk = firstBlock();
     QString str;
+    QTextBlock blk = firstBlock();
 
     while(blk.isValid()) {
         blk = blk.next();
@@ -75,29 +75,6 @@ TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _fi
     }
 
     force_word_wrap = str.length() > 10000;
-
-    if (!identificateLexer()) {
-        if (_file -> formatType() == ft_unknown) {
-            if (file -> identifyTypeByShebang(str))
-                identificateLexer();
-        }
-    }
-
-//    timer.start();
-//        _doc = new QTextDocument();
-
-//        QTextStream stream(_file -> source());
-//        QTextCursor cursor(_doc);
-
-//        while(!stream.atEnd()) {
-//            QString s = stream.readLine();
-//            s.replace('\t', TextDocument::tab_space);
-//            cursor.insertText(s);
-//            cursor.insertBlock();
-//        }
-//    qDebug() << "LINES WAY: " << timer.nsecsElapsed();
-
-
 
     if (!highlighter)
         connect(this, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));

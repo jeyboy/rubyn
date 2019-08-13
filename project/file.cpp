@@ -78,16 +78,13 @@ bool File::identifyType(const QString & name, FormatType & format, const uint & 
 //                Logger::error(QLatin1Literal("File"), QLatin1Literal("Cant identify file type for: ") % _name % '(' % name % ')');
             }
         }
+    } else if (lower_name.startsWith('.')) {
+        format = ft_text;
     }
 
     if (format == ft_unknown && level == 0) {
         format = Projects::obj().identificateName(lower_name);
     }
-
-    ////////////// temp
-    if (format == ft_unknown)
-        format = ft_text;
-    ///////////////////
 
     return format > ft_unknown;
 //    QByteArray ch_arr = name.toUtf8();
@@ -145,12 +142,27 @@ bool File::identifyTypeByShebang(const QString & str) {
 }
 
 bool File::open() {
-    if (_main_format == ft_unknown)
-        if (!userAskFileType())
-            return false;
-
     if (!openDevice())
         return false;
+
+    if (_main_format == ft_unknown) {
+        {
+            QTextStream in(_device);
+            while (!in.atEnd()) {
+              first_non_null_str = in.readLine();
+              if (!first_non_null_str.isEmpty())
+                break;
+            }
+        }
+
+        _device -> reset();
+
+        if (!identifyTypeByShebang(first_non_null_str)) {
+            if (!userAskFileType())
+                _main_format = ft_text;
+//                return false;
+        }
+    }
 
     if (_main_format & ft_text) {
         _doc = new TextDocument(this);
@@ -164,6 +176,7 @@ bool File::open() {
         qDebug() << "ft_binary";
     }
     else if (_main_format & ft_image) {
+        qDebug() << "ft_image";
         //_doc = new ImageDocument(_path, _name, device, project, f);
     }
 

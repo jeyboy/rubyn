@@ -28,6 +28,8 @@ protected:
     QString _name;
     QString _uid;
 
+    QString first_non_null_str;
+
     uint level;
 
     bool userAskFileType();
