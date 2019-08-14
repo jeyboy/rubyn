@@ -17,10 +17,6 @@ public:
     virtual ~RegexpLexer();
 
     void handle(const QString & text, IHighlighter * lighter);
-
-    bool isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end);
-    bool isCompleterContinuable(const LEXEM_TYPE & lex, const bool & /*at_end*/);
-    bool isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start);
 };
 
 #endif // REGEXP_LEXER_H
