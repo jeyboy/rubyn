@@ -212,19 +212,14 @@ Predefined::Predefined() {
     keys.insert(QByteArrayLiteral("$_"), lex_method); // The local variable, last string read by gets or readline in the current scope.
     keys.insert(QByteArrayLiteral("$~"), lex_method); // The local variable, MatchData relating to the last match. Regex#match method returns the last match information.
 
-    // $ n ($1, $2, $3...) // The string matched in the nth group of the last pattern match. Equivalent to m[n], where m is a MatchData object.
-    for(int i = 1; i < 254; i++)
-        keys.insert('$' + QByteArray::number(i), lex_method);
+//    // $ n ($1, $2, $3...) // The string matched in the nth group of the last pattern match. Equivalent to m[n], where m is a MatchData object.
+//    for(int i = 1; i < 254; i++)
+//        keys.insert('$' + QByteArray::number(i), lex_method);
 
     keys.insert(QByteArrayLiteral("$&"), lex_method); // The string matched in the last pattern match. Equivalent to m[0], where m is a MatchData object.
     keys.insert(QByteArrayLiteral("$`"), lex_method); // The string preceding the match in the last pattern match. Equivalent to m.pre_match, where m is a MatchData object.
     keys.insert(QByteArrayLiteral("$'"), lex_method); // The string following the match in the last pattern match. Equivalent to m.post_match, where m is a MatchData object.
     keys.insert(QByteArrayLiteral("$+"), lex_method); // The string corresponding to the last successfully matched group in the last pattern match.
-
-
-
-//        keys.insert(QByteArrayLiteral("Class"), lex_operator_addition);
-
 
 
     //        keys.insert(QByteArrayLiteral("attr"), true);

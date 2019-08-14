@@ -1011,6 +1011,40 @@ bool LexerFrontend::parseCharCode(LexerControl * state) {
     return res;
 }
 
+bool LexerFrontend::parseRegexpGroup(LexerControl * state) {
+    bool has_error = false;
+    bool parsed = false;
+
+    while(!parsed) {
+        switch(ECHAR0) {
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '0': {
+                ++state -> buffer;
+            break;}
+
+            default: {
+                has_error = isWord(ECHAR0, false);
+                parsed = true;
+            }
+        }
+    };
+
+    bool res = cutWord(state, lex_method);
+
+    if (has_error)
+        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong symbol code"));
+
+    return res;
+}
+
 
 void LexerFrontend::lexicate(LexerControl * state) {
 //        a + b is interpreted as a.+(b)
@@ -1502,23 +1536,18 @@ void LexerFrontend::lexicate(LexerControl * state) {
                                 state -> next_offset += 2;
                             }
                         } else if (isDigit(next_char)) { // $0-$99
-                            int offset = 1;
-
-                            if (isDigit(n1_char)) {
-                                ++offset;
-                            } else if (isAlpha(n1_char)) {
-                                // raise error
-                            }
-
-                            state -> next_offset += offset;
-                            has_match = true;
+                            ++state -> buffer;
+                            parseRegexpGroup(state);
+                            goto iterate;
                         }
                     }
                 }
 
-                if (has_match) {
-                    if (!cutWord(state)) goto exit;
-                }
+                if (!cutWord(state)) goto exit;
+
+                if (!has_match)
+                    state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Expression requires"));
+
                 else goto iterate;
             break;}
 

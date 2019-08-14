@@ -41,6 +41,7 @@ namespace Ruby {
         bool parseRegexp(LexerControl * state);
         bool parseComment(LexerControl * state);
         bool parseCharCode(LexerControl * state);
+        bool parseRegexpGroup(LexerControl * state);
 
         void lexicate(LexerControl * control);
     protected:

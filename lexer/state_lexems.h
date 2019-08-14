@@ -185,6 +185,7 @@ enum StateLexem : LEXEM_TYPE {
     lex_method_def_vars_splitter,
 //    lex_method_def_vars_end,
 
+//    lex_predefined,
     lex_method,
     lex_method_access,
 
