@@ -1451,8 +1451,11 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 if (res != lex_none) {
                     if (!cutWord(state, lex_none, res, slf_stack_delimiter)) goto exit;
 
-                    state -> stack_token -> data =
-                        new QByteArray(1, Grammar::obj().percentagePresentationBlocker(braker));
+                    if (state -> stack_token -> data) {
+                        state -> stack_token -> data -> clear();
+                        state -> stack_token -> data -> append(Grammar::obj().percentagePresentationBlocker(braker));
+                    }
+                    else state -> stack_token -> data = new QByteArray(1, Grammar::obj().percentagePresentationBlocker(braker));
 
                     if (!parsePercentagePresenation(state))
                         goto exit;
