@@ -8,7 +8,7 @@
 #include <qpixmap.h>
 #include <qdebug.h>
 
-QIcon & Projects::getIco(const FormatType & format_type, const uint & size) {
+QIcon & Projects::getIco(const FormatType & format_type, const FormatType & add_format_type, const uint & size) {
     if (!_icons.contains(format_type)) {
         QIcon ico;
         QPixmap pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(format_type), size);

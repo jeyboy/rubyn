@@ -62,7 +62,7 @@ const QFile::OpenMode File::openMode() {
     return omode;
 }
 
-bool File::identifyType(const QString & name, FormatType & format, const uint & level) {
+bool File::identifyType(const QString & name, FormatType & format, FormatType & add_format, const uint & level) {
     QString lower_name = name.toLower();
     QStringList parts = lower_name.split('.', QString::SkipEmptyParts);
 
@@ -72,7 +72,10 @@ bool File::identifyType(const QString & name, FormatType & format, const uint & 
 
             if (ft == ft_unknown) continue;
 
-            if ((format & ft_priority) < (ft & ft_priority)) {
+            if (format == ft_file_css && (ft == ft_file_scss || ft == ft_file_sass)) {
+                format = ft;
+            } else if ((format & ft_priority) < (ft & ft_priority)) {
+                add_format = ft;
                 format = ft;
 //            } else {
 //                Logger::error(QLatin1Literal("File"), QLatin1Literal("Cant identify file type for: ") % _name % '(' % name % ')');
@@ -198,9 +201,9 @@ void File::close() {
 }
 
 File::File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops)
-    : _doc(nullptr), _device(nullptr), _main_format(ft_unknown), _path(path), _name(name), level(inproject_level)
+    : _doc(nullptr), _device(nullptr), _main_format(ft_unknown), _additional_format(ft_unknown), _path(path), _name(name), level(inproject_level)
 {
-    identifyType(_name, _main_format, level);
+    identifyType(_name, _main_format, _additional_format, level);
 
     if (ops & fo_open) {
         open();

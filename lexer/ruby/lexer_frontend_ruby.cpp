@@ -521,6 +521,18 @@ bool LexerFrontend::parseCommand(LexerControl * state) {
 }
 
 bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
+
+    //# %i Non-interpolated Array of symbols, separated by whitespace
+    //# %l Interpolated Array of symbols, separated by whitespace
+    //# %q String
+    //# %Q String with interpolation
+    //# %/ String with interpolation
+    //# %r Regular Expression
+    //# %s Symbol
+    //# %w Array of Strings
+    //# %W Array of double quoted strings
+    //# %x Backtick (capture subshell result)
+
     TokenCell * stack_state = state -> stack_token;
 
     if (!stack_state || !stack_state -> data) {
@@ -1682,16 +1694,16 @@ void LexerFrontend::paraOpositionStr(const PARA_TYPE & para, QString & res) {
         case pt_regexp:
         case pt_close_regexp: { res = QLatin1Literal("//"); break;}
 
-        case pt_open_do_block: { res = QLatin1Literal("end"); break;}
-        case pt_open_begin_block: { res = QLatin1Literal("end"); break;}
-        case pt_open_method: { res = QLatin1Literal("end"); break;}
-        case pt_open_class: { res = QLatin1Literal("end"); break;}
-        case pt_open_module: { res = QLatin1Literal("end"); break;}
-        case pt_open_if: { res = QLatin1Literal("end"); break;}
-        case pt_open_unless: { res = QLatin1Literal("end"); break;}
-        case pt_open_case: { res = QLatin1Literal("end"); break;}
-        case pt_open_while: { res = QLatin1Literal("end"); break;}
-        case pt_open_until: { res = QLatin1Literal("end"); break;}
+//        case pt_open_do_block:
+        case pt_open_begin_block:
+        case pt_open_method:
+//        case pt_open_class:
+//        case pt_open_module:
+        case pt_open_if:
+        case pt_open_unless:
+        case pt_open_case:
+        case pt_open_while:
+        case pt_open_until:
         case pt_open_for: { res = QLatin1Literal("end"); break;}
 
         case pt_comment:

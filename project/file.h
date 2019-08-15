@@ -16,13 +16,14 @@ class TreeDocument;
 class Folder;
 
 class File {
-    static bool identifyType(const QString & name, FormatType & format, const uint & level = 0);
+    static bool identifyType(const QString & name, FormatType & format, FormatType & add_format, const uint & level = 0);
     static bool identifyTypeByShebang(const QString & str, FormatType & format);
 protected:
     IDocument * _doc;
     QIODevice * _device;
 
     FormatType _main_format;
+    FormatType _additional_format;
 
     QString _path;
     QString _name;
@@ -79,7 +80,7 @@ public:
             else
                 return ico;
         }
-        else return Projects::obj().getIco(icoType());
+        else return Projects::obj().getIco(_main_format, _additional_format);
     }
 
     inline bool isOpened() const { return _device && _device -> isOpen(); }

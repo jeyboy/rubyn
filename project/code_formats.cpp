@@ -67,52 +67,95 @@ FormatType CodeFormats::identify(const QString & ext) {
     else return _formats.value(ext_lower, ft_unknown);
 }
 
-QString CodeFormats::formatIcoPath(const FormatType & ft) {
+QString CodeFormats::formatIcoPath(const FormatType & ft, const FormatType & add_ft) {
     QString res = QLatin1Literal(":/doc_types/");
 
     switch(ft) {
-        case ft_folder: return res %  QLatin1Literal("folder");
-        case ft_broken: return res %  QLatin1Literal("file_broken");
+        case ft_folder: return res % QLatin1Literal("folder");
+        case ft_broken: return res % QLatin1Literal("file_broken");
 
-        case ft_file_image: return res %  QLatin1Literal("file_img");
-        case ft_file_text: return res %  QLatin1Literal("file_txt");
-        case ft_file_bin: return res %  QLatin1Literal("file_bin");
+        case ft_file_image: return res % QLatin1Literal("file_img");
+        case ft_file_text: return res % QLatin1Literal("file_txt");
+        case ft_file_bin: return res % QLatin1Literal("file_bin");
 
-        case ft_file_rb: return res %  QLatin1Literal("file_ruby");
-        case ft_file_rake: return res %  QLatin1Literal("file_rake");
-        case ft_file_sql: return res %  QLatin1Literal("file_sql");
-        case ft_file_html: return res %  QLatin1Literal("file_html");
+        case ft_file_rb: return res % QLatin1Literal("file_ruby");
+        case ft_file_rake: return res % QLatin1Literal("file_rake");
+        case ft_file_sql: return res % QLatin1Literal("file_sql");
+        case ft_file_html: {
+            switch(add_ft) {
+                case ft_file_erb: return res % QLatin1Literal("file_html_erb");
+                case ft_file_haml: return res % QLatin1Literal("file_html_haml");
+                case ft_file_slim: return res % QLatin1Literal("file_html_slim");
+                default: return res % QLatin1Literal("file_html");
+            }
+        }
 
-        case ft_file_css: return res %  QLatin1Literal("file_css");
-        case ft_file_scss: return res %  QLatin1Literal("file_scss");
-        case ft_file_sass: return res %  QLatin1Literal("file_sass");
+        case ft_file_css: {
+            switch(add_ft) {
+                case ft_file_erb: return res % QLatin1Literal("file_css_erb");
+                case ft_file_haml: return res % QLatin1Literal("file_css_haml");
+                case ft_file_slim: return res % QLatin1Literal("file_css_slim");
+                default: return res % QLatin1Literal("file_css");
+            }
+        }
+        case ft_file_scss: {
+            switch(add_ft) {
+                case ft_file_erb: return res % QLatin1Literal("file_scss_erb");
+                case ft_file_haml: return res % QLatin1Literal("file_scss_haml");
+                case ft_file_slim: return res % QLatin1Literal("file_scss_slim");
+                default: return res % QLatin1Literal("file_scss");
+            }
+        }
+        case ft_file_sass: {
+            switch(add_ft) {
+                case ft_file_erb: return res % QLatin1Literal("file_sass_erb");
+                case ft_file_haml: return res % QLatin1Literal("file_sass_haml");
+                case ft_file_slim: return res % QLatin1Literal("file_sass_slim");
+                default: return res % QLatin1Literal("file_sass");
+            }
+        }
 
-        case ft_file_js: return res %  QLatin1Literal("file_js");
-        case ft_file_coffee: return res %  QLatin1Literal("file_coffee");
+        case ft_file_js: {
+            switch(add_ft) {
+                case ft_file_erb: return res % QLatin1Literal("file_js_erb");
+                case ft_file_haml: return res % QLatin1Literal("file_js_haml");
+                case ft_file_slim: return res % QLatin1Literal("file_js_slim");
+                default: return res % QLatin1Literal("file_js");
+            }
+        }
+        case ft_file_coffee: {
+            switch(add_ft) {
+                case ft_file_erb: return res % QLatin1Literal("file_coffee_erb");
+                case ft_file_haml: return res % QLatin1Literal("file_coffee_haml");
+                case ft_file_slim: return res % QLatin1Literal("file_coffee_slim");
+                default: return res % QLatin1Literal("file_coffee");
+            }
+        }
 
-        case ft_file_xml: return res %  QLatin1Literal("file_xml");
-        case ft_file_json: return res %  QLatin1Literal("file_json");
-        case ft_file_erb: return res %  QLatin1Literal("file_erb");
-        case ft_file_haml: return res %  QLatin1Literal("file_haml");
-        case ft_file_slim: return res %  QLatin1Literal("file_slim");
-        case ft_file_yml: return res %  QLatin1Literal("file_yml");
+        case ft_file_xml: return res % QLatin1Literal("file_xml");
+        case ft_file_json: return res % QLatin1Literal("file_json");
+        case ft_file_yml: return res % QLatin1Literal("file_yml");
 
-        case ft_file_lock: return res %  QLatin1Literal("file_lock");
-        case ft_file_gemfile: return res %  QLatin1Literal("file_gemfile");
-        case ft_file_font: return res %  QLatin1Literal("file_font");
-        case ft_file_log: return res %  QLatin1Literal("file_log");
-        case ft_file_datum: return res %  QLatin1Literal("file_datum");
+        case ft_file_erb: return res % QLatin1Literal("file_erb");
+        case ft_file_haml: return res % QLatin1Literal("file_haml");
+        case ft_file_slim: return res % QLatin1Literal("file_slim");
+
+        case ft_file_lock: return res % QLatin1Literal("file_lock");
+        case ft_file_gemfile: return res % QLatin1Literal("file_gemfile");
+        case ft_file_font: return res % QLatin1Literal("file_font");
+        case ft_file_log: return res % QLatin1Literal("file_log");
+        case ft_file_datum: return res % QLatin1Literal("file_datum");
 
 
-        case ft_folder_db: return res %  QLatin1Literal("folder_db");
-        case ft_folder_public: return res %  QLatin1Literal("folder_public");
-        case ft_folder_log: return res %  QLatin1Literal("folder_log");
-        case ft_folder_temp: return res %  QLatin1Literal("folder_temp");
-        case ft_folder_test: return res %  QLatin1Literal("folder_test");
-        case ft_folder_config: return res %  QLatin1Literal("folder_config");
-        case ft_folder_app: return res %  QLatin1Literal("folder_app");
+        case ft_folder_db: return res % QLatin1Literal("folder_db");
+        case ft_folder_public: return res % QLatin1Literal("folder_public");
+        case ft_folder_log: return res % QLatin1Literal("folder_log");
+        case ft_folder_temp: return res % QLatin1Literal("folder_temp");
+        case ft_folder_test: return res % QLatin1Literal("folder_test");
+        case ft_folder_config: return res % QLatin1Literal("folder_config");
+        case ft_folder_app: return res % QLatin1Literal("folder_app");
 
-        default: return res %  QLatin1Literal("file_unknown");
+        default: return res % QLatin1Literal("file_unknown");
     }
 }
 

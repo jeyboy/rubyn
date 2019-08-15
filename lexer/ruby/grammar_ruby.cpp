@@ -24,11 +24,18 @@ void Grammar::initParas() {
     para_tokens[lex_wrap_open] = pt_round_bracket;
     para_tokens[lex_wrap_close] = pt_close_round_bracket;
 
-    para_tokens[lex_do] = pt_open_do_block;
+
+    para_tokens[lex_percent_presentation_start] = pt_representation;
+    para_tokens[lex_percent_presentation_end] = pt_close_representation;
+    para_tokens[lex_epercent_presentation_start] = pt_representation;
+    para_tokens[lex_epercent_presentation_end] = pt_close_representation;
+
+
+    para_tokens[lex_do] = pt_open_begin_block; //pt_open_do_block;
     para_tokens[lex_begin] = pt_open_begin_block;
     para_tokens[lex_method_def] = pt_open_method;
-    para_tokens[lex_class_def] = pt_open_class;
-    para_tokens[lex_module_def] = pt_open_module;
+    para_tokens[lex_class_def] = pt_open_begin_block; //pt_open_class;
+    para_tokens[lex_module_def] = pt_open_begin_block; //pt_open_module;
 
     para_tokens[lex_if] = pt_open_if;
     para_tokens[lex_elsif] = pt_open_elsif;
@@ -417,10 +424,6 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_command_content:
         case lex_require_path:
 
-        case lex_epercent_presentation_start:
-        case lex_percent_presentation_start:
-        case lex_epercent_presentation_end:
-        case lex_percent_presentation_end:
         case lex_epercent_presentation_content:
         case lex_percent_presentation_content:
 
@@ -430,7 +433,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_cheredoc_intended_content:
         case lex_eheredoc_content:
         case lex_cheredoc_content:
-            return hid_string;          
+            return hid_string;
 
         case lex_regexp_content:
             return hid_regexp;
@@ -438,6 +441,10 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
         case lex_regexp_start:
         case lex_regexp_end:
         case lex_regexp_flags:
+        case lex_epercent_presentation_start:
+        case lex_percent_presentation_start:
+        case lex_epercent_presentation_end:
+        case lex_percent_presentation_end:
             return hid_regexp_border;
 
         case lex_ternary_main_start:

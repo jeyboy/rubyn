@@ -31,21 +31,18 @@ enum FormatType : quint32 {
 
     ft_file_rb =             1 | ft_text | ft_level_one,
     ft_file_sql =            2 | ft_text | ft_level_one,
-    ft_file_html =           3 | ft_text | ft_level_three,
-    ft_file_css =            4 | ft_text | ft_level_three, // ft_level_one
+    ft_file_html =           3 | ft_text | ft_level_one,
+    ft_file_css =            4 | ft_text | ft_level_one,
     ft_file_scss =           5 | ft_text | ft_level_one,
     ft_file_sass =           6 | ft_text | ft_level_one,
-    ft_file_js =             7 | ft_text | ft_level_four,
+    ft_file_js =             7 | ft_text | ft_level_one,
     ft_file_coffee =         8 | ft_text | ft_level_one,
     ft_file_xml =            9 | ft_text | ft_level_one,
     ft_file_json =           10 | ft_tree | ft_level_one,
-    ft_file_erb =            11 | ft_text | ft_level_two,
-    ft_file_haml =           12 | ft_text | ft_level_two,
-    ft_file_slim =           13 | ft_text | ft_level_two,
-    ft_file_yml =            14 | ft_text | ft_level_one,
-    ft_file_lock =           15 | ft_text | ft_level_one,
-    ft_file_gemfile =        16 | ft_text | ft_level_one,
-    ft_file_rake =           17 | ft_text | ft_level_one,
+    ft_file_yml =            11 | ft_text | ft_level_one,
+    ft_file_lock =           12 | ft_text | ft_level_one,
+    ft_file_gemfile =        13 | ft_text | ft_level_one,
+    ft_file_rake =           14 | ft_text | ft_level_one,
 
 
     //        ft_c,
@@ -57,6 +54,12 @@ enum FormatType : quint32 {
     //        ft_php,
     //        ft_py,
     //        ft_vb,
+
+
+    ft_file_erb =            60 | ft_text | ft_level_two,
+    ft_file_haml =           61 | ft_text | ft_level_two,
+    ft_file_slim =           62| ft_text | ft_level_two,
+
 
 
     ft_file_ctree =         94 | ft_tree | ft_level_one,
@@ -88,7 +91,7 @@ class CodeFormats {
     static QHash<QString, FormatType> _user_mappings;
 public:
     static FormatType identify(const QString & ext);
-    static QString formatIcoPath(const FormatType & ft);
+    static QString formatIcoPath(const FormatType & ft, const FormatType & add_ft = ft_unknown);
 
     static void addMappings(const QString & ext, const FormatType & format);
     static void removeMappings(const QString & ext);

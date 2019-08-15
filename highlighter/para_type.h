@@ -52,12 +52,15 @@ enum ParaType : PARA_TYPE {
     pt_regexp = 1 << 10,
     pt_close_regexp = pt_regexp | pt_close,
 
+    pt_representation = 1 << 11,
+    pt_close_representation = pt_representation | pt_close,
 
-    pt_open_do_block = 1 << 11 | pt_foldable,
-    pt_open_begin_block = 1 << 12 | pt_foldable,
-    pt_open_method = 1 << 13 | pt_foldable,
-    pt_open_class = 1 << 14 | pt_foldable,
-    pt_open_module = 1 << 15 | pt_foldable,
+    //    pt_open_class = 1 << 11 | pt_foldable,
+    //    pt_open_module = 1 << 12 | pt_foldable,
+//    pt_open_do_block = 1 << 13 | pt_foldable,
+
+    pt_open_begin_block = 1 << 14 | pt_foldable,
+    pt_open_method = 1 << 15 | pt_foldable,
     pt_open_if = 1 << 16 | pt_foldable,
     pt_open_elsif = 1 << 17 | pt_foldable,
     pt_open_else = 1 << 18 | pt_foldable,
