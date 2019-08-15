@@ -1418,6 +1418,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     case '=': { ++state -> next_offset; break; }
 
                     case '{':
+                    case '(':
                     case '/': {
                         ++state -> next_offset;
                         braker = ECHAR1;
