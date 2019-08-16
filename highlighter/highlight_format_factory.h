@@ -10,6 +10,7 @@
 class HighlightFormatFactory : public Singleton<HighlightFormatFactory> {
     QHash<Identifier, QTextCharFormat> _formats;
 protected:
+    void registerProjectTreeLibRangeFormat();
     void registerProjectTreeTmpRangeFormat();
     void registerProjectTreeSpecRangeFormat();
     void registerProjectTreePublicRangeFormat();

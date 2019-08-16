@@ -59,6 +59,8 @@
         <file alias="folder_config">icons/folder_config.png</file>
         <file alias="folder_app">icons/folder_app.png</file>
         <file alias="file_rake">icons/file_rake.png</file>
+        <file alias="folder_lib">icons/folder_lib.png</file>
+        <file alias="file_html_erb">icons/file_html_erb.png</file>
     </qresource>
     <qresource prefix="/tools">
         <file alias="console">icons/console.png</file>

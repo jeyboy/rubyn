@@ -1,5 +1,11 @@
 #include "highlight_format_factory.h"
 
+void HighlightFormatFactory::registerProjectTreeLibRangeFormat() {
+    QTextCharFormat format;
+    format.setBackground(QColor::fromRgb(0, 38, 255, 24));
+    _formats.insert(hid_project_tree_lib_range, format);
+}
+
 void HighlightFormatFactory::registerProjectTreeTmpRangeFormat() {
     QTextCharFormat format;
     format.setBackground(QColor::fromRgb(255, 215, 0, 24));
@@ -366,6 +372,7 @@ void HighlightFormatFactory::registerCommentMarkTodoFormat() {
 
 
 HighlightFormatFactory::HighlightFormatFactory() {
+    registerProjectTreeLibRangeFormat();
     registerProjectTreeTmpRangeFormat();
     registerProjectTreeSpecRangeFormat();
     registerProjectTreePublicRangeFormat();

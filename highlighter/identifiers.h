@@ -8,6 +8,7 @@
 enum Identifier : UID_TYPE {
     hid_custom = -80, // not used yet
 
+    hid_project_tree_lib_range = -71,
     hid_project_tree_tmp_range = -70,
     hid_project_tree_spec_range = -69,
     hid_project_tree_public_range = -68,

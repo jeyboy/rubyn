@@ -8,7 +8,7 @@ FormatType IFolder::icoType(const QString & name, const uint & level) {
     if (level == 1) {
         if (name == QLatin1Literal("tmp")) {
             return FormatType::ft_folder_temp;
-        } else if (name == QLatin1Literal("test") || name == QLatin1Literal("spec")) {
+        } else if (name == QLatin1Literal("test") || name == QLatin1Literal("spec") || name == QLatin1Literal("tests")) {
             return FormatType::ft_folder_test;
         } else if (name == QLatin1Literal("log")) {
             return FormatType::ft_folder_log;
@@ -20,6 +20,8 @@ FormatType IFolder::icoType(const QString & name, const uint & level) {
             return FormatType::ft_folder_config;
         } else if (name == QLatin1Literal("app")) {
             return FormatType::ft_folder_app;
+        } else if (name == QLatin1Literal("lib")) {
+            return FormatType::ft_folder_lib;
         }
     }
 
@@ -37,6 +39,7 @@ QColor * IFolder::identifyColor(const FormatType & ico_type) {
         case ft_folder_db: { uid = hid_project_tree_db_range; break;}
         case ft_folder_config: { uid = hid_project_tree_config_range; break;}
         case ft_folder_app: { uid = hid_project_tree_app_range; break;}
+        case ft_folder_lib: { uid = hid_project_tree_lib_range; break;}
 
         default:;
     }

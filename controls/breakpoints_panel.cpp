@@ -48,6 +48,7 @@ BreakpointsPanel::BreakpointsPanel(QWidget * parent) : QWidget(parent), breakpoi
     connect(breakpoints, &QListWidget::itemDoubleClicked, this, &BreakpointsPanel::breakpointDoubleClicked);
 
     QShortcut * shortcut = new QShortcut(QKeySequence(Qt::Key_Delete), breakpoints);
+    shortcut -> setContext(Qt::WidgetShortcut);
     connect(shortcut, SIGNAL(activated()), this, SLOT(deleteBreakpointItem()));
 
 

@@ -32,7 +32,7 @@ public:
     inline Project * project(const QUrl & uri) { return _projects.value(uri, nullptr); }
 
     //TODO: need sync size with project tree
-    QIcon & getIco(const FormatType & format_type, const FormatType & add_format_type = ft_unknown, const uint & size = 22);
+    QIcon & getIco(const FormatType & format_type, const FormatType & add_format_type = ft_unknown, const int & size = 22);
     FormatType identificateName(const QString & name);
 signals:
     void errorOccurred(QString & source, QString & info);

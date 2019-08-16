@@ -8,22 +8,29 @@
 #include <qpixmap.h>
 #include <qdebug.h>
 
-QIcon & Projects::getIco(const FormatType & format_type, const FormatType & add_format_type, const uint & size) {
-    if (!_icons.contains(format_type)) {
+QIcon & Projects::getIco(const FormatType & format_type, const FormatType & add_format_type, const int & size) {
+    FormatType wt = format_type;
+
+    if (add_format_type) {
+        wt = FormatType(wt + add_format_type & 7);
+    }
+
+    if (!_icons.contains(wt)) {
         QIcon ico;
-        QPixmap pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(format_type), size);
+        QPixmap pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(format_type, add_format_type), size);
 
         if (pix.isNull()) {
             qDebug() << "UNKNOW ICO FORMAT: " << format_type;
-            pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(ft_unknown), size);
+//            pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(ft_unknown), size);
+            return getIco(ft_unknown, ft_unknown, size);
         }
 
         ico.addPixmap(pix);
 
-        _icons.insert(format_type, ico);
+        _icons.insert(wt, ico);
     }
 
-    return _icons[format_type];
+    return _icons[wt];
 }
 
 FormatType Projects::identificateName(const QString & name) {

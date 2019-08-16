@@ -7,14 +7,13 @@
 
 enum FormatType : quint32 {
 
-    // (1 << 8)
+    // (1 << 14)
 
     // ...
 
-    ft_level_four = (1 << 13),
-    ft_level_three = (1 << 14), // 256
-    ft_level_two = (1 << 15),
-    ft_level_one = (1 << 16),
+    ft_level_three = (1 << 17),
+    ft_level_two = (1 << 18),
+    ft_level_one = (1 << 19),
 
     // ...
 
@@ -27,23 +26,30 @@ enum FormatType : quint32 {
     ft_binary = (1 << 29),
     ft_tree = (1 << 30),
 
+
+//    https://www.ruby-toolbox.com/categories/template_engines
+
     ft_unknown =             0,
 
-    ft_file_rb =             1 | ft_text | ft_level_one,
-    ft_file_sql =            2 | ft_text | ft_level_one,
-    ft_file_html =           3 | ft_text | ft_level_one,
-    ft_file_css =            4 | ft_text | ft_level_one,
-    ft_file_scss =           5 | ft_text | ft_level_one,
-    ft_file_sass =           6 | ft_text | ft_level_one,
-    ft_file_js =             7 | ft_text | ft_level_one,
-    ft_file_coffee =         8 | ft_text | ft_level_one,
-    ft_file_xml =            9 | ft_text | ft_level_one,
-    ft_file_json =           10 | ft_tree | ft_level_one,
-    ft_file_yml =            11 | ft_text | ft_level_one,
-    ft_file_lock =           12 | ft_text | ft_level_one,
-    ft_file_gemfile =        13 | ft_text | ft_level_one,
-    ft_file_rake =           14 | ft_text | ft_level_one,
+    ft_file_erb =            1 | ft_text | ft_level_two,
+    ft_file_haml =           2 | ft_text | ft_level_two,
+    ft_file_slim =           3 | ft_text | ft_level_two,
 
+
+    ft_file_rb =             10 | ft_text | ft_level_one,
+    ft_file_sql =            20 | ft_text | ft_level_one,
+    ft_file_html =           30 | ft_text | ft_level_one,
+    ft_file_css =            40 | ft_text | ft_level_one,
+    ft_file_scss =           50 | ft_text | ft_level_one,
+    ft_file_sass =           60 | ft_text | ft_level_one,
+    ft_file_js =             70 | ft_text | ft_level_one,
+    ft_file_coffee =         80 | ft_text | ft_level_one,
+    ft_file_xml =            90 | ft_text | ft_level_one,
+    ft_file_json =           100 | ft_tree | ft_level_one,
+    ft_file_yml =            110 | ft_text | ft_level_one,
+    ft_file_lock =           120 | ft_text | ft_level_one,
+    ft_file_gemfile =        130 | ft_text | ft_level_one,
+    ft_file_rake =           140 | ft_text | ft_level_one,
 
     //        ft_c,
     //        ft_h,
@@ -56,34 +62,29 @@ enum FormatType : quint32 {
     //        ft_vb,
 
 
-    ft_file_erb =            60 | ft_text | ft_level_two,
-    ft_file_haml =           61 | ft_text | ft_level_two,
-    ft_file_slim =           62| ft_text | ft_level_two,
+    ft_file_ctree =         500 | ft_tree | ft_level_one,
+    ft_file_datum =         510 | ft_datum | ft_system | ft_level_one,
+    ft_file_bin =           520 | ft_binary | ft_level_one,
+    ft_file_text =          530 | ft_text | ft_level_three,
+    ft_file_ico =           540 | ft_image | ft_level_one,
+    ft_file_image =         550 | ft_image | ft_level_one,
+    ft_file_font =          560 | ft_system | ft_level_one,
+    ft_file_log =           570 | ft_text | ft_level_one,
 
 
+    ft_folder_lib =         800 | ft_folder,
+    ft_folder_app =         810 | ft_folder,
+    ft_folder_config =      820 | ft_folder,
+    ft_folder_db =          830 | ft_folder,
+    ft_folder_public =      840 | ft_folder,
+    ft_folder_log =         850 | ft_folder,
+    ft_folder_temp =        860 | ft_folder,
+    ft_folder_test =        870 | ft_folder,
 
-    ft_file_ctree =         94 | ft_tree | ft_level_one,
-    ft_file_datum =         95 | ft_datum | ft_system | ft_level_one,
-    ft_file_bin =           95 | ft_binary | ft_level_one,
-    ft_file_text =          96 | ft_text | ft_level_four,
-    ft_file_ico =           97 | ft_image | ft_level_one,
-    ft_file_image =         98 | ft_image | ft_level_one,
-    ft_file_font =          99 | ft_system | ft_level_one,
-    ft_file_log =           100 | ft_text | ft_level_one,
-
-
-    ft_folder_app =         193 | ft_folder,
-    ft_folder_config =      194 | ft_folder,
-    ft_folder_db =          195 | ft_folder,
-    ft_folder_public =      196 | ft_folder,
-    ft_folder_log =         197 | ft_folder,
-    ft_folder_temp =        198 | ft_folder,
-    ft_folder_test =        199 | ft_folder,
-
-    ft_user_defined =       200 | ft_level_four,
+    ft_user_defined =       8000 | ft_level_three,
 
     ft_base_file_types =    ft_image | ft_text | ft_binary | ft_tree,
-    ft_priority =           ft_level_one | ft_level_two | ft_level_three | ft_level_four
+    ft_priority =           ft_level_one | ft_level_two | ft_level_three
 };
 
 class CodeFormats {
