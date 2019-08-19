@@ -67,6 +67,7 @@ signals:
     void moveToBlankState(TabsBlock *);
 
 public slots:
+    void fileClosed(const QString & uid);
     void saveFiles();
     void currentTabChanged(QListWidgetItem * tab);
     void currentTabIndexChanged(const int & index);

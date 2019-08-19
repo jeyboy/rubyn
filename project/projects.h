@@ -34,18 +34,23 @@ public:
     //TODO: need sync size with project tree
     QIcon & getIco(const FormatType & format_type, const FormatType & add_format_type = ft_unknown, const int & size = 22);
     FormatType identificateName(const QString & name);
+
+public slots:
+    void closeProject(const QString & path);
+
 signals:
     void errorOccurred(QString & source, QString & info);
     void fileIconChanged(const QString & name, const QIcon & ico);
 
     void projectAdded(void * project);
-    void projectRemoved(void * project);
+    void projectRemoved(const QString & path);
     void projectRenamed(void * project, const QString & prev_name);
 
     void projectInitiated(QTreeWidgetItem *);
 
 //    void fileAdded(File *);
 //    void fileRemoved(File *);
+    void fileRemoved(const QString & uid);
 //    void fileRenamed(File *, const QString & from, const QString & to);
 };
 

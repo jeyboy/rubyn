@@ -456,6 +456,7 @@ void IDEWindow::setupEditor(QSplitter * list) {
     connect(new_editor, SIGNAL(moveToBlankState(TabsBlock*)), this, SLOT(editorIsEmpty(TabsBlock*)));
     connect(new_editor, SIGNAL(activated(TabsBlock*)), this, SLOT(setActiveEditor(TabsBlock*)));
     connect(new_editor, SIGNAL(resourceDropped(TabsBlock*,QUrl)), this, SLOT(openResource(TabsBlock*,QUrl)));
+    connect(&Projects::obj(), SIGNAL(fileRemoved(const QString &)), new_editor, SLOT(fileClosed(const QString &)));
 
     if (active_editor && active_editor -> parentWidget() == list) {
         int index = list -> indexOf(active_editor);
@@ -571,8 +572,10 @@ void IDEWindow::setupToolWindows() {
     Toolbars::obj().registerContainer(this);
 
 
-
     tree = new ProjectTree(this);
+
+    connect(tree, SIGNAL(closeProjectRequired(const QString &)), &Projects::obj(), SLOT(closeProject(const QString &)));
+
     DockWidget * widget =
         DockWidgets::obj().createWidget(
             QLatin1Literal("Files"),
@@ -611,7 +614,7 @@ void IDEWindow::setupToolWindows() {
             Qt::AllDockWidgetAreas
         );
 
-    color_picker_widget -> setBehaviour((DockWidget::Features)(DockWidget::dwf_movable | DockWidget::dwf_closable));
+    color_picker_widget -> setBehaviour(DockWidget::Features(DockWidget::dwf_movable | DockWidget::dwf_closable));
 
     DockWidgets::obj().append(color_picker_widget);
 

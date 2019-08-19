@@ -215,6 +215,8 @@ File::File(const uint & inproject_level, const QString & name, const QString & p
 File::~File() {
     close();
 
+    emit Projects::obj().fileRemoved(uid());
+
     delete _doc;
 }
 

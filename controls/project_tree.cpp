@@ -341,6 +341,18 @@ void ProjectTree::showContextMenu(const QPoint & point) {
 
     menu.addSeparator();
 
+    if (curr_item) {
+        QVariant path = curr_item -> data(0, Qt::UserRole + 2);
+
+        if (path.isValid()) {
+            QAction * close_action = new QAction(QIcon(QLatin1Literal(":/tools/console")), "Close", this);
+            connect(close_action, &QAction::triggered, [=]() { closeProject(path.toString()); });
+
+            menu.addAction(close_action);
+            menu.addSeparator();
+        }
+    }
+
     if (curr_item && !curr_item -> parent()) {
         QAction * console_action = new QAction(QIcon(QLatin1Literal(":/tools/console")), "Open sys console", this);
         connect(console_action, &QAction::triggered, [=]() {
@@ -406,4 +418,10 @@ void ProjectTree::expandChildren(QTreeWidgetItem * curr_item) {
         child -> setExpanded(true);
         expandChildren(child);
     }
+}
+
+void ProjectTree::closeProject(const QString & path) {
+    emit closeProjectRequired(path);
+
+    delete currentItem();
 }

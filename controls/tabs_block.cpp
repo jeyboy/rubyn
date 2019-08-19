@@ -249,6 +249,12 @@ void TabsBlock::tabsCountChanged(const int & correction) {
     }
 }
 
+void TabsBlock::fileClosed(const QString & uid) {
+    QListWidgetItem * item = _bar -> _tabs_linkages[uid];
+    if (item)
+        closeTab(item);
+}
+
 void TabsBlock::saveFiles() {
     QHash<QString, QListWidgetItem *>::Iterator it = _bar -> _tabs_linkages.begin();
 

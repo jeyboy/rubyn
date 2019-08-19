@@ -42,7 +42,7 @@ public:
         if (_files.contains(name))
             return _files[name];
         else
-            return 0;
+            return nullptr;
     }
 };
 

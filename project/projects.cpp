@@ -40,6 +40,14 @@ FormatType Projects::identificateName(const QString & name) {
         return ft_unknown;
 }
 
+void Projects::closeProject(const QString & path) {
+    Project * project = _projects.take(QUrl::fromLocalFile(path));
+
+    delete project;
+
+    emit projectRemoved(path);
+}
+
 bool Projects::identificate(const QString & name, void * folder, File *& file, bool & is_external) {
     is_external = false;
 

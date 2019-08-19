@@ -41,6 +41,7 @@ signals:
     void searchResultsCount(const int &);
     void closeSearch();
     void consoleRequired(const QString & path);
+    void closeProjectRequired(const QString & path);
 
     void fileActivated(const QString & name, void * folder);
 //    void fileDeleted(void * folder, const QString & name);
@@ -60,6 +61,7 @@ private slots:
     void showContextMenu(const QPoint & point);
     void collapseChildren(QTreeWidgetItem * curr_item = nullptr);
     void expandChildren(QTreeWidgetItem * curr_item = nullptr);
+    void closeProject(const QString & path);
 };
 
 #endif // PROJECT_TREE_H
