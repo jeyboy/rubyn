@@ -244,15 +244,16 @@ void TabsBlock::tabsCountChanged(const int & correction) {
     _list_btn -> setText(QString::number(new_amount));
 
     if (new_amount == 0) {
-        emit moveToBlankState(this);
         hide();
+        emit moveToBlankState(this);
     }
 }
 
 void TabsBlock::fileClosed(const QString & uid) {
     QListWidgetItem * item = _bar -> _tabs_linkages[uid];
-    if (item)
+    if (item) {
         closeTab(item);
+    }
 }
 
 void TabsBlock::saveFiles() {

@@ -343,12 +343,14 @@ void IDEWindow::editorIsEmpty(TabsBlock * target_editor) {
             active_is_deleting = false;
         }
 
+        target_editor -> setParent(nullptr);
         target_editor -> deleteLater();
 
         if (!del_required)
             break;
         else {
             QSplitter * psplitter = static_cast<QSplitter *>(parent_splitter -> parentWidget());
+            parent_splitter -> setParent(nullptr);
             parent_splitter -> deleteLater();
             parent_splitter = psplitter;
         }
