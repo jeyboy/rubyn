@@ -315,7 +315,9 @@ void TabsBlock::closeTab(QListWidgetItem * tab) {
                 _editor -> openFile(nullptr);
             }
 
+            Projects::obj().blockSignals(true);
             delete _external_files.take(file_uid);
+            Projects::obj().blockSignals(false);
         }
 
         _bar -> _tabs_linkages.remove(file_uid);
