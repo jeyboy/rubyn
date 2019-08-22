@@ -164,6 +164,9 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 }
 
 IDEWindow::~IDEWindow() {
+    // do not send signals about closing of files
+    Projects::obj().disconnect();
+
     delete ui;
     delete ui_dumper;
 }
@@ -181,7 +184,7 @@ void IDEWindow::setupConsole(ConsoleWidget * console, const QString & header) {
             Qt::AllDockWidgetAreas
         );
 
-    console_widget -> setBehaviour((DockWidget::Features)(DockWidget::dwf_movable | DockWidget::dwf_closable));
+    console_widget -> setBehaviour(DockWidget::Features(DockWidget::dwf_movable | DockWidget::dwf_closable));
 
     DockWidgets::obj().append(console_widget, Qt::BottomDockWidgetArea);
 }
