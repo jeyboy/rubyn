@@ -21,7 +21,7 @@ class Projects : public QObject, public Singleton<Projects> {
     QHash<FormatType, QIcon> _icons;
     QHash<QString, FormatType> _special_files_formats;
 public:
-    static bool identificate(const QString & name, void * folder, File *& file, bool & is_external);
+    static bool identificate(const QString & name, void * folder, File *& file);
 
     Projects(QObject * parent = nullptr);
     ~Projects();

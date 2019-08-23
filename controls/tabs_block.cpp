@@ -107,15 +107,13 @@ TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _active
 
 TabsBlock::~TabsBlock() {
     delete _bar;
-
-    qDeleteAll(_external_files);
 }
 
 void TabsBlock::registerCursorPosOutput(QLabel * output) {
     connect(_editor, &UniversalEditor::cursorPosChanged, output, &QLabel::setText);
 }
 
-bool TabsBlock::openFile(File * file, const bool & is_external) {
+bool TabsBlock::openFile(File * file) {
     QString file_uid = file -> uid();
 
     if (_bar -> _tabs_linkages.contains(file_uid)) {
@@ -126,7 +124,7 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
     } else {
         //TODO: this block ruin normal logic: we should call openFileInEditor after _bar -> setCurrentItem
         if (!_editor -> openFile(file)) {
-            if (is_external)
+            if (file -> isExternal())
                 delete file;
 
             return false;
@@ -141,10 +139,12 @@ bool TabsBlock::openFile(File * file, const bool & is_external) {
 
         _bar -> _tabs_linkages.insert(file_uid, item);
 
-        if (is_external) {
-            _external_files.insert(file_uid, file);
+        if (file -> isExternal()) {
+            _bar -> _external_files.insert(file_uid, file);
             item -> setBackgroundColor(QColor(255, 0, 0, 92));
         }
+
+        file -> incOpened();
 
         _bar -> blockSignals(true);
         _bar -> setCurrentItem(item);
@@ -307,17 +307,25 @@ void TabsBlock::closeTab(QListWidgetItem * tab) {
     File * file = _bar -> tabFile(tab);
 
     if (file) {
-        file -> close();
+        uint usage_count = file -> decOpened();
+
+        if (usage_count == 0)
+            file -> close();
 
         QString file_uid = file -> uid();
-        if (_external_files.contains(file_uid)) {
+        if (_bar -> _external_files.contains(file_uid)) {
             if (_bar -> currentItem() == tab) {
                 _editor -> openFile(nullptr);
             }
 
-            Projects::obj().blockSignals(true);
-            delete _external_files.take(file_uid);
-            Projects::obj().blockSignals(false);
+            _bar -> _external_files.take(file_uid);
+
+            if (usage_count == 0) {
+                Projects::obj().blockSignals(true);
+                delete file;
+                qDebug() << "TabsBlock::remove remote file";
+                Projects::obj().blockSignals(false);
+            }
         }
 
         _bar -> _tabs_linkages.remove(file_uid);

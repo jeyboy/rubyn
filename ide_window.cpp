@@ -223,9 +223,8 @@ void IDEWindow::splitterMoved(int /*pos*/, int index) {
 
 void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool & in_new, const bool & vertical, const int & scroll_pos_y) {
     File * _file = nullptr;
-    bool is_external = false;
 
-    if (!Projects::identificate(name, folder, _file, is_external)) {
+    if (!Projects::identificate(name, folder, _file)) {
         Logger::error(QStringLiteral("IDE"), QStringLiteral("Cant find folder for file: '") % name % '\'');
         return;
     }
@@ -262,7 +261,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
 
     if (!_file -> isOpened()) {
         if (!_file -> open()) {
-            if (is_external) {
+            if (_file -> isExternal()) {
                 delete _file;
             }
 
@@ -275,12 +274,12 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
         _file -> asText() -> setVerticalScrollPos(scroll_pos_y);
 
     if (!active_editor || in_new)
-        newEditorRequired(_file, vertical, is_external);
+        newEditorRequired(_file, vertical);
     else
-        active_editor -> openFile(_file, is_external);
+        active_editor -> openFile(_file);
 }
 
-void IDEWindow::newEditorRequired(File * file, const bool & vertical, const bool & is_external) {
+void IDEWindow::newEditorRequired(File * file, const bool & vertical) {
     QSplitter * parent_splitter = parentSplitter();
 
     if ((parent_splitter -> orientation() == Qt::Vertical) != vertical) {
@@ -288,7 +287,7 @@ void IDEWindow::newEditorRequired(File * file, const bool & vertical, const bool
     }
 
     setupEditor(parent_splitter);
-    active_editor -> openFile(file, is_external);
+    active_editor -> openFile(file);
 }
 
 void IDEWindow::setActiveEditor(TabsBlock * new_active) {

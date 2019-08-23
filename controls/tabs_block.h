@@ -34,8 +34,6 @@ class TabsBlock : public QWidget {
 
     QMenu * _files_list;
 
-    QHash<QString, File *> _external_files;
-
     void setupLayout();
 public:
     TabsBlock(QWidget * parent = nullptr);
@@ -45,7 +43,7 @@ public:
     void registerCursorPosOutput(QLabel * output);
     void registerBreakpointsPanel(BreakpointsPanel * panel);
 
-    bool openFile(File * file, const bool & is_external = false);
+    bool openFile(File * file);
 
     int tabsCount();
     QString tabFilePath(const int & index);

@@ -79,6 +79,35 @@ TabBar::TabBar(QWidget * parent) : QListWidget(parent), hscroll_range(-1), _inte
     connect(horizontalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(scrollUpdated(int,int)));
 }
 
+TabBar::~TabBar() {
+//    qDeleteAll(_external_files);
+
+    if (!_external_files.isEmpty()) {
+        QHash<QString, File *>::Iterator it = _external_files.begin();
+
+        for(; it != _external_files.end(); it++) {
+            _tabs_linkages.take(it.value() -> uid());
+
+            if (it.value() -> decOpened() == 0) {
+                qDebug() << "TabsBlock::remove remote file";
+                delete it.value();
+            }
+        }
+    }
+
+    if (!_tabs_linkages . isEmpty()) {
+        QHash<QString, QListWidgetItem *>::Iterator tab_it = _tabs_linkages.begin();
+
+        for(; tab_it != _tabs_linkages.end(); tab_it++) {
+            File * file = tabFile(tab_it.value());
+
+            if (file) {
+                file -> decOpened();
+            }
+        }
+    }
+}
+
 QListWidgetItem * TabBar::addTab(const QIcon & ico, const QString & text) {
     QListWidgetItem * item = new QListWidgetItem(ico, text);
     addItem(item);
@@ -146,8 +175,16 @@ void TabBar::dropEvent(QDropEvent * event) {
     }
     else {
         if (!target_item) {
+            target_item = currentItem();
+
             File * file = tabFile(copy_source);
-            _tabs_linkages.insert(file -> uid(), currentItem());
+            file -> incOpened();
+            _tabs_linkages.insert(file -> uid(), target_item);
+
+            if (file -> isExternal()) {
+                _external_files.insert(file -> uid(), file);
+                target_item -> setBackgroundColor(QColor(255, 0, 0, 92));
+            }
         }
 
         emit copy_parent -> tabCloseRequested(copy_source);

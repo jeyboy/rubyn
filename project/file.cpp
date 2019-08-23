@@ -203,7 +203,8 @@ void File::close() {
 }
 
 File::File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops)
-    : _doc(nullptr), _device(nullptr), _main_format(ft_unknown), _additional_format(ft_unknown), _path(path), _name(name), level(inproject_level)
+    : _doc(nullptr), _device(nullptr), _main_format(ft_unknown), _additional_format(ft_unknown), _path(path),
+      _name(name), level(inproject_level), opened_count(0), is_external(false)
 {
     identifyType(_name, _main_format, _additional_format, level);
 

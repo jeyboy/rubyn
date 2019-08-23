@@ -48,9 +48,7 @@ void Projects::closeProject(const QString & path) {
     emit projectRemoved(path);
 }
 
-bool Projects::identificate(const QString & name, void * folder, File *& file, bool & is_external) {
-    is_external = false;
-
+bool Projects::identificate(const QString & name, void * folder, File *& file) {
     if (folder) {
         IFolder * _folder = reinterpret_cast<IFolder *>(folder);
 
@@ -66,7 +64,7 @@ bool Projects::identificate(const QString & name, void * folder, File *& file, b
             QFileInfo finfo(name);
             file = new File(0, finfo.baseName(), name);
 
-            is_external = true;
+            file -> setExternal(true);
         }
     }
 

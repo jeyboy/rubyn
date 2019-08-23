@@ -4,6 +4,7 @@
 #include <qfile.h>
 #include <qurl.h>
 //#include <qhash.h>
+#include <qdebug.h>
 
 #include "editor/idocument.h"
 #include "code_formats.h"
@@ -32,6 +33,9 @@ protected:
     QString first_non_null_str;
 
     uint level;
+    uint opened_count;
+
+    bool is_external;
 
     bool userAskFileType();
     void initUid();
@@ -67,6 +71,19 @@ public:
     inline const QString & name() { return _name; }
     inline const QString & path() { return _path; }
     inline const QString & uid() { return _uid; }
+
+    inline uint incOpened() {
+        qDebug() << "incOpened" << (opened_count + 1);
+        return ++opened_count;
+    }
+    inline uint decOpened() {
+        qDebug() << "decOpened" << (opened_count - 1);
+
+        return --opened_count;
+    }
+
+    inline bool isExternal() { return is_external; }
+    inline void setExternal(const bool & ext) { is_external = ext; }
 
     const QString & firstStr();
 
