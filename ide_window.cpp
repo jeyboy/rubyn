@@ -544,6 +544,18 @@ QSplitter * IDEWindow::splitActiveEditor(const bool & vertical) {
     int index = parent_splitter -> indexOf(active_editor);
     parent_splitter -> replaceWidget(index, new_child);
     new_child -> addWidget(active_editor);
+
+    int size;
+
+    if (vertical) {
+        size = parent_splitter -> height() / 2;
+    } else {
+        size = parent_splitter -> width() / 2;
+    }
+
+    QList<int> sizes({size, size});
+    new_child -> setSizes(sizes);
+
     return new_child;
 }
 
