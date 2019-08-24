@@ -305,9 +305,12 @@ void IDEWindow::editorIsEmpty(TabsBlock * target_editor) {
     QSplitter * parent_splitter = static_cast<QSplitter *>(target_editor -> parentWidget());
     bool active_is_deleting = active_editor == target_editor;
 
+    target_editor -> setParent(nullptr);
+    target_editor -> deleteLater();
+
     while(parent_splitter) {
         bool is_main = parent_splitter == widgets_list;
-        bool del_required = !is_main && parent_splitter -> count() == 1;
+        bool del_required = !is_main && parent_splitter -> count() == 0;
 
         if (active_is_deleting) {
             QWidget * widget = nullptr;
@@ -344,9 +347,6 @@ void IDEWindow::editorIsEmpty(TabsBlock * target_editor) {
             setActiveEditor(qobject_cast<TabsBlock *>(widget));
             active_is_deleting = false;
         }
-
-        target_editor -> setParent(nullptr);
-        target_editor -> deleteLater();
 
         if (!del_required)
             break;

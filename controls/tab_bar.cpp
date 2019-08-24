@@ -80,8 +80,6 @@ TabBar::TabBar(QWidget * parent) : QListWidget(parent), hscroll_range(-1), _inte
 }
 
 TabBar::~TabBar() {
-//    qDeleteAll(_external_files);
-
     if (!_external_files.isEmpty()) {
         QHash<QString, File *>::Iterator it = _external_files.begin();
 
