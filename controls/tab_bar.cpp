@@ -84,10 +84,12 @@ TabBar::~TabBar() {
         QHash<QString, QListWidgetItem *>::Iterator tab_it = _tabs_linkages.begin();
 
         for(; tab_it != _tabs_linkages.end(); tab_it++) {
-            File * file = tabFile(tab_it.value());
+            if (tab_it.value()) {
+                File * file = tabFile(tab_it.value());
 
-            if (file) {
-                file -> decOpened();
+                if (file) {
+                    file -> decOpened();
+                }
             }
         }
     }

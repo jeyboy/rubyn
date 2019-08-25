@@ -21,6 +21,8 @@ class Projects : public QObject, public Singleton<Projects> {
     QHash<FormatType, QIcon> _icons;
     QHash<QString, FormatType> _special_files_formats;
     QHash<QString, File *> _external_files;
+
+    int icon_size;
 public:
     static bool identificate(const QString & name, void * folder, File *& file);
 
@@ -33,7 +35,8 @@ public:
     inline Project * project(const QUrl & uri) { return _projects.value(uri, nullptr); }
 
     //TODO: need sync size with project tree
-    QIcon & getIco(const FormatType & format_type, const FormatType & add_format_type = ft_unknown, const int & size = 22);
+    QIcon & getIco(const FormatType & format_type, const FormatType & add_format_type = ft_unknown);
+    int icoSize() { return icon_size; }
     FormatType identificateName(const QString & name);
 
     void fileUsabilityChanged(File * file);

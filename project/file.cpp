@@ -74,6 +74,9 @@ bool File::identifyType(const QString & name, FormatType & format, FormatType & 
 
             if (format == ft_file_css && (ft == ft_file_scss || ft == ft_file_sass)) {
                 format = ft;
+            }
+            else if (format == ft_file_js && ft == ft_file_coffee) {
+                format = ft;
             } else {
                 int curr_priority = format & ft_priority;
                 int new_priority = ft & ft_priority;
@@ -227,6 +230,24 @@ File::~File() {
     emit Projects::obj().fileRemoved(uid());
 
     delete _doc;
+}
+
+QIcon File::ico() {
+    if (_main_format == ft_file_ico) {
+        QIcon ico(_path);
+
+        if (ico.isNull() || ico.availableSizes().isEmpty())
+            return Projects::obj().getIco(ft_broken);
+        else {
+            int ico_size = Projects::obj().icoSize();
+            QIcon ret_ico;
+            QPixmap pix = ico.pixmap(QSize(ico_size, ico_size)).scaled(ico_size, ico_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            ret_ico.addPixmap(pix);
+            return ret_ico;
+        }
+    }
+
+    return Projects::obj().getIco(_main_format, _additional_format);
 }
 
 //File::File(const QUrl & uri, Project * project) : _doc(0), _device(0), _project(project) {

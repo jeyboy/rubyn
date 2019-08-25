@@ -92,17 +92,7 @@ public:
     const QString & firstStr();
 
     FormatType icoType() { return _main_format; }
-    QIcon ico() {
-        if (_main_format == ft_file_ico) {
-            QIcon ico(_path);
-
-            if (ico.isNull() || ico.availableSizes().isEmpty())
-                return Projects::obj().getIco(ft_broken);
-            else
-                return ico;
-        }
-        else return Projects::obj().getIco(_main_format, _additional_format);
-    }
+    QIcon ico();
 
     inline bool isOpened() const { return _device && _device -> isOpen(); }
     inline bool isChanged() const { return _doc && _doc -> isChanged(); }

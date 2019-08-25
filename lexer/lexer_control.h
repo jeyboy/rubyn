@@ -335,7 +335,7 @@ struct LexerControl {
         last_uid = uid;
 
         lighter -> setFormat(
-            last_light_pos, static_cast<int>(last_light_len),
+            last_light_pos, int(last_light_len),
             HighlightFormatFactory::obj().getFormatFor(last_uid)
         );
     }
@@ -354,7 +354,7 @@ struct LexerControl {
             last_uid = uid;
 
             lighter -> setFormat(
-                last_light_pos, static_cast<int>(last_light_len),
+                last_light_pos, int(last_light_len),
                 HighlightFormatFactory::obj().getFormatFor(last_uid)
             );
         }
@@ -398,12 +398,12 @@ struct LexerControl {
 
                 para -> para_type = ptype;
                 para -> pos = cached_str_pos;
-                para -> length = static_cast<quint8>(cached_length); // 8 bits should be enough for any type of para
+                para -> length = quint8(cached_length); // 8 bits should be enough for any type of para
 
                 para -> is_foldable = false;
                 para -> is_oneliner = false;
             }
-            else para = ParaList::insert(para, ptype, cached_str_pos, static_cast<quint8>(cached_length));
+            else para = ParaList::insert(para, ptype, cached_str_pos, quint8(cached_length));
 
             para -> is_blockator = !replaceable;
         }

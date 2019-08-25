@@ -66,6 +66,19 @@
         <file alias="file_scss_erb">icons/file_scss_erb.png</file>
         <file alias="file_html_haml">icons/file_html_haml.png</file>
         <file alias="file_html_slim">icons/file_html_slim.png</file>
+        <file alias="file_css_erb">icons/file_css_erb.png</file>
+        <file alias="file_css_haml">icons/file_css_haml.png</file>
+        <file alias="file_css_slim">icons/file_css_slim2.png</file>
+        <file alias="file_sass_haml">icons/file_sass_haml.png</file>
+        <file alias="file_sass_slim">icons/file_sass_slim.png</file>
+        <file alias="file_scss_haml">icons/file_scss_haml.png</file>
+        <file alias="file_scss_slim">icons/file_scss_slim.png</file>
+        <file alias="file_coffee_erb">icons/file_coffee_erb.png</file>
+        <file alias="file_coffee_haml">icons/file_coffee_haml.png</file>
+        <file alias="file_coffee_slim">icons/file_coffee_slim.png</file>
+        <file alias="file_js_erb">icons/file_js_erb.png</file>
+        <file alias="file_js_haml">icons/file_js_haml.png</file>
+        <file alias="file_js_slim">icons/file_js_slim.png</file>
     </qresource>
     <qresource prefix="/tools">
         <file alias="console">icons/console.png</file>

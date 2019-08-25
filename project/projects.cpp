@@ -8,21 +8,21 @@
 #include <qpixmap.h>
 #include <qdebug.h>
 
-QIcon & Projects::getIco(const FormatType & format_type, const FormatType & add_format_type, const int & size) {
+QIcon & Projects::getIco(const FormatType & format_type, const FormatType & add_format_type) {
     FormatType wt = format_type;
 
     if (add_format_type) {
-        wt = FormatType(wt + add_format_type & 7);
+        wt = FormatType(wt + (add_format_type & 7));
     }
 
     if (!_icons.contains(wt)) {
         QIcon ico;
-        QPixmap pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(format_type, add_format_type), size);
+        QPixmap pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(format_type, add_format_type), icon_size);
 
         if (pix.isNull()) {
             qDebug() << "UNKNOW ICO FORMAT: " << format_type;
 //            pix = PREPARE_PIXMAP(CodeFormats::formatIcoPath(ft_unknown), size);
-            return getIco(ft_unknown, ft_unknown, size);
+            return getIco(ft_unknown, ft_unknown);
         }
 
         ico.addPixmap(pix);
@@ -92,7 +92,7 @@ bool Projects::identificate(const QString & name, void * folder, File *& file) {
     return true;
 }
 
-Projects::Projects(QObject * parent) : QObject(parent) {
+Projects::Projects(QObject * parent) : QObject(parent), icon_size(22) {
     _special_files_formats.insert(QLatin1Literal("gemfile"), ft_file_gemfile);
     _special_files_formats.insert(QLatin1Literal("rakefile"), ft_file_rb);
     _special_files_formats.insert(QLatin1Literal("capfile"), ft_file_rb);
