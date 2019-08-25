@@ -80,19 +80,6 @@ TabBar::TabBar(QWidget * parent) : QListWidget(parent), hscroll_range(-1), _inte
 }
 
 TabBar::~TabBar() {
-    if (!_external_files.isEmpty()) {
-        QHash<QString, File *>::Iterator it = _external_files.begin();
-
-        for(; it != _external_files.end(); it++) {
-            _tabs_linkages.take(it.value() -> uid());
-
-            if (it.value() -> decOpened() == 0) {
-                qDebug() << "TabsBlock::remove remote file";
-                delete it.value();
-            }
-        }
-    }
-
     if (!_tabs_linkages . isEmpty()) {
         QHash<QString, QListWidgetItem *>::Iterator tab_it = _tabs_linkages.begin();
 
@@ -180,7 +167,6 @@ void TabBar::dropEvent(QDropEvent * event) {
             _tabs_linkages.insert(file -> uid(), target_item);
 
             if (file -> isExternal()) {
-                _external_files.insert(file -> uid(), file);
                 target_item -> setBackgroundColor(QColor(255, 0, 0, 92));
             }
         }

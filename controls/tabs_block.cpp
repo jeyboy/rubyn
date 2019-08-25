@@ -140,7 +140,6 @@ bool TabsBlock::openFile(File * file) {
         _bar -> _tabs_linkages.insert(file_uid, item);
 
         if (file -> isExternal()) {
-            _bar -> _external_files.insert(file_uid, file);
             item -> setBackgroundColor(QColor(255, 0, 0, 92));
         }
 
@@ -307,28 +306,14 @@ void TabsBlock::closeTab(QListWidgetItem * tab) {
     File * file = _bar -> tabFile(tab);
 
     if (file) {
-        uint usage_count = file -> decOpened();
-
-        if (usage_count == 0)
-            file -> close();
-
-        QString file_uid = file -> uid();
-        if (_bar -> _external_files.contains(file_uid)) {
+        if (file -> isExternal()) {
             if (_bar -> currentItem() == tab) {
                 _editor -> openFile(nullptr);
             }
-
-            _bar -> _external_files.take(file_uid);
-
-            if (usage_count == 0) {
-                Projects::obj().blockSignals(true);
-                delete file;
-                qDebug() << "TabsBlock::remove remote file";
-                Projects::obj().blockSignals(false);
-            }
         }
 
-        _bar -> _tabs_linkages.remove(file_uid);
+        file -> decOpened();
+        _bar -> _tabs_linkages.remove(file -> uid());
     }
 
     _bar -> removeTab(tab);

@@ -72,14 +72,18 @@ public:
     inline const QString & path() { return _path; }
     inline const QString & uid() { return _uid; }
 
+    inline uint openedAmount() { return opened_count; }
     inline uint incOpened() {
-        qDebug() << "incOpened" << (opened_count + 1);
-        return ++opened_count;
+        ++opened_count;
+        qDebug() << "incOpened" << (opened_count);
+        Projects::obj().fileUsabilityChanged(this);
+        return opened_count;
     }
     inline uint decOpened() {
-        qDebug() << "decOpened" << (opened_count - 1);
-
-        return --opened_count;
+        --opened_count;
+        qDebug() << "decOpened" << (opened_count);
+        Projects::obj().fileUsabilityChanged(this);
+        return opened_count;
     }
 
     inline bool isExternal() { return is_external; }

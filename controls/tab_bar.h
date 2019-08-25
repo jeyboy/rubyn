@@ -12,7 +12,6 @@ class TabBar : public QListWidget {
     int hscroll_range;
     bool _internal_move;
     QHash<QString, QListWidgetItem *> _tabs_linkages;
-    QHash<QString, File *> _external_files;
 public:
     TabBar(QWidget * parent = nullptr);
     ~TabBar();

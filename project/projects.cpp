@@ -40,6 +40,15 @@ FormatType Projects::identificateName(const QString & name) {
         return ft_unknown;
 }
 
+void Projects::fileUsabilityChanged(File * file) {
+    if (file -> openedAmount() == 0 && file -> isExternal()) {
+        blockSignals(true);
+        qDebug() << "Projects::fileUsabilityChanged remove file";
+        delete _external_files[file -> uid()];
+        blockSignals(false);
+    }
+}
+
 void Projects::closeProject(const QString & path) {
     Project * project = _projects.take(QUrl::fromLocalFile(path));
 
@@ -61,10 +70,22 @@ bool Projects::identificate(const QString & name, void * folder, File *& file) {
         file = obj().findFile(QUrl::fromLocalFile(name));
 
         if (!file) {
+            QHash<QString, File *> & external_files = obj()._external_files;
+            QHash<QString, File *>::Iterator it = external_files.begin();
+
+            for(; it != external_files.end(); it++) {
+                if (it.value() -> path() == name) {
+                   file = it.value();
+                   break;
+                }
+            }
+        }
+
+        if (!file) {
             QFileInfo finfo(name);
             file = new File(0, finfo.baseName(), name);
-
             file -> setExternal(true);
+            obj()._external_files.insert(file -> uid(), file);
         }
     }
 

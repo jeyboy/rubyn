@@ -20,6 +20,7 @@ class Projects : public QObject, public Singleton<Projects> {
     QHash<QUrl, Project *> _projects;
     QHash<FormatType, QIcon> _icons;
     QHash<QString, FormatType> _special_files_formats;
+    QHash<QString, File *> _external_files;
 public:
     static bool identificate(const QString & name, void * folder, File *& file);
 
@@ -34,6 +35,8 @@ public:
     //TODO: need sync size with project tree
     QIcon & getIco(const FormatType & format_type, const FormatType & add_format_type = ft_unknown, const int & size = 22);
     FormatType identificateName(const QString & name);
+
+    void fileUsabilityChanged(File * file);
 
 public slots:
     void closeProject(const QString & path);
