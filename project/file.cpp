@@ -74,13 +74,21 @@ bool File::identifyType(const QString & name, FormatType & format, FormatType & 
 
             if (format == ft_file_css && (ft == ft_file_scss || ft == ft_file_sass)) {
                 format = ft;
-            } else if ((format & ft_priority) < (ft & ft_priority)) {
-                if ((ft & ft_priority) == ft_level_two)
-                    add_format = format;
+            } else {
+                int curr_priority = format & ft_priority;
+                int new_priority = ft & ft_priority;
 
-                format = ft;
-//            } else {
-//                Logger::error(QLatin1Literal("File"), QLatin1Literal("Cant identify file type for: ") % _name % '(' % name % ')');
+                if (curr_priority != new_priority) {
+                    if (curr_priority < new_priority) {
+                        if (new_priority == ft_level_two)
+                            add_format = format;
+
+                        format = ft;
+                    } else {
+                        if (new_priority == ft_level_two)
+                            add_format = ft;
+                    }
+                }
             }
         }
     } else if (lower_name.startsWith('.')) {
