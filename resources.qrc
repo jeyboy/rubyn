@@ -22,6 +22,7 @@
         <file alias="remove">icons/remove.png</file>
         <file alias="search_btn">icons/search_btn.png</file>
         <file alias="search_replace_btn">icons/search_replace_btn.png</file>
+        <file alias="active_breakpoint">icons/active_breakpoint.png</file>
     </qresource>
     <qresource prefix="/doc_types">
         <file alias="folder">icons/folder.png</file>
@@ -61,6 +62,10 @@
         <file alias="file_rake">icons/file_rake.png</file>
         <file alias="folder_lib">icons/folder_lib.png</file>
         <file alias="file_html_erb">icons/file_html_erb.png</file>
+        <file alias="file_sass_erb">icons/file_sass_erb.png</file>
+        <file alias="file_scss_erb">icons/file_scss_erb.png</file>
+        <file alias="file_html_haml">icons/file_html_haml.png</file>
+        <file alias="file_html_slim">icons/file_html_slim.png</file>
     </qresource>
     <qresource prefix="/tools">
         <file alias="console">icons/console.png</file>
