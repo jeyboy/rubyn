@@ -1,4 +1,4 @@
-#include "lexer_regexp_ruby.h"
+#include "ruby_lexer_regexp.h"
 
 using namespace Ruby;
 

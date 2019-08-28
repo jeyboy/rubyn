@@ -1,5 +1,5 @@
-#ifndef LEXEMS_YAML_H
-#define LEXEMS_YAML_H
+#ifndef YAML_LEXEMS_H
+#define YAML_LEXEMS_H
 
 #pragma once
 
@@ -473,4 +473,4 @@ struct Lexems {
     }
 };
 
-#endif // LEXEMS_YAML_H
+#endif // YAML_LEXEMS_H

@@ -1,8 +1,8 @@
-#ifndef LEXER_CONTROL_H
-#define LEXER_CONTROL_H
+#ifndef ILEXER_CONTROL_H
+#define ILEXER_CONTROL_H
 
 //#include "misc/stack.h"
-#include "state_lexems.h"
+#include "lexer_stack_flags.h"
 //#include "scopes/scope.h"
 #include "lexer/igrammar.h"
 #include "highlighter/ihighlighter.h"
@@ -26,7 +26,7 @@
 #define SCHAR1 STREAM_NEXT_CHAR(state -> prev)
 #define SCHAR2 STREAM_N_CHAR(state -> prev, 2)
 
-struct LexerControl {
+struct ILexerControl {
     IHighlighter * lighter;
 
     IGrammar * grammar;
@@ -34,9 +34,9 @@ struct LexerControl {
 
     QByteArray cached;
 
-    StateLexem lex_prev_word;
-    StateLexem lex_word;
-    StateLexem lex_delimiter;
+    LEXEM_TYPE lex_prev_word;
+    LEXEM_TYPE lex_word;
+    LEXEM_TYPE lex_delimiter;
 
     quint8 next_offset;
 
@@ -63,16 +63,16 @@ struct LexerControl {
 
     BlockUserData *& user_data;
 
-    LexerControl(IGrammar * cgrammar, BlockUserData *& user_data, TokenCell * stack_token = nullptr, IHighlighter * lighter = nullptr) :
+    ILexerControl(IGrammar * cgrammar, BlockUserData *& user_data, TokenCell * stack_token = nullptr, IHighlighter * lighter = nullptr) :
         lighter(lighter), grammar(cgrammar),
-        lex_prev_word(lex_none), lex_word(lex_none)/*, lex_prev_delimiter(lex_none)*/, lex_delimiter(lex_none), next_offset(1),
-        heredoc_token(nullptr), stack_token(stack_token), token(user_data -> lineControlToken()), last_non_blank_token(nullptr),
+        lex_prev_word(LEX_NONE_STATE), lex_word(LEX_NONE_STATE)/*, lex_prev_delimiter(DEFAULT_LEX_STATE)*/, lex_delimiter(LEX_NONE_STATE),
+        next_offset(1), heredoc_token(nullptr), stack_token(stack_token), token(user_data -> lineControlToken()), last_non_blank_token(nullptr),
         para(user_data -> lineControlPara()), control_para(nullptr), active_para(nullptr),
         last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2),
         last_light_len(0), start(nullptr), buffer(nullptr), prev(nullptr), user_data(user_data)
     {}
 
-    ~LexerControl() {}
+    ~ILexerControl() {}
 
 
     inline void setBuffer(const char * buff) {
@@ -91,7 +91,7 @@ struct LexerControl {
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
 
-        if (lex_word != lex_none) {
+        if (lex_word != LEX_NONE_STATE) {
             lex_prev_word = lex_word;
         }
 
@@ -120,22 +120,22 @@ struct LexerControl {
     inline EDITOR_POS_TYPE bufferPos() { return prev - start; }
     inline EDITOR_LEN_TYPE strLength() { return static_cast<EDITOR_LEN_TYPE>(buffer - prev); }
 
-    inline StateLexem & sublastToken() { return token -> prev -> lexem; }
-    inline StateLexem & lastToken() { return token -> lexem; }
-    inline StateLexem lastNonBlankLexem() {
+    inline LEXEM_TYPE & sublastToken() { return token -> prev -> lexem; }
+    inline LEXEM_TYPE & lastToken() { return token -> lexem; }
+    inline LEXEM_TYPE lastNonBlankLexem() {
         if (last_non_blank_token)
             return last_non_blank_token -> lexem;
 
         TokenCell * it = token;
 
         while(it) {
-            if (it -> lexem >= lex_none)
+            if (it -> lexem >= LEX_NONE_STATE)
                 return (last_non_blank_token = it) -> lexem;
 
             it = it -> prev;
         }
 
-        return lex_none;
+        return LEX_NONE_STATE;
     }
 
     inline ParaCell * paraParent(int & lines_between, ParaCell * para, const bool & foldable, const bool & only_blockators = false) {
@@ -205,7 +205,7 @@ struct LexerControl {
 //    }
 
 
-    inline void attachToken(const StateLexem & lexem, const uint & flags = slf_none) {
+    inline void attachToken(const LEXEM_TYPE & lexem, const uint & flags = slf_none) {
         if (token -> next) {
             token = token -> next;
             token -> lexem = lexem;
@@ -219,7 +219,7 @@ struct LexerControl {
         }
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
 
-        if (token -> lexem >= lex_none)
+        if (token -> lexem >= LEX_NONE_STATE)
             last_non_blank_token = token;
 
         if (flags != slf_none) {
@@ -231,7 +231,7 @@ struct LexerControl {
                     attachPara(grammar -> paraType(lexem), flags, true);
 
                     if (!grammar -> stackDropable(stack_token -> lexem, lexem))
-                        cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
+                        cacheAndLightWithMessage(LEX_ERROR_STATE, QByteArrayLiteral("Wrong stack state"));
                     else {
 //                        lex_prev_word = stack_token -> stacked_state_lexem;
 
@@ -241,7 +241,7 @@ struct LexerControl {
                         stack_token = stack_token -> stacked_prev;
                     }
                 } else {
-                    cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
+                    cacheAndLightWithMessage(LEX_ERROR_STATE, QByteArrayLiteral("Wrong stack state"));
                 }
             }
 
@@ -254,13 +254,13 @@ struct LexerControl {
                 stack_token = token;
 
 //                stack_token -> stacked_state_lexem = lex_none; //stack_word ? lex_prev_word : lex_word;
-                lex_prev_word = lex_none;
+                lex_prev_word = LEX_NONE_STATE;
 
                 attachPara(grammar -> paraType(lexem), flags, false);
             }
 
-            lex_word = lex_none;
-            lex_delimiter = lex_none;
+            lex_word = LEX_NONE_STATE;
+            lex_delimiter = LEX_NONE_STATE;
         }
     }
 //    inline void replaceToken(const StateLexem & lexem, const uint & flags = slf_none) {
@@ -272,58 +272,6 @@ struct LexerControl {
 //            stack_token = token;
 //        }
 //    }
-
-    inline void validateHeredocState() {
-        //TODO: remove all stack values till we have heredoc start on the top
-        if (stack_token) {
-            switch(stack_token -> lexem) {
-                case lex_heredoc_intended_start:
-                case lex_heredoc_start:
-                case lex_cheredoc_intended_start:
-                case lex_cheredoc_start:
-                case lex_eheredoc_intended_start:
-                case lex_eheredoc_start: { break;}
-
-                default: {
-                    lightWithMessage(
-                        lex_error,
-                        QByteArrayLiteral("Wrong stack state for begin of heredoc")
-                    );
-                }
-            }
-        }
-    }
-    inline void registerHeredocMark(const StateLexem & lexem, QByteArray * name) {
-        StateLexem doc_lex = lex_none;
-
-        switch(lexem) {
-            case lex_heredoc_intended_mark:     { doc_lex = lex_heredoc_intended_start; break;}
-            case lex_heredoc_mark:              { doc_lex = lex_heredoc_start; break;}
-            case lex_cheredoc_intended_mark:    { doc_lex = lex_cheredoc_intended_start; break;}
-            case lex_cheredoc_mark:             { doc_lex = lex_cheredoc_start; break;}
-            case lex_eheredoc_intended_mark:    { doc_lex = lex_eheredoc_intended_start; break;}
-            case lex_eheredoc_mark:             { doc_lex = lex_eheredoc_start; break;}
-            default:;
-        };
-
-        if (doc_lex != lex_none) {
-            TokenCell * new_heredoc =
-                TokenList::insert(user_data -> token_begin, doc_lex, -1, 0);
-
-            new_heredoc -> data = name;
-
-            if (!heredoc_token) {
-                new_heredoc -> stacked_prev = stack_token;
-                heredoc_token = stack_token = new_heredoc;
-            } else {
-                new_heredoc -> stacked_prev = heredoc_token -> stacked_prev;
-                heredoc_token -> stacked_prev = new_heredoc;
-                heredoc_token = new_heredoc;
-            }
-        } else {
-            int i = 0;
-        }
-    }
 
 //    void popStack() {
 //        if (!stack_token) return;
@@ -341,8 +289,8 @@ struct LexerControl {
     }
 
     inline void light(const Identifier & uid) {
-        if (uid == hid_error)
-            return;
+//        if (uid == hid_error)
+//            return;
 
         bool has_predicate = cached_length > 0;
 
@@ -365,17 +313,17 @@ struct LexerControl {
             HighlightFormatFactory::obj().getFormatFor(uid)
         );
     }
-    inline void light(const StateLexem & lexem) {
+    inline void light(const LEXEM_TYPE & lexem) {
         light(grammar -> toHighlightable(lexem));
     }
-    inline void cacheAndLightWithMessage(const StateLexem & lexem, const QByteArray & msg) {
+    inline void cacheAndLightWithMessage(const LEXEM_TYPE & lexem, const QByteArray & msg) {
         cachingPredicate();
         lightWithMessage(lexem, msg);
     }
-    inline void lightWithMessage(const StateLexem & lexem, const QByteArray & msg) {
+    inline void lightWithMessage(const LEXEM_TYPE & lexem, const QByteArray & msg) {
         light(lexem);
 
-        if (lexem == lex_error) {
+        if (lexem == LEX_ERROR_STATE) {
             //TODO: return me later
 //            if (!msg.contains("error_token"))
 //                qWarning() << msg;
@@ -453,4 +401,4 @@ struct LexerControl {
     }
 };
 
-#endif // LEXER_CONTROL_H
+#endif // ILEXER_CONTROL_H

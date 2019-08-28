@@ -1,4 +1,4 @@
-#include "grammar_ruby.h"
+#include "ruby_grammar.h"
 
 using namespace Ruby;
 

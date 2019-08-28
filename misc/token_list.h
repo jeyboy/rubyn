@@ -2,24 +2,23 @@
 #define TOKEN_LIST_H
 
 #include "defines.h"
-#include "lexer/state_lexems.h"
 
 struct TokenCell {
     TokenCell * prev;
     TokenCell * next;
 
     TokenCell * stacked_prev;
-    StateLexem stacked_state_lexem;
+    LEXEM_TYPE stacked_state_lexem;
 
-    StateLexem lexem;
+    LEXEM_TYPE lexem;
     EDITOR_POS_TYPE start_pos;
     EDITOR_LEN_TYPE length;
 
     QByteArray * data;
 
-    TokenCell(const StateLexem & lexem, const EDITOR_POS_TYPE & start_pos,
+    TokenCell(const LEXEM_TYPE & lexem, const EDITOR_POS_TYPE & start_pos,
               const EDITOR_LEN_TYPE & length, TokenCell * prev_token = nullptr)
-        : prev(prev_token), next(nullptr), stacked_prev(nullptr), stacked_state_lexem(lex_none),
+        : prev(prev_token), next(nullptr), stacked_prev(nullptr), stacked_state_lexem(LEX_NONE_STATE),
           lexem(lexem), start_pos(start_pos), length(length), data(nullptr)
     {
         if (prev) {
@@ -61,8 +60,8 @@ class TokenList {
     TokenCell * root, * last;
 public:
     inline TokenList() : root(nullptr), last(nullptr) {
-        root = new TokenCell(lex_none, 0, 0);
-        last = new TokenCell(lex_end_doc, 0, 0, root);
+        root = new TokenCell(LEX_NONE_STATE, 0, 0);
+        last = new TokenCell(LEX_END_DOC_STATE, 0, 0, root);
     }
 
     inline ~TokenList() {
@@ -94,8 +93,8 @@ public:
         if (!prev_end)
             prev_end = last -> prev;
 
-        left = new TokenCell(lex_none, 0, 0, prev_end);
-        right = new TokenCell(lex_end_line, 0, 0, left);
+        left = new TokenCell(LEX_NONE_STATE, 0, 0, prev_end);
+        right = new TokenCell(LEX_END_LINE_STATE, 0, 0, left);
     }
 
     static void removeLine(TokenCell * left, TokenCell * right) {
@@ -109,11 +108,11 @@ public:
         delete right;
     }
 
-    TokenCell * append(const StateLexem & lexem, const EDITOR_POS_TYPE & start_pos, const EDITOR_LEN_TYPE & length) {
+    TokenCell * append(const LEXEM_TYPE & lexem, const EDITOR_POS_TYPE & start_pos, const EDITOR_LEN_TYPE & length) {
         return new TokenCell(lexem, start_pos, length, last -> prev);
     }
 
-    static TokenCell * insert(TokenCell * left, const StateLexem & lexem, const EDITOR_POS_TYPE & start_pos, const EDITOR_LEN_TYPE & length) {
+    static TokenCell * insert(TokenCell * left, const LEXEM_TYPE & lexem, const EDITOR_POS_TYPE & start_pos, const EDITOR_LEN_TYPE & length) {
         return new TokenCell(lexem, start_pos, length, left);
     }
 };

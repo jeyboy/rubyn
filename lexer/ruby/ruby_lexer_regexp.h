@@ -1,5 +1,5 @@
-#ifndef LEXER_REGEXP_RUBY_H
-#define LEXER_REGEXP_RUBY_H
+#ifndef RUBY_LEXER_REGEXP_H
+#define RUBY_LEXER_REGEXP_H
 
 #include "lexer/regexp_lexer.h"
 
@@ -11,4 +11,4 @@ namespace Ruby {
     };
 }
 
-#endif // LEXER_REGEXP_RUBY_H
+#endif // RUBY_LEXER_REGEXP_H

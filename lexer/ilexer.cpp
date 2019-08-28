@@ -23,7 +23,7 @@ bool ILexer::isBlank(const char & c) { return c == ' ' || c == '\t'; }
     //template<typename ch_t> inline bool is_crlf(ch_t c) { return c=='\r' || c=='\n'; }
 
 int ILexer::lineState(BlockUserData * udata) {
-    StateLexem lex = lex_none;
+    LEXEM_TYPE lex = LEX_NONE_STATE;
 
     if (udata -> stack_token)
         lex = udata -> stack_token -> lexem;

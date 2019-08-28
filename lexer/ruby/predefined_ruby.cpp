@@ -1,4 +1,4 @@
-#include "predefined_ruby.h"
+#include "ruby_predefined.h"
 
 #include <qdebug.h>
 

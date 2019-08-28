@@ -1,4 +1,4 @@
-#include "lexer_frontend_yaml.h"
+#include "yaml_lexer_frontend.h"
 
 #include <qiodevice.h>
 

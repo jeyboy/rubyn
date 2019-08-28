@@ -2,9 +2,9 @@
 // http://yaml.org/spec/1.2/spec.html
 // https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
 
-#ifndef YML_LEXER_H
-#define YML_LEXER_H
+#ifndef YAML_LEXER_H
+#define YAML_LEXER_H
 
 
 
-#endif // YML_LEXER_H
+#endif // YAML_LEXER_H

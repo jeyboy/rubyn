@@ -7,6 +7,19 @@
 
 #define NO_INFO -1
 
+#define LEX_MIN -10
+#define LEX_UNDEFINED_STATE -9
+#define LEX_END_LINE_STATE -8
+#define LEX_END_DOC_STATE -7
+#define LEX_TAB -6
+#define LEX_TABS -5
+#define LEX_BLANK -4
+#define LEX_BLANKS -3
+#define LEX_IGNORE -2
+#define LEX_DEFAULT_STATE -1
+#define LEX_ERROR_STATE 0
+#define LEX_NONE_STATE 1
+
 #define PROJECT_FORMAT_TYPE quint8
 
 #define PARA_TYPE quint32

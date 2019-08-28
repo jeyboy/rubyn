@@ -1,11 +1,14 @@
-#ifndef LEXER_FRONTEND_RUBY_H
-#define LEXER_FRONTEND_RUBY_H
+#ifndef RUBY_LEXER_FRONTEND_H
+#define RUBY_LEXER_FRONTEND_H
 
 #include "lexer/ilexer.h"
-
-class LexerControl;
+#include "lexer/lexer_stack_flags.h"
+#include "ruby_lexer_control.h"
+#include "ruby_state_lexems.h"
 
 namespace Ruby {
+    struct LexerControl;
+
     class LexerFrontend : public ILexer {
         enum CharCodePart : quint8 {
             ccp_none = 0,
@@ -39,9 +42,9 @@ namespace Ruby {
         bool parseHeredocMarks(LexerControl * state, StateLexem & lex);
         bool parseHeredoc(LexerControl * state);
         bool parseRegexp(LexerControl * state);
+        bool parseRegexpGroup(LexerControl * state);
         bool parseComment(LexerControl * state);
         bool parseCharCode(LexerControl * state);
-        bool parseRegexpGroup(LexerControl * state);
 
         void lexicate(LexerControl * control);
     protected:
@@ -56,4 +59,4 @@ namespace Ruby {
     };
 }
 
-#endif // LEXER_FRONTEND_RUBY_H
+#endif // RUBY_LEXER_FRONTEND_H

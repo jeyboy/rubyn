@@ -1,11 +1,11 @@
-#ifndef PREDEFINED_RUBY_H
-#define PREDEFINED_RUBY_H
+#ifndef RUBY_PREDEFINED_H
+#define RUBY_PREDEFINED_H
 
 #include <qhash.h>
 #include <qbytearray.h>
 
 #include "misc/singleton.h"
-#include "lexer/state_lexems.h"
+#include "ruby_state_lexems.h"
 
 //http://www.rubymagic.org/posts/ruby-and-rails-reserved-words
 //https://www.tutorialspoint.com/ruby/ruby_regular_expressions.htm
@@ -22,4 +22,4 @@ namespace Ruby {
     };
 }
 
-#endif // PREDEFINED_RUBY_H
+#endif // RUBY_PREDEFINED_H

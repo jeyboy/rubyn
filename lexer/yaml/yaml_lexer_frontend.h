@@ -1,5 +1,5 @@
-#ifndef LEXER_DUMPER_YAML_H
-#define LEXER_DUMPER_YAML_H
+#ifndef YAML_LEXER_FRONTEND_H
+#define YAML_LEXER_FRONTEND_H
 
 #include <qstring.h>
 
@@ -10,4 +10,4 @@ public:
     LexerFrontendYaml(QIODevice * device);
 };
 
-#endif // LEXER_DUMPER_YAML_H
+#endif // YAML_LEXER_FRONTEND_H

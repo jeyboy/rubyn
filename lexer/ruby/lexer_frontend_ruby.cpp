@@ -1,8 +1,8 @@
-#include "lexer_frontend_ruby.h"
+#include "ruby_lexer_frontend.h"
 
-#include "lexer/lexer_control.h"
-#include "lexer/ruby/grammar_ruby.h"
-#include "lexer/ruby/predefined_ruby.h"
+#include "lexer/ilexer_control.h"
+#include "lexer/ruby/ruby_grammar.h"
+#include "lexer/ruby/ruby_predefined.h"
 
 #include <qdatetime.h>
 
@@ -157,6 +157,21 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
                 identifyWordType(state);
             else
                 state -> grammar -> initFlags(flags, state -> lex_word, last_non_blank);
+
+//            if (state -> lex_word == lex_word) {
+//                switch(last_non_blank) {
+//                    case lex_method_def: {
+//                        state -> lex_word = lex_method_def_name;
+//                    break;}
+//                    case lex_module_def: {
+//                        state -> lex_word = lex_module_def_name;
+//                    break;}
+//                    case lex_class_def: {
+//                        state -> lex_word = lex_class_def_name;
+//                    break;}
+//                    default:;
+//                }
+//            }
 
             Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
             if (highlightable != hid_none)
@@ -817,6 +832,40 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
     return status;
 }
 
+bool LexerFrontend::parseRegexpGroup(LexerControl * state) {
+    bool has_error = false;
+    bool parsed = false;
+
+    while(!parsed) {
+        switch(ECHAR0) {
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '0': {
+                ++state -> buffer;
+            break;}
+
+            default: {
+                has_error = isWord(ECHAR0, false);
+                parsed = true;
+            }
+        }
+    };
+
+    bool res = cutWord(state, lex_method);
+
+    if (has_error)
+        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong symbol code"));
+
+    return res;
+}
+
 bool LexerFrontend::parseComment(LexerControl * state) {
     state -> next_offset = 0;
 
@@ -1016,40 +1065,6 @@ bool LexerFrontend::parseCharCode(LexerControl * state) {
     }
 
     bool res = cutWord(state, lex_char_sequence);
-
-    if (has_error)
-        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong symbol code"));
-
-    return res;
-}
-
-bool LexerFrontend::parseRegexpGroup(LexerControl * state) {
-    bool has_error = false;
-    bool parsed = false;
-
-    while(!parsed) {
-        switch(ECHAR0) {
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-            case '0': {
-                ++state -> buffer;
-            break;}
-
-            default: {
-                has_error = isWord(ECHAR0, false);
-                parsed = true;
-            }
-        }
-    };
-
-    bool res = cutWord(state, lex_method);
 
     if (has_error)
         state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong symbol code"));

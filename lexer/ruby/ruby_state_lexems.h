@@ -1,5 +1,5 @@
-#ifndef STATE_LEXEMS_H
-#define STATE_LEXEMS_H
+#ifndef RUBY_STATE_LEXEMS_H
+#define RUBY_STATE_LEXEMS_H
 
 #pragma once
 
@@ -12,47 +12,29 @@
 
  // = (1ULL << 1),
 
-enum StackLexemFlag : uint {
-    slf_none = 0,
-
-    slf_stack_word = 1,
-    slf_stack_delimiter = 2,
-
-    slf_unstack_word = 4,
-    slf_unstack_delimiter = 8,
-
-    slf_replace_word = 16,
-
-    slf_word_related = slf_stack_word | slf_unstack_word | slf_replace_word,
-    slf_delimiter_related = slf_stack_delimiter | slf_unstack_delimiter,
-
-    slf_stackable = slf_stack_word | slf_stack_delimiter | slf_replace_word,
-    slf_unstackable = slf_unstack_word | slf_unstack_delimiter | slf_replace_word
-};
-
-enum StateLexem : LEXEM_TYPE {
-    lex_min = -10,
-
-    lex_undefined = -9,
-    lex_end_line = -8,
-    lex_end_doc = -7,
-
-    lex_tab = -6,
-    lex_tabs = -5,
-    lex_blank = -4,
-    lex_blanks = -3,
-    lex_ignore = -2,
-
-    lex_default = -1,
-
+enum RubyStateLexem : LEXEM_TYPE {
     lex_ruby_division_breaker = 1 << 11,
     lex_ruby_ternary_braker = 1 << 12,
 //    lex_unary_operator = 1 << 13,
 //    lex_binary_operator = 1 << 14,
 
-    lex_error = 0,
+    lex_min = LEX_MIN,
 
-    lex_none = 1,
+    lex_undefined = LEX_UNDEFINED_STATE,
+    lex_end_line = LEX_END_LINE_STATE,
+    lex_end_doc = LEX_END_DOC_STATE,
+
+    lex_tab = LEX_TAB,
+    lex_tabs = LEX_TABS,
+    lex_blank = LEX_BLANK,
+    lex_blanks = LEX_BLANKS,
+    lex_ignore = LEX_IGNORE,
+
+    lex_default = LEX_DEFAULT_STATE,
+
+    lex_error = LEX_ERROR_STATE,
+
+    lex_none = LEX_NONE_STATE,
 
     lex_symbol_key              = 2 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
     lex_dot_dot                 = 3 | lex_ruby_division_breaker | lex_ruby_ternary_braker,  // ..
@@ -484,4 +466,4 @@ enum StateLexem : LEXEM_TYPE {
     lex_end_of_code,
 };
 
-#endif // STATE_LEXEMS_H
+#endif // RUBY_STATE_LEXEMS_H
