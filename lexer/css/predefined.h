@@ -1,16 +1,13 @@
-#ifndef RUBY_PREDEFINED_H
-#define RUBY_PREDEFINED_H
+#ifndef CSS_PREDEFINED_H
+#define CSS_PREDEFINED_H
 
 #include <qhash.h>
 #include <qbytearray.h>
 
 #include "misc/singleton.h"
-#include "ruby_state_lexems.h"
+#include "state_lexems.h"
 
-//http://www.rubymagic.org/posts/ruby-and-rails-reserved-words
-//https://www.tutorialspoint.com/ruby/ruby_regular_expressions.htm
-
-namespace Ruby {
+namespace Css {
     class Predefined : public Singleton<Predefined> {
         QHash<QByteArray, StateLexem> keys;
 
@@ -22,4 +19,4 @@ namespace Ruby {
     };
 }
 
-#endif // RUBY_PREDEFINED_H
+#endif // CSS_PREDEFINED_H

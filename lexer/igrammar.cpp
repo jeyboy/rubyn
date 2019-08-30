@@ -2,4 +2,4 @@
 
 IGrammar::~IGrammar() {}
 
-bool IGrammar::stackDropable(const StateLexem & /*state*/, const StateLexem & /*input*/) { return true; }
+bool IGrammar::stackDropable(const LEXEM_TYPE & /*state*/, const LEXEM_TYPE & /*input*/) { return true; }

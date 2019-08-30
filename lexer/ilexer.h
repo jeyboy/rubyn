@@ -47,9 +47,9 @@ public:
 
     virtual void paraOpositionStr(const PARA_TYPE & /*para*/, QString & res) { res.clear(); }
 
-    virtual bool isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end);
-    virtual bool isCompleterContinuable(const LEXEM_TYPE & lex, const bool & at_end);
-    virtual bool isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start);
+    virtual bool isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end) = 0;
+    virtual bool isCompleterContinuable(const LEXEM_TYPE & lex, const bool & at_end) = 0;
+    virtual bool isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start) = 0;
 
 //    virtual bool dump(QIODevice * device, ) { return false; }
 };

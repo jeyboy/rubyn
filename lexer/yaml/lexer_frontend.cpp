@@ -1,12 +1,34 @@
-#include "css_lexer_frontend.h"
+#include "lexer_frontend.h"
 
-#include "lexer/ilexer_control.h"
-#include "lexer/ruby/ruby_grammar.h"
-#include "lexer/ruby/ruby_predefined.h"
+//Byte0  	 Byte1  	 Byte2  	 Byte3  	 Encoding
+//Explicit BOM 	 #x00 	 #x00 	 #xFE 	 #xFF 	 UTF-32BE
+//ASCII first character 	 #x00 	 #x00 	 #x00 	 any 	 UTF-32BE
+//Explicit BOM 	 #xFF 	 #xFE 	 #x00 	 #x00 	 UTF-32LE
+//ASCII first character 	 any 	 #x00 	 #x00 	 #x00 	 UTF-32LE
+//Explicit BOM 	 #xFE 	 #xFF 	  	  	 UTF-16BE
+//ASCII first character 	 #x00 	 any 	  	  	 UTF-16BE
+//Explicit BOM 	 #xFF 	 #xFE 	  	  	 UTF-16LE
+//ASCII first character 	 any 	 #x00 	  	  	 UTF-16LE
+//Explicit BOM 	 #xEF 	 #xBB 	 #xBF 	  	 UTF-8
+//Default 	  	  	  	  	 UTF-8
+
+
+// http://yaml.org/spec/1.1/
+// http://yaml.org/spec/1.2/spec.html
+// https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+
+//%asdasd nnn
+//---
+
+//...
+
+#include "lexer_control.h"
+#include "grammar.h"
+#include "predefined.h"
 
 #include <qdatetime.h>
 
-using namespace Css;
+using namespace Yaml;
 
 //bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_lexem, const StateLexem & predefined_delimiter, StackLexemFlag flags) {
 //    bool has_predefined = predefined_lexem != lex_none;
@@ -1237,3 +1259,10 @@ void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
 //        default: ILexer::paraOpositionStr(para, res);
 //    }
 //}
+
+bool LexerFrontend::isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end) {}
+
+bool LexerFrontend::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & /*at_end*/) {}
+
+bool LexerFrontend::isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start) {}
+

@@ -3,8 +3,8 @@
 
 #include "lexer/ilexer.h"
 #include "lexer/lexer_stack_flags.h"
-#include "ruby_lexer_control.h"
-#include "ruby_state_lexems.h"
+#include "lexer_control.h"
+#include "state_lexems.h"
 
 namespace Ruby {
     struct LexerControl;
@@ -56,6 +56,12 @@ namespace Ruby {
         void handle(const QString & text, IHighlighter * lighter);
 
         void paraOpositionStr(const PARA_TYPE & para, QString & res);
+
+        bool isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end);
+
+        bool isCompleterContinuable(const LEXEM_TYPE & lex, const bool & /*at_end*/);
+
+        bool isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start);
     };
 }
 

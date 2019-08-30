@@ -1,8 +1,8 @@
-#include "ruby_predefined.h"
+#include "predefined.h"
 
 #include <qdebug.h>
 
-using namespace Ruby;
+using namespace Css;
 
 Predefined::Predefined() {   
     keys.insert(QByteArrayLiteral("#{"), lex_interpolation);
