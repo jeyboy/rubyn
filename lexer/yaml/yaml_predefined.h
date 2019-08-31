@@ -5,7 +5,7 @@
 #include <qbytearray.h>
 
 #include "misc/singleton.h"
-#include "state_lexems.h"
+#include "yaml_state_lexems.h"
 
 namespace Yaml {
     class Predefined : public Singleton<Predefined> {

@@ -25,8 +25,8 @@ SOURCES += main.cpp\
     lexer/ruby/lexer_frontend.cpp \
     lexer/ruby/lexer_regexp.cpp \
     lexer/ruby/predefined.cpp \
-    lexer/yaml/lexer_frontend.cpp \
-    lexer/yaml/predefined.cpp \
+    lexer/yaml/yaml_lexer_frontend.cpp \
+    lexer/yaml/yaml_predefined.cpp \
     project/file.cpp \
     project/project.cpp \
     project/projects.cpp \
@@ -122,6 +122,7 @@ HEADERS  += ide_window.h \
     lexer/css/predefined.h \
     lexer/css/state_lexems.h \
     lexer/ilexer_control.h \
+    lexer/istate_lexem.h \
     lexer/lexer_stack_flags.h \
     lexer/ruby/_flags.h \
     lexer/ruby/grammar.h \
@@ -130,12 +131,11 @@ HEADERS  += ide_window.h \
     lexer/ruby/lexer_regexp.h \
     lexer/ruby/predefined.h \
     lexer/ruby/state_lexems.h \
-    lexer/state_lexems.h \
-    lexer/yaml/grammar.h \
-    lexer/yaml/lexer_control.h \
-    lexer/yaml/lexer_frontend.h \
-    lexer/yaml/predefined.h \
-    lexer/yaml/state_lexems.h \
+    lexer/yaml/yaml_grammar.h \
+    lexer/yaml/yaml_lexer_control.h \
+    lexer/yaml/yaml_lexer_frontend.h \
+    lexer/yaml/yaml_predefined.h \
+    lexer/yaml/yaml_state_lexems.h \
     styles/click_fix_style.h \
     controls/dock_widgets.h \
     editor/idocument.h \
@@ -221,7 +221,6 @@ HEADERS  += ide_window.h \
     highlighter/identifiers.h \
     misc/dumper_obj.h \
     lexer/lexers_factory.h \
-    lexer/state_lexems.h \
     lexer/obj_lexems.h \
     lexer/igrammar.h \
     misc/_stack.h \

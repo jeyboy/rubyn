@@ -1,7 +1,5 @@
 #include "ilexer.h"
 
-#include <qdebug.h>
-
 bool ILexer::isBDigit(const char & c) { return c == '0' || c == '1'; }
 bool ILexer::isODigit(const char & c) { return c >= '0' && c <= '7'; }
 bool ILexer::isDigit(const char & c) { return c >= '0' && c <= '9'; }

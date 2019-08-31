@@ -2,6 +2,7 @@
 #define BLOCK_USER_DATA_H
 
 #include <QTextBlockUserData>
+#include <qdebug.h>
 
 #include "highlighter/para_list.h"
 #include "highlighter/msg_info.h"

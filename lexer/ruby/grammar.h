@@ -14,27 +14,27 @@ namespace Ruby {
     protected:
         void initParas();
     public:
-        void initFlags(StackLexemFlag & flags, const StateLexem & lex, const StateLexem & last_non_blank_lex);
+        void initFlags(StackLexemFlag & flags, const IState::Lexem & lex, const IState::Lexem & last_non_blank_lex);
 
-        bool stackDropable(const StateLexem & state, const StateLexem & input);
+        bool stackDropable(const IState::Lexem & state, const IState::Lexem & input);
 
-//        LEXEM_TYPE toInterceptor(const StateLexem & lex);
+//        LEXEM_TYPE toInterceptor(const IState::Lexem & lex);
 
-        StateLexem stateForHeredoc(const StateLexem & lex, const bool & content);
+        IState::Lexem stateForHeredoc(const IState::Lexem & lex, const bool & content);
 
         char percentagePresentationBlocker(const char & ch);
 
-//        bool isStackDroppable(const StateLexem & lexem);
+//        bool isStackDroppable(const IState::Lexem & lexem);
 
-//        bool isInterpolable(const StateLexem & lexem);
+//        bool isInterpolable(const IState::Lexem & lexem);
 
-//        StateLexem toHeredocContinious(const StateLexem & lexem);
+//        IState::Lexem toHeredocContinious(const IState::Lexem & lexem);
 
-//        StateLexem fromContinious(const StateLexem & lexem);
+//        IState::Lexem fromContinious(const IState::Lexem & lexem);
 
-        Identifier toHighlightable(const StateLexem & lexem);
+        Identifier toHighlightable(const IState::Lexem & lexem);
 
-        StateLexem translate(const StateLexem & state, const StateLexem & input);
+        IState::Lexem translate(const IState::Lexem & state, const IState::Lexem & input);
     };
 }
 

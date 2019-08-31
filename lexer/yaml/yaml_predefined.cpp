@@ -1,4 +1,4 @@
-#include "predefined.h"
+#include "yaml_predefined.h"
 
 using namespace Yaml;
 
