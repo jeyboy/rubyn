@@ -91,49 +91,4 @@ enum ParaType : PARA_TYPE {
     pt_max_end = pt_max | pt_close
 };
 
-//static inline QByteArray toString(const PARA_TYPE & para_type) {
-//    switch(para_type) {
-//        case pt_selectable: return QByteArrayLiteral("selectable");
-//        case pt_foldable: return QByteArrayLiteral("foldable");
-//        case pt_open_foldable: return QByteArrayLiteral("open_foldable");
-
-//        case pt_curly_bracket: return QByteArrayLiteral("curly_bracket");
-//        case pt_open_curly_bracket: return QByteArrayLiteral("open_curly_bracket");
-//        case pt_close_curly_bracket: return QByteArrayLiteral("close_curly_bracket");
-
-//        case pt_square_bracket: return QByteArrayLiteral("square_bracket");
-//        case pt_open_square_bracket: return QByteArrayLiteral("open_square_bracket");
-//        case pt_close_square_bracket: return QByteArrayLiteral("close_square_bracket");
-
-//        case pt_round_bracket: return QByteArrayLiteral("round_bracket");
-//        case pt_open_round_bracket: return QByteArrayLiteral("open_round_bracket");
-//        case pt_close_round_bracket: return QByteArrayLiteral("close_round_bracket");
-
-////        pt_angle_bracket = 1 << 7 | pt_selectable, //<
-
-////        pt_open_angle_bracket = pt_angle_bracket | pt_open, //<
-////        pt_close_angle_bracket = pt_angle_bracket | pt_close, //>
-
-//        case pt_open_do_block: return QByteArrayLiteral("open_do_block");
-//        case pt_open_begin_block: return QByteArrayLiteral("open_begin_block");
-//        case pt_open_method: return QByteArrayLiteral("open_method");
-//        case pt_open_class: return QByteArrayLiteral("open_class");
-//        case pt_open_module: return QByteArrayLiteral("open_module");
-//        case pt_open_if: return QByteArrayLiteral("open_if");
-//        case pt_open_unless: return QByteArrayLiteral("open_unless");
-//        case pt_open_case: return QByteArrayLiteral("open_case");
-//        case pt_open_while: return QByteArrayLiteral("open_while");
-//        case pt_open_until: return QByteArrayLiteral("open_until");
-//        case pt_open_for: return QByteArrayLiteral("open_for");
-
-//        case pt_open_struct: return QByteArrayLiteral("open_struct");
-//        case pt_close_struct: return QByteArrayLiteral("close_struct");
-
-//        case pt_max: return QByteArrayLiteral("max");
-//        case pt_max_end: return QByteArrayLiteral("max_end");
-
-//        default: return QByteArrayLiteral("XXX");
-//    };
-//}
-
 #endif // PARA_TYPE_H

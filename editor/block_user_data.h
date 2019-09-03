@@ -81,11 +81,11 @@ struct BlockUserData : public QTextBlockUserData {
         TokenCell * it = token_begin -> next;
 
         switch(it -> lexem) {
-            case LEX_BLANKS:
-            case LEX_TABS: return it -> length;
+            case lex_blanks:
+            case lex_tabs: return it -> length;
 
-            case LEX_TAB:
-            case LEX_BLANK: return 1;
+            case lex_tab:
+            case lex_blank: return 1;
 
             default: return 0;
         }

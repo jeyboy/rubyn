@@ -122,7 +122,6 @@ HEADERS  += ide_window.h \
     lexer/css/predefined.h \
     lexer/css/state_lexems.h \
     lexer/ilexer_control.h \
-    lexer/istate_lexem.h \
     lexer/lexer_stack_flags.h \
     lexer/ruby/_flags.h \
     lexer/ruby/grammar.h \
@@ -131,6 +130,7 @@ HEADERS  += ide_window.h \
     lexer/ruby/lexer_regexp.h \
     lexer/ruby/predefined.h \
     lexer/ruby/state_lexems.h \
+    lexer/state_lexem.h \
     lexer/yaml/yaml_grammar.h \
     lexer/yaml/yaml_lexer_control.h \
     lexer/yaml/yaml_lexer_frontend.h \

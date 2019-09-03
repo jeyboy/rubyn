@@ -5,6 +5,8 @@
 #include <qobject.h>
 #include <qstringbuilder.h>
 
+#define DefaultStateLexems lex_min = -12, lex_undefined = -11, lex_end_line = -10, lex_end_doc = -9, lex_tab = -8, lex_tabs = -7, lex_blank = -6, lex_blanks = -5, lex_ignore = -4, lex_default = -3, lex_notice = -2, lex_warning = -1, lex_error = 0, lex_none = 1
+
 #define NO_INFO -1
 
 #define PROJECT_FORMAT_TYPE quint8

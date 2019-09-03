@@ -61,7 +61,7 @@ void Grammar::initParas() {
     para_tokens[lex_commentary_end] = pt_close_foldable_comment;
 }
 
-void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const StateLexem & last_non_blank_lex) {
+void Grammar::initFlags(StackLexemFlag & flags, const LEXEM_TYPE & lex, const LEXEM_TYPE & last_non_blank_lex) {
     switch(lex) {
         case lex_end:
         case lex_commentary_end:
@@ -140,7 +140,7 @@ void Grammar::initFlags(StackLexemFlag & flags, const StateLexem & lex, const St
     }
 }
 
-bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) {
+bool Grammar::stackDropable(const LEXEM_TYPE & state, const LEXEM_TYPE & input) {
     switch(state) {
         case lex_if:
             return input == lex_end || input == lex_elsif || input == lex_else;
@@ -236,7 +236,7 @@ bool Grammar::stackDropable(const StateLexem & state, const StateLexem & input) 
 //    };
 //}
 
-StateLexem Grammar::stateForHeredoc(const StateLexem & lex, const bool & content) {
+LEXEM_TYPE Grammar::stateForHeredoc(const LEXEM_TYPE & lex, const bool & content) {
     switch(lex) {
         case lex_eheredoc_intended_start:
             return content ? lex_eheredoc_intended_content : lex_eheredoc_intended_end;
@@ -300,7 +300,7 @@ char Grammar::percentagePresentationBlocker(const char & ch) {
 //    }
 //}
 
-Identifier Grammar::toHighlightable(const StateLexem & lexem) {
+Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
     switch(lexem) {
         case lex_method_def:
         case lex_class_def:
@@ -464,7 +464,7 @@ Identifier Grammar::toHighlightable(const StateLexem & lexem) {
     }
 }
 
-StateLexem Grammar::translate(const StateLexem & state, const StateLexem & input) {
+LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input) {
     if (state == lex_none)
         return input;
 

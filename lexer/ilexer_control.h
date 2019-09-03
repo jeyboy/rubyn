@@ -65,7 +65,7 @@ struct ILexerControl {
 
     ILexerControl(IGrammar * cgrammar, BlockUserData *& user_data, TokenCell * stack_token = nullptr, IHighlighter * lighter = nullptr) :
         lighter(lighter), grammar(cgrammar),
-        lex_prev_word(LEX_NONE_STATE), lex_word(LEX_NONE_STATE)/*, lex_prev_delimiter(DEFAULT_LEX_STATE)*/, lex_delimiter(LEX_NONE_STATE),
+        lex_prev_word(lex_none), lex_word(lex_none)/*, lex_prev_delimiter(DEFAULT_LEX_STATE)*/, lex_delimiter(lex_none),
         next_offset(1), heredoc_token(nullptr), stack_token(stack_token), token(user_data -> lineControlToken()), last_non_blank_token(nullptr),
         para(user_data -> lineControlPara()), control_para(nullptr), active_para(nullptr),
         last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2),
@@ -91,7 +91,7 @@ struct ILexerControl {
         cached_length = strLength();
         cached.setRawData(prev, cached_length);
 
-        if (lex_word != LEX_NONE_STATE) {
+        if (lex_word != lex_none) {
             lex_prev_word = lex_word;
         }
 
@@ -129,13 +129,13 @@ struct ILexerControl {
         TokenCell * it = token;
 
         while(it) {
-            if (it -> lexem >= LEX_NONE_STATE)
+            if (it -> lexem >= lex_none)
                 return (last_non_blank_token = it) -> lexem;
 
             it = it -> prev;
         }
 
-        return LEX_NONE_STATE;
+        return lex_none;
     }
 
     inline ParaCell * paraParent(int & lines_between, ParaCell * para, const bool & foldable, const bool & only_blockators = false) {
@@ -219,7 +219,7 @@ struct ILexerControl {
         }
         else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
 
-        if (token -> lexem >= LEX_NONE_STATE)
+        if (token -> lexem >= lex_none)
             last_non_blank_token = token;
 
         if (flags != slf_none) {
@@ -231,7 +231,7 @@ struct ILexerControl {
                     attachPara(grammar -> paraType(lexem), flags, true);
 
                     if (!grammar -> stackDropable(stack_token -> lexem, lexem))
-                        cacheAndLightWithMessage(LEX_ERROR_STATE, QByteArrayLiteral("Wrong stack state"));
+                        cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
                     else {
 //                        lex_prev_word = stack_token -> stacked_state_lexem;
 
@@ -241,7 +241,7 @@ struct ILexerControl {
                         stack_token = stack_token -> stacked_prev;
                     }
                 } else {
-                    cacheAndLightWithMessage(LEX_ERROR_STATE, QByteArrayLiteral("Wrong stack state"));
+                    cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
                 }
             }
 
@@ -254,13 +254,13 @@ struct ILexerControl {
                 stack_token = token;
 
 //                stack_token -> stacked_state_lexem = lex_none; //stack_word ? lex_prev_word : lex_word;
-                lex_prev_word = LEX_NONE_STATE;
+                lex_prev_word = lex_none;
 
                 attachPara(grammar -> paraType(lexem), flags, false);
             }
 
-            lex_word = LEX_NONE_STATE;
-            lex_delimiter = LEX_NONE_STATE;
+            lex_word = lex_none;
+            lex_delimiter = lex_none;
         }
     }
 //    inline void replaceToken(const StateLexem & lexem, const uint & flags = slf_none) {
@@ -323,7 +323,7 @@ struct ILexerControl {
     inline void lightWithMessage(const LEXEM_TYPE & lexem, const QByteArray & msg) {
         light(lexem);
 
-        if (lexem == LEX_ERROR_STATE) {
+        if (lexem == lex_error) {
             //TODO: return me later
 //            if (!msg.contains("error_token"))
 //                qWarning() << msg;

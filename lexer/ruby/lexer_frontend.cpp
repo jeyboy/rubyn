@@ -101,7 +101,7 @@ void LexerFrontend::identifyWordType(LexerControl * state) {
 }
 
 void LexerFrontend::translateState(LexerControl * state) {
-    StateLexem new_state = state -> grammar -> translate(state -> lex_prev_word, state -> lex_delimiter);
+    LEXEM_TYPE new_state = state -> grammar -> translate(state -> lex_prev_word, state -> lex_delimiter);
 
     if (new_state == lex_error) {
         state -> lightWithMessage(
@@ -126,18 +126,18 @@ void LexerFrontend::translateState(LexerControl * state) {
     state -> lex_word = new_state;
 }
 
-bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_lexem, const StateLexem & predefined_delimiter, StackLexemFlag flags) {
+bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem, const LEXEM_TYPE & predefined_delimiter, StackLexemFlag flags) {
     bool has_predefined = predefined_lexem != lex_none;
 
     state -> cachingPredicate();
 
     if (state -> cached_length || has_predefined) {
-        StateLexem last_non_blank = state -> lastNonBlankLexem();
+        LEXEM_TYPE last_non_blank = state -> lastNonBlankLexem();
 
         if (has_predefined)
             state -> lex_word = predefined_lexem;
         else {
-            StateLexem pot_lex = Predefined::obj().lexem(state -> cached);
+            LEXEM_TYPE pot_lex = Predefined::obj().lexem(state -> cached);
 
             switch(pot_lex) {
                 case lex_yield: { break; } // yield can call through object: 'block.yield'
@@ -198,7 +198,7 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
     else state -> lex_word = lex_none;
 
     if (state -> next_offset) {
-        StateLexem prev_delimiter = state -> lex_delimiter;
+        LEXEM_TYPE prev_delimiter = state -> lex_delimiter;
 
         state -> cachingDelimiter();
 
@@ -214,7 +214,7 @@ bool LexerFrontend::cutWord(LexerControl * state, const StateLexem & predefined_
         state -> attachToken(state -> lex_delimiter, flags & slf_delimiter_related);
 
         if (state -> lex_word == lex_none) {
-            StateLexem new_state = state -> grammar -> translate(prev_delimiter, state -> lex_delimiter);
+            LEXEM_TYPE new_state = state -> grammar -> translate(prev_delimiter, state -> lex_delimiter);
 
             if (new_state == lex_error) {
                 state -> lightWithMessage(
@@ -557,9 +557,9 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
 
     const char blocker = stack_state -> data -> operator[](0);
 
-    StateLexem stack_lexem = state -> stack_token -> lexem;
-    StateLexem lex = lex_none;
-    StateLexem del_lex = lex_none;
+    LEXEM_TYPE stack_lexem = state -> stack_token -> lexem;
+    LEXEM_TYPE lex = lex_none;
+    LEXEM_TYPE del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 
     bool is_interable = stack_lexem != lex_percent_presentation_start;
@@ -663,8 +663,8 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
         return true; // false;
     }
 
-    StateLexem lex = lex_none;
-    StateLexem del_lex = lex_none;
+    LEXEM_TYPE lex = lex_none;
+    LEXEM_TYPE del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 
     QByteArray stop_token = *state -> stack_token -> data;

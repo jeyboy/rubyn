@@ -2,6 +2,7 @@
 #define TOKEN_LIST_H
 
 #include "defines.h"
+#include "lexer/state_lexem.h"
 
 struct TokenCell {
     TokenCell * prev;
@@ -18,7 +19,7 @@ struct TokenCell {
 
     TokenCell(const LEXEM_TYPE & lexem, const EDITOR_POS_TYPE & start_pos,
               const EDITOR_LEN_TYPE & length, TokenCell * prev_token = nullptr)
-        : prev(prev_token), next(nullptr), stacked_prev(nullptr), stacked_state_lexem(LEX_NONE_STATE),
+        : prev(prev_token), next(nullptr), stacked_prev(nullptr), stacked_state_lexem(lex_none),
           lexem(lexem), start_pos(start_pos), length(length), data(nullptr)
     {
         if (prev) {
@@ -60,8 +61,8 @@ class TokenList {
     TokenCell * root, * last;
 public:
     inline TokenList() : root(nullptr), last(nullptr) {
-        root = new TokenCell(LEX_NONE_STATE, 0, 0);
-        last = new TokenCell(LEX_END_DOC_STATE, 0, 0, root);
+        root = new TokenCell(lex_none, 0, 0);
+        last = new TokenCell(lex_end_doc, 0, 0, root);
     }
 
     inline ~TokenList() {
@@ -93,8 +94,8 @@ public:
         if (!prev_end)
             prev_end = last -> prev;
 
-        left = new TokenCell(LEX_NONE_STATE, 0, 0, prev_end);
-        right = new TokenCell(LEX_END_LINE_STATE, 0, 0, left);
+        left = new TokenCell(lex_none, 0, 0, prev_end);
+        right = new TokenCell(lex_end_line, 0, 0, left);
     }
 
     static void removeLine(TokenCell * left, TokenCell * right) {

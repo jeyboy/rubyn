@@ -5,30 +5,30 @@
 #include "highlighter/para_type.h"
 #include "highlighter/identifiers.h"
 #include "lexer/lexer_stack_flags.h"
-#include "lexer/istate_lexem.h"
+#include "lexer/state_lexem.h"
 
 class IGrammar {
 protected:
-    QHash<IState::Lexem, ParaType> para_tokens;
+    QHash<LEXEM_TYPE, ParaType> para_tokens;
 
     virtual ~IGrammar();
 public:  
     //    static inline bool hasPara(const QByteArray & poss_para) { return para_tokens.contains(poss_para); }
-    inline const ParaType & paraType(const IState::Lexem & poss_para) { return para_tokens[poss_para]; }
+    inline const ParaType & paraType(const LEXEM_TYPE & poss_para) { return para_tokens[poss_para]; }
 //    inline PARA_TYPE oppositePara(const PARA_TYPE & para_type) { return para_opposition.value(para_type, pt_none); }
 
-    virtual IState::Lexem translate(const IState::Lexem & state, const IState::Lexem & input) {
-        if (input == IState::LEX_NONE_STATE)
+    virtual LEXEM_TYPE translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input) {
+        if (input == lex_none)
             return state;
 
         return input;
     }
 
-    virtual void initFlags(StackLexemFlag & flags, const IState::Lexem & lex, const IState::Lexem & last_non_blank_lex) = 0;
+    virtual void initFlags(StackLexemFlag & flags, const LEXEM_TYPE & lex, const LEXEM_TYPE & last_non_blank_lex) = 0;
 
-    virtual bool stackDropable(const IState::Lexem & state, const IState::Lexem & input);
+    virtual bool stackDropable(const LEXEM_TYPE & state, const LEXEM_TYPE & input);
 
-    virtual Identifier toHighlightable(const IState::Lexem & /*lexem*/) = 0;
+    virtual Identifier toHighlightable(const LEXEM_TYPE & /*lexem*/) = 0;
 };
 
 #endif // IGRAMMAR_H
