@@ -599,7 +599,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
     return cutWord(state, lex, del_lex, flags);
 }
 
-bool LexerFrontend::parseHeredocMarks(LexerControl * state, StateLexem & lex) {
+bool LexerFrontend::parseHeredocMarks(LexerControl * state, LEXEM_TYPE & lex) {
     const char * curr = state -> buffer + 2;
     bool is_intended = false;
 
@@ -1304,10 +1304,10 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
             case '?': {
                 uint len = state -> strLength();
-                StateLexem lex = lex_ternary_main_start;
+                LEXEM_TYPE lex = lex_ternary_main_start;
 
                 if (len == 0) {
-                    StateLexem sublex = state -> lastNonBlankLexem();
+                    LEXEM_TYPE sublex = state -> lastNonBlankLexem();
 
                     bool is_charcode = sublex == lex_none || (sublex & lex_ruby_ternary_braker && !isBlank(ECHAR1));
 
@@ -1328,7 +1328,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case '<': {
-                StateLexem lex = lex_none;
+                LEXEM_TYPE lex = lex_none;
 
                 if (ECHAR1 == '<') {
                     ++state -> next_offset;
@@ -1487,7 +1487,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
                     if (!cutWord(state)) goto exit;
                 } else {
-                    StateLexem lex = state -> lastNonBlankLexem();
+                    LEXEM_TYPE lex = state -> lastNonBlankLexem();
                     bool next_is_blank = isBlank(ECHAR1);
 
                     bool is_division = (lex != lex_none || (!state -> isBufferStart() && isAlphaNum(ECHAR_PREV1))) &&

@@ -143,15 +143,15 @@ LEXEM_TYPE TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_T
 
         if (tkn) {
             switch(tkn -> lexem) {
-                case LEX_BLANKS: {
+                case lex_blanks: {
                     start += pos;
                     length = 1;
-                    return LEX_BLANK;
+                    return lex_blank;
                 }
-                case LEX_TABS: {
+                case lex_tabs: {
                     start += pos;
                     length = 1;
-                    return LEX_TAB;
+                    return lex_tab;
                 }
 
                 default: {
@@ -167,7 +167,7 @@ LEXEM_TYPE TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_T
 
     if (block_text.isEmpty()) {
         length = 0;
-        return LEX_NONE_STATE;
+        return lex_none;
     }
 
     int offset = 0;
@@ -188,7 +188,7 @@ LEXEM_TYPE TextDocument::getWordBoundaries(EDITOR_POS_TYPE & start, EDITOR_POS_T
         }
     }
 
-    return LEX_UNDEFINED_STATE;
+    return lex_undefined;
 }
 
 ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE & pos) {

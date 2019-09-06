@@ -15,7 +15,7 @@ namespace Ruby {
         ~LexerControl() {}
 
         void validateHeredocState();
-        void registerHeredocMark(const StateLexem & lexem, QByteArray * name);
+        void registerHeredocMark(const LEXEM_TYPE & lexem, QByteArray * name);
     };
 }
 
