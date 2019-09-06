@@ -1,8 +1,8 @@
-#include "lexer_frontend.h"
+#include "ruby_lexer_frontend.h"
 
-#include "lexer_control.h"
-#include "grammar.h"
-#include "predefined.h"
+#include "ruby_lexer_control.h"
+#include "ruby_grammar.h"
+#include "ruby_predefined.h"
 
 #include <qdatetime.h>
 

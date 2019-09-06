@@ -1,5 +1,5 @@
-#ifndef FLAGS_RUBY_H
-#define FLAGS_RUBY_H
+#ifndef RUBY_FLAGS_H
+#define RUBY_FLAGS_H
 
 //$ ruby [ options ] [.] [ programfile ] [ arguments ... ]
 
@@ -87,4 +87,4 @@
 //--yydebug
 //Enables parser debug mode (equivalent to -y).
 
-#endif // FLAGS_RUBY_H
+#endif // RUBY_FLAGS_H

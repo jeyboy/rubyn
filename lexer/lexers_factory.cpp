@@ -1,8 +1,8 @@
 #include "lexers_factory.h"
 
 //#include "lexer/ruby/lexer_regexp_ruby.h"
-#include "lexer/ruby/lexer_frontend.h"
-#include "lexer/css/lexer_frontend.h"
+#include "lexer/ruby/ruby_lexer_frontend.h"
+#include "lexer/css/css_lexer_frontend.h"
 
 LexersFactory::LexersFactory() {
     _lexers.insert(ft_file_rb, new Ruby::LexerFrontend());

@@ -1,4 +1,4 @@
-#include "lexer_control.h"
+#include "ruby_lexer_control.h"
 
 using namespace Ruby;
 

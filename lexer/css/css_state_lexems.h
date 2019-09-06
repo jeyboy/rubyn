@@ -7,12 +7,9 @@
 
 namespace Css {
     enum StateLexem : LEXEM_TYPE {
-        lex_none = 0,
+        DefaultStateLexems,
 
-        ////////// highlightable
-        yml_lex_error,
-        yml_lex_warning,
-        yml_lex_notice,
+        lex_word,
 
     //    lex_mark,
         lex_key,
@@ -40,13 +37,6 @@ namespace Css {
     //    lex_name = 1 << 30,
     //    //////////
 
-        lex_undefined,
-        lex_end_line,
-        lex_end_doc,
-        lex_tab,
-        lex_blank,
-        lex_blanks,
-        lex_ignore,
     //    lex_chain_item, // service token
 
         lex_max

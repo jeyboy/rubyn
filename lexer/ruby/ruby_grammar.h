@@ -4,7 +4,7 @@
 //https://github.com/ruby/ruby/tree/trunk/doc
 
 #include "lexer/igrammar.h"
-#include "state_lexems.h"
+#include "ruby_state_lexems.h"
 
 namespace Ruby {
     class Grammar : public IGrammar, public Singleton<Grammar> {

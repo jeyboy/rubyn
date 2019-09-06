@@ -1,8 +1,8 @@
-#include "predefined.h"
+#include "ruby_predefined.h"
 
 #include <qdebug.h>
 
-using namespace Css;
+using namespace Ruby;
 
 Predefined::Predefined() {   
     keys.insert(QByteArrayLiteral("#{"), lex_interpolation);
@@ -230,6 +230,6 @@ Predefined::Predefined() {
 
 
 bool Predefined::hasKey(const QByteArray & key) { return keys.contains(key); }
-StateLexem Predefined::lexem(const QByteArray & key) {
+LEXEM_TYPE Predefined::lexem(const QByteArray & key) {
     return keys.value(key, lex_word);
 }

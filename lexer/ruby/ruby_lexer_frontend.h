@@ -3,8 +3,8 @@
 
 #include "lexer/ilexer.h"
 #include "lexer/lexer_stack_flags.h"
-#include "lexer_control.h"
-#include "state_lexems.h"
+#include "ruby_lexer_control.h"
+#include "ruby_state_lexems.h"
 
 namespace Ruby {
     struct LexerControl;

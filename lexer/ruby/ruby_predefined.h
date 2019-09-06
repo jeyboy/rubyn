@@ -5,7 +5,7 @@
 #include <qbytearray.h>
 
 #include "misc/singleton.h"
-#include "state_lexems.h"
+#include "ruby_state_lexems.h"
 
 //http://www.rubymagic.org/posts/ruby-and-rails-reserved-words
 //https://www.tutorialspoint.com/ruby/ruby_regular_expressions.htm

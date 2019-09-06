@@ -18,13 +18,13 @@ SOURCES += main.cpp\
     editor/parts/body_overlay_info.cpp \
     editor/code_editor.cpp \
     highlighter/highlighter.cpp \
-    lexer/css/lexer_frontend.cpp \
-    lexer/css/predefined.cpp \
-    lexer/ruby/grammar.cpp \
-    lexer/ruby/lexer_control.cpp \
-    lexer/ruby/lexer_frontend.cpp \
-    lexer/ruby/lexer_regexp.cpp \
-    lexer/ruby/predefined.cpp \
+    lexer/css/css_lexer_frontend.cpp \
+    lexer/css/css_predefined.cpp \
+    lexer/ruby/ruby_grammar.cpp \
+    lexer/ruby/ruby_lexer_control.cpp \
+    lexer/ruby/ruby_lexer_frontend.cpp \
+    lexer/ruby/ruby_lexer_regexp.cpp \
+    lexer/ruby/ruby_predefined.cpp \
     lexer/yaml/yaml_lexer_frontend.cpp \
     lexer/yaml/yaml_predefined.cpp \
     project/file.cpp \
@@ -116,20 +116,20 @@ SOURCES += main.cpp\
 
 HEADERS  += ide_window.h \
     delegates/tree_view_item_delegate.h \
-    lexer/css/grammar.h \
-    lexer/css/lexer_control.h \
-    lexer/css/lexer_frontend.h \
-    lexer/css/predefined.h \
-    lexer/css/state_lexems.h \
+    lexer/css/css_grammar.h \
+    lexer/css/css_lexer_control.h \
+    lexer/css/css_lexer_frontend.h \
+    lexer/css/css_predefined.h \
+    lexer/css/css_state_lexems.h \
     lexer/ilexer_control.h \
     lexer/lexer_stack_flags.h \
-    lexer/ruby/_flags.h \
-    lexer/ruby/grammar.h \
-    lexer/ruby/lexer_control.h \
-    lexer/ruby/lexer_frontend.h \
-    lexer/ruby/lexer_regexp.h \
-    lexer/ruby/predefined.h \
-    lexer/ruby/state_lexems.h \
+    lexer/ruby/_ruby_flags.h \
+    lexer/ruby/ruby_grammar.h \
+    lexer/ruby/ruby_lexer_control.h \
+    lexer/ruby/ruby_lexer_frontend.h \
+    lexer/ruby/ruby_lexer_regexp.h \
+    lexer/ruby/ruby_predefined.h \
+    lexer/ruby/ruby_state_lexems.h \
     lexer/state_lexem.h \
     lexer/yaml/yaml_grammar.h \
     lexer/yaml/yaml_lexer_control.h \

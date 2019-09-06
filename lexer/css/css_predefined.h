@@ -5,7 +5,7 @@
 #include <qbytearray.h>
 
 #include "misc/singleton.h"
-#include "state_lexems.h"
+#include "css_state_lexems.h"
 
 namespace Css {
     class Predefined : public Singleton<Predefined> {

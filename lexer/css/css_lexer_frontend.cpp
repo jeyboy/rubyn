@@ -1,8 +1,8 @@
-#include "lexer_frontend.h"
+#include "css_lexer_frontend.h"
 
-#include "lexer_control.h"
-#include "grammar.h"
-#include "predefined.h"
+#include "css_lexer_control.h"
+#include "css_grammar.h"
+#include "css_predefined.h"
 
 #include <qdatetime.h>
 
