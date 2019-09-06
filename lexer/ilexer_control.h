@@ -8,23 +8,19 @@
 #include "highlighter/ihighlighter.h"
 #include "highlighter/highlight_format_factory.h"
 
-#define STREAM_N_CHAR(w, offset) (*(w + offset))
+//#define STREAM_N_CHAR(w, offset) (*(w + offset))
 
-#define STREAM_CURR_CHAR(w) (*w)
-#define STREAM_PREV_CHAR(w) STREAM_N_CHAR(w, -1)
-#define STREAM_NEXT_CHAR(w) STREAM_N_CHAR(w, 1)
+#define ECHAR0 *(state -> buffer)
+#define ECHAR1 *(state -> buffer + 1)
+#define ECHAR2 *(state -> buffer + 2)
+#define ECHAR3 *(state -> buffer + 3)
+#define ECHAR4 *(state -> buffer + 4)
+#define ECHAR5 *(state -> buffer + 5)
+#define ECHAR_1 *(state -> buffer - 1)
 
-#define ECHAR0 STREAM_CURR_CHAR(state -> buffer)
-#define ECHAR1 STREAM_NEXT_CHAR(state -> buffer)
-#define ECHAR2 STREAM_N_CHAR(state -> buffer, 2)
-#define ECHAR3 STREAM_N_CHAR(state -> buffer, 3)
-#define ECHAR4 STREAM_N_CHAR(state -> buffer, 4)
-#define ECHAR5 STREAM_N_CHAR(state -> buffer, 5)
-#define ECHAR_PREV1 STREAM_PREV_CHAR(state -> buffer)
-
-#define SCHAR0 STREAM_CURR_CHAR(state -> prev)
-#define SCHAR1 STREAM_NEXT_CHAR(state -> prev)
-#define SCHAR2 STREAM_N_CHAR(state -> prev, 2)
+#define SCHAR0 *(state -> prev)
+#define SCHAR1 *(state -> prev + 1)
+#define SCHAR2 *(state -> prev + 2)
 
 struct ILexerControl {
     IHighlighter * lighter;

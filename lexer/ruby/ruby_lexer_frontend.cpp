@@ -84,7 +84,7 @@ void LexerFrontend::identifyWordType(LexerControl * state) {
                 state -> lex_word = lex_var_instance;
         break;}
         default: {
-            if (ECHAR_PREV1 == ':')
+            if (ECHAR_1 == ':')
                 state -> lex_word = lex_symbol_key;
             else if (isUpper(state -> cached[0])) {
                 const char * it = state -> cached;
@@ -435,7 +435,7 @@ bool LexerFrontend::parseString(LexerControl * state) {
     while(true) {
         switch(ECHAR0) {
             case '\'': {
-                if (ECHAR_PREV1 != '\\') {
+                if (ECHAR_1 != '\\') {
                     lex = lex_string_content;
                     del_lex = lex_string_end;
                     flags = slf_unstack_delimiter;
@@ -465,7 +465,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
     while(true) {
         switch(ECHAR0) {
             case '#': {
-                if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
+                if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                     ++state -> next_offset;
                     lex = lex_estring_content;
                     del_lex = lex_estring_interception;
@@ -474,7 +474,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
             break; }
 
             case '"': {
-                if (ECHAR_PREV1 != '\\') {
+                if (ECHAR_1 != '\\') {
                     lex = lex_estring_content;
                     del_lex = lex_estring_end;
                     flags = slf_unstack_delimiter;
@@ -504,7 +504,7 @@ bool LexerFrontend::parseCommand(LexerControl * state) {
     while(lex == lex_none) {
         switch(ECHAR0) {
             case '#': {
-                if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
+                if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                     ++state -> next_offset;
                     lex = lex_command_content;
                     del_lex = lex_command_interception;
@@ -512,7 +512,7 @@ bool LexerFrontend::parseCommand(LexerControl * state) {
             break; }
 
             case '`': {
-                if (ECHAR_PREV1 != '\\') {
+                if (ECHAR_1 != '\\') {
                     ++state -> buffer;
                     lex = lex_command_content;
                     del_lex = lex_command_end;
@@ -568,7 +568,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
         switch(ECHAR0) {
             case '#': {
                 if (is_interable) {
-                    if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
+                    if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                         ++state -> next_offset;
                         lex = lex_epercent_presentation_content;
                         del_lex = lex_epercent_presentation_interception;
@@ -583,7 +583,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
             break;}
 
             default: {
-                if (ECHAR0 == blocker && ECHAR_PREV1 != '\\') {
+                if (ECHAR0 == blocker && ECHAR_1 != '\\') {
                     lex = is_interable ? lex_epercent_presentation_content : lex_percent_presentation_content;
                     del_lex = is_interable ? lex_epercent_presentation_end  : lex_percent_presentation_end;
                     flags = slf_unstack_delimiter;
@@ -715,7 +715,7 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
                 while(true) {
                     switch(ECHAR0) {
                         case '#': {
-                            if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
+                            if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                                 ++state -> next_offset;
                                 lex = Grammar::obj().stateForHeredoc(state -> stack_token -> lexem, true);
                                 del_lex = lex_heredoc_interception;
@@ -751,7 +751,7 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
     while(true) {
         switch(ECHAR0) {
             case '#': {
-                if (ECHAR1 == '{' && ECHAR_PREV1 != '\\') {
+                if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                     ++state -> next_offset;
 
                     lex = lex_regexp_content;
@@ -761,7 +761,7 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
             break;}
 
             case '/': {
-                if (ECHAR_PREV1 != '\\') {
+                if (ECHAR_1 != '\\') {
                     lex = lex_regexp_content;
                     del_lex = lex_regexp_end;
                     flags = slf_unstack_delimiter;
@@ -1199,7 +1199,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                 else { // if we have deal with symbol
                     EDITOR_LEN_TYPE len = state -> strLength();
 
-                    if (len > 0 && isWord(ECHAR_PREV1)) {
+                    if (len > 0 && isWord(ECHAR_1)) {
                         ++state -> buffer;
                         state -> next_offset = 0;
                     } else {
@@ -1292,7 +1292,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 
             case '!': {
-                if (isAlphaNum(ECHAR_PREV1))
+                if (isAlphaNum(ECHAR_1))
                     goto iterate;
 
                 if (ECHAR1 == '~' || ECHAR1 == '=')
@@ -1320,7 +1320,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                         }
                     }
                 } else {
-                    if (isWord(ECHAR_PREV1)) goto iterate;
+                    if (isWord(ECHAR_1)) goto iterate;
                 }
 
                 if (!cutWord(state, lex_none, lex, lex == lex_ternary_main_start ? slf_stack_delimiter : slf_none)) goto exit;
@@ -1380,7 +1380,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '-': {
                 if (ECHAR1 == '>' || ECHAR1 == '=')
                     ++state -> next_offset;
-                else if(isDigit(ECHAR1) && (state -> isBufferStart() || isBlank(ECHAR_PREV1))) {
+                else if(isDigit(ECHAR1) && (state -> isBufferStart() || isBlank(ECHAR_1))) {
                     goto parse_number;
                 }
 
@@ -1391,7 +1391,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '+': {
                 if (ECHAR1 == '=')
                     ++state -> next_offset;
-                else if(isDigit(ECHAR1) && (state -> isBufferStart() || isBlank(ECHAR_PREV1))) {
+                else if(isDigit(ECHAR1) && (state -> isBufferStart() || isBlank(ECHAR_1))) {
                     goto parse_number;
                 }
 
@@ -1409,7 +1409,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
             case '7':
             case '8':
             case '9': {
-                if (isWord(ECHAR_PREV1))
+                if (isWord(ECHAR_1))
                     goto iterate;
 
                 parse_number:
@@ -1490,7 +1490,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
                     LEXEM_TYPE lex = state -> lastNonBlankLexem();
                     bool next_is_blank = isBlank(ECHAR1);
 
-                    bool is_division = (lex != lex_none || (!state -> isBufferStart() && isAlphaNum(ECHAR_PREV1))) &&
+                    bool is_division = (lex != lex_none || (!state -> isBufferStart() && isAlphaNum(ECHAR_1))) &&
                         (next_is_blank || !(lex & lex_ruby_division_breaker));
 
                     if (is_division) {
