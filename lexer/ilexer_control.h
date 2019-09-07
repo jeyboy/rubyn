@@ -320,6 +320,7 @@ struct ILexerControl {
         light(lexem);
 
         if (lexem == lex_error) {
+            return;
             //TODO: return me later
 //            if (!msg.contains("error_token"))
 //                qWarning() << msg;
