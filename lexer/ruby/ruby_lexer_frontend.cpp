@@ -645,7 +645,6 @@ bool LexerFrontend::parseCommand(LexerControl * state) {
 }
 
 bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
-
     //# %i Non-interpolated Array of symbols, separated by whitespace
     //# %l Interpolated Array of symbols, separated by whitespace
     //# %q String
