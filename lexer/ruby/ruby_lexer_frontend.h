@@ -6,6 +6,13 @@
 #include "ruby_lexer_control.h"
 #include "ruby_state_lexems.h"
 
+
+// Store context variable in control
+// List of contexts identificated from list of extensions
+
+// Store code context variable in control \\ in class \\ in module \\ in method \\ in method params and etc and append it to lexems
+
+
 namespace Ruby {
     struct LexerControl;
 

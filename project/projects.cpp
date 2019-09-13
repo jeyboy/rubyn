@@ -8,8 +8,8 @@
 #include <qpixmap.h>
 #include <qdebug.h>
 
-QIcon & Projects::getIco(const FormatType & format_type, const FormatType & add_format_type) {
-    FormatType wt = format_type;
+QIcon & Projects::getIco(LexerContext * _context) {
+    FormatType wt = _context -> _main_format;
 
     if (add_format_type) {
         wt = FormatType(wt + (add_format_type & 7));

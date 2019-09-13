@@ -6,8 +6,8 @@
 //#include <qhash.h>
 #include <qdebug.h>
 
+#include "lexer/lexer_context.h"
 #include "editor/idocument.h"
-#include "code_formats.h"
 #include "projects.h"
 
 class TextDocument;
@@ -17,14 +17,12 @@ class TreeDocument;
 class Folder;
 
 class File {
-    static bool identifyType(const QString & name, FormatType & format, FormatType & add_format, const uint & level = 0);
-    static bool identifyTypeByShebang(const QString & str, FormatType & format);
+    static bool identifyType(const QString & name, LexerContext *& context, const uint & level = 0);
+    static bool identifyTypeByShebang(const QString & str, LexerContext *& context);
 protected:
     IDocument * _doc;
     QIODevice * _device;
-
-    FormatType _main_format;
-    FormatType _additional_format;
+    LexerContext * _context;
 
     QString _path;
     QString _name;
@@ -91,20 +89,20 @@ public:
 
     const QString & firstStr();
 
-    FormatType icoType() { return _main_format; }
+    FormatType icoType() { return _context -> _main_format; }
     QIcon ico();
 
     inline bool isOpened() const { return _device && _device -> isOpen(); }
     inline bool isChanged() const { return _doc && _doc -> isChanged(); }
     inline bool isFullyReaded() const { return _doc && _doc -> isFullyReaded(); }
 
-    inline FormatType formatType() const { return _main_format; }
-    inline int baseFormatType() const { return _main_format & ft_base_file_types; }
+    inline FormatType formatType() const { return _context -> _main_format; }
+    inline int baseFormatType() const { return _context -> _main_format & ft_base_file_types; }
 
-    inline bool isText() const { return _main_format & ft_text; }
-    inline bool isImage() const { return _main_format & ft_image; }
-    inline bool isBinary() const { return _main_format & ft_binary; }
-    inline bool isTree() const { return _main_format & ft_tree; }
+    inline bool isText() const { return _context -> _main_format & ft_text; }
+    inline bool isImage() const { return _context -> _main_format & ft_image; }
+    inline bool isBinary() const { return _context -> _main_format & ft_binary; }
+    inline bool isTree() const { return _context -> _main_format & ft_tree; }
 
     TextDocument * asText();
     ImageDocument * asImage();

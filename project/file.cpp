@@ -3,6 +3,8 @@
 #include <qdatetime.h>
 #include <qstringbuilder.h>
 #include <qregularexpression.h>
+
+#include "lexer/lexer_context.h"
 #include "editor/document_types/documents_types.h"
 
 #include "controls/logger.h"
@@ -56,13 +58,13 @@ void File::closeDevice() {
 
 const QFile::OpenMode File::openMode() {
     QFile::OpenMode omode = QFile::ReadOnly;
-    if (_main_format & ft_text)
+    if (_context -> _main_format & ft_text)
         omode = QFile::Text | QFile::ReadOnly;
 
     return omode;
 }
 
-bool File::identifyType(const QString & name, FormatType & format, FormatType & add_format, const uint & level) {
+bool File::identifyType(const QString & name, , LexerContext *& _context, const uint & level) {
     QString lower_name = name.toLower();
     QStringList parts = lower_name.split('.', QString::SkipEmptyParts);
 
@@ -130,7 +132,7 @@ bool File::identifyType(const QString & name, FormatType & format, FormatType & 
 //    }
 }
 
-bool File::identifyTypeByShebang(const QString & str, FormatType & format) {
+bool File::identifyTypeByShebang(const QString & str, LexerContext *& context) {
     if (str.startsWith(QLatin1Literal("#!"))) {
         QRegularExpression regex(QLatin1Literal("\\b(ruby)\\b"), QRegularExpression::CaseInsensitiveOption);
 
@@ -140,16 +142,16 @@ bool File::identifyTypeByShebang(const QString & str, FormatType & format) {
             QString captured = match.captured(1);
 
             if (captured.toLower() == QLatin1Literal("ruby")) {
-                format = ft_file_rb;
+                context -> append(ft_file_rb);
             }
         }
     }
 
-    return format != ft_unknown;
+    return context -> hasType();
 }
 
 bool File::identifyTypeByShebang(const QString & str) {
-    if (identifyTypeByShebang(str, _main_format)) {
+    if (identifyTypeByShebang(str, _context)) {
         emit Projects::obj().fileIconChanged(_path, ico());
         return true;
     }
@@ -179,26 +181,26 @@ bool File::open() {
     if (!openDevice())
         return false;
 
-    if (_main_format == ft_unknown) {
+    if (!_context -> hasType()) {
         if (!identifyTypeByShebang(firstStr())) {
             if (!userAskFileType())
-                _main_format = ft_text;
+                _context -> _main_format = ft_text;
 //                return false;
         }
     }
 
-    if (_main_format & ft_text) {
+    if (isText()) {
         _doc = new TextDocument(this);
         return true;
     }
-    else if (_main_format & ft_tree) {
+    else if (isTree()) {
         _doc = new TreeDocument(this);
         return true;
     }
-    else if (_main_format & ft_binary) {
+    else if (isBinary()) {
         qDebug() << "ft_binary";
     }
-    else if (_main_format & ft_image) {
+    else if (isImage()) {
         qDebug() << "ft_image";
         //_doc = new ImageDocument(_path, _name, device, project, f);
     }
@@ -214,10 +216,10 @@ void File::close() {
 }
 
 File::File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops)
-    : _doc(nullptr), _device(nullptr), _main_format(ft_unknown), _additional_format(ft_unknown), _path(path),
+    : _doc(nullptr), _device(nullptr), _context(new LexerContext()), _path(path),
       _name(name), level(inproject_level), opened_count(0), is_external(false)
 {
-    identifyType(_name, _main_format, _additional_format, level);
+    identifyType(_name, _context, level);
 
     if (ops & fo_open) {
         open();
@@ -230,10 +232,11 @@ File::~File() {
     emit Projects::obj().fileRemoved(uid());
 
     delete _doc;
+    delete _context;
 }
 
 QIcon File::ico() {
-    if (_main_format == ft_file_ico) {
+    if (_context -> _main_format == ft_file_ico) {
         QIcon ico(_path);
 
         if (ico.isNull() || ico.availableSizes().isEmpty())
@@ -247,7 +250,7 @@ QIcon File::ico() {
         }
     }
 
-    return Projects::obj().getIco(_main_format, _additional_format);
+    return Projects::obj().getIco(_context);
 }
 
 //File::File(const QUrl & uri, Project * project) : _doc(0), _device(0), _project(project) {

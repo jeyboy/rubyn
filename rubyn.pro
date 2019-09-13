@@ -20,6 +20,7 @@ SOURCES += main.cpp\
     highlighter/highlighter.cpp \
     lexer/css/css_lexer_frontend.cpp \
     lexer/css/css_predefined.cpp \
+    lexer/lexer_context.cpp \
     lexer/ruby/ruby_grammar.cpp \
     lexer/ruby/ruby_lexer_control.cpp \
     lexer/ruby/ruby_lexer_frontend.cpp \
@@ -122,6 +123,7 @@ HEADERS  += ide_window.h \
     lexer/css/css_predefined.h \
     lexer/css/css_state_lexems.h \
     lexer/ilexer_control.h \
+    lexer/lexer_context.h \
     lexer/lexer_stack_flags.h \
     lexer/ruby/_ruby_flags.h \
     lexer/ruby/ruby_grammar.h \
