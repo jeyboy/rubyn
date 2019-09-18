@@ -64,7 +64,7 @@ const QFile::OpenMode File::openMode() {
     return omode;
 }
 
-bool File::identifyType(const QString & name, , LexerContext *& _context, const uint & level) {
+bool File::identifyType(const QString & name, LexerContext *& _context, const uint & level) {
     QString lower_name = name.toLower();
     QStringList parts = lower_name.split('.', QString::SkipEmptyParts);
 
@@ -74,37 +74,17 @@ bool File::identifyType(const QString & name, , LexerContext *& _context, const 
 
             if (ft == ft_unknown) continue;
 
-            if (format == ft_file_css && (ft == ft_file_scss || ft == ft_file_sass)) {
-                format = ft;
-            }
-            else if (format == ft_file_js && ft == ft_file_coffee) {
-                format = ft;
-            } else {
-                int curr_priority = format & ft_priority;
-                int new_priority = ft & ft_priority;
-
-                if (curr_priority != new_priority) {
-                    if (curr_priority < new_priority) {
-                        if (new_priority == ft_level_two)
-                            add_format = format;
-
-                        format = ft;
-                    } else {
-                        if (new_priority == ft_level_two)
-                            add_format = ft;
-                    }
-                }
-            }
+            _context -> append(ft);
         }
     } else if (lower_name.startsWith('.')) {
-        format = ft_text;
+        _context -> append(ft_text);
     }
 
-    if (format == ft_unknown && level == 0) {
-        format = Projects::obj().identificateName(lower_name);
+    if (_context -> _main_format == ft_unknown && level == 0) {
+        _context -> append(Projects::obj().identificateName(lower_name));
     }
 
-    return format > ft_unknown;
+    return _context -> _main_format > ft_unknown;
 //    QByteArray ch_arr = name.toUtf8();
 //    const char * str = ch_arr.constData();
 //    const char * iter = str, * sub = 0;
@@ -250,7 +230,7 @@ QIcon File::ico() {
         }
     }
 
-    return Projects::obj().getIco(_context);
+    return Projects::obj().getIco(_context -> _main_format, _context -> _add_format);
 }
 
 //File::File(const QUrl & uri, Project * project) : _doc(0), _device(0), _project(project) {

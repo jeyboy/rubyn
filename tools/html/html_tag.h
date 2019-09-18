@@ -138,10 +138,10 @@ namespace Html {
 
         static Tag * stub() { return new Tag(HTML_ANY_TAG); }
 
-        inline Tag(const QByteArray & tag, Tag * parent_tag = 0) :
-            _level(parent_tag ? parent_tag -> _level + 1 : 0), _tag_id(tagID(tag)), _tag_len(tag.length()), _classes(0), _parent(parent_tag) {}
-        inline Tag(const int & tag_id, const int & tag_length, Tag * parent_tag = 0) :
-            _level(parent_tag ? parent_tag -> _level + 1 : 0), _tag_id(tag_id), _tag_len(tag_length), _classes(0), _parent(parent_tag) {}
+        inline Tag(const QByteArray & tag, Tag * parent_tag = nullptr) :
+            _level(parent_tag ? parent_tag -> _level + 1 : 0), _tag_id(tagID(tag)), _tag_len(tag.length()), _classes(nullptr), _parent(parent_tag) {}
+        inline Tag(const int & tag_id, const int & tag_length, Tag * parent_tag = nullptr) :
+            _level(parent_tag ? parent_tag -> _level + 1 : 0), _tag_id(tag_id), _tag_len(tag_length), _classes(nullptr), _parent(parent_tag) {}
 
         inline ~Tag() {
             qDeleteAll(_tags);
@@ -232,8 +232,8 @@ namespace Html {
         bool isFormProceable() const;
 
         inline Tag * parent() { return _parent; }
-        inline Tag * child(const int & pos) const { return pos < _tags.size() ? _tags[pos] : 0; }
-        inline Tag * lastChild() const { return _tags.isEmpty() ? 0 : _tags.last(); }
+        inline Tag * child(const int & pos) const { return pos < _tags.size() ? _tags[pos] : nullptr; }
+        inline Tag * lastChild() const { return _tags.isEmpty() ? nullptr : _tags.last(); }
         Tag * child(const QByteArray & name_predicate, const int & pos = 0) const;
         inline int childrenCount() { return _tags.size(); }
 
@@ -248,7 +248,7 @@ namespace Html {
         }
         inline bool hasAttr(const QByteArray & attr_name = attr_checked) const { return _attrs.contains(attr_name); }
         inline bool hasAttr(const QByteArray & attr_name, const QByteArray & attr_val) const { return _attrs[attr_name] == attr_val; }
-        inline bool hasChildren(const char * predicate = 0) const { return !(predicate ? find(predicate).isEmpty() : _tags.isEmpty()); }
+        inline bool hasChildren(const char * predicate = nullptr) const { return !(predicate ? find(predicate).isEmpty() : _tags.isEmpty()); }
 
         Set find(const char * predicate) const;
         Tag * findFirst(const char * predicate) const;

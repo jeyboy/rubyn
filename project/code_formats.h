@@ -34,7 +34,7 @@ enum FormatType : quint32 {
 
     ft_file_erb =            1 | ft_text | ft_level_two,
     ft_file_haml =           2 | ft_text | ft_level_two,
-    ft_file_slim =           3 | ft_text | ft_level_two,
+    ft_file_slim =           4 | ft_text | ft_level_two,
 
 
     ft_file_rb =             10 | ft_text | ft_level_one,

@@ -13,7 +13,6 @@
 class Project;
 class File;
 class QTreeWidgetItem;
-class LexerContext;
 
 class Projects : public QObject, public Singleton<Projects> {
     Q_OBJECT
@@ -36,7 +35,7 @@ public:
     inline Project * project(const QUrl & uri) { return _projects.value(uri, nullptr); }
 
     //TODO: need sync size with project tree
-    QIcon & getIco(LexerContext * _context);
+    QIcon & getIco(const FormatType & format_type, const FormatType & add_format_type = ft_unknown);
     int icoSize() { return icon_size; }
     FormatType identificateName(const QString & name);
 

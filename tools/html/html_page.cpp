@@ -6,17 +6,17 @@ using namespace Html;
 
 //// remove me later
 Page::Page(Tag * root_tag, const char * str_data, const Decoding::CharsetType & doc_charset, const ParseFlags & parse_flags)
-    : root(0), pflags(parse_flags), sflags(sf_none), charset(doc_charset)
+    : root(nullptr), pflags(parse_flags), sflags(sf_none), charset(doc_charset)
 {
     parse(str_data, root_tag);
 }
 Page::Page(Tag * root_tag, const QByteArray & str, const Decoding::CharsetType & doc_charset, const ParseFlags & parse_flags)
-   : root(0), pflags(parse_flags), sflags(sf_none), charset(doc_charset)
+   : root(nullptr), pflags(parse_flags), sflags(sf_none), charset(doc_charset)
 {
    parse(str.constData(), root_tag);
 }
 Page::Page(Tag * root_tag, const QString & str, const Decoding::CharsetType & doc_charset, const ParseFlags & parse_flags)
-    : root(0), pflags(parse_flags), sflags(sf_none), charset(doc_charset)
+    : root(nullptr), pflags(parse_flags), sflags(sf_none), charset(doc_charset)
 {
     parse(QSTR_TO_CHAR(str), root_tag);
 }
@@ -55,13 +55,13 @@ Set Page::find(const char * predicate) const {
 Tag * Page::findFirst(const char * predicate) const {
     Selector selector(predicate);
     Set set = find(&selector, true);
-    return set.isEmpty() ? 0 : set.first();
+    return set.isEmpty() ? nullptr : set.first();
 }
 
 void Page::parse(const char * data, Tag * root_tag) {
-    Tag * elem = root_tag, * temp = 0;
+    Tag * elem = root_tag, * temp = nullptr;
     PState state = content;
-    const char *pdata = data, *sname = 0, *sval = 0, *ename = 0;
+    const char *pdata = data, *sname = nullptr, *sval = nullptr, *ename = nullptr;
     bool has_cdata = false, is_xml = false, unicode_quotes = false;  // cdata presents in text
     bool simplify = pflags & pf_simplify_text, trim = pflags & pf_trim_text, simplify_mnemonics = pflags & pf_simplify_mnemonics;
     quint8 tag_flags = 0; // charset
@@ -132,10 +132,10 @@ void Page::parse(const char * data, Tag * root_tag) {
                                 state = comment;
                                 goto next_step;
                             } else
-                                sflags = (StateFlags)(sflags | sf_html);
+                                sflags = StateFlags(sflags | sf_html);
                         } else if (nchr == question_token) {
                             is_xml = true;
-                            sflags = (StateFlags)(sflags | sf_xml);
+                            sflags = StateFlags(sflags | sf_xml);
                         } else {
                             if (nchr != close_tag_predicate && !isalpha(nchr)) { // fix for text like <a><<</a> and <a><=></a>
                                 goto next_step;
@@ -147,7 +147,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                                 QByteArray ar = NAME_BUFF;
 
                                 if (has_cdata)
-                                    ar.replace(tkn_scdata, 0).replace(tkn_ecdata,  0);
+                                    ar.replace(tkn_scdata, nullptr).replace(tkn_ecdata,  nullptr);
 
                                 elem -> appendText(DECODE_NAME(ar, trim, simplify, simplify_mnemonics));
                             }
@@ -165,7 +165,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                     case close_tag:
                     case space: {
                         elem -> addAttr(NAME_BUFF, DECODE_NAME(VAL_BUFF, true, false, false));
-                        sname = 0; sval = 0; ename = 0;
+                        sname = nullptr; sval = nullptr; ename = nullptr;
                         state = attr;
                         continue;
                     break;}
@@ -202,7 +202,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                                 pdata += 2;
                                 unicode_quotes = false;
                             }
-                            sname = 0; sval = 0; ename = 0;
+                            sname = nullptr; sval = nullptr; ename = nullptr;
                             state = attr;
                         }
                     break;}
@@ -235,17 +235,17 @@ void Page::parse(const char * data, Tag * root_tag) {
                         ) {
                             if (elem -> isFrame()) {
                                 iframes << elem;
-                                sflags = (StateFlags)(sflags | sf_has_iframes);
+                                sflags = StateFlags(sflags | sf_has_iframes);
                             }
 
                             elem = elem -> parent();
 
                             if (!elem) {
                                 elem = root;
-                                sflags = (StateFlags)(sflags | sf_has_errors);
+                                sflags = StateFlags(sflags | sf_has_errors);
                             }
                         } else {
-                            sflags = (StateFlags)(sflags | sf_has_errors);
+                            sflags = StateFlags(sflags | sf_has_errors);
                             qDebug() << "IGNORE CLOSING OF TAG: " << NAME_BUFF << " around " << QByteArray(pdata - 60, 60);
 
                             Tag * curr = elem -> parent();
@@ -338,7 +338,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                                 if (NAME_BUFF_VALID)
                                     elem -> addAttr(NAME_BUFF, VAL_BUFF);
 
-                                sval = 0; sname = 0; ename = 0;
+                                sval = nullptr; sname = nullptr; ename = nullptr;
 
                                 if (*(pdata + 1) == content_del1 || *(pdata + 1) == content_del2) {
                                     state = in_attr;
@@ -376,7 +376,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                                 if (sname && *(pdata - 1) != question_token) // ignore ?>
                                     elem -> addAttr(NAME_BUFF, VAL_BUFF);
 
-                                sname = 0; sval = 0; ename = 0;
+                                sname = nullptr; sval = nullptr; ename = nullptr;
                             break;}
 
                             case tag: {
@@ -395,7 +395,7 @@ void Page::parse(const char * data, Tag * root_tag) {
 
                             if (!elem) {
                                 elem = root;
-                                sflags = (StateFlags)(sflags | sf_has_errors);
+                                sflags = StateFlags(sflags | sf_has_errors);
                             }
 
                         } else if (elem -> isCodeBlock()) {
@@ -409,7 +409,7 @@ void Page::parse(const char * data, Tag * root_tag) {
                         switch (state) {
                             case attr_val: {
                                 elem -> addAttr(NAME_BUFF, VAL_BUFF);
-                                sname = 0; sval = 0; ename = 0;
+                                sname = nullptr; sval = nullptr; ename = nullptr;
                             }
                             case tag: {
                                 if (*(pdata - 1) != open_tag) // <br/> ant etc
@@ -436,7 +436,7 @@ void Page::checkCharset(Tag * tag) {
     if (tag -> isMeta() || tag -> isXmlHead())
         proceedCharset(tag);
     else if (tag -> isHead())
-        sflags = (StateFlags)(sflags | sf_use_user_charset);
+        sflags = StateFlags(sflags | sf_use_user_charset);
 }
 
 void Page::proceedCharset(Tag * tag) { // refactor me: use qbytearray except string
@@ -444,7 +444,7 @@ void Page::proceedCharset(Tag * tag) { // refactor me: use qbytearray except str
         QByteArray xml_encoding = tag -> value(tkn_encoding);
         if (!xml_encoding.isEmpty()) {
             charset = Decoding::charsetType(xml_encoding);
-            sflags = (StateFlags)(sflags | sf_use_doc_charset);
+            sflags = StateFlags(sflags | sf_use_doc_charset);
         }
     } else {
         QByteArray meta = tag -> value(tkn_charset);
@@ -464,7 +464,7 @@ void Page::proceedCharset(Tag * tag) { // refactor me: use qbytearray except str
 
         if (!meta.isEmpty()) {
             charset = Decoding::charsetType(meta);
-            sflags = (StateFlags)(sflags | sf_use_doc_charset);
+            sflags = StateFlags(sflags | sf_use_doc_charset);
         }
     }
 }
