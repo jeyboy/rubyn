@@ -255,8 +255,8 @@ struct ILexerControl {
                 attachPara(grammar -> paraType(lexem), flags, false);
             }
 
-            lex_word = lex_none;
-            lex_delimiter = lex_none;
+//            lex_word = lex_none;
+//            lex_delimiter = lex_none;
         }
     }
 //    inline void replaceToken(const StateLexem & lexem, const uint & flags = slf_none) {
