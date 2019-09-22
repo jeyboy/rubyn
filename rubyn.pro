@@ -20,6 +20,10 @@ SOURCES += main.cpp\
     highlighter/highlighter.cpp \
     lexer/css/css_lexer_frontend.cpp \
     lexer/css/css_predefined.cpp \
+    lexer/html/html_lexer_frontend.cpp \
+    lexer/html/html_predefined.cpp \
+    lexer/js/js_lexer_frontend.cpp \
+    lexer/js/js_predefined.cpp \
     lexer/lexer_context.cpp \
     lexer/ruby/ruby_grammar.cpp \
     lexer/ruby/ruby_lexer_control.cpp \
@@ -28,6 +32,7 @@ SOURCES += main.cpp\
     lexer/ruby/ruby_predefined.cpp \
     lexer/yaml/yaml_lexer_frontend.cpp \
     lexer/yaml/yaml_predefined.cpp \
+    misc/info_collector.cpp \
     project/file.cpp \
     project/project.cpp \
     project/projects.cpp \
@@ -122,7 +127,17 @@ HEADERS  += ide_window.h \
     lexer/css/css_lexer_frontend.h \
     lexer/css/css_predefined.h \
     lexer/css/css_state_lexems.h \
+    lexer/html/html_grammar.h \
+    lexer/html/html_lexer_control.h \
+    lexer/html/html_lexer_frontend.h \
+    lexer/html/html_predefined.h \
+    lexer/html/html_state_lexems.h \
     lexer/ilexer_control.h \
+    lexer/js/js_grammar.h \
+    lexer/js/js_lexer_control.h \
+    lexer/js/js_lexer_frontend.h \
+    lexer/js/js_predefined.h \
+    lexer/js/js_state_lexems.h \
     lexer/lexer_context.h \
     lexer/lexer_stack_flags.h \
     lexer/ruby/_ruby_flags.h \
@@ -138,6 +153,7 @@ HEADERS  += ide_window.h \
     lexer/yaml/yaml_lexer_frontend.h \
     lexer/yaml/yaml_predefined.h \
     lexer/yaml/yaml_state_lexems.h \
+    misc/info_collector.h \
     styles/click_fix_style.h \
     controls/dock_widgets.h \
     editor/idocument.h \

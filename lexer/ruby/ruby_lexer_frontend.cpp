@@ -241,22 +241,20 @@ bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_
     state -> cachingPredicate();
 
     if (state -> cached_length || has_predefined) {
-        LEXEM_TYPE last_non_blank = state -> lastNonBlankLexem();
-
         if (has_predefined)
             state -> lex_word = predefined_lexem;
         else {
             LEXEM_TYPE pot_lex = Predefined::obj().lexem(state -> cached);
 
-            switch(pot_lex) {
-                case lex_yield: { break; } // yield can call through object: 'block.yield'
-                case lex_word: { break; }
+//            switch(pot_lex) {
+//                case lex_yield: { break; } // yield can call through object: 'block.yield'
+//                case lex_word: { break; }
 
-                default: { // proc lex with dot in front like
-                    if (last_non_blank == lex_dot)
-                       pot_lex = lex_word;
-                }
-            }
+//                default: { // proc lex with dot in front like
+//                    if (last_non_blank == lex_dot)
+//                       pot_lex = lex_word;
+//                }
+//            }
 
             state -> lex_word = pot_lex;
         }
@@ -264,27 +262,10 @@ bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_
         if (state -> cached_length) {
             if (state -> lex_word == lex_word)
                 identifyWordType(state);
-            else
+            else {
+                LEXEM_TYPE last_non_blank = state -> lastNonBlankLexem();
                 state -> grammar -> initFlags(flags, state -> lex_word, last_non_blank);
-
-//            if (state -> lex_word == lex_word) {
-//                switch(last_non_blank) {
-//                    case lex_method_def: {
-//                        state -> lex_word = lex_method_def_name;
-//                    break;}
-//                    case lex_module_def: {
-//                        state -> lex_word = lex_module_def_name;
-//                    break;}
-//                    case lex_class_def: {
-//                        state -> lex_word = lex_class_def_name;
-//                    break;}
-//                    default:;
-//                }
-//            }
-
-            Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
-            if (highlightable != hid_none)
-                state -> light(highlightable);
+            }
         }
 
         state -> attachToken(state -> lex_word, flags & slf_word_related);
@@ -292,9 +273,6 @@ bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_
         translateState(state);
 
         if (state -> cached_length) {
-//            if (state -> lex_word == lex_word)
-//                registerVariable(state);
-
             Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
             if (highlightable == hid_none) {
                 highlightable = state -> grammar -> toHighlightable(state -> lex_prev_word);
@@ -1475,6 +1453,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
             break;}
 
 
+            // make inline comments collapsable
             case '#': { // inline comment
                 state -> moveBufferToEnd();
                 state -> next_offset = 0;

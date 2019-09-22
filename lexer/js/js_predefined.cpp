@@ -1,51 +1,15 @@
-#include "css_predefined.h"
+#include "js_predefined.h"
 
 #include <qdebug.h>
 
-using namespace Css;
+using namespace Js;
 
-// https://base64.guru/converter/encode/image
-
-// BASE64 decode
-//QString base64img = jsonObj["photo"].toString();
-//QByteArray by = QByteArray::fromBase64(base64img.toLatin1());
-//QImage img = QImage::fromData(by,"JPEG");
-
-
-
-//-ms-, mso-	Microsoft
-//-moz-	Mozilla
-//-o-, -xv-	Opera Software
-//-atsc-	Advanced Television Standards Committee
-//-wap-	The WAP Forum
-//-khtml-	KDE
-//-webkit-	Apple
-//prince-	YesLogic
-//-ah-	Antenna House
-//-hp-	Hewlett Packard
-//-ro-	Real Objects
-//-rim-	Research In Motion
-//-tc-	TallComponents
-
-
-// https://drafts.csswg.org/selectors-4/
-// https://www.w3.org/TR/?tag=css&status=rec&version=latest
-// https://www.w3.org/Style/CSS/all-properties.en.html
-// https://www.tutorialrepublic.com/css-reference/css3-properties.php
-// https://developer.mozilla.org/ru/docs/Web/CSS/%D0%9F%D1%81%D0%B5%D0%B2%D0%B4%D0%BE-%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D1%8B
-// https://www.smashingmagazine.com/2016/05/an-ultimate-guide-to-css-pseudo-classes-and-pseudo-elements/#backdrop-experimental
+// http://largescalejs.ru/module-pattern/
+// https://www.ecma-international.org/publications/standards/Ecma-262.htm
+// https://www.ecma-international.org/ecma-262/10.0/index.html#sec-ecmascript-standard-built-in-objects
 
 
 Predefined::Predefined() {
-
-//PREDEFINED KEYWORDS
-
-//  initial - represents the value specified as the property’s initial value
-//  inherit - represents the computed value of the property on the element’s parent
-//  unset - acts as either inherit or initial, depending on whether the property is inherited or not
-
-
-
 
 //    ns|* - вхождения всех элементов в пространстве имён ns
 //    *|* - находит все элементы

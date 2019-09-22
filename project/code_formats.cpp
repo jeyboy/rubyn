@@ -39,6 +39,7 @@ QHash<QString, FormatType> CodeFormats::_formats = {
     { QLatin1Literal("rake"),   ft_file_rake },
     { QLatin1Literal("sql"),    ft_file_sql },
     { QLatin1Literal("html"),   ft_file_html },
+    { QLatin1Literal("htm"),    ft_file_html },
     { QLatin1Literal("css"),    ft_file_css },
     { QLatin1Literal("xml"),    ft_file_xml },
     { QLatin1Literal("js"),     ft_file_js },
