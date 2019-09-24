@@ -16,44 +16,46 @@ void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
         }
     }
 
-    if (user_data && user_data -> para_control) {
-        if (!user_data -> para_control -> is_opener) {
-            if (user_data -> level >= 0) {
-                parent -> block_offsets.resize(user_data -> level);
+    if (!user_data || !user_data -> para_control)
+        return;
 
-                if (scope_offsets.length() > 0 && user_data -> level <= scope_offsets.last().level) {
-                    popScopeOffset();
-                }
+
+    if (!user_data -> para_control -> is_opener) {
+        if (user_data -> level >= 0) {
+            parent -> block_offsets.resize(user_data -> level);
+
+            if (scope_offsets.length() > 0 && user_data -> level <= scope_offsets.last().level) {
+                popScopeOffset();
             }
-        } else {
-            if (!user_data -> para_control -> is_oneliner) {
-                is_folding_opener = true;
+        }
+    } else {
+        if (!user_data -> para_control -> is_oneliner) {
+            is_folding_opener = true;
 
-                if (user_data -> level >= 0) {
-                    int indent_len = user_data -> indentSize();
+            if (user_data -> level >= 0) {
+                int indent_len = user_data -> indentSize();
 
-                    if (indent_len >= 0) {
-                        int prev_indent = scope_offsets.size() - 1;
+                if (indent_len >= 0) {
+                    int prev_indent = scope_offsets.size() - 1;
 
-                        if (scope_offsets.size() <= indent_len) {
-                            scope_offsets.resize(indent_len + 1);
-                        }
+                    if (scope_offsets.size() <= indent_len) {
+                        scope_offsets.resize(indent_len + 1);
+                    }
 
-                        scope_offsets[indent_len].level = user_data -> level;
-                        scope_offsets[indent_len].start_block_number = block_number;
-                        if (scope_offsets[indent_len].prev_offset == NO_INFO)
-                            scope_offsets[indent_len].prev_offset = prev_indent;
+                    scope_offsets[indent_len].level = user_data -> level;
+                    scope_offsets[indent_len].start_block_number = block_number;
+                    if (scope_offsets[indent_len].prev_offset == NO_INFO)
+                        scope_offsets[indent_len].prev_offset = prev_indent;
 
-                        if (indent_len > 0) {
-                            parent -> block_offsets.resize(user_data -> level + 1);
-                            parent -> block_offsets[user_data -> level] = indent_len * parent -> symbol_width;
-                        }
+                    if (indent_len > 0) {
+                        parent -> block_offsets.resize(user_data -> level + 1);
+                        parent -> block_offsets[user_data -> level] = indent_len * parent -> symbol_width;
                     }
                 }
             }
-            else if (user_data -> level >= 0) {
-                parent -> block_offsets.resize(user_data -> level);
-            }
+        }
+        else if (user_data -> level >= 0) {
+            parent -> block_offsets.resize(user_data -> level);
         }
     }
 }

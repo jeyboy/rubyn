@@ -308,8 +308,6 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
         DATA_FLAGS_TYPE folding_flags = user_data ? user_data -> foldingState() : 0;
 
         if (folding_flags) {
-            qDebug() << blockByNumber(cache -> block_number).text();
-
             if (!user_data -> isOneliner()) {
                 bool folded = user_data -> isFolded();
 

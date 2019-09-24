@@ -386,8 +386,6 @@ struct ILexerControl {
                         parent -> is_oneliner = lines_between < 2;
                         --user_data -> level;
                     }
-
-                    control_para = prevFoldableInActiveParaLine(parent);
                 }
 
                 if (!replaceable && parent) {
@@ -405,8 +403,14 @@ struct ILexerControl {
                 }
             }
             else para -> closer = nullptr;
+
+            if (parent && parent -> is_oneliner && para -> is_foldable) {
+                control_para = prevFoldableInActiveParaLine(parent);
+                return;
+            }
         }
-        else if (para -> is_foldable) {
+
+        if (para -> is_foldable) {
             control_para = para;
         }
     }
