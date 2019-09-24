@@ -183,7 +183,10 @@ namespace Ruby {
         lex_class,
 
         lex_class_def,
+        lex_class_def_prename,
         lex_class_def_name,
+        lex_class_def_name_begin,
+        lex_class_def_name_end,
         lex_class_def_extension,
         lex_class_def_extender,
         lex_class_def_inheritance,

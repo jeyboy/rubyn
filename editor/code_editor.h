@@ -468,6 +468,10 @@ protected:
     inline void setMouseCursor(const Qt::CursorShape & shape) { viewport() -> setCursor(QCursor(shape)); }
     inline void restoreDefaultMouseCursor() { setMouseCursor(Qt::IBeamCursor); }
 
+    inline QTextBlock blockByNumber(int block_number) {
+        return document() -> findBlockByNumber(block_number);
+    }
+
 //    void procRevision();
     void imitateClick();
     void prepareIcons(const int & size = ICO_WIDTH);

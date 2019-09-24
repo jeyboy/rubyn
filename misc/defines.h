@@ -5,7 +5,7 @@
 #include <qobject.h>
 #include <qstringbuilder.h>
 
-#define DefaultStateLexems lex_min = -7, lex_end_line = -6, lex_end_doc = -5, lex_tab = -4, lex_tabs = -3, lex_blank = -2, lex_blanks = -1, lex_none = 0, lex_error, lex_warning, lex_notice, lex_undefined, lex_ignore, lex_default
+#define DefaultStateLexems lex_min = -7, lex_end_line = -6, lex_end_doc = -5, lex_tab = -4, lex_tabs = -3, lex_blank = -2, lex_blanks = -1, lex_boundaries = lex_tab | lex_tabs | lex_blank | lex_blanks, lex_none = 0, lex_error, lex_warning, lex_notice, lex_undefined, lex_ignore, lex_default
 
 #define NO_INFO -1
 

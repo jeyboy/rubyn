@@ -57,6 +57,7 @@ struct BlockUserData : public QTextBlockUserData {
         return res > udf_none ? res : (hasFolding() ? udf_unfolded : udf_none);
     }
     inline bool hasFolding() { return para_control && para_control -> is_opener; }
+    inline bool isOneliner() { return para_control && para_control -> is_oneliner; }
     inline bool isFolded() { return hasFolding() && (flags & udf_folded) == udf_folded; }
     inline void setFolded(const bool & on) { setFlag(udf_folded, on); }
     inline void invertFoldingState() { setFolded(!isFolded()); }

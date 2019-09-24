@@ -134,73 +134,6 @@ struct ILexerControl {
         return lex_none;
     }
 
-    inline ParaCell * paraParent(int & lines_between, ParaCell * para, const bool & foldable, const bool & only_blockators = false) {
-        ParaCell * it = para -> prev;
-        lines_between = 0;
-
-        while(it) {
-            if (it -> pos == -1) {
-                ++lines_between;
-                it = it -> prev;
-
-                if (it && it -> pos == -1)
-                    it = it -> prev;
-            } else {
-                if (it -> is_opener && it -> is_foldable == foldable) {
-                    if (!only_blockators || (only_blockators && it -> is_blockator))
-                        return it;
-                }
-
-                if (!it -> is_opener && it -> closer) {
-                    it = it -> closer;
-                    // this broke foldable curly brackets
-//                    lines_between += (it -> closer -> is_oneliner && it -> closer -> is_foldable ? 0 : 1);
-                }
-
-                it = it -> prev;
-            }
-        }
-
-        return nullptr;
-    }
-
-//    inline ParaCell * lastNonClosedPara(const bool & replaceable) {
-//        ParaCell * it = !replaceable && active_para ? active_para : para -> prev;
-
-//        while(it) {
-//            if (!it -> close && ((replaceable && it -> para_type == pt_none) || (!replaceable && it -> pos != -1))) {
-//                return it;
-//            }
-
-//            it = it -> prev;
-//        }
-
-//        return nullptr;
-//    }
-//    inline bool paraInActiveParaLine(ParaCell * pcell) {
-//        ParaCell * it = active_para;
-
-//        while(it && it -> para_type != pt_max) {
-//            if (it == pcell)
-//                return true;
-
-//            it = it -> next;
-//        }
-
-//        return false;
-//    }
-//    inline bool paraIsNextToActiveParaLine(ParaCell * pcell) {
-//        ParaCell * it = active_para;
-
-//        if (it) {
-//            while(it -> para_type != pt_none && (it = it -> next));
-//            return it == pcell;
-//        }
-
-//        return false;
-//    }
-
-
     inline void attachToken(const LEXEM_TYPE & lexem, const uint & flags = slf_none) {
         if (token -> next) {
             token = token -> next;
@@ -329,6 +262,86 @@ struct ILexerControl {
         user_data -> addMessage(MsgInfo{lexem, last_light_pos, last_light_len, msg});
     }
 
+
+    inline ParaCell * prevFoldableInActiveParaLine(ParaCell * pcell) {
+        ParaCell * it = pcell;
+
+        while(it && it -> para_type != pt_none) {
+            it = it -> prev;
+
+            if (it -> is_foldable && it -> is_opener)
+                return it;
+        }
+
+        return nullptr;
+    }
+
+//    inline ParaCell * lastNonClosedPara(const bool & replaceable) {
+//        ParaCell * it = !replaceable && active_para ? active_para : para -> prev;
+
+//        while(it) {
+//            if (!it -> close && ((replaceable && it -> para_type == pt_none) || (!replaceable && it -> pos != -1))) {
+//                return it;
+//            }
+
+//            it = it -> prev;
+//        }
+
+//        return nullptr;
+//    }
+//    inline bool paraInActiveParaLine(ParaCell * pcell) {
+//        ParaCell * it = active_para;
+
+//        while(it && it -> para_type != pt_max) {
+//            if (it == pcell)
+//                return true;
+
+//            it = it -> next;
+//        }
+
+//        return false;
+//    }
+//    inline bool paraIsNextToActiveParaLine(ParaCell * pcell) {
+//        ParaCell * it = active_para;
+
+//        if (it) {
+//            while(it -> para_type != pt_none && (it = it -> next));
+//            return it == pcell;
+//        }
+
+//        return false;
+//    }
+
+    inline ParaCell * paraParent(int & lines_between, ParaCell * para, const bool & foldable, const bool & only_blockators = false) {
+        ParaCell * it = para -> prev;
+        lines_between = 0;
+
+        while(it) {
+            if (it -> pos == -1) {
+                ++lines_between;
+                it = it -> prev;
+
+                if (it && it -> pos == -1)
+                    it = it -> prev;
+            } else {
+                if (it -> is_opener && it -> is_foldable == foldable) {
+                    if (!only_blockators || (only_blockators && it -> is_blockator))
+                        return it;
+                }
+
+                if (!it -> is_opener && it -> closer) {
+                    it = it -> closer;
+                    // this broke foldable curly brackets
+//                    lines_between += (it -> closer -> is_oneliner && it -> closer -> is_foldable ? 0 : 1);
+                }
+
+                it = it -> prev;
+            }
+        }
+
+        return nullptr;
+    }
+
     inline void attachPara(const ParaType & ptype, const uint & flags, const bool & closable) {
         if (!ptype) return;
 
@@ -373,6 +386,8 @@ struct ILexerControl {
                         parent -> is_oneliner = lines_between < 2;
                         --user_data -> level;
                     }
+
+                    control_para = prevFoldableInActiveParaLine(parent);
                 }
 
                 if (!replaceable && parent) {
@@ -391,8 +406,7 @@ struct ILexerControl {
             }
             else para -> closer = nullptr;
         }
-
-        if (para -> is_foldable) {
+        else if (para -> is_foldable) {
             control_para = para;
         }
     }

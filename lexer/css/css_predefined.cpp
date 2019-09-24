@@ -34,6 +34,8 @@ using namespace Css;
 // https://www.tutorialrepublic.com/css-reference/css3-properties.php
 // https://developer.mozilla.org/ru/docs/Web/CSS/%D0%9F%D1%81%D0%B5%D0%B2%D0%B4%D0%BE-%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D1%8B
 // https://www.smashingmagazine.com/2016/05/an-ultimate-guide-to-css-pseudo-classes-and-pseudo-elements/#backdrop-experimental
+// https://www.tutorialrepublic.com/css-reference/css3-properties.php
+// https://www.hostinger.com/tutorials/css-cheat-sheet
 
 
 Predefined::Predefined() {

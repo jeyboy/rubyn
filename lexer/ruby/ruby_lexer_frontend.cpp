@@ -260,10 +260,28 @@ bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_
         }
 
         if (state -> cached_length) {
-            if (state -> lex_word == lex_word)
-                identifyWordType(state);
-            else {
-                LEXEM_TYPE last_non_blank = state -> lastNonBlankLexem();
+            LEXEM_TYPE last_non_blank = state -> lastNonBlankLexem();
+
+            if (state -> lex_word == lex_word) {
+                switch(last_non_blank) {
+                    case lex_class_def: {
+                        state -> lex_word = lex_class_def_name;
+                        registerClass(state);
+                    break;}
+
+                    case lex_module_def: {
+                        state -> lex_word = lex_module_def_name;
+                        registerModule(state);
+                    break;}
+
+                    case lex_method_def: {
+                        state -> lex_word = lex_method_def_name;
+                        registerMethod(state);
+                    break;}
+
+                    default: identifyWordType(state);
+                }
+            } else {
                 state -> grammar -> initFlags(flags, state -> lex_word, last_non_blank);
             }
         }

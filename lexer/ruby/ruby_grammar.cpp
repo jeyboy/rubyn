@@ -34,8 +34,8 @@ void Grammar::initParas() {
     para_tokens[lex_do] = pt_open_begin_block; //pt_open_do_block;
     para_tokens[lex_begin] = pt_open_begin_block;
     para_tokens[lex_method_def] = pt_open_method;
-    para_tokens[lex_class_def] = pt_open_begin_block; //pt_open_class;
-    para_tokens[lex_module_def] = pt_open_begin_block; //pt_open_module;
+    para_tokens[lex_class_def] = pt_open_class; //pt_open_class;
+    para_tokens[lex_module_def] = pt_open_module; //pt_open_module;
 
     para_tokens[lex_if] = pt_open_if;
     para_tokens[lex_elsif] = pt_open_elsif;
@@ -484,9 +484,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_blanks: {
             switch(input) {
-                case lex_tab:
-                case lex_tabs:
-                case lex_blank:
+                case lex_boundaries:
                     return lex_blanks;
                 default: return input;
             }
@@ -513,10 +511,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_symbol_key: {
             switch(input) {
-                case lex_blank:
-                case lex_blanks:
-                case lex_tab:
-                case lex_tabs:
+                case lex_boundaries:
                 case lex_end_line:
                     return state;
                 default: return input;
@@ -525,10 +520,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_operator_assigment: {
             switch(input) {
-                case lex_blank:
-                case lex_blanks:
-                case lex_tab:
-                case lex_tabs:
+                case lex_boundaries:
                 case lex_end_line:
                     return state;
                 default: return input;
@@ -624,20 +616,33 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_class_def: {
             switch(input) {
-                case lex_word: return lex_class_def_name;
-                case lex_operator_bit_left_shift: return lex_class_def_extension;
+                case lex_boundaries: return lex_class_def_prename;
                 default: return lex_error;
             }
         }
 
-        case lex_class_def_name: {
+        case lex_class_def_prename: {
             switch(input) {
-                case lex_operator_less: return lex_class_def_inheritance;
-                case lex_semicolon: return lex_block_start;
-                case lex_end_line: return lex_block_start;
+                case lex_class_def_name: return lex_class_def_name_begin;
                 default: return lex_error;
             }
         }
+
+        case lex_class_def_name_begin: {
+            switch(input) {
+                case lex_end_line: return lex_class_def_name_end;
+                default: return lex_error;
+            }
+        }
+
+//        case lex_class_def_name: {
+//            switch(input) {
+//                case lex_operator_less: return lex_class_def_inheritance;
+//                case lex_semicolon: return lex_block_start;
+//                case lex_end_line: return lex_block_start;
+//                default: return lex_error;
+//            }
+//        }
 
         case lex_class_def_extension: {
             switch(input) {
