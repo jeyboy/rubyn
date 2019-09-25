@@ -1987,6 +1987,9 @@ bool LexerFrontend::isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & 
 
         case lex_method:
         case lex_word:
+        case lex_class_def:
+        case lex_method_def:
+        case lex_module_def:
         case lex_const:
         case lex_var_local:
         case lex_var_instance:

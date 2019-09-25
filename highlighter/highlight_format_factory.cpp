@@ -157,13 +157,13 @@ void HighlightFormatFactory::registerParaContentPopupFormat() {
 
 void HighlightFormatFactory::registerBreakpointsRangeFormat() {
     QTextCharFormat format;
-    format.setBackground(QColor::fromRgb(255, 0, 0, 16));
+    format.setBackground(QColor::fromRgb(255, 0, 0, 20));
     _formats.insert(hid_breakpoints_range, format);
 }
 
 void HighlightFormatFactory::registerBreakpointLineFormat() {
     QTextCharFormat format;
-    format.setBackground(QColor::fromRgb(255, 0, 0, 16));
+    format.setBackground(QColor::fromRgb(255, 0, 0, 20));
     _formats.insert(hid_breakpoint_line, format);
 }
 

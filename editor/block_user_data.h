@@ -34,6 +34,7 @@ struct BlockUserData : public QTextBlockUserData {
     ParaCell * para_control;
 
     int level;
+    bool can_have_debug_point;
 
     QList<MsgInfo> * msgs;
 

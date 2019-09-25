@@ -1756,6 +1756,7 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
 
     if (initiate_popup && completions_amount == 1 && completion_prefix == text) {
         applyCompletion(completer -> currentCompletion());
+        completer -> hide();
     } else {
         QRect cr = cursorRect();
         cr.setLeft(cr.left() + extra_area -> width());
