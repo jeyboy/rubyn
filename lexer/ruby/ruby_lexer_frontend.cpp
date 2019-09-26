@@ -264,10 +264,10 @@ bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_
 
             if (state -> lex_word == lex_word) {
                 switch(last_non_blank) {
-                    case lex_class_def: {
-                        state -> lex_word = lex_class_def_name;
-                        registerClass(state);
-                    break;}
+//                    case lex_class_def: {
+//                        state -> lex_word = lex_class_def_name;
+//                        registerClass(state);
+//                    break;}
 
                     case lex_module_def: {
                         state -> lex_word = lex_module_def_name;

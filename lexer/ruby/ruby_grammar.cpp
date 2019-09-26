@@ -370,9 +370,9 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
         case lex_method_def_scoped_name:
         case lex_method_def_var_name:
         case lex_method_call_block_var_name:
-        case lex_class_def_ancestor:
-        case lex_class_def_resolution:
-        case lex_class_def_extender:
+//        case lex_class_def_ancestor:
+//        case lex_class_def_resolution:
+//        case lex_class_def_extender:
         case lex_lambda_def_var_name:
         case lex_proc_def_var_name:
         case lex_include_obj:
@@ -396,7 +396,8 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
 
         case lex_method_def_name:
         case lex_method_def_scope_or_name:
-        case lex_class_def_name:
+        case lex_class_def_name_begin:
+        case lex_class_def_ancestor:
         case lex_module_def_name:
             return hid_name_def;
 
@@ -623,7 +624,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_class_def_prename: {
             switch(input) {
-                case lex_class_def_name: return lex_class_def_name_begin;
+                case lex_word: return lex_class_def_name_begin;
                 default: return lex_error;
             }
         }
@@ -631,6 +632,8 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
         case lex_class_def_name_begin: {
             switch(input) {
                 case lex_end_line: return lex_class_def_name_end;
+                case lex_resolution: return lex_class_def_resolution;
+                case lex_operator_less: return lex_class_def_inheritance;
                 default: return lex_error;
             }
         }
@@ -644,12 +647,12 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 //            }
 //        }
 
-        case lex_class_def_extension: {
-            switch(input) {
-                case lex_word: return lex_class_def_extender;
-                default: return lex_error;
-            }
-        }
+//        case lex_class_def_extension: {
+//            switch(input) {
+//                case lex_word: return lex_class_def_extender;
+//                default: return lex_error;
+//            }
+//        }
 
         case lex_class_def_resolution: {
             switch(input) {
