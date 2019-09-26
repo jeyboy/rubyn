@@ -648,27 +648,19 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
         case lex_class_def_name_part: {
             switch(input) {
                 case lex_end_line: return lex_class_def_name_end;
+                case lex_semicolon: return lex_class_def_name_end;
                 case lex_resolution: return lex_class_def_resolution;
                 case lex_operator_less: return lex_class_def_inheritance;
                 default: return lex_error;
             }
         }
 
-//        case lex_class_def_name: {
-//            switch(input) {
-//                case lex_operator_less: return lex_class_def_inheritance;
-//                case lex_semicolon: return lex_block_start;
-//                case lex_end_line: return lex_block_start;
-//                default: return lex_error;
-//            }
-//        }
-
-//        case lex_class_def_extension: {
-//            switch(input) {
-//                case lex_word: return lex_class_def_extender;
-//                default: return lex_error;
-//            }
-//        }
+        case lex_class_def_extension: {
+            switch(input) {
+                case lex_word: return lex_class_def_extender;
+                default: return lex_error;
+            }
+        }
 
         case lex_class_def_resolution: {
             switch(input) {
@@ -679,8 +671,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_class_def_extender: {
             switch(input) {
-                case lex_semicolon: return lex_block_start;
-                case lex_end_line: return lex_block_start;
+                case lex_end_line: return lex_class_def_name_end;
                 default: return lex_error;
             }
         }

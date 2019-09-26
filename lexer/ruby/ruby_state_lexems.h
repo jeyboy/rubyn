@@ -195,14 +195,14 @@ namespace Ruby {
 
         lex_class_def_inheritance, // class A < B
 
-        lex_class_def_block,
-        lex_class_def_block_end,
+//        lex_class_def_block,
+//        lex_class_def_block_end,
 
-        lex_class_def_short,
-        lex_class_def_short_accessing,
-        lex_class_def_short_method,
-        lex_class_def_short_block,
-        lex_class_def_short_block_end,
+//        lex_class_def_short,
+//        lex_class_def_short_accessing,
+//        lex_class_def_short_method,
+//        lex_class_def_short_block,
+//        lex_class_def_short_block_end,
 
         lex_module,
 
