@@ -640,7 +640,8 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_class_def_prename: {
             switch(input) {
-                case lex_word: return lex_class_def_name_part;
+                case lex_word:
+                case lex_const: return lex_class_def_name_part;
                 default: return lex_error;
             }
         }
@@ -673,14 +674,16 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_class_def_extension: {
             switch(input) {
-                case lex_word: return lex_class_def_extender;
+                case lex_word:
+                case lex_const: return lex_class_def_extender;
                 default: return lex_error;
             }
         }
 
         case lex_class_def_resolution: {
             switch(input) {
-                case lex_word: return lex_class_def_ancestor;
+                case lex_word:
+                case lex_const: return lex_class_def_ancestor;
                 default: return lex_error;
             }
         }
@@ -694,7 +697,12 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_class_def_inheritance: {
             switch(input) {
-                case lex_word: return lex_class_def_ancestor;
+                case lex_blank:
+                case lex_blanks:
+                case lex_tab:
+                case lex_tabs: return lex_class_def_inheritance;
+                case lex_word:
+                case lex_const: return lex_class_def_ancestor;
                 case lex_resolution: return lex_class_def_resolution;
                 default: return lex_error;
             }
@@ -883,30 +891,42 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
         case lex_include_pre_obj: {
             switch(input) {
                 case lex_resolution: return lex_include_resolution;
-                case lex_word: return lex_include_obj_part;
+                case lex_word:
+                case lex_const: return lex_include_obj_part;
                 default: return lex_error;
             }
         }
 
         case lex_include_obj_part: {
             switch(input) {
+                case lex_blank:
+                case lex_blanks:
+                case lex_tab:
+                case lex_tabs: return lex_include_obj_part;
                 case lex_resolution: return lex_include_resolution;
                 case lex_comma: return lex_include_splitter;
+                case lex_end_line: return lex_include_end;
                 default: return lex_error;
             }
         }
 
         case lex_include_resolution: {
             switch(input) {
-                case lex_word: return lex_include_obj_part;
+                case lex_word:
+                case lex_const: return lex_include_obj_part;
                 default: return lex_error;
             }
         }
 
         case lex_include_splitter: {
             switch(input) {
+                case lex_blank:
+                case lex_blanks:
+                case lex_tab:
+                case lex_tabs: return lex_include_splitter;
                 case lex_resolution: return lex_include_resolution;
-                case lex_word: return lex_include_obj_part;
+                case lex_word:
+                case lex_const: return lex_include_obj_part;
                 default: return lex_error;
             }
         }

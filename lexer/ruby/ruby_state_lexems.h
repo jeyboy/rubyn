@@ -317,6 +317,7 @@ namespace Ruby {
         lex_include_obj_part, // part of name
         lex_include_resolution, // ::
         lex_include_splitter, // ,
+        lex_include_end,
 
         lex_extend, // extend some obj
         lex_extend_obj, // part of name
