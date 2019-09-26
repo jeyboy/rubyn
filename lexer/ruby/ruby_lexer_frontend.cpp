@@ -269,15 +269,15 @@ bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_
 //                        registerClass(state);
 //                    break;}
 
-                    case lex_module_def: {
-                        state -> lex_word = lex_module_def_name;
-                        registerModule(state);
-                    break;}
+//                    case lex_module_def: {
+//                        state -> lex_word = lex_module_def_name;
+//                        registerModule(state);
+//                    break;}
 
-                    case lex_method_def: {
-                        state -> lex_word = lex_method_def_name;
-                        registerMethod(state);
-                    break;}
+//                    case lex_method_def: {
+//                        state -> lex_word = lex_method_def_name;
+//                        registerMethod(state);
+//                    break;}
 
                     default: identifyWordType(state);
                 }

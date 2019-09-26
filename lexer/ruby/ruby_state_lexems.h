@@ -184,7 +184,7 @@ namespace Ruby {
 
         lex_class_def,
         lex_class_def_prename, // blank after def
-        lex_class_def_name_begin,
+        lex_class_def_name_part,
         lex_class_def_name_end,
 
         lex_class_def_extension, // class << self
@@ -313,14 +313,14 @@ namespace Ruby {
         lex_require_path,
 
         lex_include, // include some obj
-        lex_include_obj, // part of name
+        lex_include_pre_obj, // space before name
+        lex_include_obj_part, // part of name
         lex_include_resolution, // ::
-        lex_include_name, // full name
+        lex_include_splitter, // ,
 
         lex_extend, // extend some obj
         lex_extend_obj, // part of name
         lex_extend_resolution, // ::
-        lex_extend_name, // full name
 
         lex_undef, // undef method
         lex_undef_arg,

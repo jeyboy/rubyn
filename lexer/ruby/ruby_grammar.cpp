@@ -375,7 +375,6 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
 //        case lex_class_def_extender:
         case lex_lambda_def_var_name:
         case lex_proc_def_var_name:
-        case lex_include_obj:
         case lex_extend_obj:
         case lex_undef_arg:
         case lex_visibility_scope_arg:
@@ -396,8 +395,9 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
 
         case lex_method_def_name:
         case lex_method_def_scope_or_name:
-        case lex_class_def_name_begin:
+        case lex_class_def_name_part:
         case lex_class_def_ancestor:
+        case lex_include_obj_part:
         case lex_module_def_name:
             return hid_name_def;
 
@@ -485,8 +485,10 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_blanks: {
             switch(input) {
-                case lex_boundaries:
-                    return lex_blanks;
+                case lex_tab:
+                case lex_tabs:
+                case lex_blank:
+                case lex_blanks: return lex_blanks;
                 default: return input;
             }
         }
@@ -494,6 +496,8 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
         case lex_tab: {
             switch(input) {
                 case lex_tab: return lex_tabs;
+                case lex_blank:
+                case lex_blanks: return lex_blanks;
                 default: return input;
             }
         }
@@ -512,7 +516,10 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_symbol_key: {
             switch(input) {
-                case lex_boundaries:
+                case lex_tab:
+                case lex_tabs:
+                case lex_blank:
+                case lex_blanks:
                 case lex_end_line:
                     return state;
                 default: return input;
@@ -521,7 +528,10 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_operator_assigment: {
             switch(input) {
-                case lex_boundaries:
+                case lex_tab:
+                case lex_tabs:
+                case lex_blank:
+                case lex_blanks:
                 case lex_end_line:
                     return state;
                 default: return input;
@@ -592,6 +602,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
             }
         }
 
+
         case lex_module_def: {
             switch(input) {
                 case lex_word: return lex_module_def_name;
@@ -615,21 +626,26 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
             }
         }
 
+
         case lex_class_def: {
             switch(input) {
-                case lex_boundaries: return lex_class_def_prename;
+                case lex_tab:
+                case lex_tabs:
+                case lex_blank:
+                case lex_blanks: return lex_class_def_prename;
+
                 default: return lex_error;
             }
         }
 
         case lex_class_def_prename: {
             switch(input) {
-                case lex_word: return lex_class_def_name_begin;
+                case lex_word: return lex_class_def_name_part;
                 default: return lex_error;
             }
         }
 
-        case lex_class_def_name_begin: {
+        case lex_class_def_name_part: {
             switch(input) {
                 case lex_end_line: return lex_class_def_name_end;
                 case lex_resolution: return lex_class_def_resolution;
@@ -685,6 +701,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
                 default: return lex_error;
             }
         }
+
 
         case lex_method_def: {
             switch(input) {
@@ -837,20 +854,66 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
             }
         }
 
+        case lex_method_call_args_close: {
+            switch(input) {
+                case lex_end_line: return lex_none;
+                case lex_semicolon: return lex_none;
+                default: return lex_error;
+            }
+        }
+
+
+        case lex_include: {
+            switch(input) {
+                case lex_blank:
+                case lex_blanks:
+                case lex_tab:
+                case lex_tabs: return lex_include_pre_obj;
+                default: return lex_error;
+            }
+        }
+
+        case lex_include_pre_obj: {
+            switch(input) {
+                case lex_resolution: return lex_include_resolution;
+                case lex_word: return lex_include_obj_part;
+                default: return lex_error;
+            }
+        }
+
+        case lex_include_obj_part: {
+            switch(input) {
+                case lex_resolution: return lex_include_resolution;
+                case lex_comma: return lex_include_splitter;
+                default: return lex_error;
+            }
+        }
+
+        case lex_include_resolution: {
+            switch(input) {
+                case lex_word: return lex_include_obj_part;
+                default: return lex_error;
+            }
+        }
+
+        case lex_include_splitter: {
+            switch(input) {
+                case lex_resolution: return lex_include_resolution;
+                case lex_word: return lex_include_obj_part;
+                default: return lex_error;
+            }
+        }
+
+
+
+
+
         case lex_word: {
             switch(input) {
                 case lex_blank: return lex_method_call_vars_start;
                 case lex_blanks: return lex_method_call_vars_start;
                 case lex_wrap_open: return lex_method_call_args_start;
                 case lex_dot: return lex_method_access;
-                default: return lex_error;
-            }
-        }
-
-        case lex_method_call_args_close: {
-            switch(input) {
-                case lex_end_line: return lex_none;
-                case lex_semicolon: return lex_none;
                 default: return lex_error;
             }
         }
