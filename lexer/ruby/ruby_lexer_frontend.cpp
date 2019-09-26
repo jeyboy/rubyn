@@ -100,8 +100,8 @@ void LexerFrontend::identifyWordType(LexerControl * state) {
     }
 }
 
-void LexerFrontend::translateState(LexerControl * state) {
-    LEXEM_TYPE new_state = state -> grammar -> translate(state -> lex_prev_word, state -> lex_delimiter);
+LEXEM_TYPE LexerFrontend::translateState(LexerControl * state, const LEXEM_TYPE & lex1, const LEXEM_TYPE & lex2) {
+    LEXEM_TYPE new_state = state -> grammar -> translate(lex1, lex2);
 
     if (new_state == lex_error) {
         state -> lightWithMessage(
@@ -111,19 +111,21 @@ void LexerFrontend::translateState(LexerControl * state) {
         //return false;
     }
 
-    state -> lex_prev_word = new_state;
+    return new_state;
 
-    new_state = state -> grammar -> translate(state -> lex_prev_word, state -> lex_word);
+//    state -> lex_prev_word = new_state;
 
-    if (new_state == lex_error) {
-        state -> lightWithMessage(
-            lex_error,
-            ERROR_STATE(QByteArrayLiteral("Wrong token state!!!"), state -> lex_prev_word, state -> lex_word)
-        );
-        //return false;
-    }
+//    new_state = state -> grammar -> translate(state -> lex_prev_word, state -> lex_word);
 
-    state -> lex_word = new_state;
+//    if (new_state == lex_error) {
+//        state -> lightWithMessage(
+//            lex_error,
+//            ERROR_STATE(QByteArrayLiteral("Wrong token state!!!"), state -> lex_prev_word, state -> lex_word)
+//        );
+//        //return false;
+//    }
+
+//    state -> lex_word = new_state;
 }
 
 
@@ -288,22 +290,22 @@ bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_
 
         state -> attachToken(state -> lex_word, flags & slf_word_related);
 
-        translateState(state);
+        state -> lex_word = translateState(state, state -> lex_prev_word, state -> lex_word);
 
         if (state -> cached_length) {
             Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
-            if (highlightable == hid_none) {
-                highlightable = state -> grammar -> toHighlightable(state -> lex_prev_word);
-            }
+//            if (highlightable == hid_none) {
+//                highlightable = state -> grammar -> toHighlightable(state -> lex_prev_word);
+//            }
 
             if (highlightable != hid_none)
                 state -> light(highlightable);
         }
     }
-    else state -> lex_word = lex_none;
+//    else state -> lex_word = lex_none;
 
     if (state -> next_offset) {
-        LEXEM_TYPE prev_delimiter = state -> lex_delimiter;
+//        LEXEM_TYPE prev_delimiter = state -> lex_delimiter;
 
         state -> cachingDelimiter();
 
@@ -312,25 +314,11 @@ bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_
                 Predefined::obj().lexem(state -> cached) :
                 predefined_delimiter;
 
-        Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_delimiter);
-        if (highlightable != hid_none)
-            state -> light(highlightable);
-
         state -> attachToken(state -> lex_delimiter, flags & slf_delimiter_related);
 
-        if (state -> lex_word == lex_none) {
-            LEXEM_TYPE new_state = state -> grammar -> translate(prev_delimiter, state -> lex_delimiter);
+        state -> lex_word = translateState(state, state -> lex_word, state -> lex_delimiter);
 
-            if (new_state == lex_error) {
-                state -> lightWithMessage(
-                    lex_error,
-                    ERROR_STATE(QByteArrayLiteral("Wrong delimiter satisfy state!!!"), prev_delimiter, state -> lex_delimiter)
-                );
-                //return false;
-            }
-
-            state -> lex_delimiter = new_state;
-        }
+        state -> light(state -> grammar -> toHighlightable(state -> lex_word));
     }
 
     state -> dropCached();
@@ -1690,7 +1678,10 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
             case 0: {
                 state -> next_offset = 0;
-                cutWord(state, lex_end_line);
+                cutWord(state);
+
+                state -> lex_word = translateState(state, state -> lex_word, lex_end_line);
+
                 goto exit;
             /*break;*/}
 

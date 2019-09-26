@@ -90,10 +90,6 @@ struct ILexerControl {
         if (lex_word != lex_none) {
             lex_prev_word = lex_word;
         }
-
-        if (cached_length) {
-//            lex_prev_delimiter = lex_none;
-        }
     }
     inline void cachingDelimiter() {
 //        if (lex_word == lex_none)
@@ -218,6 +214,9 @@ struct ILexerControl {
     }
 
     inline void light(const Identifier & uid) {
+        if (uid == hid_none)
+            return;
+
 //        if (uid == hid_error)
 //            return;
 

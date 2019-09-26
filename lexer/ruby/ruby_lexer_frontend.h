@@ -36,7 +36,7 @@ namespace Ruby {
         void registerModule(LexerControl * state);
 
         void identifyWordType(LexerControl * state);
-        void translateState(LexerControl * state);
+        LEXEM_TYPE translateState(LexerControl * state, const LEXEM_TYPE & lex1, const LEXEM_TYPE & lex2);
         bool cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem = lex_none,
                      const LEXEM_TYPE & predefined_delimiter = lex_none, StackLexemFlag flags = slf_none);
 
