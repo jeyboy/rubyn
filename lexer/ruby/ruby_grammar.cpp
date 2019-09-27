@@ -370,12 +370,8 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
         case lex_method_def_scoped_name:
         case lex_method_def_var_name:
         case lex_method_call_block_var_name:
-//        case lex_class_def_ancestor:
-//        case lex_class_def_resolution:
-//        case lex_class_def_extender:
         case lex_lambda_def_var_name:
         case lex_proc_def_var_name:
-        case lex_extend_obj:
         case lex_undef_arg:
         case lex_visibility_scope_arg:
         case lex_alias_base_name:
@@ -397,8 +393,9 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
         case lex_method_def_scope_or_name:
         case lex_class_def_name_part:
         case lex_class_def_ancestor:
+        case lex_module_def_name_part:
+        case lex_module_def_ancestor:
         case lex_include_obj_part:
-        case lex_module_def_name:
             return hid_name_def;
 
         case lex_method:
@@ -514,117 +511,71 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
             }
         }
 
-        case lex_symbol_key: {
+
+        case lex_extend: { // same like include
             switch(input) {
-                case lex_tab:
-                case lex_tabs:
                 case lex_blank:
                 case lex_blanks:
-                case lex_end_line:
-                    return state;
-                default: return input;
+                case lex_tab:
+                case lex_tabs: return lex_include_pre_obj;
+                default: return lex_error;
             }
         }
 
-        case lex_operator_assigment: {
+
+        case lex_include: {
             switch(input) {
-                case lex_tab:
-                case lex_tabs:
                 case lex_blank:
                 case lex_blanks:
-                case lex_end_line:
-                    return state;
-                default: return input;
-            }
-        }
-
-        case lex_string_start: {
-            switch(input) {
-                case lex_string_content: return lex_string_content;
-                case lex_string_end: return lex_string_end;
+                case lex_tab:
+                case lex_tabs: return lex_include_pre_obj;
                 default: return lex_error;
             }
         }
 
-        case lex_string_content: {
+        case lex_include_pre_obj: {
             switch(input) {
-                case lex_string_end: return lex_string_end;
+                case lex_resolution: return lex_include_resolution;
+                case lex_word:
+                case lex_const: return lex_include_obj_part;
                 default: return lex_error;
             }
         }
 
-        case lex_estring_start: {
+        case lex_include_obj_part: {
             switch(input) {
-                case lex_estring_content: return lex_estring_content;
-                case lex_estring_interception: return lex_estring_interception;
-                case lex_estring_end: return lex_estring_end;
+                case lex_blank:
+                case lex_blanks:
+                case lex_tab:
+                case lex_tabs: return lex_include_obj_part;
+                case lex_resolution: return lex_include_resolution;
+                case lex_comma: return lex_include_splitter;
+                case lex_end_line: return lex_include_end;
                 default: return lex_error;
             }
         }
 
-        case lex_estring_content: {
+        case lex_include_resolution: {
             switch(input) {
-                case lex_estring_end: return lex_estring_end;
-                case lex_estring_interception: return lex_estring_interception;
+                case lex_word:
+                case lex_const: return lex_include_obj_part;
                 default: return lex_error;
             }
         }
 
-        case lex_command_start: {
+        case lex_include_splitter: {
             switch(input) {
-                case lex_command_content: return lex_command_content;
-                case lex_command_interception: return lex_command_interception;
-                case lex_command_end: return lex_command_end;
+                case lex_blank:
+                case lex_blanks:
+                case lex_tab:
+                case lex_tabs: return lex_include_splitter;
+                case lex_resolution: return lex_include_resolution;
+                case lex_word:
+                case lex_const: return lex_include_obj_part;
                 default: return lex_error;
             }
         }
 
-        case lex_command_content: {
-            switch(input) {
-                case lex_command_end: return lex_command_end;
-                case lex_command_interception: return lex_command_interception;
-                default: return lex_error;
-            }
-        }
-
-        case lex_percent_presentation_start: {
-            switch(input) {
-                case lex_percent_presentation_content: return lex_percent_presentation_content;
-                case lex_percent_presentation_end: return lex_percent_presentation_end;
-                default: return lex_error;
-            }
-        }
-
-        case lex_percent_presentation_content: {
-            switch(input) {
-                case lex_percent_presentation_end: return lex_percent_presentation_end;
-                default: return lex_error;
-            }
-        }
-
-
-        case lex_module_def: {
-            switch(input) {
-                case lex_word: return lex_module_def_name;
-                case lex_module_def_resolution: return lex_module_def_resolution;
-                default: return lex_error;
-            }
-        }
-
-        case lex_module_def_resolution: {
-            switch(input) {
-                case lex_word: return lex_module_def_name;
-                default: return lex_error;
-            }
-        }
-
-        case lex_module_def_name: {
-            switch(input) {
-                case lex_resolution: return lex_module_def_resolution;
-                case lex_end_line: return lex_module_def_block;
-                default: return lex_error;
-            }
-        }
 
 
         case lex_class_def: {
@@ -716,6 +667,139 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
                 default: return lex_error;
             }
         }
+
+
+
+        case lex_module_def: {
+            switch(input) {
+                case lex_tab:
+                case lex_tabs:
+                case lex_blank:
+                case lex_blanks: return lex_module_def_prename;
+                case lex_resolution: return lex_module_def_resolution;
+                default: return lex_error;
+            }
+        }
+
+        case lex_module_def_resolution: {
+            switch(input) {
+                case lex_word:
+                case lex_const: return lex_module_def_ancestor;
+                default: return lex_error;
+            }
+        }
+
+        case lex_module_def_name_part: {
+            switch(input) {
+                case lex_resolution: return lex_module_def_resolution;
+                case lex_end_line: return lex_module_def_name_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_module_def_ancestor: {
+            switch(input) {
+                case lex_resolution: return lex_module_def_resolution;
+                case lex_end_line: return lex_block_start;
+                default: return lex_error;
+            }
+        }
+
+
+
+
+
+
+
+
+        case lex_symbol_key: {
+            switch(input) {
+                case lex_tab:
+                case lex_tabs:
+                case lex_blank:
+                case lex_blanks:
+                case lex_end_line:
+                    return state;
+                default: return input;
+            }
+        }
+
+        case lex_operator_assigment: {
+            switch(input) {
+                case lex_tab:
+                case lex_tabs:
+                case lex_blank:
+                case lex_blanks:
+                case lex_end_line:
+                    return state;
+                default: return input;
+            }
+        }
+
+        case lex_string_start: {
+            switch(input) {
+                case lex_string_content: return lex_string_content;
+                case lex_string_end: return lex_string_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_string_content: {
+            switch(input) {
+                case lex_string_end: return lex_string_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_estring_start: {
+            switch(input) {
+                case lex_estring_content: return lex_estring_content;
+                case lex_estring_interception: return lex_estring_interception;
+                case lex_estring_end: return lex_estring_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_estring_content: {
+            switch(input) {
+                case lex_estring_end: return lex_estring_end;
+                case lex_estring_interception: return lex_estring_interception;
+                default: return lex_error;
+            }
+        }
+
+        case lex_command_start: {
+            switch(input) {
+                case lex_command_content: return lex_command_content;
+                case lex_command_interception: return lex_command_interception;
+                case lex_command_end: return lex_command_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_command_content: {
+            switch(input) {
+                case lex_command_end: return lex_command_end;
+                case lex_command_interception: return lex_command_interception;
+                default: return lex_error;
+            }
+        }
+
+        case lex_percent_presentation_start: {
+            switch(input) {
+                case lex_percent_presentation_content: return lex_percent_presentation_content;
+                case lex_percent_presentation_end: return lex_percent_presentation_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_percent_presentation_content: {
+            switch(input) {
+                case lex_percent_presentation_end: return lex_percent_presentation_end;
+                default: return lex_error;
+            }
+        }
+
 
 
         case lex_method_def: {
@@ -878,60 +962,6 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
         }
 
 
-        case lex_include: {
-            switch(input) {
-                case lex_blank:
-                case lex_blanks:
-                case lex_tab:
-                case lex_tabs: return lex_include_pre_obj;
-                default: return lex_error;
-            }
-        }
-
-        case lex_include_pre_obj: {
-            switch(input) {
-                case lex_resolution: return lex_include_resolution;
-                case lex_word:
-                case lex_const: return lex_include_obj_part;
-                default: return lex_error;
-            }
-        }
-
-        case lex_include_obj_part: {
-            switch(input) {
-                case lex_blank:
-                case lex_blanks:
-                case lex_tab:
-                case lex_tabs: return lex_include_obj_part;
-                case lex_resolution: return lex_include_resolution;
-                case lex_comma: return lex_include_splitter;
-                case lex_end_line: return lex_include_end;
-                default: return lex_error;
-            }
-        }
-
-        case lex_include_resolution: {
-            switch(input) {
-                case lex_word:
-                case lex_const: return lex_include_obj_part;
-                default: return lex_error;
-            }
-        }
-
-        case lex_include_splitter: {
-            switch(input) {
-                case lex_blank:
-                case lex_blanks:
-                case lex_tab:
-                case lex_tabs: return lex_include_splitter;
-                case lex_resolution: return lex_include_resolution;
-                case lex_word:
-                case lex_const: return lex_include_obj_part;
-                default: return lex_error;
-            }
-        }
-
-
 
 
 
@@ -968,7 +998,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_none: {
             switch(input) {
-                case lex_module_def_block_end: return lex_none;
+//                case lex_module_def_block_end: return lex_none;
                 default: return lex_error;
             }
         }

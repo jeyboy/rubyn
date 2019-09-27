@@ -74,7 +74,7 @@ public:
     inline uint incOpened() {
         ++opened_count;
         qDebug() << "incOpened" << (opened_count);
-        Projects::obj().fileUsabilityChanged(this);
+//        Projects::obj().fileUsabilityChanged(this);
         return opened_count;
     }
     inline uint decOpened() {

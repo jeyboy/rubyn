@@ -312,8 +312,8 @@ void TabsBlock::closeTab(QListWidgetItem * tab) {
             }
         }
 
-        file -> decOpened();
         _bar -> _tabs_linkages.remove(file -> uid());
+        file -> decOpened();
     }
 
     _bar -> removeTab(tab);

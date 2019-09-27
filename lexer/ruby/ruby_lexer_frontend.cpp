@@ -103,12 +103,22 @@ void LexerFrontend::identifyWordType(LexerControl * state) {
 LEXEM_TYPE LexerFrontend::translateState(LexerControl * state, const LEXEM_TYPE & lex1, const LEXEM_TYPE & lex2) {
     LEXEM_TYPE new_state = state -> grammar -> translate(lex1, lex2);
 
-    if (new_state == lex_error) {
-        state -> lightWithMessage(
-            lex_error,
-            ERROR_STATE(QByteArrayLiteral("Wrong prev delimiter satisfy state!!!"), state -> lex_prev_word, state -> lex_delimiter)
-        );
-        //return false;
+    switch(new_state) {
+        case lex_error: {
+            state -> lightWithMessage(
+                lex_error,
+                ERROR_STATE(QByteArrayLiteral("Wrong prev delimiter satisfy state!!!"), state -> lex_prev_word, state -> lex_delimiter)
+            );
+            //return false;
+        break;}
+
+        case lex_word: {
+            // check word on availability in variables, methods and objects
+        break;}
+
+        case lex_const: {
+            // check word on availability in constants
+        break;}
     }
 
     return new_state;
@@ -1921,7 +1931,7 @@ bool LexerFrontend::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & 
         case lex_global_post_hook:
 
         case lex_alias:
-        case lex_operator_and_word:
+        case lex_operator_and_literal:
 
         case lex_begin:
         case lex_loop_break:
@@ -1947,7 +1957,7 @@ bool LexerFrontend::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & 
         case lex_module_def:
         case lex_loop_next:
         case lex_operator_not:
-        case lex_operator_or_word:
+        case lex_operator_or_literal:
         case lex_visibility_scope:
         case lex_proc_def:
         case lex_raise:

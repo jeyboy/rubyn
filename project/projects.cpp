@@ -1,6 +1,7 @@
 #include "projects.h"
 #include "project.h"
 
+#include "controls/logger.h"
 #include "project/ifolder.h"
 #include "project/file.h"
 
@@ -44,7 +45,13 @@ void Projects::fileUsabilityChanged(File * file) {
     if (file -> openedAmount() == 0 && file -> isExternal()) {
         blockSignals(true);
         qDebug() << "Projects::fileUsabilityChanged remove file";
-        delete _external_files[file -> uid()];
+        QString uid = file -> uid();
+        if (_external_files.contains(uid)) {
+            delete _external_files.take(uid);
+        } else {
+            Logger::obj().error(LStr("Projects"), LStr("External file UID is not found while deleting"));
+        }
+
         blockSignals(false);
     }
 }
@@ -83,7 +90,7 @@ bool Projects::identificate(const QString & name, void * folder, File *& file) {
 
         if (!file) {
             QFileInfo finfo(name);
-            file = new File(0, finfo.baseName(), name);
+            file = new File(0, finfo.fileName(), name, File::fo_open);
             file -> setExternal(true);
             obj()._external_files.insert(file -> uid(), file);
         }

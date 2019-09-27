@@ -41,57 +41,59 @@ namespace Ruby {
         lex_var_instance            = 21 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
         lex_var_object              = 22 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
         lex_var_global              = 23 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
+        lex_var_or_method           = 24 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
+        lex_unknown_var_or_method   = 25 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
 
 
-        lex_operator_assigment                  = 24 | lex_ruby_ternary_braker, // =
-        lex_operator_comparison                 = 25 | lex_ruby_ternary_braker, // ==
-        lex_operator_equality                   = 26 | lex_ruby_ternary_braker, // ===
-        lex_operator_not_equal                  = 27 | lex_ruby_ternary_braker, // !=
+        lex_operator_assigment                  = 30 | lex_ruby_ternary_braker, // =
+        lex_operator_comparison                 = 31 | lex_ruby_ternary_braker, // ==
+        lex_operator_equality                   = 32 | lex_ruby_ternary_braker, // ===
+        lex_operator_not_equal                  = 33 | lex_ruby_ternary_braker, // !=
 
-        lex_operator_less                       = 28 | lex_ruby_ternary_braker, // <
-        lex_operator_less_eql                   = 29 | lex_ruby_ternary_braker, // <=
-        lex_operator_great                      = 30 | lex_ruby_ternary_braker, // >
-        lex_operator_great_eql                  = 31 | lex_ruby_ternary_braker, // >=
+        lex_operator_less                       = 34 | lex_ruby_ternary_braker, // <
+        lex_operator_less_eql                   = 35 | lex_ruby_ternary_braker, // <=
+        lex_operator_great                      = 36 | lex_ruby_ternary_braker, // >
+        lex_operator_great_eql                  = 37 | lex_ruby_ternary_braker, // >=
 
-        lex_operator_sort                       = 32 | lex_ruby_ternary_braker, // <=>
+        lex_operator_sort                       = 38 | lex_ruby_ternary_braker, // <=>
 
-        lex_operator_add                        = 33 | lex_ruby_ternary_braker, // +
-        lex_operator_add_assigment              = 34 | lex_ruby_ternary_braker, // +=
-        lex_operator_increase                   = 35 | lex_ruby_ternary_braker, // ++
-        lex_operator_minus                      = 36 | lex_ruby_ternary_braker, // -
-        lex_operator_minus_assigment            = 37 | lex_ruby_ternary_braker, // -=
-        lex_operator_decrease                   = 38 | lex_ruby_ternary_braker, // --
-        lex_operator_multiplication             = 39 | lex_ruby_ternary_braker, // *
-        lex_operator_multiplication_assigment   = 40 | lex_ruby_ternary_braker, // *=
-        lex_operator_division                   = 41 | lex_ruby_ternary_braker, // /
-        lex_operator_division_assigment         = 42 | lex_ruby_ternary_braker, // /=
-        lex_operator_exponentiation             = 43 | lex_ruby_ternary_braker, // **
-        lex_operator_exponentiation_assigment   = 44 | lex_ruby_ternary_braker, // **=
-        lex_operator_modulus                    = 45 | lex_ruby_ternary_braker, // %
-        lex_operator_modulus_assigment          = 46 | lex_ruby_ternary_braker, // %=
+        lex_operator_add                        = 39 | lex_ruby_ternary_braker, // +
+        lex_operator_add_assigment              = 40 | lex_ruby_ternary_braker, // +=
+        lex_operator_increase                   = 41 | lex_ruby_ternary_braker, // ++
+        lex_operator_minus                      = 42 | lex_ruby_ternary_braker, // -
+        lex_operator_minus_assigment            = 43 | lex_ruby_ternary_braker, // -=
+        lex_operator_decrease                   = 44 | lex_ruby_ternary_braker, // --
+        lex_operator_multiplication             = 45 | lex_ruby_ternary_braker, // *
+        lex_operator_multiplication_assigment   = 46 | lex_ruby_ternary_braker, // *=
+        lex_operator_division                   = 47 | lex_ruby_ternary_braker, // /
+        lex_operator_division_assigment         = 48 | lex_ruby_ternary_braker, // /=
+        lex_operator_exponentiation             = 49 | lex_ruby_ternary_braker, // **
+        lex_operator_exponentiation_assigment   = 50 | lex_ruby_ternary_braker, // **=
+        lex_operator_modulus                    = 51 | lex_ruby_ternary_braker, // %
+        lex_operator_modulus_assigment          = 52 | lex_ruby_ternary_braker, // %=
 
-        lex_operator_bit_and                    = 47 | lex_ruby_ternary_braker, // &
-        lex_operator_bit_or                     = 48 | lex_ruby_ternary_braker, // |
-        lex_operator_bit_exclusive_or           = 49 | lex_ruby_ternary_braker, // ^
-        lex_operator_bit_not                    = 50 | lex_ruby_ternary_braker, // ~
-        lex_operator_bit_left_shift             = 51 | lex_ruby_ternary_braker, // <<
-        lex_operator_bit_right_shift            = 52 | lex_ruby_ternary_braker, // >>
+        lex_operator_bit_and                    = 53 | lex_ruby_ternary_braker, // &
+        lex_operator_bit_or                     = 54 | lex_ruby_ternary_braker, // |
+        lex_operator_bit_exclusive_or           = 55 | lex_ruby_ternary_braker, // ^
+        lex_operator_bit_not                    = 56 | lex_ruby_ternary_braker, // ~
+        lex_operator_bit_left_shift             = 57 | lex_ruby_ternary_braker, // <<
+        lex_operator_bit_right_shift            = 58 | lex_ruby_ternary_braker, // >>
 
-        lex_operator_bit_and_assigment          = 53 | lex_ruby_ternary_braker, // &=
-        lex_operator_bit_or_assigment           = 54 | lex_ruby_ternary_braker, // |=
-        lex_operator_bit_exclusive_or_assigment = 55 | lex_ruby_ternary_braker, // ^=
-        lex_operator_bit_left_shift_assigment   = 56 | lex_ruby_ternary_braker, // <<=
-        lex_operator_bit_right_shift_assigment  = 57 | lex_ruby_ternary_braker, // >>=
+        lex_operator_bit_and_assigment          = 59 | lex_ruby_ternary_braker, // &=
+        lex_operator_bit_or_assigment           = 60 | lex_ruby_ternary_braker, // |=
+        lex_operator_bit_exclusive_or_assigment = 61 | lex_ruby_ternary_braker, // ^=
+        lex_operator_bit_left_shift_assigment   = 62 | lex_ruby_ternary_braker, // <<=
+        lex_operator_bit_right_shift_assigment  = 63 | lex_ruby_ternary_braker, // >>=
 
-        lex_operator_and_word                   = 58 | lex_ruby_ternary_braker,
-        lex_operator_and                        = 59 | lex_ruby_ternary_braker, // &&
-        lex_operator_and_assigment              = 60 | lex_ruby_ternary_braker, // &&=
-        lex_operator_or_word                    = 61 | lex_ruby_ternary_braker,
-        lex_operator_or                         = 62 | lex_ruby_ternary_braker, // ||
-        lex_operator_or_assigment               = 63 | lex_ruby_ternary_braker, // ||=
-        lex_operator_not                        = 64 | lex_ruby_ternary_braker, // !
+        lex_operator_and_literal                = 64 | lex_ruby_ternary_braker,
+        lex_operator_and                        = 65 | lex_ruby_ternary_braker, // &&
+        lex_operator_and_assigment              = 66 | lex_ruby_ternary_braker, // &&=
+        lex_operator_or_literal                 = 67 | lex_ruby_ternary_braker,
+        lex_operator_or                         = 68 | lex_ruby_ternary_braker, // ||
+        lex_operator_or_assigment               = 69 | lex_ruby_ternary_braker, // ||=
+        lex_operator_not                        = 70 | lex_ruby_ternary_braker, // !
 
-        lex_operator_safe_navigation = 65, // &. // ruby 2.3+
+        lex_operator_safe_navigation = 71, // &. // ruby 2.3+
 
         lex_loop,
         lex_yield,
@@ -180,7 +182,7 @@ namespace Ruby {
         lex_method_call_block_vars_end,
         lex_method_call_block_end,
 
-        lex_class,
+//        lex_class,
 
         lex_class_def,
         lex_class_def_prename, // blank after def
@@ -204,13 +206,15 @@ namespace Ruby {
 //        lex_class_def_short_block,
 //        lex_class_def_short_block_end,
 
-        lex_module,
+//        lex_module,
 
         lex_module_def,
-        lex_module_def_name,
+        lex_module_def_prename,
+        lex_module_def_name_part,
+        lex_module_def_name_end,
+
         lex_module_def_resolution,
-        lex_module_def_block,
-        lex_module_def_block_end,
+        lex_module_def_ancestor,
 
 
         lex_lambda_def,
@@ -320,8 +324,6 @@ namespace Ruby {
         lex_include_end,
 
         lex_extend, // extend some obj
-        lex_extend_obj, // part of name
-        lex_extend_resolution, // ::
 
         lex_undef, // undef method
         lex_undef_arg,
