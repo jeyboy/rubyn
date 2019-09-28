@@ -512,17 +512,8 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
         }
 
 
-        case lex_extend: { // same like include
-            switch(input) {
-                case lex_blank:
-                case lex_blanks:
-                case lex_tab:
-                case lex_tabs: return lex_include_pre_obj;
-                default: return lex_error;
-            }
-        }
-
-
+        case lex_extend:
+        case lex_prepend:
         case lex_include: {
             switch(input) {
                 case lex_blank:
@@ -693,6 +684,15 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
             switch(input) {
                 case lex_resolution: return lex_module_def_resolution;
                 case lex_end_line: return lex_module_def_name_end;
+                default: return lex_error;
+            }
+        }
+
+        case lex_module_def_prename: {
+            switch(input) {
+                case lex_resolution: return lex_module_def_resolution;
+                case lex_word:
+                case lex_const: return lex_module_def_name_part;
                 default: return lex_error;
             }
         }

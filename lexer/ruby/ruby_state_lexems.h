@@ -324,6 +324,7 @@ namespace Ruby {
         lex_include_end,
 
         lex_extend, // extend some obj
+        lex_prepend, // prepend some obj
 
         lex_undef, // undef method
         lex_undef_arg,

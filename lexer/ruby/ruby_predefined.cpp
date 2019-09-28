@@ -68,15 +68,21 @@ Predefined::Predefined() {
 
     keys.insert(QByteArrayLiteral("lambda"), lex_lambda_def);
     keys.insert(QByteArrayLiteral("module"), lex_module_def); // Creates or opens a module
+    keys.insert(QByteArrayLiteral("module_function"), lex_visibility_scope); // Creates module functions for the named methods
     keys.insert(QByteArrayLiteral("next"), lex_loop_next); // Skips the rest of the block
     keys.insert(QByteArrayLiteral("new"), lex_method);
     keys.insert(QByteArrayLiteral("nil"), lex_method); // A false value usually indicating “no value” or “unknown”
     keys.insert(QByteArrayLiteral("not"), lex_operator_not); // Inverts the following boolean expression
     keys.insert(QByteArrayLiteral("or"), lex_operator_or_literal); // Boolean or with lower precedence than ||
     keys.insert(QByteArrayLiteral("private"), lex_visibility_scope);
+    keys.insert(QByteArrayLiteral("private_constant"), lex_visibility_scope);
+    keys.insert(QByteArrayLiteral("private_class_method"), lex_visibility_scope);
+    keys.insert(QByteArrayLiteral("prepend"), lex_prepend);
     keys.insert(QByteArrayLiteral("proc"), lex_proc_def);
     keys.insert(QByteArrayLiteral("protected"), lex_visibility_scope);
     keys.insert(QByteArrayLiteral("public"), lex_visibility_scope);
+    keys.insert(QByteArrayLiteral("public_constant"), lex_visibility_scope);
+    keys.insert(QByteArrayLiteral("public_class_method"), lex_visibility_scope);
     keys.insert(QByteArrayLiteral("raise"), lex_raise);
     keys.insert(QByteArrayLiteral("redo"), lex_loop_redo); // Restarts execution in the current block
     keys.insert(QByteArrayLiteral("require"), lex_require);

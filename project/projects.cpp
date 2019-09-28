@@ -89,6 +89,9 @@ bool Projects::identificate(const QString & name, void * folder, File *& file) {
         }
 
         if (!file) {
+            if (!QFileInfo::exists(name))
+                return false;
+
             QFileInfo finfo(name);
             file = new File(0, finfo.fileName(), name, File::fo_open);
             file -> setExternal(true);
