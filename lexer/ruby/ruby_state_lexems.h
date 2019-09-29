@@ -109,7 +109,7 @@ namespace Ruby {
         lex_float,
         lex_double,
 
-        lex_expression, // abstract
+//        lex_expression, // abstract
 
         lex_symbol,
         lex_char_sequence,
@@ -130,12 +130,14 @@ namespace Ruby {
 
 
         lex_method_def,
+        lex_method_def_pre_name,
         lex_method_def_scope_or_name, // def Goof.tort // Goof in exmp
         lex_method_def_scoped_name, // def self.meth_name // self in exmp
         lex_method_def_scoped_delimiter, // def self.meth_name // dot in exmp
         lex_method_def_name,
-        lex_method_def_block,
-        lex_method_def_block_end,
+        lex_method_def_post_name,
+        lex_method_def_block_start,
+//        lex_method_def_block_end,
 
 
         lex_method_def_args_start,
@@ -389,10 +391,10 @@ namespace Ruby {
         lex_else_block_end,
 
 
-        lex_switch,
-        lex_switch_target,
-        lex_switch_block,
-        lex_switch_block_end,
+//        lex_switch,
+//        lex_switch_target,
+//        lex_switch_block,
+//        lex_switch_block_end,
 
         lex_case,
         lex_case_target,
