@@ -714,6 +714,10 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_module_def_ancestor: {
             switch(input) {
+                case lex_blank:
+                case lex_blanks:
+                case lex_tab:
+                case lex_tabs: return lex_module_def_ancestor;
                 case lex_resolution: return lex_module_def_resolution;
                 case lex_end_line: return lex_block_start;
                 default: return lex_error;
