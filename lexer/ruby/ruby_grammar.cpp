@@ -461,24 +461,29 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
     }
 }
 
-LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input) {
+LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & handle) {
     if (state == lex_none)
-        return input;
+        return handle;
 
-    if (input == lex_none)
+    if (handle == lex_none)
         return state;
+
+    LEXEM_TYPE input = handle;
+
+    if (handle == lex_blanks || handle == lex_tabs)
+        input = lex_spacing;
 
     switch(state) {
         case lex_blanks: {
             switch(input) {
-                case lex_tabs: return lex_blanks;
+                case lex_spacing: return lex_blanks;
                 default: return input;
             }
         }
 
         case lex_tabs: {
             switch(input) {
-                case lex_blanks: return lex_blanks;
+                case lex_spacing: return lex_blanks;
                 default: return input;
             }
         }
@@ -489,16 +494,14 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_method_def: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return lex_method_def_pre_name;
+                case lex_spacing: return lex_method_def_pre_name;
                 default: return lex_error;
             }
         }
 
         case lex_method_def_pre_name: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return state;
+                case lex_spacing: return state;
                 case lex_self: return lex_method_def_scoped_name;
                 case lex_word: return lex_method_def_scope_or_name;
                 default: return lex_error;
@@ -507,8 +510,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_method_def_scoped_name: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return state;
+                case lex_spacing: return state;
                 case lex_dot: return lex_method_def_scoped_delimiter;
                 default: return lex_error;
             }
@@ -516,10 +518,9 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_method_def_scope_or_name: {
             switch(input) {
+                case lex_spacing: return lex_method_def_vars_start;
                 case lex_wrap_open: return lex_method_def_args_start;
                 case lex_dot: return lex_method_def_scoped_delimiter;
-                case lex_blanks: return lex_method_def_vars_start;
-                case lex_tabs: return lex_method_def_vars_start;
                 case lex_end_line: return lex_method_call_block;
                 default: return lex_error;
             }
@@ -527,8 +528,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_method_def_scoped_delimiter: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return state;
+                case lex_spacing: return state;
                 case lex_word: return lex_method_def_name;
                 default: return lex_error;
             }
@@ -536,8 +536,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_method_def_name: {
             switch(input) {
-                case lex_blanks: return lex_method_def_post_name;
-                case lex_tabs: return lex_method_def_post_name;
+                case lex_spacing: return lex_method_def_post_name;
                 case lex_wrap_open: return lex_method_def_args_start;
                 case lex_end_line: return lex_method_def_block_start;
                 default: return lex_error;
@@ -546,8 +545,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_method_def_post_name: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return state;
+                case lex_spacing: return state;
                 case lex_word: return lex_method_def_vars_start;
                 case lex_wrap_open: return lex_method_def_args_start;
                 case lex_end_line: return lex_method_def_block_start;
@@ -558,8 +556,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_method_def_args_start: {
             switch(input) {
-                case lex_tabs:
-                case lex_blanks: return state;
+                case lex_spacing: return state;
                 case lex_operator_multiplication: return lex_method_def_arg_access_type;
                 case lex_operator_exponentiation: return lex_method_def_arg_access_type;
                 case lex_operator_bit_and: return lex_method_def_arg_access_type;
@@ -578,8 +575,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_method_def_arg_access_type: {
             switch(input) {
-                case lex_tabs:
-                case lex_blanks: return state;
+                case lex_spacing: return state;
                 case lex_word: return lex_method_def_arg_name;
                 default: return lex_error;
             }
@@ -587,8 +583,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_method_def_arg_name: {
             switch(input) {
-                case lex_tabs:
-                case lex_blanks: return state;
+                case lex_spacing: return state;
                 case lex_operator_equality: return lex_method_def_arg_assign;
                 case lex_comma: return lex_method_def_arg_splitter;
                 case lex_wrap_close: return lex_method_def_args_end;
@@ -598,8 +593,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_method_def_arg_splitter: {
             switch(input) {
-                case lex_tabs:
-                case lex_blanks: return state;
+                case lex_spacing: return state;
                 case lex_operator_multiplication: return lex_method_def_arg_access_type;
                 case lex_operator_exponentiation: return lex_method_def_arg_access_type;
                 case lex_operator_bit_and: return lex_method_def_arg_access_type;
@@ -653,8 +647,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
 //        case lex_method_def_arg_assign: {
 //            switch(input) {
-//                case lex_tabs:
-//                case lex_blanks: return state;
+//                case lex_spacing: return state;
 //                case lex_number: return lex_method_def_arg_assign_val;
 //                default: return lex_error;
 //            }
@@ -663,8 +656,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_method_def_args_end: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return state;
+                case lex_spacing: return state;
                 case lex_end_line: return lex_method_def_block_start;
                 default: return lex_error;
             }
@@ -688,8 +680,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
         case lex_prepend:
         case lex_include: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return lex_include_pre_obj;
+                case lex_spacing: return lex_include_pre_obj;
                 default: return lex_error;
             }
         }
@@ -705,8 +696,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_include_obj_part: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return lex_include_obj_part;
+                case lex_spacing: return lex_include_obj_part;
                 case lex_resolution: return lex_include_resolution;
                 case lex_comma: return lex_include_splitter;
                 case lex_end_line: return lex_include_end;
@@ -724,8 +714,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_include_splitter: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return lex_include_splitter;
+                case lex_spacing: return lex_include_splitter;
                 case lex_resolution: return lex_include_resolution;
                 case lex_word:
                 case lex_const: return lex_include_obj_part;
@@ -737,9 +726,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_class_def: {
             switch(input) {
-                case lex_tabs:
-                case lex_blanks: return lex_class_def_prename;
-
+                case lex_spacing: return lex_class_def_prename;
                 default: return lex_error;
             }
         }
@@ -756,8 +743,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
             switch(input) {
                 case lex_resolution: return lex_class_def_resolution;
                 case lex_operator_less: return lex_class_def_inheritance;
-                case lex_blanks:
-                case lex_tabs:
+                case lex_spacing:
                 case lex_end_line:
                 case lex_semicolon: return lex_class_def_name_end;
                 default: return lex_error;
@@ -766,8 +752,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_class_def_name_end: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs:
+                case lex_spacing:
                 case lex_end_line:
                 case lex_semicolon: return lex_class_def_name_end;
                 case lex_resolution: return lex_class_def_resolution;
@@ -786,8 +771,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_class_def_resolution: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return lex_class_def_resolution;
+                case lex_spacing: return state;
                 case lex_word:
                 case lex_const: return lex_class_def_ancestor;
                 default: return lex_error;
@@ -803,8 +787,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_class_def_inheritance: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return lex_class_def_inheritance;
+                case lex_spacing: return state;
                 case lex_word:
                 case lex_const: return lex_class_def_ancestor;
                 case lex_resolution: return lex_class_def_resolution;
@@ -825,8 +808,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_module_def: {
             switch(input) {
-                case lex_tabs:
-                case lex_blanks: return lex_module_def_prename;
+                case lex_spacing: return lex_module_def_prename;
                 case lex_resolution: return lex_module_def_resolution;
                 default: return lex_error;
             }
@@ -834,8 +816,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_module_def_resolution: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return lex_module_def_resolution;
+                case lex_spacing: return state;
                 case lex_word:
                 case lex_const: return lex_module_def_ancestor;
                 default: return lex_error;
@@ -844,8 +825,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_module_def_name_part: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs:
+                case lex_spacing:
                 case lex_end_line:
                 case lex_semicolon: return lex_module_def_name_end;
                 case lex_resolution: return lex_module_def_resolution;
@@ -864,8 +844,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_module_def_ancestor: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs: return state;
+                case lex_spacing: return state;
                 case lex_resolution: return lex_module_def_resolution;
                 case lex_end_line: return lex_block_start;
                 default: return lex_error;
@@ -874,8 +853,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_module_def_name_end: {
             switch(input) {
-                case lex_blanks:
-                case lex_tabs:
+                case lex_spacing:
                 case lex_end_line:
                 case lex_semicolon: return state;
                 case lex_resolution: return lex_module_def_resolution;
@@ -896,20 +874,16 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_symbol_key: {
             switch(input) {
-                case lex_tabs:
-                case lex_blanks:
-                case lex_end_line:
-                    return state;
+                case lex_spacing:
+                case lex_end_line: return state;
                 default: return input;
             }
         }
 
         case lex_operator_assigment: {
             switch(input) {
-                case lex_tabs:
-                case lex_blanks:
-                case lex_end_line:
-                    return state;
+                case lex_spacing:
+                case lex_end_line: return state;
                 default: return input;
             }
         }
@@ -1002,8 +976,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
 
         case lex_word: {
             switch(input) {
-                case lex_tabs:
-                case lex_blanks: return lex_method_call_vars_start;
+                case lex_spacing: return lex_method_call_vars_start;
                 case lex_wrap_open: return lex_method_call_args_start;
                 case lex_dot: return lex_method_access;
                 default: return lex_error;
@@ -1041,10 +1014,7 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input
         default: {
             switch(input) {
                 case lex_end_line:
-                case lex_blanks:
-                case lex_tabs: return state;
-
-
+                case lex_spacing: return state;
                 default: return lex_error;
             }
         }

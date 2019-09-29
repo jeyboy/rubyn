@@ -34,7 +34,7 @@ namespace Ruby {
 
         Identifier toHighlightable(const LEXEM_TYPE & lexem);
 
-        LEXEM_TYPE translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input);
+        LEXEM_TYPE translate(const LEXEM_TYPE & state, const LEXEM_TYPE & handle);
     };
 }
 
