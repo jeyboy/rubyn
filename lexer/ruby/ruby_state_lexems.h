@@ -20,6 +20,14 @@ namespace Ruby {
         lex_ruby_division_breaker = 1 << 9, // 512
         lex_ruby_ternary_braker = 1 << 10, // 1024
 
+
+//        lex_scope_global,
+//        lex_scope_method_def,
+//        lex_lambda_def
+
+
+
+
 //        lex_ruby_division_breaker = 1 << 11,
 //        lex_ruby_ternary_braker = 1 << 12,
     //    lex_unary_operator = 1 << 13,

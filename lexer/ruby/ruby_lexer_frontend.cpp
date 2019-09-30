@@ -105,6 +105,7 @@ LEXEM_TYPE LexerFrontend::translateState(LexerControl * state, const LEXEM_TYPE 
 
     switch(new_state) {
         case lex_method_def_scoped_delimiter: {
+            // Need to recheck scope if it not eql to self
             state -> relightLast(state -> grammar -> toHighlightable(lex_method_def_scoped_name));
         break;}
 
@@ -308,19 +309,14 @@ bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_
 
         if (state -> cached_length) {
             Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
-//            if (highlightable == hid_none) {
-//                highlightable = state -> grammar -> toHighlightable(state -> lex_prev_word);
-//            }
 
             if (highlightable != hid_none)
                 state -> light(highlightable);
         }
     }
-//    else state -> lex_word = lex_none;
+
 
     if (state -> next_offset) {
-//        LEXEM_TYPE prev_delimiter = state -> lex_delimiter;
-
         state -> cachingDelimiter();
 
         state -> lex_delimiter =

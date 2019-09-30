@@ -38,6 +38,7 @@ void Grammar::initParas() {
     para_tokens[lex_module_def] = pt_open_module; //pt_open_module;
 
     para_tokens[lex_if] = pt_open_if;
+    para_tokens[lex_then] = pt_open_then;
     para_tokens[lex_elsif] = pt_open_elsif;
     para_tokens[lex_else] = pt_open_else;
     para_tokens[lex_unless] = pt_open_unless;
@@ -134,6 +135,7 @@ void Grammar::initFlags(StackLexemFlag & flags, const LEXEM_TYPE & lex, const LE
         case lex_else:
         case lex_block_rescue:
         case lex_block_ensure:
+        case lex_then:
             { flags = slf_replace_word; break;}
 
         default:;
@@ -143,7 +145,7 @@ void Grammar::initFlags(StackLexemFlag & flags, const LEXEM_TYPE & lex, const LE
 bool Grammar::stackDropable(const LEXEM_TYPE & state, const LEXEM_TYPE & input) {
     switch(state) {
         case lex_if:
-            return input == lex_end || input == lex_elsif || input == lex_else;
+            return input == lex_end || input == lex_elsif || input == lex_else || input == lex_then;
 
         case lex_unless:
             return input == lex_end || input == lex_else;
@@ -312,6 +314,7 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
         case lex_alias:
         case lex_unless:
         case lex_if:
+        case lex_then:
         case lex_elsif:
         case lex_else:
         case lex_case:
@@ -336,7 +339,6 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
         case lex_self:
         case lex_yield:
         case lex_return:
-        case lex_then:
         case lex_loop:
         case lex_loop_break:
         case lex_loop_redo:

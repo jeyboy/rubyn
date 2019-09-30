@@ -67,16 +67,17 @@ enum ParaType : PARA_TYPE {
     pt_open_begin_block = 14 | pt_foldable,
     pt_open_method = 15 | pt_foldable,
     pt_open_if = 16 | pt_foldable,
-    pt_open_elsif = 17 | pt_foldable,
-    pt_open_else = 18 | pt_foldable,
-    pt_open_unless = 19 | pt_foldable,
-    pt_open_case = 20 | pt_foldable,
-    pt_open_when = 21 | pt_foldable,
-    pt_open_while = 22 | pt_foldable,
-    pt_open_until = 23 | pt_foldable,
-    pt_open_for = 24 | pt_foldable,
-    pt_rescue = 25 | pt_foldable,
-    pt_ensure = 26 | pt_foldable,
+    pt_open_then = 17 | pt_foldable,
+    pt_open_elsif = 18 | pt_foldable,
+    pt_open_else = 19 | pt_foldable,
+    pt_open_unless = 20 | pt_foldable,
+    pt_open_case = 21 | pt_foldable,
+    pt_open_when = 22 | pt_foldable,
+    pt_open_while = 23 | pt_foldable,
+    pt_open_until = 24 | pt_foldable,
+    pt_open_for = 25 | pt_foldable,
+    pt_rescue = 26 | pt_foldable,
+    pt_ensure = 27 | pt_foldable,
 
     pt_close_begin_block = pt_open_begin_block | pt_close,
     pt_close_method = pt_open_method | pt_close,
@@ -95,14 +96,14 @@ enum ParaType : PARA_TYPE {
 //        pt_open_if | pt_open_else | pt_open_elsif | pt_open_unless | pt_open_case |
 //        pt_open_when | pt_open_while | pt_open_until | pt_open_for | pt_rescue | pt_ensure,
 
-    pt_close_struct = 27 | pt_close | pt_foldable,
+    pt_close_struct = 28 | pt_close | pt_foldable,
 
-    pt_comment = 28,
+    pt_comment = 29,
     pt_close_comment = pt_comment | pt_close,
     pt_foldable_comment = pt_comment | pt_foldable,
     pt_close_foldable_comment = pt_comment | pt_close| pt_foldable,
 
-    pt_ternary = 29,
+    pt_ternary = 30,
     pt_close_ternary = pt_ternary | pt_close,
 };
 
