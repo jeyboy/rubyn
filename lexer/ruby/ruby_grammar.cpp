@@ -367,7 +367,6 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
         case lex_var_object:
         case lex_var_global:
         case lex_method_def_scoped_name:
-        case lex_method_def_var_name:
         case lex_method_call_block_var_name:
         case lex_lambda_def_var_name:
         case lex_proc_def_var_name:
@@ -377,6 +376,10 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
         case lex_alias_alt_name:
             return hid_var;
 
+
+        case lex_method_def_arg_name:
+        case lex_method_def_var_name:
+            return hid_name_arg;
 
         case lex_heredoc_close_mark:
         case lex_heredoc_mark:

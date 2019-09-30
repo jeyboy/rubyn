@@ -42,8 +42,13 @@ enum Identifier : UID_TYPE {
 
     hid_operator,
     hid_label,
+
+//    hid_obj_def,
+//    hid_obj_call,
+
     hid_name_def,
     hid_name_call,
+    hid_name_arg,
     hid_var,
     hid_const,
     hid_symbol,

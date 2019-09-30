@@ -104,6 +104,10 @@ LEXEM_TYPE LexerFrontend::translateState(LexerControl * state, const LEXEM_TYPE 
     LEXEM_TYPE new_state = state -> grammar -> translate(lex1, lex2);
 
     switch(new_state) {
+        case lex_method_def_scoped_delimiter: {
+            state -> relightLast(state -> grammar -> toHighlightable(lex_method_def_scoped_name));
+        break;}
+
         case lex_error: {
             state -> lightWithMessage(
                 lex_error,

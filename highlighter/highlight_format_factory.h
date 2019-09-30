@@ -85,6 +85,8 @@ protected:
 
     void registerNameCallFormat();
 
+    void registerNameArgFormat();
+
     void registerNameDefFormat();
 
     void registerConstFormat();

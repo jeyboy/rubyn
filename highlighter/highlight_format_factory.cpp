@@ -280,6 +280,12 @@ void HighlightFormatFactory::registerNameCallFormat() {
     _formats.insert(hid_name_call, format);
 }
 
+void HighlightFormatFactory::registerNameArgFormat() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(197, 83, 2));
+    _formats.insert(hid_name_arg, format);
+}
+
 void HighlightFormatFactory::registerNameDefFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
@@ -410,6 +416,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerKeywordFormat();
     registerAssigmentFormat();
     registerNameCallFormat();
+    registerNameArgFormat();
     registerNameDefFormat();
     registerConstFormat();
     registerStringBorderFormat();
