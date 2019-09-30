@@ -518,7 +518,17 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & handl
 
         case lex_method_def_scope_or_name: {
             switch(input) {
-                case lex_spacing: return lex_method_def_vars_start;
+                case lex_spacing: return lex_method_def_post_scope_or_name;
+                case lex_wrap_open: return lex_method_def_args_start;
+                case lex_dot: return lex_method_def_scoped_delimiter;
+                case lex_end_line: return lex_method_call_block;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_post_scope_or_name: {
+            switch(input) {
+                case lex_spacing: return state;
                 case lex_wrap_open: return lex_method_def_args_start;
                 case lex_dot: return lex_method_def_scoped_delimiter;
                 case lex_end_line: return lex_method_call_block;

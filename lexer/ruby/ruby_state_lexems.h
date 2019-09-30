@@ -132,6 +132,7 @@ namespace Ruby {
         lex_method_def,
         lex_method_def_pre_name,
         lex_method_def_scope_or_name, // def Goof.tort // Goof in exmp
+        lex_method_def_post_scope_or_name,
         lex_method_def_scoped_name, // def self.meth_name // self in exmp
         lex_method_def_scoped_delimiter, // def self.meth_name // dot in exmp
         lex_method_def_name,
