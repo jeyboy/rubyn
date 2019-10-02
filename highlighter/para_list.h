@@ -139,7 +139,7 @@ public:
 
     void registerLine(ParaCell *& left, ParaCell *& right, ParaCell * prev_end = nullptr) {
         if (!prev_end)
-            prev_end = last -> prev;
+            prev_end = root; //last -> prev;
 
         left = new ParaCell(pt_none, -1, 0, prev_end);
         right = new ParaCell(pt_max, -1, 0, left);

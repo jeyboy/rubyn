@@ -49,7 +49,7 @@ void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
 
                     if (indent_len > 0) {
                         parent -> block_offsets.resize(user_data -> level + 1);
-                        parent -> block_offsets[user_data -> level] = indent_len * parent -> symbol_width;
+                        parent -> block_offsets[user_data -> level] = qint16(indent_len * parent -> symbol_width);
                     }
                 }
             }
@@ -90,7 +90,7 @@ void CodeEditorCacheCell::initLevels(const QTextBlock & block) {
 
                     scope_offsets[indent] = CacheScopeOffset(curr_level, indent, blk_num);
                     prev_indent = indent;
-                    parent -> block_offsets[curr_level] = indent * parent -> symbol_width;
+                    parent -> block_offsets[curr_level] = qint16(indent * parent -> symbol_width);
 
                     if (curr_level <= 0)
                         break;

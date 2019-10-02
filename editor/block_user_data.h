@@ -84,7 +84,7 @@ struct BlockUserData : public QTextBlockUserData {
 
         switch(it -> lexem) {
             case lex_blanks:
-            case lex_tabs: return it -> length;
+            case lex_tabs: return int(it -> length);
 
             case lex_tab:
             case lex_blank: return 1;

@@ -286,12 +286,12 @@ void CodeEditor::paintBlock(QPainter & painter, const QTextBlock & block, const 
 void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * cache) {
     bool is_current = curr_block_number == cache -> block_number;
 
-    int block_top = cache -> bounding_rect.top();
-    int block_bottom = cache -> bounding_rect.bottom();
+    int block_top = int(cache -> bounding_rect.top());
+    int block_bottom = int(cache -> bounding_rect.bottom());
 
     if (is_current) {
         const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_current_line_extra);
-        painter.fillRect(0, block_top, extra_zone_width, cache -> bounding_rect.height(), format.background());
+        painter.fillRect(0, block_top, extra_zone_width, int(cache -> bounding_rect.height()), format.background());
     }
 
     bool on_block = folding_y != NO_FOLDING && folding_y > block_top && folding_y < block_bottom;
@@ -415,11 +415,11 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, const QTextBlock & bloc
     }
 
     if (user_data) {
-        if (show_foldings_panel && active_folding.containsBlockNumber(block_num)) {
-            const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_hover_range);
-            painter.setPen(format.foreground().color());
-            painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, format.background());
-        }
+//        if (show_foldings_panel && active_folding.containsBlockNumber(block_num)) {
+//            const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_folding_hover_range);
+//            painter.setPen(format.foreground().color());
+//            painter.fillRect(folding_offset_x, paint_top, folding_width, block_bottom - block_top, format.background());
+//        }
 
         if (show_breakpoints_panel && user_data -> hasBreakpoint()) {
             painter.drawPixmap(
@@ -1058,7 +1058,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 }
 
 
-void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {   
+void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     QRect view_rect = viewport() -> rect();
     QRect er = e -> rect();
     QHash<int, bool> folding_scopes;
@@ -1083,8 +1083,9 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     display_cacher -> top_block_number = block.blockNumber();
     cache_cell = display_cacher -> append(display_cacher -> top_block_number);
 
-    if (show_folding_scope_lines)
+    if (show_folding_scope_lines) {
         cache_cell -> initLevels(block);
+    }
 
     // keep right margin clean from full-width selection
     int max_x = offset.x() + qMax(static_cast<qreal>(view_rect.width()), max_width) - doc_margin;
@@ -1101,7 +1102,6 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
     forever {
         cache_cell -> bounding_rect = blockBoundingRect(block).translated(offset);
-        cache_cell -> layout = block.layout();
 
         if (searcher.is_active)
             searcher.procBlockSearch(block);
@@ -1125,6 +1125,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 
         cache_cell -> block_pos = block.position();
         cache_cell -> block_length = block.length();
+        cache_cell -> layout = block.layout();
 
         if (cache_cell -> bounding_rect.bottom() >= er.top() && cache_cell -> bounding_rect.top() <= er.bottom()) {
 
@@ -1151,8 +1152,8 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 painter.setPen(folding_level_line_format.foreground().color());
 
                 int level = cache_cell -> user_data ? cache_cell -> user_data -> level - (cache_cell -> is_folding_opener ? 1 : 0) : DEFAULT_LEVEL;
-                int def_line_offset = offset.rx() + doc_margin;
-                int line_height = cache_cell -> bounding_rect.height();
+                int def_line_offset = int(offset.rx() + doc_margin);
+                int line_height = int(cache_cell -> bounding_rect.height());
                 int it = -1;
                 bool has_active = has_active_para && para_info.containsBlockNumber(cache_cell -> block_number);
 
@@ -1169,7 +1170,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                     folding_scopes[folding_line_offset] = true;
                     folding_line_offset += def_line_offset;
 
-                    QLine line(folding_line_offset, offset.ry(), folding_line_offset, offset.ry() + line_height);
+                    QLine line(folding_line_offset, int(offset.ry()), folding_line_offset, int(offset.ry() + line_height));
 
                     if (has_active && it == para_info.level) {
                         painter.save();
@@ -1188,33 +1189,35 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
             int blpos = cache_cell -> block_pos;
             int bllen = cache_cell -> block_length;
 
-            for (int i = 0; i < context.selections.size(); ++i) {
-                const QAbstractTextDocumentLayout::Selection & range = context.selections.at(i);
-                const int sel_start = range.cursor.selectionStart() - blpos;
-                const int sel_end = range.cursor.selectionEnd() - blpos;
+            if (cache_cell -> layout) {
+                for (int i = 0; i < context.selections.size(); ++i) {
+                    const QAbstractTextDocumentLayout::Selection & range = context.selections.at(i);
+                    const int sel_start = range.cursor.selectionStart() - blpos;
+                    const int sel_end = range.cursor.selectionEnd() - blpos;
 
-                cache_cell -> is_folding_selected = sel_start < bllen && sel_end > bllen;
+                    cache_cell -> is_folding_selected = sel_start < bllen && sel_end > bllen;
 
-                if (sel_start < bllen && sel_end > 0 && sel_end > sel_start) {
-                    QTextLayout::FormatRange o;
-                    o.start = sel_start;
-                    o.length = sel_end - sel_start;
-                    o.format = selection_format; //range.format; //selection_format; //
-                    selections.append(o);
-                } else if (!range.cursor.hasSelection() && range.format.hasProperty(QTextFormat::FullWidthSelection)
-                           && block.contains(range.cursor.position())) {
-                    // for full width selections we don't require an actual selection, just
-                    // a position to specify the line. that's more convenience in usage.
-                    QTextLayout::FormatRange o;
-                    QTextLine l = cache_cell -> layout -> lineForTextPosition(range.cursor.position() - blpos);
-                    o.start = l.textStart();
-                    o.length = l.textLength();
+                    if (sel_start < bllen && sel_end > 0 && sel_end > sel_start) {
+                        QTextLayout::FormatRange o;
+                        o.start = sel_start;
+                        o.length = sel_end - sel_start;
+                        o.format = selection_format; //range.format; //selection_format; //
+                        selections.append(o);
+                    } else if (!range.cursor.hasSelection() && range.format.hasProperty(QTextFormat::FullWidthSelection)
+                               && block.contains(range.cursor.position())) {
+                        // for full width selections we don't require an actual selection, just
+                        // a position to specify the line. that's more convenience in usage.
+                        QTextLayout::FormatRange o;
+                        QTextLine l = cache_cell -> layout -> lineForTextPosition(range.cursor.position() - blpos);
+                        o.start = l.textStart();
+                        o.length = l.textLength();
 
-                    if (o.start + o.length == bllen - 1)
-                        ++o.length; // include newline
+                        if (o.start + o.length == bllen - 1)
+                            ++o.length; // include newline
 
-                    o.format = selection_format; //range.format; // selection_format
-                    selections.append(o);
+                        o.format = selection_format; //range.format; // selection_format
+                        selections.append(o);
+                    }
                 }
             }
 
@@ -1237,31 +1240,33 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 }
             }
 
-            if (need_placeholder && cache_cell -> layout -> preeditAreaText().isEmpty()) {
-              QColor col = palette().text().color();
-              col.setAlpha(128);
-              painter.setPen(col);
-              painter.drawText(cache_cell -> bounding_rect.adjusted(doc_margin, 0, 0, 0), Qt::AlignTop | Qt::TextWordWrap, placeholderText());
-            } else {
-              cache_cell -> layout -> draw(&painter, offset, selections, er);
-            }
+            if (cache_cell -> layout) {
+                if (need_placeholder && cache_cell -> layout -> preeditAreaText().isEmpty()) {
+                  QColor col = palette().text().color();
+                  col.setAlpha(128);
+                  painter.setPen(col);
+                  painter.drawText(cache_cell -> bounding_rect.adjusted(doc_margin, 0, 0, 0), Qt::AlignTop | Qt::TextWordWrap, placeholderText());
+                } else {
+                  cache_cell -> layout -> draw(&painter, offset, selections, er);
+                }
 
-            if ((draw_cursor && !draw_cursor_as_block)
-                || (editable && context.cursorPosition < -1
-                    && !cache_cell -> layout -> preeditAreaText().isEmpty())) {
-                int cpos = context.cursorPosition;
-                if (cpos < -1)
-                    cpos = cache_cell -> layout -> preeditAreaPosition() - (cpos + 2);
-                else
-                    cpos -= blpos;
-                cache_cell -> layout -> drawCursor(&painter, offset, cpos, cursorWidth());
+                if ((draw_cursor && !draw_cursor_as_block)
+                    || (editable && context.cursorPosition < -1
+                        && !cache_cell -> layout -> preeditAreaText().isEmpty())) {
+                    int cpos = context.cursorPosition;
+                    if (cpos < -1)
+                        cpos = cache_cell -> layout -> preeditAreaPosition() - (cpos + 2);
+                    else
+                        cpos -= blpos;
+                    cache_cell -> layout -> drawCursor(&painter, offset, cpos, cursorWidth());
+                }
             }
 
             bool is_breakpoint_line = cache_cell -> user_data && cache_cell -> user_data -> hasBreakpoint();
             bool is_current_line = cache_cell -> block_number == curr_block_number;
 
             if (!is_active_debug_line && (is_current_line || is_breakpoint_line)) {
-                QRect r(0, offset.ry(), max_x, cache_cell -> bounding_rect.height());
+                QRect r(0, int(offset.ry()), max_x, int(cache_cell -> bounding_rect.height()));
 
                 if (is_breakpoint_line)
                     painter.fillRect(r, breakpoint_line_format.background());
@@ -1297,7 +1302,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         );
     }
 
-    display_cacher -> fill_bottom = offset.ry();
+    display_cacher -> fill_bottom = int(offset.ry());
     display_cacher -> bottom_block_number = cache_cell -> block_number;
 
     if (change_scroll_pos_required) {
