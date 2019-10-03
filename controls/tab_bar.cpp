@@ -8,6 +8,8 @@
 #include <qevent.h>
 #include <qdebug.h>
 
+QColor TabBar::remote_file_color = QColor(255, 0, 0, 48);
+
 TabBar::TabBar(QWidget * parent) : QListWidget(parent), hscroll_range(-1), _internal_move(false) {
 //    setStyleSheet(
 //        QLatin1Literal(
@@ -169,7 +171,7 @@ void TabBar::dropEvent(QDropEvent * event) {
             _tabs_linkages.insert(file -> uid(), target_item);
 
             if (file -> isExternal()) {
-                target_item -> setBackgroundColor(QColor(255, 0, 0, 92));
+                target_item -> setBackgroundColor(remote_file_color);
             }
         }
 

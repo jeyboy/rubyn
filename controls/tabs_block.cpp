@@ -34,6 +34,8 @@ void TabsBlock::setupLayout() {
     _bar -> setStyle(new TabBarNoFocusStyle());
     _bar -> setMovement(QListView::Free);
     _bar -> setContextMenuPolicy(Qt::CustomContextMenu);
+    _bar -> setAttribute(Qt::WA_ShowWithoutActivating);
+    _bar -> setFocusPolicy(Qt::NoFocus);
 
 
     _active_btn = new QToolButton(this);
@@ -140,7 +142,7 @@ bool TabsBlock::openFile(File * file) {
         _bar -> _tabs_linkages.insert(file_uid, item);
 
         if (file -> isExternal()) {
-            item -> setBackgroundColor(QColor(255, 0, 0, 92));
+            item -> setBackgroundColor(_bar -> remote_file_color);
         }
 
         file -> incOpened();

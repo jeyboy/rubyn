@@ -9,6 +9,8 @@ class File;
 class TabBar : public QListWidget {
     Q_OBJECT
 
+    static QColor remote_file_color;
+
     int hscroll_range;
     bool _internal_move;
     QHash<QString, QListWidgetItem *> _tabs_linkages;
