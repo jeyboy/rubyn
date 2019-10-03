@@ -188,6 +188,7 @@ void SearchPanel::predicateIsCorrect() {
     qDebug() << "SearchPanel::predicateIsCorrect";
 
     setToolTip(QLatin1Literal("Searching..."));
+    qDebug() << "predicateIsCorrect";
     setStyleSheet(QLatin1String());
 }
 void SearchPanel::predicateHasError(const QString & error) {
@@ -198,7 +199,13 @@ void SearchPanel::predicateHasError(const QString & error) {
 }
 
 void SearchPanel::finded(const int & count) {
-    qDebug() << "EditorSearch::finded" << count;
+    qDebug() << "SearchPanel::finded" << count;
+
+    if (count == 0 && !text().isEmpty()) {
+        setStyleSheet(QLatin1Literal("SearchPanel { background-color: rgba(255, 0, 0, 0.4); color: #FFFFFF; }"));
+    } else {
+        setStyleSheet(QLatin1String());
+    }
 
     setToolTip(QLatin1Literal("Found: ") + QString::number(count));
 }

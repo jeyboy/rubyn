@@ -150,7 +150,6 @@ void EditorSearch::changeVisibility(const bool & show) {
 
     if (show) {
         predicate -> setFocus();
-
         predicate -> activate();
     }
 }
@@ -171,10 +170,13 @@ void EditorSearch::predicateHasError(const QString & error) {
 void EditorSearch::finded(const int & count) {
     qDebug() << "EditorSearch::finded" << count;
 
-    if (count > 0)
+    if (count > 0) {
+        predicate -> setStyleSheet(QLatin1Literal());
         l1 -> setText(SEARCH_LABEL_TEXT % ' ' % '(' % QString::number(count) % ')');
-    else
+    } else if (!predicate -> text().isEmpty()) {
+        predicate -> setStyleSheet(QLatin1Literal("QLineEdit { color: #FFFFFF; background-color: rgba(255, 0, 0, .4);}"));
         l1 -> setText(SEARCH_LABEL_TEXT);
+    }
 
     predicate -> setToolTip(QLatin1Literal("Found ") + QString::number(count));
 }
