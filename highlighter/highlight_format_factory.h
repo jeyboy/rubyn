@@ -47,7 +47,11 @@ protected:
 
     void registerParaHoverLineFormat();
 
+    void registerParaHoverSubOverlay2Format();
+
     void registerParaHoverOverlay2Format();
+
+    void registerParaHoverSubOverlayFormat();
 
     void registerParaHoverOverlayFormat();
 

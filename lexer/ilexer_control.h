@@ -374,7 +374,7 @@ struct ILexerControl {
 
             if (parent) {
                 if (para -> is_foldable) {
-                    if (replaceable == false && parent -> is_blockator == false) {
+                    if (!replaceable && parent -> is_blockator == false) {
                         user_data -> level -= lines_between > 0 ? 2 : 1;
 
                         parent -> is_oneliner = parent -> is_blockator ? lines_between == 1 : lines_between < 2;
@@ -387,18 +387,20 @@ struct ILexerControl {
                     }
                 }
 
-                if (!replaceable && parent) {
-                    parent -> is_oneliner = lines_between == 0;
+                if (parent) {
+                    parent -> is_oneliner = parent -> is_oneliner || lines_between == 0;
 
-                    if (parent -> closer && parent -> closer != para)
-                        parent -> closer -> closer = nullptr;
+                    if (!replaceable) {
+                        if (parent -> closer && parent -> closer != para)
+                            parent -> closer -> closer = nullptr;
 
-                    parent -> closer = para;
+                        parent -> closer = para;
 
-                    if (para -> closer && para -> closer != parent)
-                        para -> closer -> closer = nullptr;
+                        if (para -> closer && para -> closer != parent)
+                            para -> closer -> closer = nullptr;
 
-                    para -> closer = parent;
+                        para -> closer = parent;
+                    }
                 }
             }
             else para -> closer = nullptr;

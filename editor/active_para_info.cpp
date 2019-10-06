@@ -14,6 +14,7 @@ void ActiveParaInfo::clear() {
     closer_length = 0;
     start_block_num = NO_INFO;
     end_block_num = NO_INFO;
+    middles.clear();
 }
 
 ParaCell * ActiveParaInfo::findOpositePara(ParaCell *& para) {

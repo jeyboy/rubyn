@@ -90,6 +90,11 @@ void SearchPanel::buildLayout() {
 }
 
 QRegularExpression SearchPanel::buildRegex(const QString & pattern) {
+    if (pattern.isEmpty()) {
+        return QRegularExpression();
+    }
+
+
     QString val = pattern;
     bool is_multiline = false;
 

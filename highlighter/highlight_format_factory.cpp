@@ -134,11 +134,25 @@ void HighlightFormatFactory::registerParaHoverLineFormat() {
     _formats.insert(hid_para_hover_line, format);
 }
 
+void HighlightFormatFactory::registerParaHoverSubOverlay2Format() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(0, 0, 0, 92));
+    format.setBackground(QColor::fromRgb(255, 115, 255, 32));
+    _formats.insert(hid_para_hover_sub_overlay2, format);
+}
+
 void HighlightFormatFactory::registerParaHoverOverlay2Format() {
     QTextCharFormat format;
     format.setForeground(QColor::fromRgb(0, 0, 0, 92));
     format.setBackground(QColor::fromRgb(255, 115, 255, 92));
     _formats.insert(hid_para_hover_overlay2, format);
+}
+
+void HighlightFormatFactory::registerParaHoverSubOverlayFormat() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(0, 0, 0, 92));
+    format.setBackground(QColor::fromRgb(180, 238, 180, 64));
+    _formats.insert(hid_para_hover_sub_overlay, format);
 }
 
 void HighlightFormatFactory::registerParaHoverOverlayFormat() {
@@ -401,7 +415,9 @@ HighlightFormatFactory::HighlightFormatFactory() {
     registerParaContentPopupFormat();
     registerParaHoverLineFormat();
     registerFoldedOverlayFormat();
+    registerParaHoverSubOverlay2Format();
     registerParaHoverOverlay2Format();
+    registerParaHoverSubOverlayFormat();
     registerParaHoverOverlayFormat();
     registerBreakpointsRangeFormat();
     registerBreakpointLineFormat();

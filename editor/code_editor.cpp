@@ -456,6 +456,13 @@ void CodeEditor::drawParaOverlays(QPainter & painter) {
             drawTextOverlay(hid_para_hover_overlay, painter, closer_blk, para_info.closer_pos, para_info.closer_length);
         }
 
+        if (!para_info.middles.isEmpty()) {
+            for(QList<JPos>::Iterator it = para_info.middles.begin(); it != para_info.middles.end(); it++) {
+                QTextBlock opener_blk = document() -> findBlockByNumber((*it).block_num);
+                drawTextOverlay(hid_para_hover_sub_overlay, painter, opener_blk, (*it).pos, (*it).length);
+            }
+        }
+
         if (alt_para_info.isValid()) {
             QTextBlock opener_blk = document() -> findBlockByNumber(alt_para_info.start_block_num);
             drawTextOverlay(hid_para_hover_overlay2, painter, opener_blk, alt_para_info.opener_pos, alt_para_info.opener_length);
@@ -463,6 +470,13 @@ void CodeEditor::drawParaOverlays(QPainter & painter) {
             if (alt_para_info.closer_pos != NO_INFO) {
                 QTextBlock closer_blk = alt_para_info.start_block_num == alt_para_info.end_block_num ? opener_blk : document() -> findBlockByNumber(alt_para_info.end_block_num);
                 drawTextOverlay(hid_para_hover_overlay2, painter, closer_blk, alt_para_info.closer_pos, alt_para_info.closer_length);
+            }
+
+            if (!alt_para_info.middles.isEmpty()) {
+                for(QList<JPos>::Iterator it = alt_para_info.middles.begin(); it != alt_para_info.middles.end(); it++) {
+                    QTextBlock opener_blk = document() -> findBlockByNumber((*it).block_num);
+                    drawTextOverlay(hid_para_hover_sub_overlay2, painter, opener_blk, (*it).pos, (*it).length);
+                }
             }
         }
     }
@@ -1790,8 +1804,16 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
                     info.setCloser(stoper -> pos, stoper -> length);
 
                     while(para && para != stoper) {
-                        if (para -> para_type == pt_max)
+                        if (para -> para_type == pt_max) {
                             ++end_pos;
+                            blk = blk.next();
+                            para = para -> next; // ignore default token for start of line
+                        } else {
+                            if (!para -> closer) {
+                                if (para -> is_oneliner || info.level + 1 == TextDocumentLayout::getBlockLevel(blk))
+                                    info.addMiddle(end_pos, para -> pos, para -> length);
+                            }
+                        }
 
                         para = para -> next;
                     }
@@ -1800,8 +1822,16 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
                     info.setCloser(para -> pos, para -> length);
 
                     while(para && para != stoper) {
-                        if (para -> para_type == pt_max)
+                        if (para -> para_type == pt_none) {
                             --start_pos;
+                            blk = blk.previous();
+                            para = para -> prev; // ignore default token for end of line
+                        } else {
+                            if (!para -> closer) {
+                                if (para -> is_oneliner || info.level + 1 == TextDocumentLayout::getBlockLevel(blk))
+                                    info.addMiddle(start_pos, para -> pos, para -> length);
+                            }
+                        }
 
                         para = para -> prev;
                     }
@@ -1858,7 +1888,7 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
 //}
 
 void CodeEditor::searchInitiated(const QRegularExpression & pattern, const bool & scroll) {
-    qDebug() << "CodeEditor::searchInitiated" << pattern;
+    qDebug() << "CodeEditor::searchInitiated" << pattern.pattern();
 
     if (pattern.pattern().isEmpty()) {
         searcher.clearSearch();
@@ -1927,7 +1957,7 @@ void CodeEditor::searchNextResult(QString * replace) {
 void CodeEditor::searchPrevResult(QString * replace) {
     qDebug() << "CodeEditor::searchPrevResult" << replace;
 
-    if (searcher.hasResults()) {
+    if (searcher.searchResultsCount() == 0) {
         qDebug() << "CodeEditor::searchPrevResult" << "NO RESULTS";
         return;
     }
@@ -2066,6 +2096,7 @@ void CodeEditor::cursorMoved() {
     bool initiated = false;
 
     alt_para_info.clear();
+    para_info.middles.clear();
 
     //INFO: when a document opened but do not have the focus yet we always have the cursor in pos 0:0 but it's not drawn. We should ignore this case.
     if (hasFocus()) {
