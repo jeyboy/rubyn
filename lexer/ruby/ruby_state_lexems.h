@@ -21,17 +21,29 @@ namespace Ruby {
         lex_ruby_ternary_braker = 1 << 10, // 1024
 
 
-//        lex_scope_global,
-//        lex_scope_method_def,
-//        lex_lambda_def
+//        lex_scope_pre_code = 1 << 11, // BEGIN
+//        lex_scope_post_code = 1 << 12, // END
+//        lex_scope_after_code = 1 << 13, // __END__
+//        lex_scope_global = 1 << 14, // default scope
+//        lex_scope_method_arg_def = 1 << 15, // def n(...)
+//        lex_scope_method_var_def = 1 << 16, // def n ...
+//        lex_scope_method_body = 1 << 17, // def n(); ... end
+//        lex_scope_lambda_def = 1 << 18, // -> () {...}
+//        lex_scope_local_block_vars = 1 << 19, // .each {|...| }
+//        lex_scope_local_block_body = 1 << 20, // .each {|a| ... }
+//        lex_scope_class_body = 1 << 21, // class N { ... }
+//        lex_scope_module_body = 1 << 22, // class N { ... }
+//        lex_scope_array_body = 1 << 23, // [ ... ]
+//        lex_scope_hash_body = 1 << 24, // { ... }
+//        lex_scope_string = 1 << 25, // "asdad...asdasda"
+//        lex_scope_heredoc = 1 << 26, // <<`EOC`; ... EOC
+//        lex_scope_regexp = 1 << 27, // /\w#{...}/
+//        lex_scope_percent_string = 1 << 28, // %r(/home/#{...})
+//        lex_scope_round_brackets = 1 << 29, // (...)
+//        lex_scope_begin_block = 1 << 30, // begin; ... end
+//        lex_scope_do_block_vars = 1 << 31, // .each do |...| end
+//        lex_scope_do_block_body = 1 << 32, // .each do |a| ... end
 
-
-
-
-//        lex_ruby_division_breaker = 1 << 11,
-//        lex_ruby_ternary_braker = 1 << 12,
-    //    lex_unary_operator = 1 << 13,
-    //    lex_binary_operator = 1 << 14,
 
         DefaultStateLexems,
 
