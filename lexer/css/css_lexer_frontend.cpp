@@ -1107,43 +1107,6 @@ void LexerFrontend::lexicate(LexerControl * state) {
 ////        state -> validateHeredocState();
 }
 
-//int LexerFrontend::rubyLineState(BlockUserData * udata, const int & prev_user_state, const bool & override_status) {
-//    //INFO: Hack for heredoc marks
-//    if (override_status || udata -> stack_token) {
-//        TokenCell * it = udata -> stack_token;
-
-////        if (!it -> data)
-////            it = udata -> stack_token;
-
-//        if (override_status || it -> data) {
-////            QByteArray res(*it -> data);
-//            int hash = 0;
-////            int steps = 0;
-
-////            while(it -> next -> data) {
-////                it = it -> next;
-////                res.append(' ');
-////                res.append(*it -> data);
-////            }
-
-//            while(true) {
-//                hash = static_cast<int>(qHash(QDateTime::currentMSecsSinceEpoch()));
-
-//                if (hash > 0) hash = -hash;
-////                uint seed = qHash(QDateTime::currentMSecsSinceEpoch());
-////                hash = static_cast<int>(qHash(res, seed));
-
-//                if (hash < lex_min && hash != prev_user_state)
-//                    break;
-//            }
-
-//            return hash;
-//        }
-//    }
-
-//    return ILexer::lineState(udata);
-//}
-
 LexerFrontend::LexerFrontend() {}
 
 LexerFrontend::~LexerFrontend() {}

@@ -8,8 +8,6 @@ namespace Css {
 
     class LexerFrontend : public ILexer {
         void lexicate(LexerControl * control);
-//    protected:
-//        int rubyLineState(BlockUserData * udata, const int & prev_user_state, const bool & override_status);
     public:
         LexerFrontend();
         ~LexerFrontend();
