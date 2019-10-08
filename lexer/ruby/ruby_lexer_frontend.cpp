@@ -254,6 +254,7 @@ LEXEM_TYPE LexerFrontend::translateState(LexerControl * state, const LEXEM_TYPE 
 
 bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem, const LEXEM_TYPE & predefined_delimiter, StackLexemFlag flags) {
     bool has_predefined = predefined_lexem != lex_none;
+    uint delimiter_flags = flags & slf_delimiter_related;
 
     state -> cachingPredicate();
 
@@ -324,7 +325,7 @@ bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_
                 Predefined::obj().lexem(state -> cached) :
                 predefined_delimiter;
 
-        state -> attachToken(state -> lex_delimiter, flags & slf_delimiter_related);
+        state -> attachToken(state -> lex_delimiter, delimiter_flags);
 
         state -> lex_word = translateState(state, state -> lex_word, state -> lex_delimiter);
 

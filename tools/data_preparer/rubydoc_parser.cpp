@@ -42,12 +42,12 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
                         if (*(ptr + 2) == '.') // ignore blanks before ... and .. sequences
                             break;
                     }
-                    case ')':
+                    [[clang::fallthrough]]; case ')':
                     case 44: // ,
                     case 32: {
                         ++ptr;
                         continue;
-                    break;}
+                    /*break;*/}
                 }
             break;}
 
@@ -227,13 +227,13 @@ void RubydocParser::procDescription(const Html::Set & parts, QStringList & out, 
                 Html::Set code_parts = (*tag) -> children();
 
                 QString str = QLatin1String();
-                str.append((char)pre_prefix);
+                str.append(char(pre_prefix));
 
                 for(Html::Set::Iterator code_tag = code_parts.begin(); code_tag != code_parts.end(); code_tag++) {
                     if ((*code_tag) -> isNewline()) {
                         out << str;
                         str = QLatin1String();
-                        str.append((char)pre_prefix);
+                        str.append(char(pre_prefix));
                     }
                     else str.append((*code_tag) -> text());
                 }
@@ -312,8 +312,8 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
 
     uint sigs_count = 0;
 
-    Html::Tag * aliases_block = 0;
-    Html::Tag * description_block = 0;
+    Html::Tag * aliases_block = nullptr;
+    Html::Tag * description_block = nullptr;
 
     for(Html::Set::ConstIterator div = divs.cbegin(); div != divs.cend(); div++) {
         QByteArray div_class = (*div) -> rawClasses();
@@ -430,7 +430,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
         Html::Page page(
             &datafile,
             Html::Decoding::charset_utf8,
-            (Html::Page::ParseFlags)(Html::Page::pf_skip_comment | Html::Page::pf_skip_links_decoding | Html::Page::pf_simplify_mnemonics)
+            Html::Page::ParseFlags(Html::Page::pf_skip_comment | Html::Page::pf_skip_links_decoding | Html::Page::pf_simplify_mnemonics)
         );
 
         Html::Tag * metadata_block = page.findFirst("#metadata");
@@ -570,7 +570,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                                     QByteArray desc = (*const_tag) -> texts();
 
                                     out.constants.insert(dt_tag -> texts(), desc.isEmpty() ? QByteArrayLiteral("No description") : desc);
-                                    dt_tag = 0;
+                                    dt_tag = nullptr;
                                 }
                             break;}
                         }

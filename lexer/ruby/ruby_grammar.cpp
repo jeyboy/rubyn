@@ -75,6 +75,10 @@ void Grammar::initFlags(StackLexemFlag & flags, const LEXEM_TYPE & lex, const LE
 
                 case lex_question_mark:
 
+                case lex_wrap_open:
+                case lex_open_curly_bracket:
+                case lex_open_square_bracket:
+
                 case lex_operator_assigment:
                 case lex_operator_comparison:
                 case lex_operator_equality:

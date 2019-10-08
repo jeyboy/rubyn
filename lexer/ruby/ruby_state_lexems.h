@@ -19,101 +19,104 @@ namespace Ruby {
 
         lex_ruby_division_breaker = 1 << 9, // 512
         lex_ruby_ternary_braker = 1 << 10, // 1024
-
-
-//        lex_scope_pre_code = 1 << 11, // BEGIN
-//        lex_scope_post_code = 1 << 12, // END
-//        lex_scope_after_code = 1 << 13, // __END__
-//        lex_scope_global = 1 << 14, // default scope
-//        lex_scope_method_arg_def = 1 << 15, // def n(...)
-//        lex_scope_method_var_def = 1 << 16, // def n ...
-//        lex_scope_method_body = 1 << 17, // def n(); ... end
-//        lex_scope_lambda_def = 1 << 18, // -> () {...}
-//        lex_scope_local_block_vars = 1 << 19, // .each {|...| }
-//        lex_scope_local_block_body = 1 << 20, // .each {|a| ... }
-//        lex_scope_class_body = 1 << 21, // class N { ... }
-//        lex_scope_module_body = 1 << 22, // class N { ... }
-//        lex_scope_array_body = 1 << 23, // [ ... ]
-//        lex_scope_hash_body = 1 << 24, // { ... }
-//        lex_scope_string = 1 << 25, // "asdad...asdasda"
-//        lex_scope_heredoc = 1 << 26, // <<`EOC`; ... EOC
-//        lex_scope_regexp = 1 << 27, // /\w#{...}/
-//        lex_scope_percent_string = 1 << 28, // %r(/home/#{...})
-//        lex_scope_round_brackets = 1 << 29, // (...)
-//        lex_scope_begin_block = 1 << 30, // begin; ... end
-//        lex_scope_do_block_vars = 1 << 31, // .each do |...| end
-//        lex_scope_do_block_body = 1 << 32, // .each do |a| ... end
-
+//        1 << 11// 2048
+//        1 << 12// 4096
+//        1 << 13// 8192
+//        1 << 14// 16384
+//        1 << 15// 32768
 
         DefaultStateLexems,
 
-        lex_symbol_key              = 10 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
-        lex_dot_dot                 = 11 | lex_ruby_division_breaker | lex_ruby_ternary_braker,  // ..
-        lex_dot_dot_dot             = 12 | lex_ruby_division_breaker | lex_ruby_ternary_braker,  // ...
-        lex_rocket                  = 13 | lex_ruby_division_breaker | lex_ruby_ternary_braker,  // =>
-        lex_comma                   = 14 | lex_ruby_division_breaker | lex_ruby_ternary_braker,  // ,
-        lex_wrap_open               = 15 | lex_ruby_division_breaker | lex_ruby_ternary_braker, // (
-        lex_open_curly_bracket      = 16 | lex_ruby_division_breaker | lex_ruby_ternary_braker, // {
-        lex_open_square_bracket     = 17 | lex_ruby_division_breaker | lex_ruby_ternary_braker, // [
-        lex_word                    = 18 | lex_ruby_division_breaker | lex_ruby_ternary_braker, // names and etc
-        lex_const                   = 19 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
-        lex_var_local               = 20 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
-        lex_var_instance            = 21 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
-        lex_var_object              = 22 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
-        lex_var_global              = 23 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
-        lex_var_or_method           = 24 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
-        lex_unknown_var_or_method   = 25 | lex_ruby_division_breaker | lex_ruby_ternary_braker,
+        lex_scope_pre_code = 1, // BEGIN
+        lex_scope_post_code, // END
+        lex_scope_after_code, // __END__
+        lex_scope_method_arg_def, // def n(...)
+        lex_scope_method_var_def, // def n ...
+        lex_scope_method_body, // def n(); ... end
+        lex_scope_lambda_def, // -> () {...}
+        lex_scope_local_block_vars, // .each {|...| }
+        lex_scope_local_block_body, // .each {|a| ... }
+        lex_scope_class_body, // class N { ... }
+        lex_scope_module_body, // class N { ... }
+        lex_scope_array_body, // [ ... ]
+        lex_scope_hash_body, // { ... }
+        lex_scope_string, // "asdad...asdasda"
+        lex_scope_heredoc, // <<`EOC`; ... EOC
+        lex_scope_regexp, // /\w#{...}/
+        lex_scope_percent_string, // %r(/home/#{...})
+        lex_scope_round_brackets, // (...)
+        lex_scope_begin_block, // begin; ... end
+        lex_scope_do_block_vars, // .each do |...| end
+        lex_scope_do_block_body, // .each do |a| ... end
 
+        lex_symbol_key              = (lex_reserved + 1) | lex_ruby_division_breaker | lex_ruby_ternary_braker,
+        lex_dot_dot                 = (lex_reserved + 2) | lex_ruby_division_breaker | lex_ruby_ternary_braker,  // ..
+        lex_dot_dot_dot             = (lex_reserved + 3) | lex_ruby_division_breaker | lex_ruby_ternary_braker,  // ...
+        lex_rocket                  = (lex_reserved + 4) | lex_ruby_division_breaker | lex_ruby_ternary_braker,  // =>
+        lex_comma                   = (lex_reserved + 5) | lex_ruby_division_breaker | lex_ruby_ternary_braker,  // ,
+        lex_wrap_open               = (lex_reserved + 6) | lex_ruby_division_breaker | lex_ruby_ternary_braker, // (
+        lex_open_curly_bracket      = (lex_reserved + 7) | lex_ruby_division_breaker | lex_ruby_ternary_braker, // {
+        lex_open_square_bracket     = (lex_reserved + 8) | lex_ruby_division_breaker | lex_ruby_ternary_braker, // [
+        lex_word                    = (lex_reserved + 9) | lex_ruby_division_breaker | lex_ruby_ternary_braker, // names and etc
+        lex_const                   = (lex_reserved + 10) | lex_ruby_division_breaker | lex_ruby_ternary_braker,
+        lex_var_local               = (lex_reserved + 11) | lex_ruby_division_breaker | lex_ruby_ternary_braker,
+        lex_var_instance            = (lex_reserved + 12) | lex_ruby_division_breaker | lex_ruby_ternary_braker,
+        lex_var_object              = (lex_reserved + 13) | lex_ruby_division_breaker | lex_ruby_ternary_braker,
+        lex_var_global              = (lex_reserved + 14) | lex_ruby_division_breaker | lex_ruby_ternary_braker,
+        lex_var_or_method           = (lex_reserved + 15) | lex_ruby_division_breaker | lex_ruby_ternary_braker,
+        lex_unknown_var_or_method   = (lex_reserved + 16) | lex_ruby_division_breaker | lex_ruby_ternary_braker,
 
-        lex_operator_assigment                  = 30 | lex_ruby_ternary_braker, // =
-        lex_operator_comparison                 = 31 | lex_ruby_ternary_braker, // ==
-        lex_operator_equality                   = 32 | lex_ruby_ternary_braker, // ===
-        lex_operator_not_equal                  = 33 | lex_ruby_ternary_braker, // !=
+        // ...
 
-        lex_operator_less                       = 34 | lex_ruby_ternary_braker, // <
-        lex_operator_less_eql                   = 35 | lex_ruby_ternary_braker, // <=
-        lex_operator_great                      = 36 | lex_ruby_ternary_braker, // >
-        lex_operator_great_eql                  = 37 | lex_ruby_ternary_braker, // >=
+        lex_operator_assigment                  = (lex_reserved + 25) | lex_ruby_ternary_braker, // =
+        lex_operator_comparison                 = (lex_reserved + 26) | lex_ruby_ternary_braker, // ==
+        lex_operator_equality                   = (lex_reserved + 27) | lex_ruby_ternary_braker, // ===
+        lex_operator_not_equal                  = (lex_reserved + 28) | lex_ruby_ternary_braker, // !=
 
-        lex_operator_sort                       = 38 | lex_ruby_ternary_braker, // <=>
+        lex_operator_less                       = (lex_reserved + 29) | lex_ruby_ternary_braker, // <
+        lex_operator_less_eql                   = (lex_reserved + 30) | lex_ruby_ternary_braker, // <=
+        lex_operator_great                      = (lex_reserved + 31) | lex_ruby_ternary_braker, // >
+        lex_operator_great_eql                  = (lex_reserved + 32) | lex_ruby_ternary_braker, // >=
 
-        lex_operator_add                        = 39 | lex_ruby_ternary_braker, // +
-        lex_operator_add_assigment              = 40 | lex_ruby_ternary_braker, // +=
-        lex_operator_increase                   = 41 | lex_ruby_ternary_braker, // ++
-        lex_operator_minus                      = 42 | lex_ruby_ternary_braker, // -
-        lex_operator_minus_assigment            = 43 | lex_ruby_ternary_braker, // -=
-        lex_operator_decrease                   = 44 | lex_ruby_ternary_braker, // --
-        lex_operator_multiplication             = 45 | lex_ruby_ternary_braker, // *
-        lex_operator_multiplication_assigment   = 46 | lex_ruby_ternary_braker, // *=
-        lex_operator_division                   = 47 | lex_ruby_ternary_braker, // /
-        lex_operator_division_assigment         = 48 | lex_ruby_ternary_braker, // /=
-        lex_operator_exponentiation             = 49 | lex_ruby_ternary_braker, // **
-        lex_operator_exponentiation_assigment   = 50 | lex_ruby_ternary_braker, // **=
-        lex_operator_modulus                    = 51 | lex_ruby_ternary_braker, // %
-        lex_operator_modulus_assigment          = 52 | lex_ruby_ternary_braker, // %=
+        lex_operator_sort                       = (lex_reserved + 33) | lex_ruby_ternary_braker, // <=>
 
-        lex_operator_bit_and                    = 53 | lex_ruby_ternary_braker, // &
-        lex_operator_bit_or                     = 54 | lex_ruby_ternary_braker, // |
-        lex_operator_bit_exclusive_or           = 55 | lex_ruby_ternary_braker, // ^
-        lex_operator_bit_not                    = 56 | lex_ruby_ternary_braker, // ~
-        lex_operator_bit_left_shift             = 57 | lex_ruby_ternary_braker, // <<
-        lex_operator_bit_right_shift            = 58 | lex_ruby_ternary_braker, // >>
+        lex_operator_add                        = (lex_reserved + 34) | lex_ruby_ternary_braker, // +
+        lex_operator_add_assigment              = (lex_reserved + 35) | lex_ruby_ternary_braker, // +=
+        lex_operator_increase                   = (lex_reserved + 36) | lex_ruby_ternary_braker, // ++
+        lex_operator_minus                      = (lex_reserved + 37) | lex_ruby_ternary_braker, // -
+        lex_operator_minus_assigment            = (lex_reserved + 38) | lex_ruby_ternary_braker, // -=
+        lex_operator_decrease                   = (lex_reserved + 39) | lex_ruby_ternary_braker, // --
+        lex_operator_multiplication             = (lex_reserved + 40) | lex_ruby_ternary_braker, // *
+        lex_operator_multiplication_assigment   = (lex_reserved + 41) | lex_ruby_ternary_braker, // *=
+        lex_operator_division                   = (lex_reserved + 42) | lex_ruby_ternary_braker, // /
+        lex_operator_division_assigment         = (lex_reserved + 43) | lex_ruby_ternary_braker, // /=
+        lex_operator_exponentiation             = (lex_reserved + 44) | lex_ruby_ternary_braker, // **
+        lex_operator_exponentiation_assigment   = (lex_reserved + 45) | lex_ruby_ternary_braker, // **=
+        lex_operator_modulus                    = (lex_reserved + 46) | lex_ruby_ternary_braker, // %
+        lex_operator_modulus_assigment          = (lex_reserved + 47) | lex_ruby_ternary_braker, // %=
 
-        lex_operator_bit_and_assigment          = 59 | lex_ruby_ternary_braker, // &=
-        lex_operator_bit_or_assigment           = 60 | lex_ruby_ternary_braker, // |=
-        lex_operator_bit_exclusive_or_assigment = 61 | lex_ruby_ternary_braker, // ^=
-        lex_operator_bit_left_shift_assigment   = 62 | lex_ruby_ternary_braker, // <<=
-        lex_operator_bit_right_shift_assigment  = 63 | lex_ruby_ternary_braker, // >>=
+        lex_operator_bit_and                    = (lex_reserved + 48) | lex_ruby_ternary_braker, // &
+        lex_operator_bit_or                     = (lex_reserved + 49) | lex_ruby_ternary_braker, // |
+        lex_operator_bit_exclusive_or           = (lex_reserved + 50) | lex_ruby_ternary_braker, // ^
+        lex_operator_bit_not                    = (lex_reserved + 51) | lex_ruby_ternary_braker, // ~
+        lex_operator_bit_left_shift             = (lex_reserved + 52) | lex_ruby_ternary_braker, // <<
+        lex_operator_bit_right_shift            = (lex_reserved + 53) | lex_ruby_ternary_braker, // >>
 
-        lex_operator_and_literal                = 64 | lex_ruby_ternary_braker,
-        lex_operator_and                        = 65 | lex_ruby_ternary_braker, // &&
-        lex_operator_and_assigment              = 66 | lex_ruby_ternary_braker, // &&=
-        lex_operator_or_literal                 = 67 | lex_ruby_ternary_braker,
-        lex_operator_or                         = 68 | lex_ruby_ternary_braker, // ||
-        lex_operator_or_assigment               = 69 | lex_ruby_ternary_braker, // ||=
-        lex_operator_not                        = 70 | lex_ruby_ternary_braker, // !
+        lex_operator_bit_and_assigment          = (lex_reserved + 54) | lex_ruby_ternary_braker, // &=
+        lex_operator_bit_or_assigment           = (lex_reserved + 55) | lex_ruby_ternary_braker, // |=
+        lex_operator_bit_exclusive_or_assigment = (lex_reserved + 56) | lex_ruby_ternary_braker, // ^=
+        lex_operator_bit_left_shift_assigment   = (lex_reserved + 57) | lex_ruby_ternary_braker, // <<=
+        lex_operator_bit_right_shift_assigment  = (lex_reserved + 58) | lex_ruby_ternary_braker, // >>=
 
-        lex_operator_safe_navigation = 71, // &. // ruby 2.3+
+        lex_operator_and_literal                = (lex_reserved + 59) | lex_ruby_ternary_braker,
+        lex_operator_and                        = (lex_reserved + 60) | lex_ruby_ternary_braker, // &&
+        lex_operator_and_assigment              = (lex_reserved + 61) | lex_ruby_ternary_braker, // &&=
+        lex_operator_or_literal                 = (lex_reserved + 62) | lex_ruby_ternary_braker,
+        lex_operator_or                         = (lex_reserved + 63) | lex_ruby_ternary_braker, // ||
+        lex_operator_or_assigment               = (lex_reserved + 64) | lex_ruby_ternary_braker, // ||=
+        lex_operator_not                        = (lex_reserved + 65) | lex_ruby_ternary_braker, // !
+
+        lex_operator_safe_navigation = (lex_reserved + 66), // &. // ruby 2.3+
 
         lex_loop,
         lex_yield,
