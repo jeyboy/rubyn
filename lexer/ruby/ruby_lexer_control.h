@@ -8,9 +8,8 @@
 
 namespace Ruby {
     struct LexerControl : public ILexerControl {
-        LexerControl(IGrammar * cgrammar, BlockUserData *& user_data, TokenCell * stack_token = nullptr, IHighlighter * lighter = nullptr) :
-            ILexerControl(cgrammar, user_data, stack_token, lighter)
-        {}
+        LexerControl(IGrammar * cgrammar, BlockUserData *& udata, TokenCell * init_stack_token = nullptr, IHighlighter * curr_lighter = nullptr) :
+            ILexerControl(cgrammar, udata, init_stack_token, curr_lighter) {}
 
         ~LexerControl() {}
 

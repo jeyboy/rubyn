@@ -26,7 +26,6 @@ struct ILexerControl {
     IHighlighter * lighter;
 
     IGrammar * grammar;
-    //    Scope * scope;
 
     QByteArray cached;
 
@@ -38,8 +37,11 @@ struct ILexerControl {
 
     TokenCell * heredoc_token;
     TokenCell * stack_token;
-    TokenCell * token;
     TokenCell * last_non_blank_token;
+    TokenCell * token;
+
+    TokenCell * scope_token;
+    TokenCell * scope_stack_token;
 
     ParaCell * para;
     ParaCell * control_para;
@@ -62,8 +64,8 @@ struct ILexerControl {
     ILexerControl(IGrammar * cgrammar, BlockUserData *& user_data, TokenCell * stack_token = nullptr, IHighlighter * lighter = nullptr) :
         lighter(lighter), grammar(cgrammar),
         lex_prev_word(lex_none), lex_word(lex_none)/*, lex_prev_delimiter(DEFAULT_LEX_STATE)*/, lex_delimiter(lex_none),
-        next_offset(1), heredoc_token(nullptr), stack_token(stack_token), token(user_data -> lineControlToken()), last_non_blank_token(nullptr),
-        para(user_data -> lineControlPara()), control_para(nullptr), active_para(nullptr),
+        next_offset(1), heredoc_token(nullptr), stack_token(stack_token), last_non_blank_token(nullptr), token(user_data -> lineControlToken()),
+        scope_token(user_data -> lineControlScope()), para(user_data -> lineControlPara()), control_para(nullptr), active_para(nullptr),
         last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2),
         last_light_len(0), start(nullptr), buffer(nullptr), prev(nullptr), user_data(user_data)
     {}

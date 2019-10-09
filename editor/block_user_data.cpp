@@ -2,11 +2,14 @@
 
 //#include <QtConcurrent/QtConcurrent>
 
-BlockUserData::BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev, ParaCell * para_prev, const UserDataFlags & data_flags)
-    : flags(data_flags), stack_token(nullptr), token_begin(nullptr), token_end(nullptr), para_begin(nullptr), para_end(nullptr), para_control(nullptr),
+BlockUserData::BlockUserData(TokenList * tokens, TokenList * scopes, ParaList * paras, TokenCell * token_prev, TokenCell * scope_prev, ParaCell * para_prev, const UserDataFlags & data_flags)
+    : flags(data_flags), stack_token(nullptr), token_begin(nullptr), token_end(nullptr),
+      scope_token(nullptr), scope_begin(nullptr), scope_end(nullptr),
+      para_control(nullptr), para_begin(nullptr), para_end(nullptr),
       level(DEFAULT_LEVEL), can_have_debug_point(true), msgs(nullptr)
 {
     tokens -> registerLine(token_begin, token_end, token_prev);
+    scopes -> registerLine(scope_begin, scope_end, scope_prev);
     paras -> registerLine(para_begin, para_end, para_prev);
 }
 
@@ -100,20 +103,38 @@ TokenCell * BlockUserData::lineControlToken() {
     return token_begin;
 }
 
+
+TokenCell * BlockUserData::lineControlScope() {
+    scope_end -> prev -> next = nullptr; // detach end line
+
+    return scope_begin;
+}
+
+
+
 ParaCell * BlockUserData::lineControlPara() {
     para_end -> prev -> next = nullptr; // detach end line
 
     return para_begin;
 }
 
-void BlockUserData::syncLine(TokenCell * stack_sync_token, TokenCell * sync_token, ParaCell * sync_para, ParaCell * control_sync_para) {
+void BlockUserData::syncLine(TokenCell * stack_sync_token, TokenCell * sync_token, TokenCell * stack_sync_scope, TokenCell * sync_scope,  ParaCell * control_sync_para, ParaCell * sync_para) {
     stack_token = stack_sync_token;
+    scope_token = stack_sync_scope;
     para_control = control_sync_para;
 
 //    if (control_sync_para) {
 //        if (!foldingState())
 //            setFoldingState(udf_unfolded);
 //    }
+
+
+    //////// SYNC SCOPES /////////////
+    removeTokenSequence(sync_scope -> next);
+
+    scope_end -> prev = sync_scope;
+    scope_end -> prev -> next = scope_end;
+
 
     //////// SYNC TOKENS /////////////
 //    QtConcurrent::run(this, &BlockUserData::removeTokenSequence, sync_token -> next);

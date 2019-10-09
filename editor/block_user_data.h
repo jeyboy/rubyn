@@ -29,16 +29,22 @@ struct BlockUserData : public QTextBlockUserData {
     TokenCell * token_begin;
     TokenCell * token_end;
 
+
+    TokenCell * scope_token;
+    TokenCell * scope_begin;
+    TokenCell * scope_end;
+
+
+    ParaCell * para_control;
     ParaCell * para_begin;
     ParaCell * para_end;
-    ParaCell * para_control;
 
     int level;
     bool can_have_debug_point;
 
     QList<MsgInfo> * msgs;
 
-    BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev = nullptr, ParaCell * para_prev = nullptr, const UserDataFlags & data_flags = udf_none);
+    BlockUserData(TokenList * tokens, TokenList * scopes, ParaList * paras, TokenCell * token_prev = nullptr, TokenCell * scope_prev = nullptr, ParaCell * para_prev = nullptr, const UserDataFlags & data_flags = udf_none);
 
     ~BlockUserData();
 
@@ -49,9 +55,10 @@ struct BlockUserData : public QTextBlockUserData {
 
     // maybe better to remove full tokens sequence in another thread instead of use sync and etc ???
     TokenCell * lineControlToken();
+    TokenCell * lineControlScope();
     ParaCell * lineControlPara();
 
-    void syncLine(TokenCell * stack_sync_token, TokenCell * sync_token, ParaCell * sync_para, ParaCell * control_sync_para);
+    void syncLine(TokenCell * stack_sync_token, TokenCell * sync_token, TokenCell * stack_sync_scope, TokenCell * sync_scope, ParaCell * control_sync_para, ParaCell * sync_para);
 
     inline DATA_FLAGS_TYPE foldingState() {
         DATA_FLAGS_TYPE res = flags & udf_folded;

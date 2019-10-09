@@ -1756,7 +1756,7 @@ void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
     BlockUserData * udata = lighter -> userData();
 
     QByteArray text_val = text.toUtf8();
-    lighter -> initCurrentBlockUserData(prev_udata, udata, text_val.length());
+    lighter -> initCurrentBlockUserData(prev_udata, udata, text.length());
 
     LexerControl state(
         &Ruby::Grammar::obj(),
@@ -1779,7 +1779,11 @@ void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
         }
     }
 
-    udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
+    udata -> syncLine(
+        state.stack_token, state.token,
+        state.scope_stack_token, state.scope_token,
+        state.control_para, state.para
+    );
 
     int prev_state = lighter -> userState();
     int new_state = rubyLineState(udata, prev_state, override_status);

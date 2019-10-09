@@ -2,6 +2,7 @@
 
 IHighlighter::~IHighlighter() {
     delete _tokens;
+    delete _scopes;
     delete _paras;
 }
 
@@ -33,8 +34,9 @@ void IHighlighter::setFormat(const int & start, const int & count, const QFont &
 void IHighlighter::initCurrentBlockUserData(BlockUserData * prev_udata, BlockUserData *& udata, const int & text_len) {
     if (!udata) {
         udata = new BlockUserData(
-            _tokens, _paras,
+            _tokens, _scopes, _paras,
             prev_udata ? prev_udata -> token_end : nullptr,
+            prev_udata ? prev_udata -> scope_end : nullptr,
             prev_udata ? prev_udata -> para_end : nullptr
         );
         setCurrentUserData(udata);
