@@ -1756,7 +1756,7 @@ void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
     BlockUserData * udata = lighter -> userData();
 
     QByteArray text_val = text.toUtf8();
-    lighter -> initCurrentBlockUserData(prev_udata, udata, text_val.length());
+    lighter -> initCurrentBlockUserData(prev_udata, udata, text.length());
 
     LexerControl state(
         &Ruby::Grammar::obj(),

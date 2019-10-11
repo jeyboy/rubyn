@@ -130,23 +130,7 @@ struct ILexerControl {
         return lex_none;
     }
 
-    inline void attachToken(const LEXEM_TYPE & lexem, const uint & flags = slf_none) {
-        if (token -> next) {
-            token = token -> next;
-            token -> lexem = lexem;
-            token -> start_pos = cached_str_pos;
-            token -> length = cached_length;
-
-            if (token -> data) {
-                delete token -> data;
-                token -> data = nullptr;
-            }
-        }
-        else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
-
-        if (token -> lexem >= lex_none)
-            last_non_blank_token = token;
-
+    inline void procStackable(const LEXEM_TYPE & lexem, const uint & flags) {
         if (flags != slf_none) {
             bool stackable = flags & slf_stackable;
             bool unstackable = flags & slf_unstackable;
@@ -187,6 +171,26 @@ struct ILexerControl {
 //            lex_word = lex_none;
 //            lex_delimiter = lex_none;
         }
+    }
+
+    inline void attachToken(const LEXEM_TYPE & lexem, const uint & flags = slf_none) {
+        if (token -> next) {
+            token = token -> next;
+            token -> lexem = lexem;
+            token -> start_pos = cached_str_pos;
+            token -> length = cached_length;
+
+            if (token -> data) {
+                delete token -> data;
+                token -> data = nullptr;
+            }
+        }
+        else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
+
+        if (token -> lexem >= lex_none)
+            last_non_blank_token = token;
+
+        procStackable(lexem, flags);
     }
 //    inline void replaceToken(const StateLexem & lexem, const uint & flags = slf_none) {
 //        token -> lexem = lexem;
