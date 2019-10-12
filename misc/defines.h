@@ -14,13 +14,15 @@
 #define state_level_bits_offset 16 //sizeof(LEXEM_TYPE) / 2 * 8
 #define state_scope_bits_offset 25 //sizeof(LEXEM_TYPE) / 4 * 3 * 8
 
-#define DefaultStateLexems lex_min = -8, lex_end_line = -7, lex_end_doc = -6, lex_spacing = -5, lex_tab = -4, lex_tabs = -3, lex_blank = -2, lex_blanks = -1, lex_none = 0, lex_error = 128, lex_warning, lex_notice, lex_undefined, lex_ignore, lex_default, lex_reserved = 140
+#define DefaultStateLexems lex_min = -8, lex_end_line = -7, lex_end_doc = -6, lex_spacing = -5, lex_tab = -4, lex_tabs = -3, lex_blank = -2, lex_blanks = -1, lex_none = 0, lex_error = 1, lex_warning, lex_notice, lex_undefined, lex_ignore, lex_default, lex_reserved = 10
 
 #define NO_INFO -1
 
 #define PROJECT_FORMAT_TYPE quint8
 
 #define PARA_TYPE quint32
+
+#define DefaultParaLexems pt_max = 1 << 28, pt_close = 1 << 29, pt_foldable = 1 << 30, pt_max_end = pt_max | pt_close, pt_none = 0, pt_reserved = 128
 
 #define OVERLAY_POS_TYPE quint8
 

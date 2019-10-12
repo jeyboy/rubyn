@@ -140,11 +140,13 @@ HEADERS  += ide_window.h \
     lexer/js/js_state_lexems.h \
     lexer/lexer_context.h \
     lexer/lexer_stack_flags.h \
+    lexer/para_type.h \
     lexer/ruby/_ruby_flags.h \
     lexer/ruby/ruby_grammar.h \
     lexer/ruby/ruby_lexer_control.h \
     lexer/ruby/ruby_lexer_frontend.h \
     lexer/ruby/ruby_lexer_regexp.h \
+    lexer/ruby/ruby_para_type.h \
     lexer/ruby/ruby_predefined.h \
     lexer/ruby/ruby_state_lexems.h \
     lexer/state_lexem.h \
@@ -243,7 +245,6 @@ HEADERS  += ide_window.h \
     lexer/igrammar.h \
     misc/_stack.h \
     misc/_chain.h \
-    highlighter/para_type.h \
     editor/text_document_layout.h \
     controls/logger_window.h \
     editor/code_editor_cache.h \

@@ -2,19 +2,19 @@
 #define IGRAMMAR_H
 
 #include "misc/singleton.h"
-#include "highlighter/para_type.h"
 #include "highlighter/identifiers.h"
 #include "lexer/lexer_stack_flags.h"
 #include "lexer/state_lexem.h"
+#include "lexer/para_type.h"
 
 class IGrammar {
 protected:
-    QHash<LEXEM_TYPE, ParaType> para_tokens;
+    QHash<LEXEM_TYPE, PARA_TYPE> para_tokens;
 
     virtual ~IGrammar();
 public:  
     //    static inline bool hasPara(const QByteArray & poss_para) { return para_tokens.contains(poss_para); }
-    inline const ParaType & paraType(const LEXEM_TYPE & poss_para) { return para_tokens[poss_para]; }
+    inline const PARA_TYPE & paraType(const LEXEM_TYPE & poss_para) { return para_tokens[poss_para]; }
 //    inline PARA_TYPE oppositePara(const PARA_TYPE & para_type) { return para_opposition.value(para_type, pt_none); }
 
     virtual LEXEM_TYPE translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input) {

@@ -5,8 +5,11 @@
 
 #include "lexer/igrammar.h"
 #include "ruby_state_lexems.h"
+#include "ruby_para_type.h"
 
 namespace Ruby {
+    using Ruby::ParaType;
+
     class Grammar : public IGrammar, public Singleton<Grammar> {
         Grammar();
 

@@ -1,7 +1,6 @@
 #ifndef TOKEN_LIST_H
 #define TOKEN_LIST_H
 
-#include "defines.h"
 #include "lexer/state_lexem.h"
 
 struct TokenCell {

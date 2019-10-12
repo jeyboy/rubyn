@@ -345,7 +345,7 @@ struct ILexerControl {
         return nullptr;
     }
 
-    inline void attachPara(const ParaType & ptype, const uint & flags, const bool & closable) {
+    inline void attachPara(const PARA_TYPE & ptype, const uint & flags, const bool & closable) {
         if (!ptype) return;
 
         bool replaceable = flags & slf_replace_word;

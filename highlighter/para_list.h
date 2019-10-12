@@ -1,7 +1,7 @@
 #ifndef PARA_LIST_H
 #define PARA_LIST_H
 
-#include "para_type.h"
+#include "lexer/para_type.h"
 
 struct ParaCell {
     ParaCell * prev;
@@ -9,7 +9,7 @@ struct ParaCell {
 
     ParaCell * closer;
 
-    ParaType para_type;
+    PARA_TYPE para_type;
     EDITOR_POS_TYPE pos;
     quint8 length;
 
@@ -18,7 +18,7 @@ struct ParaCell {
     bool is_foldable;
     bool is_oneliner;
 
-    ParaCell(const ParaType & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0, ParaCell * prev_token = nullptr)
+    ParaCell(const PARA_TYPE & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0, ParaCell * prev_token = nullptr)
         : prev(prev_token), next(nullptr), closer(nullptr), para_type(para), pos(start_pos), length(length),
           is_blockator(true), is_opener(true), is_foldable(false), is_oneliner(false)
     {
@@ -163,11 +163,11 @@ public:
         delete right;
     }
 
-    ParaCell * append(const ParaType & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0) {
+    ParaCell * append(const PARA_TYPE & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0) {
         return new ParaCell(para, start_pos, length, last -> prev);
     }
 
-    static ParaCell * insert(ParaCell * left, const ParaType & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0) {
+    static ParaCell * insert(ParaCell * left, const PARA_TYPE & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0) {
         return new ParaCell(para, start_pos, length, left);
     }
 };

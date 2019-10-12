@@ -27,28 +27,6 @@ namespace Ruby {
 
         DefaultStateLexems,
 
-        lex_scope_pre_code = 1, // BEGIN
-        lex_scope_post_code, // END
-        lex_scope_after_code, // __END__
-        lex_scope_method_arg_def, // def n(...)
-        lex_scope_method_var_def, // def n ...
-        lex_scope_method_body, // def n(); ... end
-        lex_scope_lambda_def, // -> () {...}
-        lex_scope_local_block_vars, // .each {|...| }
-        lex_scope_local_block_body, // .each {|a| ... }
-        lex_scope_class_body, // class N { ... }
-        lex_scope_module_body, // class N { ... }
-        lex_scope_array_body, // [ ... ]
-        lex_scope_hash_body, // { ... }
-        lex_scope_string, // "asdad...asdasda"
-        lex_scope_heredoc, // <<`EOC`; ... EOC
-        lex_scope_regexp, // /\w#{...}/
-        lex_scope_percent_string, // %r(/home/#{...})
-        lex_scope_round_brackets, // (...)
-        lex_scope_begin_block, // begin; ... end
-        lex_scope_do_block_vars, // .each do |...| end
-        lex_scope_do_block_body, // .each do |a| ... end
-
         lex_symbol_key              = (lex_reserved + 1) | lex_ruby_division_breaker | lex_ruby_ternary_braker,
         lex_dot_dot                 = (lex_reserved + 2) | lex_ruby_division_breaker | lex_ruby_ternary_braker,  // ..
         lex_dot_dot_dot             = (lex_reserved + 3) | lex_ruby_division_breaker | lex_ruby_ternary_braker,  // ...
