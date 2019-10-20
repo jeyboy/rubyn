@@ -12,6 +12,7 @@ TARGET = rubyn
 TEMPLATE = app
 
 SOURCES += main.cpp\
+    controls/custom/custom_editor.cpp \
     delegates/tree_view_item_delegate.cpp \
     ide_window.cpp \
     editor/document_types/text_document.cpp \
@@ -121,6 +122,7 @@ SOURCES += main.cpp\
     controls/console_widget.cpp
 
 HEADERS  += ide_window.h \
+    controls/cuustom/custom_editor.h \
     delegates/tree_view_item_delegate.h \
     lexer/css/css_grammar.h \
     lexer/css/css_lexer_control.h \

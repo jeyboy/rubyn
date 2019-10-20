@@ -12,6 +12,7 @@
 #include <qdebug.h>
 #include <qtextcursor.h>
 #include <qtextstream.h>
+#include <qtextdocumentfragment.h>
 
 #include <qelapsedtimer.h>
 
@@ -49,21 +50,68 @@ bool TextDocument::registerStateChangedCallback(QObject * target, const char * s
 }
 
 TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _file(file), layout(nullptr), force_word_wrap(false) {
-//    qint64 content_length = _file -> source() -> size();
-
     layout = new TextDocumentLayout(this);
     layout -> setCursorWidth(2);
     setDocumentLayout(layout);
 
     setFullyReaded(true);
 
-    QByteArray ar = _file -> source() -> readAll();
-    ar.replace('\t', TextDocument::tab_space);
-    setPlainText(ar);
+    QIODevice * source = _file -> source();
+    qint64 content_length = source -> size();
+    int pack_limit = 4999999;
+
+    if (content_length > pack_limit) {
+        char ch;
+        int len = 0;
+        QTextCursor cursor(this);
+        QByteArray buff;
+
+
+        while(!source -> atEnd()) {
+            ++len;
+
+            if (_file -> source() -> getChar(&ch)) {
+                if (ch == '\n' && len > pack_limit) {
+                    qDebug() << source -> pos() << content_length;
+                    cursor.insertFragment(QTextDocumentFragment::fromPlainText(buff));
+                    len = 0;
+                    buff.clear();
+                }
+                else buff.append(ch);
+            }
+        }
+
+        if (len > 0) {
+            cursor.insertFragment(QTextDocumentFragment::fromPlainText(buff));
+        }
+
+
+
+//        _file -> source() -> read()
+
+//        QTextStream in(_file -> source());
+//        QTextCursor cursor(this);
+
+//        while (!in.atEnd()) {
+//            qDebug() << in.pos() << content_length;
+//            cursor.insertBlock();
+//            cursor.insertText(in.readLine());
+//        }
+
+//        QTextDocumentFragment fragment();
+//        cursor.insertFragment(fragment);
+
+
+        source -> reset();
+    } else {
+        QByteArray ar = source -> readAll();
+        ar.replace('\t', TextDocument::tab_space);
+        setPlainText(ar);
+    }
 
     identificateLexer();
 
-    force_word_wrap = _file -> firstStr().length() > 10000 || _file -> size() > 4999999;
+    force_word_wrap = _file -> firstStr().length() > 10000 || content_length > 4999999;
 
     if (!highlighter)
         connect(this, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));
