@@ -17,10 +17,11 @@ enum FormatType : quint32 {
 
     // ...
 
-    ft_broken = (1 << 23),
-    ft_system = (1 << 24),
-    ft_datum = (1 << 25),
-    ft_folder = (1 << 26),
+    ft_broken = (1 << 22),
+    ft_system = (1 << 23),
+    ft_datum = (1 << 24),
+    ft_folder = (1 << 25),
+    ft_custom_text = (1 << 26),
     ft_image = (1 << 27),
     ft_text = (1 << 28),
     ft_binary = (1 << 29),
@@ -84,7 +85,7 @@ enum FormatType : quint32 {
 
     ft_user_defined =       8000 | ft_level_three,
 
-    ft_base_file_types =    ft_image | ft_text | ft_binary | ft_tree,
+    ft_base_file_types =    ft_image | ft_text | ft_binary | ft_tree | ft_custom_text,
     ft_priority =           ft_level_one | ft_level_two | ft_level_three
 };
 

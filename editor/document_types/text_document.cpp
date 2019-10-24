@@ -19,41 +19,7 @@
 #include <qjsonobject.h>
 #include <qjsonarray.h>
 
-QLatin1String TextDocument::tab_space = QLatin1Literal("  ");
-
-QHash<QChar, bool> TextDocument::word_boundary = {
-    {'~', true}, {'#', true}, {'%', true},
-    {'^', true}, {'&', true}, {'*', true},
-    {'(', true}, {')', true}, {'+', true},
-    {'{', true}, {'}', true}, {'|', true},
-    {'"', true}, {'<', true}, {'>', true},
-    {',', true}, {'.', true}, {'/', true},
-    {';', true}, {'\'', true}, {'[', true},
-    {']', true}, {'\\', true}, {'-', true},
-    {'=', true}, {' ', true}, {'`', true}
-};
-
-bool TextDocument::identificateLexer() {
-    FormatType format = _file -> formatType();
-
-    _lexer = LexersFactory::obj().lexerFor(format);
-    if (_lexer)
-        highlighter = new Highlighter(this);
-
-    return _lexer != nullptr;
-}
-
-bool TextDocument::registerStateChangedCallback(QObject * target, const char * slot) {
-    connect(this, SIGNAL(hasChanges(QString, bool)), target, slot);
-
-    return true;
-}
-
-TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _file(file), layout(nullptr), force_word_wrap(false) {
-    layout = new TextDocumentLayout(this);
-    layout -> setCursorWidth(2);
-    setDocumentLayout(layout);
-
+void TextDocument::openFile() {
     setFullyReaded(true);
 
     QIODevice * source = _file -> source();
@@ -109,9 +75,33 @@ TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _fi
         setPlainText(ar);
     }
 
-    identificateLexer();
+    force_word_wrap = _file -> firstStr().length() > 10000 || content_length > pack_limit;
+}
 
-    force_word_wrap = _file -> firstStr().length() > 10000 || content_length > 4999999;
+bool TextDocument::identificateLexer() {
+    FormatType format = _file -> formatType();
+
+    _lexer = LexersFactory::obj().lexerFor(format);
+    if (_lexer)
+        highlighter = new Highlighter(this);
+
+    return _lexer != nullptr;
+}
+
+bool TextDocument::registerStateChangedCallback(QObject * target, const char * slot) {
+    connect(this, SIGNAL(hasChanges(QString, bool)), target, slot);
+
+    return true;
+}
+
+TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _file(file), layout(nullptr), force_word_wrap(false) {
+    layout = new TextDocumentLayout(this);
+    layout -> setCursorWidth(2);
+    setDocumentLayout(layout);
+
+    openFile();
+
+    identificateLexer();
 
     if (!highlighter)
         connect(this, SIGNAL(contentsChange(int, int, int)), this, SLOT(changesInContent(int,int,int)));

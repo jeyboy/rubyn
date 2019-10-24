@@ -7,6 +7,7 @@
 class IEditor;
 class CodeEditor;
 class TreeEditor;
+namespace Custom { class Editor; }
 
 class QVBoxLayout;
 class File;
@@ -21,6 +22,7 @@ class UniversalEditor : public QWidget {
     IEditor * _active_editor;
     CodeEditor * _code_editor;
     TreeEditor * _tree_editor;
+    Custom::Editor * _custom_editor;
 
     File * _file;
     Completer * _completer;
@@ -29,6 +31,7 @@ class UniversalEditor : public QWidget {
     void setupLayout();
     void setupCodeEditor();
     void setupTreeEditor();
+    void setupCustomEditor();
 
     void setupCompleter();
 public:

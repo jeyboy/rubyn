@@ -12,8 +12,11 @@ TARGET = rubyn
 TEMPLATE = app
 
 SOURCES += main.cpp\
-    controls/custom/custom_editor.cpp \
+    editor/custom/custom_document.cpp \
+    editor/custom/custom_editor.cpp \
     delegates/tree_view_item_delegate.cpp \
+    editor/custom/custom_iblock.cpp \
+    editor/custom/custom_text_block.cpp \
     ide_window.cpp \
     editor/document_types/text_document.cpp \
     editor/parts/body_overlay_info.cpp \
@@ -122,8 +125,11 @@ SOURCES += main.cpp\
     controls/console_widget.cpp
 
 HEADERS  += ide_window.h \
-    controls/cuustom/custom_editor.h \
+    editor/custom/custom_document.h \
+    editor/custom/custom_editor.h \
     delegates/tree_view_item_delegate.h \
+    editor/custom/custom_iblock.h \
+    editor/custom/custom_text_block.h \
     lexer/css/css_grammar.h \
     lexer/css/css_lexer_control.h \
     lexer/css/css_lexer_frontend.h \

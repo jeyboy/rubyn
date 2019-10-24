@@ -14,13 +14,11 @@ class IHighlighter;
 class TextDocument : public QTextDocument, public IDocument {
     Q_OBJECT
 
-    static QLatin1String tab_space;
-    static QHash<QChar, bool> word_boundary;
-
     IHighlighter * highlighter;
 protected:
     File * _file;
 
+    void openFile();
     bool identificateLexer();
     bool registerStateChangedCallback(QObject * target, const char * slot);
 public:

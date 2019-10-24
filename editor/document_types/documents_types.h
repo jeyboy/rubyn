@@ -5,5 +5,6 @@
 #include "image_document.h"
 #include "binary_document.h"
 #include "tree_document.h"
+#include "editor/custom/custom_document.h"
 
 #endif // DOCUMENTS_TYPES

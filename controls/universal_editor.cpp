@@ -8,6 +8,7 @@
 
 #include "editor/code_editor.h"
 #include "editor/tree_editor.h"
+#include "editor/custom/custom_editor.h"
 
 #include "editor/editor_search.h"
 
@@ -116,6 +117,34 @@ void UniversalEditor::setupTreeEditor() {
     });
 }
 
+void UniversalEditor::setupCustomEditor() {
+    _custom_editor = new Custom::Editor(this);
+    _custom_editor -> setFont(font());
+
+    col_layout -> insertWidget(0, _custom_editor, 1);
+
+//    connect(_tree_editor, &TreeEditor::searchResultsFinded, [=](const int & count) {
+//        if (_active_editor == _tree_editor)
+//            _search_bar -> finded(count);
+//    });
+//    connect(_tree_editor, &TreeEditor::searchRequired, [=](const bool & show) { showSearchPanel(show); });
+
+//    connect(_tree_editor, &TreeEditor::searchRequestRequired, [=](const QString & pattern) {
+//        if (_active_editor == _tree_editor)
+//            _search_bar -> initiateSearch(pattern);
+//    });
+
+//    connect(_tree_editor, &TreeEditor::inFocus, [=]() {
+//        if (_active_editor == _tree_editor)
+//            emit inFocus();
+//    });
+
+//    connect(_tree_editor, &TreeEditor::fileDropped, [=](const QUrl & uri) {
+//        if (_active_editor == _tree_editor)
+//            emit fileDropped(uri);
+//    });
+}
+
 void UniversalEditor::setupCompleter() {
     _completer = new Completer(this);
 
@@ -155,6 +184,19 @@ bool UniversalEditor::openFile(File * file) {
     }
 
     switch(file -> baseFormatType()) {
+        case ft_custom_text: {
+            if (!_custom_editor)
+                setupCustomEditor();
+
+            if (_active_editor)
+                _active_editor -> setVisible(false);
+
+            _active_editor = _custom_editor;
+
+            _custom_editor -> openDocument(file);
+    //                _custom_editor -> setCompleter(_completer);
+        break;}
+
         case ft_text: {
             if (!_code_editor)
                 setupCodeEditor();
@@ -167,6 +209,7 @@ bool UniversalEditor::openFile(File * file) {
             _code_editor -> openDocument(file);
             _code_editor -> setCompleter(_completer);
         break;}
+
         case ft_tree: {
             if (!_tree_editor)
                 setupTreeEditor();
@@ -178,6 +221,7 @@ bool UniversalEditor::openFile(File * file) {
 
             _tree_editor -> openDocument(file);
         break;}
+
         case ft_image: //{ emit parent() -> imageAdded(url); break;}
         case ft_binary: //{ emit parent() -> binaryAdded(url); break;}
         default: {

@@ -15,6 +15,9 @@ protected:
     ILexer * _lexer;
     int scroll_pos_y;
 
+    static QLatin1String tab_space;
+    static QHash<QChar, bool> word_boundary;
+
     inline void setFullyReaded(const bool & readed) { _fully_readed = readed; }
 public:
     inline IDocument() : _fully_readed(false), _lexer(nullptr), scroll_pos_y(0) {}

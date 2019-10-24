@@ -9,11 +9,13 @@
 #include "lexer/lexer_context.h"
 #include "editor/idocument.h"
 #include "projects.h"
+#include "misc/format.h"
 
 class TextDocument;
 class ImageDocument;
 class BinaryDocument;
 class TreeDocument;
+namespace Custom { class Document; }
 class Folder;
 
 class File {
@@ -44,6 +46,7 @@ protected:
     friend class TextDocument;
     friend class ImageDocument;
     friend class BinaryDocument;
+    friend class Custom::Document;
 public:
     static QString default_uid;
 
@@ -65,7 +68,19 @@ public:
     inline IDocument * document() { return _doc; }
     inline QIODevice * source() { return _device; }
 
-    inline qint64 size() { return _device -> size(); }
+    inline QString unitSize() { return Info::toUnits(size()); }
+
+    inline bool tooLarge() {
+        return size() > 1999999;
+    }
+
+    inline qint64 size() {
+        if (!isOpened())
+            if (!openDevice())
+                return 0;
+
+        return _device -> size();
+    }
     inline const QString & name() { return _name; }
     inline const QString & path() { return _path; }
     inline const QString & uid() { return _uid; }
@@ -100,11 +115,13 @@ public:
     inline int baseFormatType() const { return _context -> _main_format & ft_base_file_types; }
 
     inline bool isText() const { return _context -> _main_format & ft_text; }
+    inline bool isCustomText() const { return _context -> _main_format & ft_custom_text; }
     inline bool isImage() const { return _context -> _main_format & ft_image; }
     inline bool isBinary() const { return _context -> _main_format & ft_binary; }
     inline bool isTree() const { return _context -> _main_format & ft_tree; }
 
     TextDocument * asText();
+    Custom::Document * asCustomText();
     ImageDocument * asImage();
     BinaryDocument * asBinary();
     TreeDocument * asTree();

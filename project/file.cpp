@@ -164,12 +164,20 @@ bool File::open() {
     if (!_context -> hasType()) {
         if (!identifyTypeByShebang(firstStr())) {
             if (!userAskFileType())
-                _context -> _main_format = ft_text;
+                _context -> _main_format = ft_custom_text;
 //                return false;
         }
     }
 
-    if (isText()) {
+    if (tooLarge() && !isCustomText()) {
+        _context -> _main_format = FormatType(_context -> _main_format - ft_text + ft_custom_text);
+    }
+
+    if (isCustomText()) {
+        _doc = new Custom::Document(this);
+        return true;
+    }
+    else if (isText()) {
         _doc = new TextDocument(this);
         return true;
     }
