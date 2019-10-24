@@ -43,7 +43,7 @@ namespace Custom {
         void searchClosed() Q_DECL_OVERRIDE;
 
     protected:
-        bool event(QEvent * event) Q_DECL_OVERRIDE;
+        bool event(QEvent * e) Q_DECL_OVERRIDE;
         void paintEvent(QPaintEvent * e) Q_DECL_OVERRIDE;
         void resizeEvent(QResizeEvent * e) Q_DECL_OVERRIDE;
         void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;

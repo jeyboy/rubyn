@@ -11,14 +11,18 @@ namespace Custom {
     class Document : public QObject, public IDocument {
         Q_OBJECT
 
-        IBlock * _root, * _last;
+        IBlock * _root, * _last, _curr;
+        quint32 _inline_pos;
         File * _file;
 
         void openFile();
     public:
         Document(File * file, QObject * parent = nullptr);
+        ~Document();
 
         void clear();
+
+        void addLine(const QString & line);
     };
 }
 

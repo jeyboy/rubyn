@@ -169,7 +169,7 @@ void UniversalEditor::setupCompleter() {
     _completer -> update();
 }
 
-UniversalEditor::UniversalEditor(QWidget * parent) : QWidget(parent), _active_editor(nullptr), _code_editor(nullptr), _tree_editor(nullptr), _file(nullptr), _completer(nullptr) {
+UniversalEditor::UniversalEditor(QWidget * parent) : QWidget(parent), _active_editor(nullptr), _code_editor(nullptr), _tree_editor(nullptr), _custom_editor(nullptr), _file(nullptr), _completer(nullptr) {
     setupLayout();
 
     setupCompleter();
@@ -241,7 +241,7 @@ const QString & UniversalEditor::documentUid() {
 
 int UniversalEditor::verticalScrollBar() {
     QScrollBar * scroll = _active_editor -> verticalScrollBar();
-    return scroll -> value();
+    return scroll ? scroll -> value() : 0;
 }
 
 void UniversalEditor::showSearchPanel(const bool & show) {

@@ -263,6 +263,18 @@ TextDocument * File::asText() {
 
     return dynamic_cast<TextDocument *>(_doc);
 }
+
+Custom::Document * File::asCustomText() {
+    if (!isCustomText()) return nullptr;
+
+    if (!_doc) {
+        if (!open())
+            return nullptr;
+    }
+
+    return dynamic_cast<Custom::Document *>(_doc);
+}
+
 ImageDocument * File::asImage() {
     if (!isImage()) return nullptr;
 

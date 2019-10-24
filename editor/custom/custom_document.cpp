@@ -2,78 +2,61 @@
 
 #include "project/file.h"
 
+#include "custom_text_block.h"
+
 using namespace Custom;
 
 void Document::openFile() {
     QIODevice * source = _file -> source();
-    qint64 content_length = source -> size();
-    int pack_limit = 4999999;
 
-    if (content_length > pack_limit) {
-        char ch;
-        int len = 0;
-        QByteArray buff;
+    char ch;
+    QByteArray buff;
+    buff.reserve(2048);
 
-
-        while(!source -> atEnd()) {
-            ++len;
-
-            if (_file -> source() -> getChar(&ch)) {
-                if (ch == '\n' && len > pack_limit) {
-                    qDebug() << source -> pos() << content_length;
-                    cursor.insertFragment(QTextDocumentFragment::fromPlainText(buff));
-                    len = 0;
-                    buff.clear();
-                }
-                else buff.append(ch);
+    while(!source -> atEnd()) {
+        if (_file -> source() -> getChar(&ch)) {
+            if (ch == '\n') {
+                addLine(buff);
+                buff.clear();
             }
+            else buff.append(ch);
         }
+    }
 
-        if (len > 0) {
-            cursor.insertFragment(QTextDocumentFragment::fromPlainText(buff));
-        }
-
-
-
-//        _file -> source() -> read()
-
-//        QTextStream in(_file -> source());
-//        QTextCursor cursor(this);
-
-//        while (!in.atEnd()) {
-//            qDebug() << in.pos() << content_length;
-//            cursor.insertBlock();
-//            cursor.insertText(in.readLine());
-//        }
-
-//        QTextDocumentFragment fragment();
-//        cursor.insertFragment(fragment);
-
-
-        source -> reset();
-    } else {
-        QByteArray ar = source -> readAll();
-        ar.replace('\t', TextDocument::tab_space);
-        setPlainText(ar);
+    if (!buff.isEmpty()) {
+        addLine(buff);
     }
 }
 
-Document::Document(File * file, QObject * parent) : QObject(parent), _file(file) {
+Document::Document(File * file, QObject * parent) : QObject(parent), _root(nullptr), _last(nullptr), _curr(nullptr), _inline_pos(0), _file(file) {
     openFile();
 }
 
+Document::~Document() {
+    clear();
+
+    delete _root;
+    delete _last;
+}
+
 void Document::clear() {
-    IBlock * curr;
+    IBlock * curr_it;
     IBlock * it = _last -> prev;
 
     while(it != _root) {
-        curr = it;
+        curr_it = it;
         it = it -> prev;
-        delete curr;
+        delete curr_it;
     }
 
     if (_root -> next != _last) {
         _last -> prev = _root;
-        _root -> next = _last;
+        _curr = _root -> next = _last;
     }
+
+    _inline_pos = 0;
+}
+
+void Document::addLine(const QString & line) {
+    _curr = new TextBlock(line, _last);
 }
