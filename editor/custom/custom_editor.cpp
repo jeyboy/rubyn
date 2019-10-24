@@ -3,6 +3,7 @@
 #include <qpainter.h>
 #include <qevent.h>
 #include <qscrollarea.h>
+#include <qstyleoption.h>
 
 #include "custom_document.h"
 #include "project/file.h"
@@ -10,13 +11,16 @@
 using namespace Custom;
 
 void Editor::intialize() {
+    setStyleSheet("background-color: #ffffff;");
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     _viewport = new QScrollArea(this);
-    this -> setBackgroundRole(QPalette::Button);
+    _viewport -> setWidgetResizable(true);
+    _viewport -> setStyleSheet("background-color: #ff0000;");
 }
 
-Editor::Editor(QWidget * parent) : QWidget(parent) {
-//    root = new TokenCell(lex_none, 0, 0);
-//    last = new TokenCell(lex_end_doc, 0, 0, root);
+Editor::Editor(QWidget * parent) : QWidget(parent), _viewport(nullptr), _document(nullptr) {
+    intialize();
 }
 
 Editor::~Editor() {
@@ -30,7 +34,7 @@ void Editor::setDocument(Document * doc) {
 QScrollBar * Editor::verticalScrollBar() { return nullptr; }
 
 void Editor::setVisible(bool visible) {
-
+    QWidget::setVisible(visible);
 }
 
 void Editor::openDocument(File * file) {
@@ -62,8 +66,17 @@ bool Editor::event(QEvent * e) {
     return QWidget::event(e);
 }
 void Editor::paintEvent(QPaintEvent * e) {
-    QPainter painter(_viewport);
-    painter . drawText(0, 0, "HUDO");
+//    QWidget::paintEvent(e);
+
+    QPainter painter(this);
+
+    QStyleOption opt;
+    opt.init(this);
+    style() -> drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+
+    painter.setPen(QColor(0,0,0));
+
+    painter.drawText(0, 10, "HUDO");
 }
 void Editor::resizeEvent(QResizeEvent * e) {
     QWidget::resizeEvent(e);

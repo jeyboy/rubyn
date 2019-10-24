@@ -36,6 +36,7 @@ class UniversalEditor : public QWidget {
     void setupCompleter();
 public:
     UniversalEditor(QWidget * parent = Q_NULLPTR);
+    ~UniversalEditor();
 
     bool openFile(File * file);
     const QString & documentUid();

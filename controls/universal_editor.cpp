@@ -175,6 +175,12 @@ UniversalEditor::UniversalEditor(QWidget * parent) : QWidget(parent), _active_ed
     setupCompleter();
 }
 
+UniversalEditor::~UniversalEditor() {
+    if (_custom_editor) {
+        _custom_editor -> openDocument(nullptr);
+    }
+}
+
 bool UniversalEditor::openFile(File * file) {
     if (!file) {
         if (_active_editor)
@@ -228,7 +234,7 @@ bool UniversalEditor::openFile(File * file) {
             Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Undefined format of file: '") % QString::number(file -> formatType()) % '\'');
             return false;
         }
-    };
+    }
 
     _active_editor -> setVisible(true);
 

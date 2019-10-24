@@ -29,11 +29,16 @@ void Document::openFile() {
 }
 
 Document::Document(File * file, QObject * parent) : QObject(parent), _root(nullptr), _last(nullptr), _curr(nullptr), _inline_pos(0), _file(file) {
+    //    root = new TokenCell(lex_none, 0, 0);
+    //    last = new TokenCell(lex_end_doc, 0, 0, root);
+
     openFile();
 }
 
 Document::~Document() {
-    clear();
+    if (_root != _last) {
+        clear();
+    }
 
     delete _root;
     delete _last;
