@@ -28,7 +28,9 @@ namespace Custom {
         DrawContext * _context;
 
         QScrollBar * vscroll;
+        uint vscroll_factor;
         QScrollBar * hscroll;
+        uint hscroll_factor;
 
         void drawDocument(QPainter & painter);
         void recalcScrolls();
@@ -43,6 +45,8 @@ namespace Custom {
 
         QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
 
+        void setVerticalScrollFactor(uint factor = 5);
+        void setHorizontalScrollFactor(uint factor = 5);
         void setVisible(bool visible) Q_DECL_OVERRIDE;
 
         void openDocument(File * file) Q_DECL_OVERRIDE;

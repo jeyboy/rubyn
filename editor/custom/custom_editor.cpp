@@ -174,6 +174,9 @@ void Editor::intialize() {
     vscroll -> setRange(-1, -1);
     hscroll -> setRange(-1, -1);
 
+    setVerticalScrollFactor();
+    setHorizontalScrollFactor();
+
     connect(hscroll, &QScrollBar::valueChanged, [=]() { emit update(); });
     connect(hscroll, &QScrollBar::rangeChanged, [=]() { emit update(); });
 
@@ -196,7 +199,14 @@ Editor::~Editor() {
     delete _document;
 }
 
-QScrollBar * Editor::verticalScrollBar() { return nullptr; }
+QScrollBar * Editor::verticalScrollBar() { return vscroll; }
+
+void Editor::setVerticalScrollFactor(uint factor) {
+    vscroll_factor = factor;
+}
+void Editor::setHorizontalScrollFactor(uint factor) {
+    hscroll_factor = factor;
+}
 
 void Editor::setVisible(bool visible) {
     QWidget::setVisible(visible);
@@ -259,7 +269,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
     QWidget::wheelEvent(e);
 
     if (e -> orientation() == Qt::Vertical) {
-        qreal offset = -_context -> __line_height;
+        qreal offset = -_context -> __line_height * vscroll_factor;
 
         if (e -> delta() < 0) {
             offset = -offset;
@@ -267,7 +277,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
 
         vscroll -> setValue(vscroll -> value() + qint32(offset));
     } else {
-        qreal offset = -_context -> __symbol_width;
+        qreal offset = -_context -> __symbol_width * hscroll_factor;
 
         if (e -> delta() < 0) {
             offset = -offset;
