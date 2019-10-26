@@ -13,6 +13,9 @@ namespace Custom {
         TextBlock(const QString & txt, IBlock * prev_block = nullptr);
 //        virtual ~TextBlock() = default;
 
+        BlockType blockType() { return bt_text; }
+        void draw(DrawContext *& context);
+
         friend class Editor;
     };
 }

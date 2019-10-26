@@ -126,6 +126,7 @@ SOURCES += main.cpp\
 
 HEADERS  += ide_window.h \
     editor/custom/custom_document.h \
+    editor/custom/custom_draw_context.h \
     editor/custom/custom_editor.h \
     delegates/tree_view_item_delegate.h \
     editor/custom/custom_iblock.h \

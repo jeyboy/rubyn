@@ -28,9 +28,8 @@ void Document::openFile() {
     }
 }
 
-Document::Document(File * file, QObject * parent) : QObject(parent), _root(nullptr), _last(nullptr), _curr(nullptr), _inline_pos(0), _file(file) {
-    //    root = new TokenCell(lex_none, 0, 0);
-    //    last = new TokenCell(lex_end_doc, 0, 0, root);
+Document::Document(File * file, QObject * parent) : QObject(parent), _root(nullptr), _last(nullptr), _inline_pos(0), _max_line_length(0), _lines_count(0), _file(file) {
+    _last = _root = new TextBlock(QString(), nullptr);
 
     openFile();
 }
@@ -46,22 +45,28 @@ Document::~Document() {
 
 void Document::clear() {
     IBlock * curr_it;
-    IBlock * it = _last -> prev;
+    IBlock * it = _last -> _prev;
 
     while(it != _root) {
         curr_it = it;
-        it = it -> prev;
+        it = it -> _prev;
         delete curr_it;
     }
 
-    if (_root -> next != _last) {
-        _last -> prev = _root;
-        _curr = _root -> next = _last;
+    if (_root -> _next != _last) {
+        _last -> _prev = _root;
+        _root -> _next = _last;
     }
 
     _inline_pos = 0;
 }
 
 void Document::addLine(const QString & line) {
-    _curr = new TextBlock(line, _last);
+    _last = new TextBlock(line, _last);
+    quint64 line_len = quint64(line.length());
+
+    if (line_len > _max_line_length)
+        _max_line_length = line_len;
+
+    ++_lines_count;
 }

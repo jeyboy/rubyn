@@ -71,7 +71,7 @@ public:
     inline QString unitSize() { return Info::toUnits(size()); }
 
     inline bool tooLarge() {
-        return size() > 1999999;
+        return size() > 1499999;
     }
 
     inline qint64 size() {

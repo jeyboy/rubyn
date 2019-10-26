@@ -14,12 +14,24 @@ class QScrollArea;
 
 namespace Custom {
     class Document;
+    class DrawContext;
+    class IBlock;
 
     class Editor : public QWidget, public IEditor {
         Q_OBJECT
 
-        QScrollArea * _viewport;
+//        QScrollArea * _scrollarea;
+//        QWidget * _viewport;
+        IBlock * _curr_block;
+
         Document * _document;
+        DrawContext * _context;
+
+        QScrollBar * vscroll;
+        QScrollBar * hscroll;
+
+        void drawDocument(QPainter & painter);
+        void recalcScrolls();
     public:
         void intialize();
 

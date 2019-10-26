@@ -2,19 +2,19 @@
 
 using namespace Custom;
 
-IBlock::IBlock(IBlock * prev_block) : prev(prev_block), next(nullptr) {
-    if (prev) {
-        if ((next = prev -> next))
-            next -> prev = this;
+IBlock::IBlock(IBlock * prev_block) : _prev(prev_block), _next(nullptr) {
+    if (_prev) {
+        if ((_next = _prev -> _next))
+            _next -> _prev = this;
 
-        prev -> next = this;
+        _prev -> _next = this;
     }
 }
 
 IBlock::~IBlock() {
-    if (prev)
-        prev -> next = next;
+    if (_prev)
+        _prev -> _next = _next;
 
-    if (next)
-        next -> prev = prev;
+    if (_next)
+        _next -> _prev = _prev;
 }
