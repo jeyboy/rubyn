@@ -34,7 +34,7 @@ namespace Custom {
             _painter -> setFont(_font);
 
             _screen_size = screen_size;
-            _pos = pos + QPointF(qint32(_left_margin), 0);
+            _pos = pos + QPointF(leftContentBorder(), 0);
 
             __max_str_length = _screen_size.width() / __symbol_width;
         }
@@ -51,14 +51,14 @@ namespace Custom {
             _right_margin = margin;
         }
 
-
+        qint32 leftContentBorder() { return _left_margin + 2; }
 
         QRectF numbersAreaRect() {
             return QRectF(0, 0, _left_margin, _screen_size.height());
         }
 
         QRectF contentAreaRect() {
-            return QRectF(_left_margin, 0, _screen_size.width() - _left_margin - _right_margin - 2, _screen_size.height());
+            return QRectF(leftContentBorder(), 0, _screen_size.width() - _left_margin - _right_margin - 2, _screen_size.height());
         }
 
         void setFont(const QFont & font) {

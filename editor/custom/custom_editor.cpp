@@ -93,16 +93,19 @@ void Editor::recalcTopBlock() {
 
     IBlock * it = _top_block;
     qint32 top_val = vscroll -> value();
+    qint32 number_offset = 0;
 
     if (top_val > 0) {
         qint32 block_top = _top_block_offset;
 
         while(it && block_top < top_val) {
             block_top += _context -> __line_height;
+            ++number_offset;
             it = it -> next();
         }
 
         if (it && block_top > top_val) {
+            _top_block_number += number_offset;
             _top_block_offset = block_top - _context -> __line_height;
             _top_block = it -> prev();
         }
@@ -263,10 +266,10 @@ void Editor::setDocument(Document * doc) {
     _top_block_number = 0;
 
     if (doc) {
-        _top_block = doc -> _root -> next();
+        _top_block = doc -> first();
         setLeftMargin(_context -> calcNumWidth(doc -> linesCount()));
     } else {
-        _top_block = doc ? doc -> first() : nullptr;
+        _top_block = nullptr;
         setLeftMargin(_context -> calcNumWidth(1));
     }
 
@@ -335,6 +338,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
                 if (!next)
                     break;
 
+                ++_top_block_number;
                 _top_block = next;
             }
         } else {
@@ -344,6 +348,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
                 if (!prev || prev == _document -> _root)
                     break;
 
+                --_top_block_number;
                 _top_block = prev;
             }
         }
