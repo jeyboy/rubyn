@@ -9,8 +9,6 @@ TextBlock::TextBlock(const QString & txt, IBlock * prev_block) : IBlock(prev_blo
 }
 
 void TextBlock::draw(DrawContext *& context) {
-    context -> _pos.ry() += context -> __line_height;
-
     context -> _painter -> drawText(
       context -> _pos,
       content

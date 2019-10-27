@@ -25,6 +25,8 @@ namespace Custom {
         Document(File * file, QObject * parent = nullptr);
         ~Document();
 
+        IBlock * first() { return _root -> next(); }
+
         void clear();
 
         void addLine(const QString & line);

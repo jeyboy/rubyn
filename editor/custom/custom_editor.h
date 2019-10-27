@@ -1,7 +1,7 @@
 #ifndef CUSTOMEDITOR_H
 #define CUSTOMEDITOR_H
 
-#include <QWidget>
+#include <qwidget.h>
 #include "editor/ieditor.h"
 
 class QEvent;
@@ -20,9 +20,14 @@ namespace Custom {
     class Editor : public QWidget, public IEditor {
         Q_OBJECT
 
-//        QScrollArea * _scrollarea;
-//        QWidget * _viewport;
-        IBlock * _curr_block;
+        IBlock * _select_block;
+        IBlock * _top_block;
+        qint32 _top_block_offset;
+        quint32 _top_block_number;
+        quint32 _left_margin;
+
+        QPalette * line_num_section_pal;
+        QPalette * content_section_pal;
 
         Document * _document;
         DrawContext * _context;
@@ -34,6 +39,8 @@ namespace Custom {
 
         void drawDocument(QPainter & painter);
         void recalcScrolls();
+        void initTopBlock();
+        void recalcTopBlock();
     public:
         void intialize();
 
@@ -45,8 +52,18 @@ namespace Custom {
 
         QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
 
-        void setVerticalScrollFactor(uint factor = 5);
-        void setHorizontalScrollFactor(uint factor = 5);
+        void setVerticalScrollFactor(uint factor = 5) {
+            vscroll_factor = factor;
+        }
+        void setHorizontalScrollFactor(uint factor = 5) {
+            hscroll_factor = factor;
+        }
+        void setLeftMargin(const quint32 & margin = 0) {
+            _left_margin = margin;
+        }
+
+        void setColor(const QPalette::ColorRole & acr, const QColor & acolor);
+
         void setVisible(bool visible) Q_DECL_OVERRIDE;
 
         void openDocument(File * file) Q_DECL_OVERRIDE;
@@ -70,6 +87,7 @@ namespace Custom {
     signals:
 
     public slots:
+
     };
 }
 

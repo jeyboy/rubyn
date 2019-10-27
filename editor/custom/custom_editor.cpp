@@ -3,13 +3,8 @@
 #include <qpainter.h>
 #include <qevent.h>
 #include <qstyleoption.h>
-#include <qapplication.h>
-
 #include <qscrollbar.h>
-
-#include <qscrollarea.h>
 #include <qlayout.h>
-#include <qlabel.h>
 
 #include "custom_document.h"
 #include "custom_draw_context.h"
@@ -20,31 +15,35 @@ using namespace Custom;
 void Editor::drawDocument(QPainter & painter) {
     if (!_document) return;
 
-    _context -> prepare(&painter, size(), QPointF(-hscroll -> value(), 0));
-    qint32 top_val = vscroll -> value();
+    painter.setPen(content_section_pal -> color(QPalette::Foreground));
+    _context -> prepare(&painter, size(), QPointF(-hscroll -> value() + qint32(_left_margin), 0));
 
+    qDebug() << "-------------------------------";
 
-//    IBlock * it = _curr_block;
+//    recalcTopBlock();
+    initTopBlock();
+    IBlock * it = _top_block;
+    int c = 0;
+    quint32 block_num = _top_block_number;
 
+    QRectF block_nums_rect = QRectF(0, 0, qint32(_left_margin), _context -> _screen_size.height());
 
-    IBlock * it = _document ? _document -> _root : nullptr;
-
-    if (top_val > 0) {
-        qint32 block_top = 0;
-
-        while(it && block_top < top_val) {
-            block_top += _context -> __line_height;
-            it = it -> next();
-        }
-
-        if (it && block_top > top_val) {
-            it = it -> prev();
-        }
-    }
-
+    painter.fillRect(block_nums_rect, line_num_section_pal -> background());
+    painter.setClipRect(block_nums_rect);
 
     while(it) {
+        _context -> _pos.ry() += _context -> __line_height;
+
         it -> draw(_context);
+        ++c;
+
+        painter.save();
+
+        painter.setClipping(false);
+        painter.setPen(line_num_section_pal -> color(QPalette::Foreground));
+        painter.drawText(0, _context -> _pos.y(), QString::number(++block_num));
+
+        painter.restore();
 
         if (_context -> screenCovered())
             break;
@@ -52,42 +51,81 @@ void Editor::drawDocument(QPainter & painter) {
         it = it -> next();
     }
 
+    qDebug() << c;
     _context -> _painter = nullptr;
 }
 
 void Editor::recalcScrolls() {
     qint32 vmax = _document ? qint32(_document -> _lines_count * _context -> __line_height) - _context -> _screen_size.height() : -1;
-    qint32 hmax = _document ? qint32(_document -> _max_line_length * _context -> __symbol_width - _context -> _screen_size.width()) : -1;
+    qint32 hmax = _document ? qint32((_document -> _max_line_length * _context -> __symbol_width + _left_margin) - _context -> _screen_size.width()) : -1;
 
     vscroll -> setRange(0, vmax);
     hscroll -> setRange(0, hmax);
 }
 
+void Editor::initTopBlock() {
+    IBlock * it = _document ? _document -> first() : nullptr;
+
+    qint32 top_val = vscroll -> value();
+
+    if (top_val > 0) {
+        qint32 block_top = 0;
+        qint32 next_top = block_top;
+
+        while(it) {
+            next_top += _context -> __line_height;
+
+            if (next_top > top_val)
+                break;
+
+            block_top = next_top;
+            it = it -> next();
+        }
+
+        if (it) {
+            _top_block_offset = block_top - _context -> __line_height;
+            _top_block = it -> prev();
+        }
+    }
+}
+
+void Editor::recalcTopBlock() {
+    if (!_top_block)
+        return;
+
+    IBlock * it = _top_block;
+    qint32 top_val = vscroll -> value();
+
+    if (top_val > 0) {
+        qint32 block_top = _top_block_offset;
+
+        while(it && block_top < top_val) {
+            block_top += _context -> __line_height;
+            it = it -> next();
+        }
+
+        if (it && block_top > top_val) {
+            _top_block_offset = block_top - _context -> __line_height;
+            _top_block = it -> prev();
+        }
+    }
+}
+
 void Editor::intialize() {
-//    QVBoxLayout * l = new QVBoxLayout(this);
-
-//    _viewport = new QWidget(this);
-//    _viewport -> setStyleSheet("background-color: #ffffff;");
-//    _viewport -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-//    _scrollarea = new QScrollArea(this);
-//    _scrollarea -> setWidget(_viewport);
-//    _scrollarea -> setWidgetResizable(true);
-//    _scrollarea -> setStyleSheet("background-color: #ff0000;");
-
-//    l -> addWidget(_scrollarea);
-//    l -> setContentsMargins(0,0,0,0);
-
-
     _context = new DrawContext(nullptr, size(), font());
 
+    line_num_section_pal = new QPalette();
+    line_num_section_pal -> setColor(QPalette::Background, Qt::black);
+    line_num_section_pal -> setColor(QPalette::Foreground, Qt::white);
 
-    QPalette pal(palette());
-    pal.setColor(QPalette::Background, Qt::white);
+    content_section_pal = new QPalette();
+    content_section_pal -> setColor(QPalette::Background, Qt::white);
+    content_section_pal -> setColor(QPalette::Foreground, Qt::black);
+
     setAutoFillBackground(true);
-    setPalette(pal);
+    setPalette(*content_section_pal);
 
-//    setStyleSheet("background-color: #ffffff;");
+    setLeftMargin();
 
     vscroll = new QScrollBar(Qt::Vertical, this);
     vscroll -> setStyleSheet(
@@ -191,21 +229,27 @@ void Editor::intialize() {
     l -> addWidget(hscroll, 0, Qt::AlignBottom);
 }
 
-Editor::Editor(QWidget * parent) : QWidget(parent),/* _scrollarea(nullptr), _viewport(nullptr),*/ _curr_block(nullptr), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
+Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _left_margin(0), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
     intialize();
+    setDocument(nullptr);
 }
 
 Editor::~Editor() {
     delete _document;
+
+    delete line_num_section_pal;
+    delete content_section_pal;
+
+    delete _context;
 }
 
 QScrollBar * Editor::verticalScrollBar() { return vscroll; }
 
-void Editor::setVerticalScrollFactor(uint factor) {
-    vscroll_factor = factor;
-}
-void Editor::setHorizontalScrollFactor(uint factor) {
-    hscroll_factor = factor;
+void Editor::setColor(const QPalette::ColorRole & acr, const QColor & acolor) {
+    QPalette pal(palette());
+    pal.setColor(acr, acolor);
+    setAutoFillBackground(true);
+    setPalette(pal);
 }
 
 void Editor::setVisible(bool visible) {
@@ -214,7 +258,18 @@ void Editor::setVisible(bool visible) {
 
 void Editor::setDocument(Document * doc) {
     _document = doc;
-    _curr_block = doc ? doc -> _root -> next() : nullptr;
+    _select_block = nullptr;
+    _top_block_offset = 0;
+    _top_block_number = 0;
+
+    if (doc) {
+        _top_block = doc -> _root -> next();
+        _left_margin = _context -> calcNumWidth(doc -> linesCount());
+    } else {
+        _top_block = doc ? doc -> first() : nullptr;
+        _left_margin = _context -> calcNumWidth(1);
+    }
+
     recalcScrolls();
 }
 
@@ -273,6 +328,24 @@ void Editor::wheelEvent(QWheelEvent * e) {
 
         if (e -> delta() < 0) {
             offset = -offset;
+
+            for(uint i = 0; i < vscroll_factor - 1; i++) {
+                IBlock * next = _top_block -> next();
+
+                if (!next)
+                    break;
+
+                _top_block = next;
+            }
+        } else {
+            for(uint i = 0; i <= vscroll_factor; i++) {
+                IBlock * prev = _top_block -> prev();
+
+                if (!prev || prev == _document -> _root)
+                    break;
+
+                _top_block = prev;
+            }
         }
 
         vscroll -> setValue(vscroll -> value() + qint32(offset));
