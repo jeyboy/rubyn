@@ -24,7 +24,6 @@ namespace Custom {
         IBlock * _top_block;
         qint32 _top_block_offset;
         quint32 _top_block_number;
-        quint32 _left_margin;
 
         QPalette * line_num_section_pal;
         QPalette * content_section_pal;
@@ -58,9 +57,7 @@ namespace Custom {
         void setHorizontalScrollFactor(uint factor = 5) {
             hscroll_factor = factor;
         }
-        void setLeftMargin(const quint32 & margin = 0) {
-            _left_margin = margin;
-        }
+        void setLeftMargin(const qint32 & margin = 0);
 
         void setColor(const QPalette::ColorRole & acr, const QColor & acolor);
 

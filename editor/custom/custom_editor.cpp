@@ -16,7 +16,8 @@ void Editor::drawDocument(QPainter & painter) {
     if (!_document) return;
 
     painter.setPen(content_section_pal -> color(QPalette::Foreground));
-    _context -> prepare(&painter, size(), QPointF(-hscroll -> value() + qint32(_left_margin), 0));
+    _context -> setRightMargin(vscroll -> isVisible() ? vscroll -> width() : 0);
+    _context -> prepare(&painter, size(), QPointF(-hscroll -> value(), 0));
 
     qDebug() << "-------------------------------";
 
@@ -25,15 +26,11 @@ void Editor::drawDocument(QPainter & painter) {
     IBlock * it = _top_block;
     int c = 0;
     quint32 block_num = _top_block_number;
-
-    QRectF block_nums_rect = QRectF(0, 0, qint32(_left_margin), _context -> _screen_size.height());
-
-    painter.fillRect(block_nums_rect, line_num_section_pal -> background());
-    painter.setClipRect(block_nums_rect);
+    painter.fillRect(_context -> numbersAreaRect(), line_num_section_pal -> background());
+    painter.setClipRect(_context -> contentAreaRect());
 
     while(it) {
         _context -> _pos.ry() += _context -> __line_height;
-
         it -> draw(_context);
         ++c;
 
@@ -42,6 +39,7 @@ void Editor::drawDocument(QPainter & painter) {
         painter.setClipping(false);
         painter.setPen(line_num_section_pal -> color(QPalette::Foreground));
         painter.drawText(0, _context -> _pos.y(), QString::number(++block_num));
+        painter.setClipping(true);
 
         painter.restore();
 
@@ -57,7 +55,7 @@ void Editor::drawDocument(QPainter & painter) {
 
 void Editor::recalcScrolls() {
     qint32 vmax = _document ? qint32(_document -> _lines_count * _context -> __line_height) - _context -> _screen_size.height() : -1;
-    qint32 hmax = _document ? qint32((_document -> _max_line_length * _context -> __symbol_width + _left_margin) - _context -> _screen_size.width()) : -1;
+    qint32 hmax = _document ? qint32((_document -> _max_line_length * _context -> __symbol_width + _context -> _left_margin) - _context -> _screen_size.width()) : -1;
 
     vscroll -> setRange(0, vmax);
     hscroll -> setRange(0, hmax);
@@ -229,7 +227,7 @@ void Editor::intialize() {
     l -> addWidget(hscroll, 0, Qt::AlignBottom);
 }
 
-Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _left_margin(0), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
+Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
     intialize();
     setDocument(nullptr);
 }
@@ -244,6 +242,8 @@ Editor::~Editor() {
 }
 
 QScrollBar * Editor::verticalScrollBar() { return vscroll; }
+
+void Editor::setLeftMargin(const qint32 & margin) { _context -> setLeftMargin(margin); }
 
 void Editor::setColor(const QPalette::ColorRole & acr, const QColor & acolor) {
     QPalette pal(palette());
@@ -264,10 +264,10 @@ void Editor::setDocument(Document * doc) {
 
     if (doc) {
         _top_block = doc -> _root -> next();
-        _left_margin = _context -> calcNumWidth(doc -> linesCount());
+        setLeftMargin(_context -> calcNumWidth(doc -> linesCount()));
     } else {
         _top_block = doc ? doc -> first() : nullptr;
-        _left_margin = _context -> calcNumWidth(1);
+        setLeftMargin(_context -> calcNumWidth(1));
     }
 
     recalcScrolls();

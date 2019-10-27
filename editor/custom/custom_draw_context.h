@@ -13,15 +13,19 @@ namespace Custom {
         QPointF _pos;
 
         qreal _letter_spacing;
+        qint32 _left_margin;
+        qint32 _right_margin;
 
         qreal __line_height;
         qreal __symbol_width;
         qreal __max_str_length;
 
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
-            : _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _letter_spacing(letter_spacing)
+            : _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _letter_spacing(letter_spacing), _left_margin(0)
         {
             setFont(font);
+            setLeftMargin();
+            setRightMargin();
         }
 
         void prepare(QPainter * curr_painter, const QSize & screen_size, const QPointF & pos) {
@@ -30,13 +34,31 @@ namespace Custom {
             _painter -> setFont(_font);
 
             _screen_size = screen_size;
-            _pos = pos;
+            _pos = pos + QPointF(qint32(_left_margin), 0);
 
             __max_str_length = _screen_size.width() / __symbol_width;
         }
 
         bool screenCovered() {
             return _pos.y() >= _screen_size.height();
+        }
+
+        void setLeftMargin(const qint32 & margin = 0) {
+            _left_margin = margin;
+        }
+
+        void setRightMargin(const qint32 & margin = 0) {
+            _right_margin = margin;
+        }
+
+
+
+        QRectF numbersAreaRect() {
+            return QRectF(0, 0, _left_margin, _screen_size.height());
+        }
+
+        QRectF contentAreaRect() {
+            return QRectF(_left_margin, 0, _screen_size.width() - _left_margin - _right_margin - 2, _screen_size.height());
         }
 
         void setFont(const QFont & font) {
@@ -49,12 +71,12 @@ namespace Custom {
             __symbol_width = _fmetrics -> maxWidth();
         }
 
-        quint32 calcStringWidth(const QString & str) {
+        qint32 calcStringWidth(const QString & str) {
             int char_num = str.length();
-            return quint32(qCeil(char_num * __symbol_width + (_letter_spacing * (char_num - 1))));
+            return qCeil(char_num * __symbol_width + (_letter_spacing * (char_num - 1)));
         }
 
-        quint32 calcNumWidth(const quint64 & num) {
+        qint32 calcNumWidth(const quint64 & num) {
             return calcStringWidth(QString::number(num));
         }
     };
