@@ -343,26 +343,6 @@ void Editor::wheelEvent(QWheelEvent * e) {
 
         if (e -> delta() < 0) {
             offset = -offset;
-
-            for(uint i = 0; i < vscroll_factor - 1; i++) {
-                IBlock * next = _top_block -> next();
-
-                if (!next)
-                    break;
-
-                ++_top_block_number;
-                _top_block = next;
-            }
-        } else {
-            for(uint i = 0; i <= vscroll_factor; i++) {
-                IBlock * prev = _top_block -> prev();
-
-                if (!prev || prev == _document -> _root)
-                    break;
-
-                --_top_block_number;
-                _top_block = prev;
-            }
         }
 
         vscroll -> setValue(vscroll -> value() + qint32(offset));
