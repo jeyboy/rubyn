@@ -21,8 +21,7 @@ void Editor::drawDocument(QPainter & painter) {
 
     qDebug() << "-------------------------------";
 
-//    recalcTopBlock();
-    initTopBlock();
+    initTopBlock(true);
     IBlock * it = _top_block;
     int c = 0;
     quint32 block_num = _top_block_number;
@@ -38,7 +37,7 @@ void Editor::drawDocument(QPainter & painter) {
 
         painter.setClipping(false);
         painter.setPen(line_num_section_pal -> color(QPalette::Foreground));
-        painter.drawText(0, _context -> _pos.y(), QString::number(++block_num));
+        painter.drawText(0, qint32(_context -> _pos.y()), QString::number(++block_num));
         painter.setClipping(true);
 
         painter.restore();
@@ -61,53 +60,65 @@ void Editor::recalcScrolls() {
     hscroll -> setRange(0, hmax);
 }
 
-void Editor::initTopBlock() {
-    IBlock * it = _document ? _document -> first() : nullptr;
+void Editor::initTopBlock(const bool & recalc) {
+    IBlock * it;
 
-    qint32 top_val = vscroll -> value();
+    if (recalc) {
+        it = _top_block;
+    } else {
+        it = _document ? _document -> first() : nullptr;
+    }
 
-    if (top_val > 0) {
-        qint32 block_top = 0;
-        qint32 next_top = block_top;
+    qint32 scroll_offset = vscroll -> value();
 
+    if (scroll_offset <= 0) {
+        _top_block = _document ? _document -> first() : nullptr;
+        _top_block_number = 0;
+        _top_block_offset = 0;
+        return;
+    }
+
+    if (_top_block_offset == scroll_offset) {
+        return;
+    }
+
+    qint32 number_offset = 0;
+    qint32 block_top = _top_block_offset;
+    qint32 next_top = block_top;
+
+    if (_top_block_offset < scroll_offset) {
         while(it) {
             next_top += _context -> __line_height;
 
-            if (next_top > top_val)
+            if (next_top > scroll_offset)
                 break;
 
             block_top = next_top;
-            it = it -> next();
-        }
-
-        if (it) {
-            _top_block_offset = block_top - _context -> __line_height;
-            _top_block = it -> prev();
-        }
-    }
-}
-
-void Editor::recalcTopBlock() {
-    if (!_top_block)
-        return;
-
-    IBlock * it = _top_block;
-    qint32 top_val = vscroll -> value();
-    qint32 number_offset = 0;
-
-    if (top_val > 0) {
-        qint32 block_top = _top_block_offset;
-
-        while(it && block_top < top_val) {
-            block_top += _context -> __line_height;
             ++number_offset;
             it = it -> next();
         }
 
-        if (it && block_top > top_val) {
+        if (it) {
+            _top_block_offset = block_top;
             _top_block_number += number_offset;
-            _top_block_offset = block_top - _context -> __line_height;
-            _top_block = it -> prev();
+            _top_block = it;
+        }
+    } else {
+        while(it != _document -> _root) {
+            next_top -= _context -> __line_height;
+
+            if (next_top < scroll_offset)
+                break;
+
+            block_top = next_top;
+            --number_offset;
+            it = it -> next();
+        }
+
+        if (it) {
+            _top_block_offset = block_top;
+            _top_block_number += number_offset;
+            _top_block = it;
         }
     }
 }
@@ -274,6 +285,7 @@ void Editor::setDocument(Document * doc) {
     }
 
     recalcScrolls();
+    initTopBlock();
 }
 
 void Editor::openDocument(File * file) {

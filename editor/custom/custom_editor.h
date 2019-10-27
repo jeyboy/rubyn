@@ -38,8 +38,7 @@ namespace Custom {
 
         void drawDocument(QPainter & painter);
         void recalcScrolls();
-        void initTopBlock();
-        void recalcTopBlock();
+        void initTopBlock(const bool & recalc = false);
     public:
         void intialize();
 
