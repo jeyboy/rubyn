@@ -112,7 +112,7 @@ void Editor::initTopBlock(const bool & recalc) {
 
             block_top = next_top;
             --number_offset;
-            it = it -> next();
+            it = it -> prev();
         }
 
         if (it) {
