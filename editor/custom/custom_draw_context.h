@@ -1,8 +1,11 @@
 #ifndef CUSTOM_DRAW_CONTEXT_H
 #define CUSTOM_DRAW_CONTEXT_H
 
+//QTextLayout
+
 #include <qpainter.h>
 #include <qmath.h>
+#include <qdebug.h>
 
 namespace Custom {
     struct DrawContext {
@@ -16,7 +19,7 @@ namespace Custom {
         qint32 _left_margin;
         qint32 _right_margin;
 
-        qreal __line_height;
+        qint32 __line_height;
         qreal __symbol_width;
         qreal __max_str_length;
 
@@ -67,7 +70,7 @@ namespace Custom {
 //            QFontInfo f(font);
             _fmetrics = new QFontMetricsF(_font);
 
-            __line_height = _fmetrics -> height() + 2;
+            __line_height = qCeil(_fmetrics -> height()) + 2;
             __symbol_width = _fmetrics -> maxWidth();
         }
 

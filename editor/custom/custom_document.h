@@ -29,6 +29,7 @@ namespace Custom {
         ~Document();
 
         IBlock * first() { return _root -> next(); }
+        IBlock * last() { return _last; }
 
         void clear();
 

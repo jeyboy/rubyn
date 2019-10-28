@@ -53,8 +53,8 @@ void Editor::drawDocument(QPainter & painter) {
 }
 
 void Editor::recalcScrolls() {
-    qint32 vmax = _document ? qint32(_document -> _lines_count * _context -> __line_height) - _context -> _screen_size.height() : -1;
-    qint32 hmax = _document ? qint32((_document -> _max_line_length * _context -> __symbol_width + _context -> _left_margin) - _context -> _screen_size.width()) : -1;
+    qint32 vmax = _document ? qint32(_document -> _lines_count * _context -> __line_height)/* - _context -> _screen_size.height()*/ : -1;
+    qint32 hmax = _document ? qint32((_document -> _max_line_length * _context -> __symbol_width + _context -> _left_margin)/* - _context -> _screen_size.width()*/) : -1;
 
     vscroll -> setRange(0, vmax);
     hscroll -> setRange(0, hmax);
@@ -78,10 +78,6 @@ void Editor::initTopBlock(const bool & recalc) {
         return;
     }
 
-    if (_top_block_offset == scroll_offset) {
-        return;
-    }
-
     qint32 number_offset = 0;
     qreal block_top = _top_block_offset;
     qreal next_top = block_top;
@@ -98,11 +94,8 @@ void Editor::initTopBlock(const bool & recalc) {
             it = it -> next();
         }
 
-        if (it) {
-            _top_block_offset = block_top;
-            _top_block_number += number_offset;
-            _top_block = it;
-        }
+        if (!it)
+            it = _document -> last();
     } else {
         while(it != _document -> _root) {
             next_top -= _context -> __line_height;
@@ -114,13 +107,12 @@ void Editor::initTopBlock(const bool & recalc) {
             --number_offset;
             it = it -> prev();
         }
-
-        if (it) {
-            _top_block_offset = block_top;
-            _top_block_number += number_offset;
-            _top_block = it;
-        }
     }
+
+
+    _top_block_offset = block_top;
+    _top_block_number += number_offset;
+    _top_block = it;
 }
 
 void Editor::intialize() {
@@ -281,7 +273,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
     QWidget::wheelEvent(e);
 
     if (e -> orientation() == Qt::Vertical) {
-        qreal offset = -_context -> __line_height * vscroll_factor;
+        qint32 offset = -_context -> __line_height * vscroll_factor;
 
         if (e -> delta() < 0) {
             offset = -offset;
@@ -289,7 +281,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
 
         vscroll -> setValue(vscroll -> value() + qint32(offset));
     } else {
-        qreal offset = -_context -> __symbol_width * hscroll_factor;
+        qint32 offset = -_context -> __symbol_width * hscroll_factor;
 
         if (e -> delta() < 0) {
             offset = -offset;
