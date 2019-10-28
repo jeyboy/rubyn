@@ -61,6 +61,7 @@ namespace Custom {
         }
 
         QRectF contentAreaRect() {
+            qDebug() << "contentAreaRect" << (_screen_size.width() - _left_margin - _right_margin - 2) << _left_margin << _right_margin;
             return QRectF(leftContentBorder(), 0, _screen_size.width() - _left_margin - _right_margin - 2, _screen_size.height());
         }
 
