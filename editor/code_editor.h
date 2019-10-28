@@ -502,6 +502,8 @@ protected:
     void hideOverlay(const OVERLAY_POS_TYPE & overlay_type);
     void hideOverlays();
 
+    void hideActiveParts();
+
     bool rectOnScreen(const QRect & r);
     inline bool blockOnScreen(const QTextBlock & block) { return rectOnScreen(blockRect(block).toRect()); }
     inline QRectF blockRect(const QTextBlock & block) { return blockBoundingGeometry(block).translated(contentOffset());  }
@@ -521,13 +523,14 @@ protected:
 
     void customPaintEvent(QPainter & painter, QPaintEvent * e);
 
-    bool event(QEvent * event) Q_DECL_OVERRIDE;
+    bool event(QEvent * e) Q_DECL_OVERRIDE;
     void paintEvent(QPaintEvent * e) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent * e) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void keyReleaseEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
     void focusInEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
+    void focusOutEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
 //    virtual void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
     void mouseDoubleClickEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent * e) Q_DECL_OVERRIDE;

@@ -69,7 +69,7 @@ void Editor::initTopBlock(const bool & recalc) {
         it = _document ? _document -> first() : nullptr;
     }
 
-    qint32 scroll_offset = vscroll -> value();
+    qreal scroll_offset = vscroll -> value();
 
     if (scroll_offset <= 0) {
         _top_block = _document ? _document -> first() : nullptr;
@@ -83,8 +83,8 @@ void Editor::initTopBlock(const bool & recalc) {
     }
 
     qint32 number_offset = 0;
-    qint32 block_top = _top_block_offset;
-    qint32 next_top = block_top;
+    qreal block_top = _top_block_offset;
+    qreal next_top = block_top;
 
     if (_top_block_offset < scroll_offset) {
         while(it) {
@@ -259,18 +259,20 @@ QScrollBar * Editor::verticalScrollBar() { return vscroll; }
 
 void Editor::setLeftMargin(const qint32 & margin) { _context -> setLeftMargin(margin); }
 
-void Editor::setColor(const QPalette::ColorRole & acr, const QColor & acolor) {
-    QPalette pal(palette());
-    pal.setColor(acr, acolor);
-    setAutoFillBackground(true);
-    setPalette(pal);
-}
+//void Editor::setColor(const QPalette::ColorRole & acr, const QColor & acolor) {
+//    QPalette pal(palette());
+//    pal.setColor(acr, acolor);
+//    setAutoFillBackground(true);
+//    setPalette(pal);
+//}
 
 void Editor::setVisible(bool visible) {
     QWidget::setVisible(visible);
 }
 
 void Editor::setDocument(Document * doc) {
+    qDebug() << this << "setDocument";
+
     _document = doc;
     _select_block = nullptr;
     _top_block_offset = 0;
@@ -286,6 +288,9 @@ void Editor::setDocument(Document * doc) {
 
     recalcScrolls();
     initTopBlock();
+
+    hscroll -> setValue(0);
+    vscroll -> setValue(0);
 }
 
 void Editor::openDocument(File * file) {

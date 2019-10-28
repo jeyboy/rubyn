@@ -22,7 +22,7 @@ namespace Custom {
 
         IBlock * _select_block;
         IBlock * _top_block;
-        qint32 _top_block_offset;
+        qreal _top_block_offset;
         quint32 _top_block_number;
 
         QPalette * line_num_section_pal;
@@ -58,7 +58,7 @@ namespace Custom {
         }
         void setLeftMargin(const qint32 & margin = 0);
 
-        void setColor(const QPalette::ColorRole & acr, const QColor & acolor);
+//        void setColor(const QPalette::ColorRole & acr, const QColor & acolor);
 
         void setVisible(bool visible) Q_DECL_OVERRIDE;
 

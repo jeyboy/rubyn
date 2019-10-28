@@ -744,6 +744,14 @@ void CodeEditor::hideOverlays() {
         it.value() -> hide();
 }
 
+void CodeEditor::hideActiveParts() {
+    if (display_cacher -> isShowOverlay())
+        hideOverlays();
+
+    if (completer)
+        completer -> hide();
+}
+
 
 bool CodeEditor::rectOnScreen(const QRect & r) {
     int view_height = height();
@@ -1326,11 +1334,14 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
 }
 
 
-bool CodeEditor::event(QEvent * event) {
-//    qDebug() << "EVENT" << event -> type();
+bool CodeEditor::event(QEvent * e) {
+//    qDebug() << "EVENT" << e -> type();
 
-    if (event -> type() == QEvent::ToolTip) {
-        QHelpEvent * helpEvent = static_cast<QHelpEvent*>(event);
+    if (e -> type() == QEvent::Hide) {
+        hideActiveParts();
+    }
+    else if (e -> type() == QEvent::ToolTip) {
+        QHelpEvent * helpEvent = static_cast<QHelpEvent *>(e);
 
         QTextCursor cursor = cursorForPosition(helpEvent -> pos() - QPoint(extraAreaWidth(), 0));
         QTextBlock blk = cursor.block();
@@ -1366,11 +1377,11 @@ bool CodeEditor::event(QEvent * event) {
 
         QToolTip::hideText();
         tooplip_block_num = NO_INFO;
-        event -> ignore();
+        e -> ignore();
         return true;
     }
 
-    return QPlainTextEdit::event(event);
+    return QPlainTextEdit::event(e);
 }
 
 void CodeEditor::paintEvent(QPaintEvent * e) {
@@ -1634,6 +1645,12 @@ void CodeEditor::focusInEvent(QFocusEvent * e) {
     emit inFocus();
 
     QPlainTextEdit::focusInEvent(e);
+}
+
+void CodeEditor::focusOutEvent(QFocusEvent * e) {
+    hideActiveParts();
+
+    QPlainTextEdit::focusOutEvent(e);
 }
 
 void CodeEditor::mouseDoubleClickEvent(QMouseEvent * e) {

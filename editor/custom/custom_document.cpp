@@ -31,7 +31,11 @@ void Document::openFile() {
 Document::Document(File * file, QObject * parent) : QObject(parent), _root(nullptr), _last(nullptr), _inline_pos(0), _max_line_length(0), _lines_count(0), _file(file) {
     _last = _root = new TextBlock(QString(), nullptr);
 
-    openFile();
+    if (file) {
+        openFile();
+    }
+
+    addLine(QString());
 }
 
 Document::~Document() {
