@@ -222,19 +222,32 @@ void Editor::intialize() {
     );
 
     vscroll -> setRange(-1, -1);
+//    vscroll -> setPageStep(_context -> __line_height);
+    vscroll -> setSingleStep(_context -> __line_height);
     hscroll -> setRange(-1, -1);
 
     setVerticalScrollFactor();
     setHorizontalScrollFactor();
 
-    connect(hscroll, &QScrollBar::valueChanged, [=]() { emit update(); });
+    connect(hscroll, &QScrollBar::valueChanged, [=]() {
+        if (_document) {
+            _document -> editorScrollPos(this).rx() = hscroll -> value();
+        }
+
+        emit update();
+    });
     connect(hscroll, &QScrollBar::rangeChanged, [=]() { emit update(); });
 
-    connect(vscroll, &QScrollBar::valueChanged, [=]() { emit update(); });
+    connect(vscroll, &QScrollBar::valueChanged, [=]() {
+        if (_document) {
+            _document -> editorScrollPos(this).ry() = vscroll -> value();
+        }
+        emit update();
+    });
     connect(vscroll, &QScrollBar::rangeChanged, [=]() { emit update(); });
 
     QVBoxLayout * l = new QVBoxLayout(this);
-    l -> setContentsMargins(0,0,0,0);
+    l -> setContentsMargins(0, 0, 0, 0);
     l -> setSpacing(0);
 
     l -> addWidget(vscroll, 1, Qt::AlignRight);
@@ -243,7 +256,7 @@ void Editor::intialize() {
 
 Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
     intialize();
-    setDocument(nullptr);
+    openDocument();
 }
 
 Editor::~Editor() {
@@ -270,31 +283,34 @@ void Editor::setVisible(bool visible) {
     QWidget::setVisible(visible);
 }
 
-void Editor::setDocument(Document * doc) {
+void Editor::openDocument(Document * doc) {
     qDebug() << this << "setDocument";
 
     _document = doc;
     _select_block = nullptr;
     _top_block_offset = 0;
     _top_block_number = 0;
+    QPoint scroll_pos(0, 0);
 
     if (doc) {
         _top_block = doc -> first();
         setLeftMargin(_context -> calcNumWidth(doc -> linesCount()));
+        scroll_pos = doc -> editorScrollPos(this);
     } else {
         _top_block = nullptr;
         setLeftMargin(_context -> calcNumWidth(1));
     }
 
     recalcScrolls();
-    initTopBlock();
 
-    hscroll -> setValue(0);
-    vscroll -> setValue(0);
+    hscroll -> setValue(scroll_pos.x());
+    vscroll -> setValue(scroll_pos.y());
+
+    initTopBlock();
 }
 
 void Editor::openDocument(File * file) {
-    setDocument(file ? file -> asCustomText() : nullptr);
+    openDocument(file ? file -> asCustomText() : nullptr);
 }
 
 //  void Editor::searchIsShow(const bool & show) = 0;

@@ -2,6 +2,7 @@
 #define CUSTOM_DOCUMENT_H
 
 #include <qobject.h>
+#include <qhash.h>
 
 #include "editor/idocument.h"
 #include "custom_iblock.h"
@@ -19,8 +20,10 @@ namespace Custom {
         quint64 _max_line_length;
         quint64 _lines_count;
         File * _file;
+        QHash<Editor *, QPoint> scroll_pos;
 
         void openFile();
+        QPoint & editorScrollPos(Editor * editor);
     public:
         Document(File * file, QObject * parent = nullptr);
         ~Document();

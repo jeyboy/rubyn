@@ -45,8 +45,9 @@ namespace Custom {
         explicit Editor(QWidget * parent = nullptr);
         ~Editor() Q_DECL_OVERRIDE;
 
-        void setDocument(Document * doc);
-        void clear();
+        void openDocument(Document * doc = nullptr);
+        void openDocument(File * file) Q_DECL_OVERRIDE;
+        void clear() { openDocument(); }
 
         QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
 
@@ -61,8 +62,6 @@ namespace Custom {
 //        void setColor(const QPalette::ColorRole & acr, const QColor & acolor);
 
         void setVisible(bool visible) Q_DECL_OVERRIDE;
-
-        void openDocument(File * file) Q_DECL_OVERRIDE;
 
     //  void searchIsShow(const bool & show) = 0;
         void searchInitiated(const QRegularExpression & pattern, const bool & scroll = true) Q_DECL_OVERRIDE;

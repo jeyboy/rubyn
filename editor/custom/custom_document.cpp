@@ -28,6 +28,14 @@ void Document::openFile() {
     }
 }
 
+QPoint & Document::editorScrollPos(Editor * editor) {
+    if (!scroll_pos.contains(editor)) {
+        scroll_pos[editor] = QPoint(0, 0);
+    }
+
+    return scroll_pos[editor];
+}
+
 Document::Document(File * file, QObject * parent) : QObject(parent), _root(nullptr), _last(nullptr), _inline_pos(0), _max_line_length(0), _lines_count(0), _file(file) {
     _last = _root = new TextBlock(QString(), nullptr);
 

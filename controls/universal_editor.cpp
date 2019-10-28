@@ -177,7 +177,7 @@ UniversalEditor::UniversalEditor(QWidget * parent) : QWidget(parent), _active_ed
 
 UniversalEditor::~UniversalEditor() {
     if (_custom_editor) {
-        _custom_editor -> openDocument(nullptr);
+        _custom_editor -> clear();
     }
 }
 
