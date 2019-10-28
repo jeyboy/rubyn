@@ -47,6 +47,7 @@ namespace Custom {
         }
 
         void setLeftMargin(const qint32 & margin = 0) {
+            qDebug() << "setLeftMargin" << margin;
             _left_margin = margin;
         }
 
@@ -61,23 +62,28 @@ namespace Custom {
         }
 
         QRectF contentAreaRect() {
-            qDebug() << "contentAreaRect" << (_screen_size.width() - _left_margin - _right_margin - 2) << _left_margin << _right_margin;
             return QRectF(leftContentBorder(), 0, _screen_size.width() - _left_margin - _right_margin - 2, _screen_size.height());
         }
 
         void setFont(const QFont & font) {
             _font = font;
-            _font.setLetterSpacing(QFont::AbsoluteSpacing, _letter_spacing);
+
+            if (_letter_spacing > 0) {
+                _font.setLetterSpacing(QFont::AbsoluteSpacing, _letter_spacing);
+            }
+
 //            QFontInfo f(font);
+
             _fmetrics = new QFontMetricsF(_font);
 
             __line_height = qCeil(_fmetrics -> height()) + 2;
-            __symbol_width = _fmetrics -> maxWidth();
+            __symbol_width = _fmetrics -> averageCharWidth() + 1; //(_fmetrics -> maxWidth() + _fmetrics -> width('!')) / 2;
         }
 
         qint32 calcStringWidth(const QString & str) {
-            int char_num = str.length();
-            return qCeil(char_num * __symbol_width + (_letter_spacing * (char_num - 1)));
+            return _fmetrics -> width(str) * 1.7;
+//            int char_num = str.length();
+//            return qCeil(char_num * __symbol_width + (_letter_spacing * (char_num - 1)));
         }
 
         qint32 calcNumWidth(const quint64 & num) {

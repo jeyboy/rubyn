@@ -16,6 +16,7 @@ void Editor::drawDocument(QPainter & painter) {
     if (!_document) return;
 
     painter.setPen(content_section_pal -> color(QPalette::Foreground));
+    painter.setFont(_context -> _font);
     _context -> setRightMargin(vscroll -> isVisible() ? vscroll -> width() + 3 : 0);
     _context -> prepare(&painter, size(), QPointF(-hscroll -> value(), 0));
 
