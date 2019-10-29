@@ -19,9 +19,10 @@ namespace Custom {
         qint32 _left_margin;
         qint32 _right_margin;
 
+        qint32 __left_str_pad;
+        qint32 __max_str_length;
         qint32 __line_height;
         qreal __symbol_width;
-        qreal __max_str_length;
 
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
             : _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _letter_spacing(letter_spacing), _left_margin(0)
@@ -37,9 +38,14 @@ namespace Custom {
             _painter -> setFont(_font);
 
             _screen_size = screen_size;
-            _pos = pos + QPointF(leftContentBorder(), 0);
 
-            __max_str_length = _screen_size.width() / __symbol_width;
+            qreal target_letter_width = __symbol_width + _letter_spacing;
+            __max_str_length = qCeil(_screen_size.width() / target_letter_width);
+            __left_str_pad = pos.x() == 0 ? 0 : qAbs(qFloor(pos.x() / target_letter_width));
+//            if (__left_str_pad > 0)
+//                __left_str_pad -= 1;
+
+            _pos = pos + QPointF(leftContentBorder() + (__left_str_pad * target_letter_width), 0);
         }
 
         bool screenCovered() {
@@ -71,6 +77,14 @@ namespace Custom {
 
         qint32 horizontalSingleStep() {
             return qCeil(__symbol_width);
+        }
+
+        qint32 leftStrPad() {
+            return __left_str_pad;
+        }
+
+        qint32 maxStrLength() {
+            return __max_str_length;
         }
 
         void setFont(const QFont & font) {
