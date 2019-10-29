@@ -77,11 +77,11 @@ namespace Custom {
             _fmetrics = new QFontMetricsF(_font);
 
             __line_height = qCeil(_fmetrics -> height()) + 2;
-            __symbol_width = _fmetrics -> averageCharWidth() + 1; //(_fmetrics -> maxWidth() + _fmetrics -> width('!')) / 2;
+            __symbol_width = _fmetrics -> averageCharWidth(); //(_fmetrics -> maxWidth() + _fmetrics -> width('!')) / 2;
         }
 
         qint32 calcStringWidth(const QString & str) {
-            return _fmetrics -> width(str) * 1.7;
+            return _fmetrics -> width(str);
 //            int char_num = str.length();
 //            return qCeil(char_num * __symbol_width + (_letter_spacing * (char_num - 1)));
         }

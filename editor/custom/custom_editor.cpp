@@ -55,7 +55,9 @@ void Editor::drawDocument(QPainter & painter) {
 
 void Editor::recalcScrolls() {
     qint32 vmax = _document ? qint32(_document -> _lines_count * _context -> __line_height)/* - _context -> _screen_size.height()*/ : -1;
-    qint32 hmax = _document ? qint32((_document -> _max_line_length * _context -> __symbol_width + _context -> _left_margin)/* - _context -> _screen_size.width()*/) : -1;
+    qint32 hmax = _document ? qint32((_document -> _max_line_length * _context -> __symbol_width + _context -> _left_margin) - size().width()) : -1;
+
+    qDebug() << "hmax" << hmax << (_document ? _document -> _max_line_length : 0);
 
     vscroll -> setRange(0, vmax);
     hscroll -> setRange(0, hmax);
@@ -199,6 +201,9 @@ void Editor::setVisible(bool visible) {
 
 void Editor::openDocument(Document * doc) {
     qDebug() << this << "setDocument";
+
+    _context -> setFont(font());
+//    _context -> _screen_size = size();
 
     _document = doc;
     _select_block = nullptr;
