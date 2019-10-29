@@ -54,8 +54,9 @@ void Editor::drawDocument(QPainter & painter) {
 }
 
 void Editor::recalcScrolls() {
-    qint32 vmax = _document ? qint32(_document -> _lines_count * _context -> __line_height)/* - _context -> _screen_size.height()*/ : -1;
-    qint32 hmax = _document ? qint32((_document -> _max_line_length * _context -> __symbol_width + _context -> _left_margin) - size().width()) : -1;
+    qint32 vmax = _document ? (qint32(_document -> _lines_count * _context -> __line_height) - _context -> _screen_size.height()) : -1;
+//            _document ? (qint32(_document -> _lines_count * _context -> __line_height) + _context -> __line_height) - _context -> _screen_size.height() : -1;
+    qint32 hmax = _document ? qint32((_document -> _max_line_length * _context -> __symbol_width + _context -> _left_margin + ((_document -> _max_line_length - 1) * _context -> _letter_spacing)) - size().width()) : -1;
 
     qDebug() << "hmax" << hmax << (_document ? _document -> _max_line_length : 0);
 
@@ -63,8 +64,20 @@ void Editor::recalcScrolls() {
     vscroll -> setSingleStep(_context -> verticalSingleStep());
     hscroll -> setSingleStep(_context -> horizontalSingleStep());
 
-    vscroll -> setRange(0, vmax);
-    hscroll -> setRange(0, hmax);
+    vscroll -> setVisible(vmax > 0);
+    if (vmax > 0) {
+        vscroll -> setRange(0, vmax);
+    } else {
+        vscroll -> setValue(0);
+    }
+
+
+    hscroll -> setVisible(hmax > 0);
+    if (hmax > 0) {
+        hscroll -> setRange(0, hmax);
+    } else {
+        hscroll -> setValue(0);
+    }
 }
 
 void Editor::initTopBlock(const bool & recalc) {
@@ -270,6 +283,8 @@ void Editor::paintEvent(QPaintEvent * e) {
 }
 void Editor::resizeEvent(QResizeEvent * e) {
     QWidget::resizeEvent(e);
+
+    recalcScrolls();
 }
 void Editor::keyPressEvent(QKeyEvent * e) {
     QWidget::keyPressEvent(e);

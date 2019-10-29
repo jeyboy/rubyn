@@ -79,6 +79,29 @@ namespace Custom {
         void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
         void focusInEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
 
+//        virtual void mousePressEvent(QMouseEvent *event);
+//        virtual void mouseReleaseEvent(QMouseEvent *event);
+//        virtual void mouseDoubleClickEvent(QMouseEvent *event);
+//        virtual void mouseMoveEvent(QMouseEvent *event);
+//        virtual void focusOutEvent(QFocusEvent *event);
+//        virtual void enterEvent(QEvent *event);
+//        virtual void leaveEvent(QEvent *event);
+//        virtual void moveEvent(QMoveEvent *event);
+//        virtual void closeEvent(QCloseEvent *event);
+//        virtual void contextMenuEvent(QContextMenuEvent *event);
+
+//        virtual void tabletEvent(QTabletEvent *event);
+//        virtual void actionEvent(QActionEvent *event);
+
+//        virtual void dragEnterEvent(QDragEnterEvent *event);
+//        virtual void dragMoveEvent(QDragMoveEvent *event);
+//        virtual void dragLeaveEvent(QDragLeaveEvent *event);
+//        virtual void dropEvent(QDropEvent *event);
+
+//        virtual void showEvent(QShowEvent *event);
+//        virtual void hideEvent(QHideEvent *event);
+
+
     signals:
 
     public slots:
