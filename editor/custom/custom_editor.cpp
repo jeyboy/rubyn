@@ -59,6 +59,10 @@ void Editor::recalcScrolls() {
 
     qDebug() << "hmax" << hmax << (_document ? _document -> _max_line_length : 0);
 
+    //    vscroll -> setPageStep(_context -> __line_height);
+    vscroll -> setSingleStep(_context -> verticalSingleStep());
+    hscroll -> setSingleStep(_context -> horizontalSingleStep());
+
     vscroll -> setRange(0, vmax);
     hscroll -> setRange(0, hmax);
 }
@@ -138,8 +142,6 @@ void Editor::intialize() {
     hscroll = new QScrollBar(Qt::Horizontal, this);
 
     vscroll -> setRange(-1, -1);
-//    vscroll -> setPageStep(_context -> __line_height);
-    vscroll -> setSingleStep(_context -> __line_height);
     hscroll -> setRange(-1, -1);
 
     setVerticalScrollFactor();

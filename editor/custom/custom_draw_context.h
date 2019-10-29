@@ -65,6 +65,14 @@ namespace Custom {
             return QRectF(leftContentBorder(), 0, _screen_size.width() - _left_margin - _right_margin - 2, _screen_size.height());
         }
 
+        qint32 verticalSingleStep() {
+            return __line_height;
+        }
+
+        qint32 horizontalSingleStep() {
+            return qCeil(__symbol_width);
+        }
+
         void setFont(const QFont & font) {
             _font = font;
 
