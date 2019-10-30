@@ -36,6 +36,7 @@ namespace Custom {
         QScrollBar * hscroll;
         uint hscroll_factor;
 
+        void drawGrid();
         void drawDocument(QPainter & painter);
         void recalcScrolls();
         void initTopBlock(const bool & recalc = false);

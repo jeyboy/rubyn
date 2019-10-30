@@ -12,6 +12,17 @@
 
 using namespace Custom;
 
+void Editor::drawGrid() {
+    _context -> _painter -> save();
+    _context -> _painter -> setPen(Qt::red);
+
+    for(int i = 0; i < _context -> __max_str_length; i++) {
+        qreal r = i * (_context -> __symbol_width + _context -> _letter_spacing);
+        _context -> _painter -> drawLine(r, 0, r, _context -> _screen_size.height());
+    }
+    _context -> _painter -> restore();
+}
+
 void Editor::drawDocument(QPainter & painter) {
     if (!_document) return;
 
@@ -21,6 +32,8 @@ void Editor::drawDocument(QPainter & painter) {
     _context -> prepare(&painter, size(), QPointF(-hscroll -> value(), 0));
 
     qDebug() << "-------------------------------";
+
+//    drawGrid();
 
     initTopBlock(true);
     IBlock * it = _top_block;
@@ -56,7 +69,7 @@ void Editor::drawDocument(QPainter & painter) {
 void Editor::recalcScrolls() {
     qint32 vmax = _document ? (qint32(_document -> _lines_count * _context -> __line_height) - _context -> _screen_size.height()) : -1;
 //            _document ? (qint32(_document -> _lines_count * _context -> __line_height) + _context -> __line_height) - _context -> _screen_size.height() : -1;
-    qint32 hmax = _document ? qint32((_document -> _max_line_length * _context -> __symbol_width + _context -> _left_margin + ((_document -> _max_line_length - 1) * _context -> _letter_spacing)) - size().width()) : -1;
+    qint32 hmax = _document ? qint32(_context -> _left_margin + (_document -> _max_line_length * _context -> __symbol_width) + (_document -> _max_line_length * _context -> _letter_spacing)) - (size().width() - _context -> _left_margin) : -1;
 
     qDebug() << "hmax" << hmax << (_document ? _document -> _max_line_length : 0);
 
