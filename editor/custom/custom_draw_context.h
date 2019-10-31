@@ -111,6 +111,10 @@ namespace Custom {
         qint32 calcNumWidth(const quint64 & num) {
             return calcStringWidth(QString::number(num));
         }
+
+        qint32 calcHScrollWidth(const quint64 & chars_amount) {
+            return qint32(_left_margin + (chars_amount * __symbol_width) + (chars_amount * _letter_spacing)) - (_screen_size.width() - _left_margin);
+        }
     };
 };
 
