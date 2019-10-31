@@ -297,6 +297,7 @@ void Editor::paintEvent(QPaintEvent * e) {
 void Editor::resizeEvent(QResizeEvent * e) {
     QWidget::resizeEvent(e);
 
+    _context -> prepare(nullptr, size(), QPointF(0, 0));
     recalcScrolls();
 }
 void Editor::keyPressEvent(QKeyEvent * e) {

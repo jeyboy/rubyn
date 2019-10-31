@@ -35,7 +35,9 @@ namespace Custom {
         void prepare(QPainter * curr_painter, const QSize & screen_size, const QPointF & pos) {
             _painter = curr_painter;
 
-            _painter -> setFont(_font);
+            if (_painter) {
+                _painter -> setFont(_font);
+            }
 
             _screen_size = screen_size;
 
