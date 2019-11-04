@@ -67,15 +67,13 @@ void Editor::drawDocument(QPainter & painter) {
 }
 
 void Editor::recalcScrolls() {
-    qint32 vmax = _document ? (qint32(_document -> _lines_count * _context -> __line_height) - _context -> _screen_size.height()) : -1;
-//            _document ? (qint32(_document -> _lines_count * _context -> __line_height) + _context -> __line_height) - _context -> _screen_size.height() : -1;
+    qint32 vmax = _document ? _context -> calcVScrollWidth(_document -> _lines_count) : -1;
     qint32 hmax = _document ? _context -> calcHScrollWidth(_document -> _max_line_length) : -1;
-
-    qDebug() << "hmax" << hmax << (_document ? _document -> _max_line_length : 0);
 
     //    vscroll -> setPageStep(_context -> __line_height);
     vscroll -> setSingleStep(_context -> verticalSingleStep());
     hscroll -> setSingleStep(_context -> horizontalSingleStep());
+
 
     vscroll -> setVisible(vmax > 0);
     if (vmax > 0) {
@@ -127,8 +125,10 @@ void Editor::initTopBlock(const bool & recalc) {
             it = it -> next();
         }
 
-        if (!it)
+        if (!it) {
             it = _document -> last();
+            --number_offset;
+        }
     } else {
         while(it != _document -> _root) {
             next_top -= _context -> __line_height;

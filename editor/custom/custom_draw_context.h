@@ -44,8 +44,6 @@ namespace Custom {
             qreal target_letter_width = __symbol_width + _letter_spacing;
             __max_str_length = qCeil(_screen_size.width() / target_letter_width);
             __left_str_pad = pos.x() == 0 ? 0 : qAbs(qFloor(pos.x() / target_letter_width));
-//            if (__left_str_pad > 0)
-//                __left_str_pad -= 1;
 
             _pos = pos + QPointF(leftContentBorder() + (__left_str_pad * target_letter_width), 0);
         }
@@ -116,6 +114,10 @@ namespace Custom {
 
         qint32 calcHScrollWidth(const quint64 & chars_amount) {
             return qint32(_left_margin + (chars_amount * __symbol_width) + (chars_amount * _letter_spacing)) - (_screen_size.width() - _left_margin);
+        }
+
+        qint32 calcVScrollWidth(const quint64 & lines_count) {
+            return qint32(lines_count * __line_height)/* - _screen_size.height()*/;
         }
     };
 };
