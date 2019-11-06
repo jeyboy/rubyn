@@ -12,28 +12,14 @@
 
 using namespace Custom;
 
-void Editor::drawGrid() {
-    _context -> _painter -> save();
-    _context -> _painter -> setPen(Qt::red);
-
-    for(int i = 0; i < _context -> __max_str_length; i++) {
-        qreal r = i * (_context -> __symbol_width + _context -> _letter_spacing);
-        _context -> _painter -> drawLine(r, 0, r, _context -> _screen_size.height());
-    }
-    _context -> _painter -> restore();
-}
-
 void Editor::drawDocument(QPainter & painter) {
     if (!_document) return;
 
     painter.setPen(content_section_pal -> color(QPalette::Foreground));
     painter.setFont(_context -> _font);
-    _context -> setRightMargin(vscroll -> isVisible() ? vscroll -> width() + 3 : 0);
-    _context -> prepare(&painter, size(), QPointF(-hscroll -> value(), 0));
+    _context -> prepare(&painter, size());
 
     qDebug() << "-------------------------------";
-
-//    drawGrid();
 
     initTopBlock(true);
     IBlock * it = _top_block;
@@ -161,7 +147,6 @@ void Editor::intialize() {
 
     setAutoFillBackground(true);
     setPalette(*content_section_pal);
-
     setLeftMargin();
 
     vscroll = new QScrollBar(Qt::Vertical, this);
@@ -196,6 +181,8 @@ void Editor::intialize() {
 
     l -> addWidget(vscroll, 1, Qt::AlignRight);
     l -> addWidget(hscroll, 0, Qt::AlignBottom);
+
+    _context -> setScrolls(hscroll, vscroll);
 }
 
 Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
@@ -297,7 +284,7 @@ void Editor::paintEvent(QPaintEvent * e) {
 void Editor::resizeEvent(QResizeEvent * e) {
     QWidget::resizeEvent(e);
 
-    _context -> prepare(nullptr, size(), QPointF(0, 0));
+    _context -> prepare(nullptr, size());
     recalcScrolls();
 }
 void Editor::keyPressEvent(QKeyEvent * e) {

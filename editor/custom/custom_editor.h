@@ -10,7 +10,6 @@ class QResizeEvent;
 class QKeyEvent;
 class QWheelEvent;
 class QFocusEvent;
-class QScrollArea;
 
 namespace Custom {
     class Document;
@@ -36,7 +35,6 @@ namespace Custom {
         QScrollBar * hscroll;
         uint hscroll_factor;
 
-        void drawGrid();
         void drawDocument(QPainter & painter);
         void recalcScrolls();
         void initTopBlock(const bool & recalc = false);

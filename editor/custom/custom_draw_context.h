@@ -4,11 +4,15 @@
 //QTextLayout
 
 #include <qpainter.h>
+#include <qscrollbar.h>
 #include <qmath.h>
 #include <qdebug.h>
 
 namespace Custom {
     struct DrawContext {
+        QScrollBar * _vscroll;
+        QScrollBar * _hscroll;
+
         QPainter * _painter;
         QSize _screen_size;
         QFont _font;
@@ -24,6 +28,17 @@ namespace Custom {
         qint32 __line_height;
         qreal __symbol_width;
 
+        void drawGrid() {
+            _painter -> save();
+            _painter -> setPen(Qt::red);
+
+            for(int i = 0; i < __max_str_length; i++) {
+                qreal r = i * (__symbol_width + _letter_spacing);
+                _painter -> drawLine(r, 0, r, _screen_size.height());
+            }
+            _painter -> restore();
+        }
+
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
             : _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _letter_spacing(letter_spacing), _left_margin(0)
         {
@@ -32,12 +47,20 @@ namespace Custom {
             setRightMargin();
         }
 
-        void prepare(QPainter * curr_painter, const QSize & screen_size, const QPointF & pos) {
+        void setScrolls(QScrollBar * hscroll, QScrollBar * vscroll) {
+            _hscroll = hscroll;
+            _vscroll = vscroll;
+        }
+
+        void prepare(QPainter * curr_painter, const QSize & screen_size) {
             _painter = curr_painter;
 
             if (_painter) {
                 _painter -> setFont(_font);
             }
+
+            setRightMargin(_vscroll -> isVisible() ? _vscroll -> width() + 3 : 0);
+            QPointF pos = QPointF(-_hscroll -> value(), 0);
 
             _screen_size = screen_size;
 
