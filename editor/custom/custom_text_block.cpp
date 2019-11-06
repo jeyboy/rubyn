@@ -8,7 +8,7 @@ TextBlock::TextBlock(const QString & txt, IBlock * prev_block) : IBlock(prev_blo
 
 }
 
-void TextBlock::draw(DrawContext *& context) {
+void TextBlock::draw(DrawContext * context) {
     if (content.length() > context -> maxStrLength()) {
         context -> _painter -> drawText(
           context -> _pos,

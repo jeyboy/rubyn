@@ -24,9 +24,6 @@ namespace Custom {
         qreal _top_block_offset;
         quint32 _top_block_number;
 
-        QPalette * line_num_section_pal;
-        QPalette * content_section_pal;
-
         Document * _document;
         DrawContext * _context;
 

@@ -15,40 +15,8 @@ using namespace Custom;
 void Editor::drawDocument(QPainter & painter) {
     if (!_document) return;
 
-    painter.setPen(content_section_pal -> color(QPalette::Foreground));
-    painter.setFont(_context -> _font);
-    _context -> prepare(&painter, size());
-
-    qDebug() << "-------------------------------";
-
     initTopBlock(true);
-    IBlock * it = _top_block;
-    int c = 0;
-    quint32 block_num = _top_block_number;
-    painter.fillRect(_context -> numbersAreaRect(), line_num_section_pal -> background());
-    painter.setClipRect(_context -> contentAreaRect());
-
-    while(it) {
-        _context -> _pos.ry() += _context -> __line_height;
-        it -> draw(_context);
-        ++c;
-
-        painter.save();
-
-        painter.setClipping(false);
-        painter.setPen(line_num_section_pal -> color(QPalette::Foreground));
-        painter.drawText(0, qint32(_context -> _pos.y()), QString::number(++block_num));
-        painter.setClipping(true);
-
-        painter.restore();
-
-        if (_context -> screenCovered())
-            break;
-
-        it = it -> next();
-    }
-
-    qDebug() << c;
+    _context -> draw(&painter, size(), _top_block, _top_block_number);
     _context -> _painter = nullptr;
 }
 
@@ -137,13 +105,15 @@ void Editor::initTopBlock(const bool & recalc) {
 void Editor::intialize() {
     _context = new DrawContext(nullptr, size(), font());
 
-    line_num_section_pal = new QPalette();
+    QPalette * line_num_section_pal = new QPalette();
     line_num_section_pal -> setColor(QPalette::Background, Qt::black);
     line_num_section_pal -> setColor(QPalette::Foreground, Qt::white);
 
-    content_section_pal = new QPalette();
+    QPalette * content_section_pal = new QPalette();
     content_section_pal -> setColor(QPalette::Background, Qt::white);
     content_section_pal -> setColor(QPalette::Foreground, Qt::black);
+
+    _context -> setPaletes(line_num_section_pal, content_section_pal);
 
     setAutoFillBackground(true);
     setPalette(*content_section_pal);
@@ -193,9 +163,6 @@ Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top
 Editor::~Editor() {
     delete _document;
 
-    delete line_num_section_pal;
-    delete content_section_pal;
-
     delete _context;
 }
 
@@ -228,11 +195,11 @@ void Editor::openDocument(Document * doc) {
 
     if (doc) {
         _top_block = doc -> first();
-        setLeftMargin(_context -> calcNumWidth(doc -> linesCount()));
+        setLeftMargin(_context -> calcNumWidth(doc -> linesCount()) + 3);
         scroll_pos = doc -> editorScrollPos(this);
     } else {
         _top_block = nullptr;
-        setLeftMargin(_context -> calcNumWidth(1));
+        setLeftMargin(_context -> calcNumWidth(1) + 3);
     }
 
     recalcScrolls();

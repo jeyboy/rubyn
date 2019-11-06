@@ -14,7 +14,7 @@ namespace Custom {
 //        virtual ~TextBlock() = default;
 
         BlockType blockType() { return bt_text; }
-        void draw(DrawContext *& context);
+        void draw(DrawContext * context);
 
         friend class Editor;
     };

@@ -17,7 +17,7 @@ namespace Custom {
         IBlock(IBlock * prev_block = nullptr);
         virtual ~IBlock();
         virtual BlockType blockType() { return bt_none; }
-        virtual void draw(DrawContext *& context) = 0;
+        virtual void draw(DrawContext * context) = 0;
 
         IBlock * next() { return _next; }
         IBlock * prev() { return _prev; }

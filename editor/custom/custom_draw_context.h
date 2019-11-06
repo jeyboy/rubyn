@@ -8,10 +8,15 @@
 #include <qmath.h>
 #include <qdebug.h>
 
+#include "custom_iblock.h"
+
 namespace Custom {
     struct DrawContext {
         QScrollBar * _vscroll;
         QScrollBar * _hscroll;
+
+        QPalette * _line_num_section_pal;
+        QPalette * _content_section_pal;
 
         QPainter * _painter;
         QSize _screen_size;
@@ -39,6 +44,42 @@ namespace Custom {
             _painter -> restore();
         }
 
+        void draw(QPainter * curr_painter, const QSize & screen_size, IBlock * _top_block, const quint32 & top_block_number = 1) {
+            prepare(curr_painter, screen_size);
+
+            qDebug() << "-------------------------------";
+
+            IBlock * it = _top_block;
+            int c = 0;
+            quint32 block_num = top_block_number;
+
+            _painter -> setPen(_content_section_pal -> color(QPalette::Foreground));
+            _painter -> fillRect(numbersAreaRect(), _line_num_section_pal -> background());
+            _painter -> setClipRect(contentAreaRect());
+
+            while(it) {
+                _pos.ry() += __line_height;
+                it -> draw(this);
+                ++c;
+
+                _painter -> save();
+
+                _painter -> setClipping(false);
+                _painter -> setPen(_line_num_section_pal -> color(QPalette::Foreground));
+                _painter -> drawText(1, qint32(_pos.y()), QString::number(++block_num));
+                _painter -> setClipping(true);
+
+                _painter -> restore();
+
+                if (screenCovered())
+                    break;
+
+                it = it -> next();
+            }
+
+            qDebug() << c;
+        }
+
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
             : _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _letter_spacing(letter_spacing), _left_margin(0)
         {
@@ -47,9 +88,19 @@ namespace Custom {
             setRightMargin();
         }
 
+        ~DrawContext() {
+            delete _line_num_section_pal;
+            delete _content_section_pal;
+        }
+
         void setScrolls(QScrollBar * hscroll, QScrollBar * vscroll) {
             _hscroll = hscroll;
             _vscroll = vscroll;
+        }
+
+        void setPaletes(QPalette * line_num_section_pal, QPalette * content_section_pal) {
+            _line_num_section_pal = line_num_section_pal;
+            _content_section_pal = content_section_pal;
         }
 
         void prepare(QPainter * curr_painter, const QSize & screen_size) {
