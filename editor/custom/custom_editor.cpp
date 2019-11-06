@@ -69,7 +69,7 @@ void Editor::initTopBlock(const bool & recalc) {
 
     if (_top_block_offset < scroll_offset) {
         while(it) {
-            next_top += _context -> __line_height;
+            next_top += 1;//_context -> __line_height;
 
             if (next_top > scroll_offset)
                 break;
@@ -85,7 +85,7 @@ void Editor::initTopBlock(const bool & recalc) {
         }
     } else {
         while(it != _document -> _root) {
-            next_top -= _context -> __line_height;
+            next_top -= 1;//_context -> __line_height;
 
             if (next_top < scroll_offset)
                 break;
@@ -264,7 +264,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
     QWidget::wheelEvent(e);
 
     if (e -> orientation() == Qt::Vertical) {
-        qint32 offset = -_context -> __line_height * vscroll_factor;
+        qint32 offset = -1/*_context -> __line_height*/ * vscroll_factor;
 
         if (e -> delta() < 0) {
             offset = -offset;
@@ -272,7 +272,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
 
         vscroll -> setValue(vscroll -> value() + qint32(offset));
     } else {
-        qint32 offset = -_context -> __symbol_width * hscroll_factor;
+        qint32 offset = -1/*_context -> __symbol_width*/ * hscroll_factor;
 
         if (e -> delta() < 0) {
             offset = -offset;

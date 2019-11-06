@@ -110,12 +110,12 @@ namespace Custom {
                 _painter -> setFont(_font);
             }
 
+            qreal target_letter_width = __symbol_width + _letter_spacing;
+
             setRightMargin(_vscroll -> isVisible() ? _vscroll -> width() + 3 : 0);
-            QPointF pos = QPointF(-_hscroll -> value(), 0);
+            QPointF pos = QPointF(-_hscroll -> value() * target_letter_width, 0);
 
             _screen_size = screen_size;
-
-            qreal target_letter_width = __symbol_width + _letter_spacing;
             __max_str_length = qCeil(_screen_size.width() / target_letter_width);
             __left_str_pad = pos.x() == 0 ? 0 : qAbs(qFloor(pos.x() / target_letter_width));
 
@@ -146,11 +146,11 @@ namespace Custom {
         }
 
         qint32 verticalSingleStep() {
-            return __line_height;
+            return 1;//__line_height;
         }
 
         qint32 horizontalSingleStep() {
-            return qCeil(__symbol_width);
+            return 1;//qCeil(__symbol_width);
         }
 
         qint32 leftStrPad() {
@@ -187,11 +187,14 @@ namespace Custom {
         }
 
         qint32 calcHScrollWidth(const quint64 & chars_amount) {
-            return qint32(_left_margin + (chars_amount * __symbol_width) + (chars_amount * _letter_spacing)) - (_screen_size.width() - _left_margin);
+//            return qint32(_left_margin + (chars_amount * __symbol_width) + (chars_amount * _letter_spacing)) - (_screen_size.width() - _left_margin);
+            return (qint32(_left_margin + (chars_amount * __symbol_width) + (chars_amount * _letter_spacing)) - (_screen_size.width() - _left_margin)) / __symbol_width;
+
         }
 
         qint32 calcVScrollWidth(const quint64 & lines_count) {
-            return qint32(lines_count * __line_height)/* - _screen_size.height()*/;
+//            return qint32(lines_count * __line_height)/* - _screen_size.height()*/;
+            return qint32(lines_count/* * __line_height*/)/* - _screen_size.height()*/;
         }
     };
 };
