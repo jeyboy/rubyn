@@ -196,6 +196,11 @@ void Editor::openDocument(Document * doc) {
     if (doc) {
         _top_block = doc -> first();
         setLeftMargin(_context -> calcNumWidth(doc -> linesCount()) + 3);
+
+        if (doc -> verticalScrollPos(false) > 0) {
+            doc -> editorScrollPos(this).ry() = doc -> verticalScrollPos(true);
+        }
+
         scroll_pos = doc -> editorScrollPos(this);
     } else {
         _top_block = nullptr;

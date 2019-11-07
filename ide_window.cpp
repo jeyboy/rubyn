@@ -1,7 +1,8 @@
 #include "ide_window.h"
 #include "ui_ide_window.h"
 
-#include "editor/document_types/text_document.h"
+//#include "editor/document_types/text_document.h"
+//#include "editor/custom/custom_document.h"
 #include "editor/breakpoints_controller.h"
 
 #include "project/projects.h"
@@ -270,8 +271,20 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
         }
     }
 
-    if (_file -> isText())
-        _file -> asText() -> setVerticalScrollPos(scroll_pos_y);
+    IDocument * doc = _file -> document();
+
+    qDebug() << _file -> path() << doc << scroll_pos_y;
+
+    if (doc) {
+        doc -> setVerticalScrollPos(scroll_pos_y);
+    }
+
+//    if (_file -> isText()) {
+//        _file -> asText() -> setVerticalScrollPos(scroll_pos_y);
+//    } else if (_file -> isCustomText()) {
+//        _file -> asCustomText() -> setVerticalScrollPos(scroll_pos_y);
+//    }
+
 
     if (!active_editor || in_new)
         newEditorRequired(_file, vertical);

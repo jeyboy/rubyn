@@ -65,7 +65,14 @@ public:
 
     virtual ~File();
 
-    inline IDocument * document() { return _doc; }
+    inline IDocument * document() {
+        if (!_doc) {
+            if (!open())
+                return nullptr;
+        }
+
+        return _doc;
+    }
     inline QIODevice * source() { return _device; }
 
     inline QString unitSize() { return Info::toUnits(size()); }

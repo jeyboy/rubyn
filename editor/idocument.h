@@ -31,6 +31,14 @@ public:
     virtual bool restore(const QVariant & /*data*/) { return false; }
 
     virtual bool registerStateChangedCallback(QObject * /*target*/, const char * /*slot*/) { return false; }
+
+    inline void setVerticalScrollPos(const int & pos) { scroll_pos_y = pos; }
+    inline int verticalScrollPos(const bool & drop = true) {
+        int res = scroll_pos_y;
+        if (drop)
+            scroll_pos_y = 0;
+        return res;
+    }
 };
 
 #endif // IDOCUMENT_H

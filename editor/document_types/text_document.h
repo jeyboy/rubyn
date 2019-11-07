@@ -57,14 +57,6 @@ public:
 //    inline void setRevision(const int & new_revision) { _revision = new_revision; }
 //    inline int revision() { return _revision; }
 
-    inline void setVerticalScrollPos(const int & pos) { scroll_pos_y = pos; }
-    inline int verticalScrollPos(const bool & drop = true) {
-        int res = scroll_pos_y;
-        if (drop)
-            scroll_pos_y = 0;
-        return res;
-    }
-
     void emitBreakpointAdded(const EDITOR_POS_TYPE & line_num);
     void emitBreakpointRemoved(const EDITOR_POS_TYPE & line_num);
     void emitBreakpointMoved(const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & line_num);

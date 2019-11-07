@@ -256,54 +256,29 @@ QIcon File::ico() {
 TextDocument * File::asText() {
     if (!isText()) return nullptr;
 
-    if (!_doc) {
-        if (!open())
-            return nullptr;
-    }
-
-    return dynamic_cast<TextDocument *>(_doc);
+    return dynamic_cast<TextDocument *>(document());
 }
 
 Custom::Document * File::asCustomText() {
     if (!isCustomText()) return nullptr;
 
-    if (!_doc) {
-        if (!open())
-            return nullptr;
-    }
-
-    return dynamic_cast<Custom::Document *>(_doc);
+    return dynamic_cast<Custom::Document *>(document());
 }
 
 ImageDocument * File::asImage() {
     if (!isImage()) return nullptr;
 
-    if (!_doc) {
-        if (!open())
-            return nullptr;
-    }
-
-    return dynamic_cast<ImageDocument *>(_doc);
+    return dynamic_cast<ImageDocument *>(document());
 }
 BinaryDocument * File::asBinary() {
     if (!isBinary()) return nullptr;
 
-    if (!_doc) {
-        if (!open())
-            return nullptr;
-    }
-
-    return dynamic_cast<BinaryDocument *>(_doc);
+    return dynamic_cast<BinaryDocument *>(document());
 }
 TreeDocument * File::asTree() {
     if (!isTree()) return nullptr;
 
-    if (!_doc) {
-        if (!open())
-            return nullptr;
-    }
-
-    return dynamic_cast<TreeDocument *>(_doc);
+    return dynamic_cast<TreeDocument *>(document());
 }
 
 bool File::dumpState(QVariant & data) {
