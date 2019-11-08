@@ -32,6 +32,7 @@ namespace Custom {
         qint32 __max_str_length;
         qint32 __line_height;
         qreal __symbol_width;
+        qreal __letter_with_pad_width;
 
         void drawGrid() {
             _painter -> save();
@@ -110,16 +111,16 @@ namespace Custom {
                 _painter -> setFont(_font);
             }
 
-            qreal target_letter_width = __symbol_width + _letter_spacing;
+            __letter_with_pad_width = __symbol_width + _letter_spacing;
 
             setRightMargin(_vscroll -> isVisible() ? _vscroll -> width() + 3 : 0);
-            QPointF pos = QPointF(-_hscroll -> value() * target_letter_width, 0);
+            QPointF pos = QPointF(-_hscroll -> value() * __letter_with_pad_width, 0);
 
             _screen_size = screen_size;
-            __max_str_length = qCeil(_screen_size.width() / target_letter_width);
-            __left_str_pad = pos.x() == 0 ? 0 : qAbs(qFloor(pos.x() / target_letter_width));
+            __max_str_length = qCeil(_screen_size.width() / __letter_with_pad_width);
+            __left_str_pad = pos.x() == 0 ? 0 : qAbs(qFloor(pos.x() / __letter_with_pad_width));
 
-            _pos = pos + QPointF(leftContentBorder() + (__left_str_pad * target_letter_width), 0);
+            _pos = pos + QPointF(leftContentBorder() + (__left_str_pad * __letter_with_pad_width), 0);
         }
 
         bool screenCovered() {

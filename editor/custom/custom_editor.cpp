@@ -9,6 +9,7 @@
 #include "custom_document.h"
 #include "custom_draw_context.h"
 #include "project/file.h"
+#include "controls/logger.h"
 
 using namespace Custom;
 
@@ -16,7 +17,10 @@ void Editor::drawDocument(QPainter & painter) {
     if (!_document) return;
 
     initTopBlock(true);
+
+    Logger::obj().startMark();
     _context -> draw(&painter, size(), _top_block, _top_block_number);
+    Logger::obj() .endMark(false, "drawDocument");
     _context -> _painter = nullptr;
 }
 

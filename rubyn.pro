@@ -12,6 +12,7 @@ TARGET = rubyn
 TEMPLATE = app
 
 SOURCES += main.cpp\
+    editor/custom/custom_chars.cpp \
     editor/custom/custom_document.cpp \
     editor/custom/custom_editor.cpp \
     delegates/tree_view_item_delegate.cpp \
@@ -125,6 +126,7 @@ SOURCES += main.cpp\
     controls/console_widget.cpp
 
 HEADERS  += ide_window.h \
+    editor/custom/custom_chars.h \
     editor/custom/custom_document.h \
     editor/custom/custom_draw_context.h \
     editor/custom/custom_editor.h \
