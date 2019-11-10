@@ -1,6 +1,7 @@
 #include "custom_text_block.h"
 
 #include "custom_draw_context.h"
+#include "custom_chars.h"
 
 using namespace Custom;
 
@@ -35,8 +36,16 @@ void TextBlock::draw(DrawContext * context) {
 
 
     for(int i = 0; i < str.length(); i++) {
-        context -> _painter -> setPen(*pens[ra.bounded(pens.length() - 1)]);
-        context -> _painter -> drawText(offset, QString(str[i]));
+        Custom::Chars::drawChar(
+            context -> _painter,
+            { offset, &Custom::Chars::glyph(str[i], context -> _painter -> font(), context -> _painter -> font().pixelSize()), Qt::black, Qt::white }
+        );
+
+
+//        context -> _painter -> setPen(*pens[ra.bounded(pens.length() - 1)]);
+//        context -> _painter -> drawText(offset, QString(str[i]));
         offset.rx() += context -> __letter_with_pad_width;
     }
+
+//
 }

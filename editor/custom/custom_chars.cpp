@@ -27,7 +27,7 @@ void Chars::drawChar(QPainter * p, const DrawUnit & u) {
     p -> fillRect(rect, u.fg);
 }
 
-const QImage & Chars::glyph(const QChar & ch, const QFont & fnt, const quint8 & size) {
+const QImage & Chars::glyph(const QChar & ch, const QFont & fnt, const int & size) {
     auto & glyph = _glyphs[{ fnt.family(), size, ch }];
 
     if (glyph.isNull()) {

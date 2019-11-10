@@ -6,9 +6,9 @@
 #include <qfontmetrics.h>
 
 namespace Custom {
-    struct CharUnit { QString family; quint8 size; QChar ch; };
+    struct CharUnit { QString family; int size; QChar ch; };
 
-    bool operator==(const CharUnit & e1, const CharUnit & e2) {
+    inline bool operator==(const CharUnit & e1, const CharUnit & e2) {
         return e1.family == e2.family &&
                 e1.size == e2.size &&
                 e1.ch == e2.ch;
@@ -17,6 +17,7 @@ namespace Custom {
     inline uint qHash(const CharUnit & key, uint seed) {
         return qHash(key.family + key.ch + QChar(key.size), seed);
     }
+
 
     struct DrawUnit { QPointF pos; const QImage * glyph; QColor fg, bg; };
 
@@ -37,7 +38,7 @@ namespace Custom {
         static QHash<CharUnit, QImage> _glyphs;
     public:
         static void drawChar(QPainter * p, const DrawUnit & u);
-        static const QImage & glyph(const QChar & ch, const QFont & fnt, const quint8 & size);
+        static const QImage & glyph(const QChar & ch, const QFont & fnt, const int & size);
 //        static void drawChar(QPainter * p, const QChar & ch, const QPointF & pos, const QColor & color);
     };
 }
