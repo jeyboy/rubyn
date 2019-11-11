@@ -18,8 +18,12 @@ QHash<CharUnit, QImage> Chars::_glyphs;
 //QChar::Nbsp
 
 
-void Chars::drawChar(QPainter * p, const DrawUnit & u) {   
+void Chars::drawChar(QPainter * p, DrawUnit u) {
     const QRectF rect(u.pos, u.glyph -> size());
+
+//    u.glyph -> setColorTable(QVector<QRgb> {u.bg.rgb(), u.fg.rgb()} );
+//    p -> drawImage(u.pos, *u.glyph);
+
     p -> setCompositionMode(QPainter::CompositionMode_Source);
     p -> drawImage(u.pos, *u.glyph);
     p -> setCompositionMode(QPainter::CompositionMode_SourceOut);
@@ -42,7 +46,7 @@ void Chars::drawChar(QPainter * p, const DrawUnit & u) {
 //    }
 }
 
-const QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
+QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
     if (ch == ' ' || ch == '\t')
         return _empty;
 
@@ -55,10 +59,18 @@ const QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
         QSize glyph_size(fmetric -> width(ch), fmetric -> height());
 
 //        QPointF extent = m_fm.boundingRect(ch).translated(m_glyphPos).bottomRight();
+
+
+
         glyph = QImage(glyph_size, QImage::Format_ARGB32_Premultiplied);
         glyph.fill(Qt::transparent);
+
         QPainter p{&glyph};
         p.setPen(Qt::white);
+
+        p.setRenderHint(QPainter::Antialiasing, true);
+        p.setRenderHint(QPainter::HighQualityAntialiasing, true);
+
         p.setFont(fnt);
         p.translate(0, glyph_size.height());
 //        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),

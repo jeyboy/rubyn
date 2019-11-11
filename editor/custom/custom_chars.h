@@ -19,7 +19,7 @@ namespace Custom {
     }
 
 
-    struct DrawUnit { QPointF pos; const QImage * glyph; QColor fg, bg; };
+    struct DrawUnit { QPointF pos; QImage * glyph; QColor fg, bg; };
 
     struct MetricUnit {
         static QHash<QString, QFontMetrics *> _metrics;
@@ -38,8 +38,8 @@ namespace Custom {
         static QImage _empty;
         static QHash<CharUnit, QImage> _glyphs;
     public:
-        static void drawChar(QPainter * p, const DrawUnit & u);
-        static const QImage & glyph(const QChar & ch, const QFont & fnt);
+        static void drawChar(QPainter * p, DrawUnit u);
+        static QImage & glyph(const QChar & ch, const QFont & fnt);
 //        static void drawChar(QPainter * p, const QChar & ch, const QPointF & pos, const QColor & color);
     };
 }
