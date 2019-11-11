@@ -25,6 +25,20 @@ void Chars::drawChar(QPainter * p, const DrawUnit & u) {
     p -> fillRect(rect, u.bg);
     p -> setCompositionMode(QPainter::CompositionMode_DestinationOver);
     p -> fillRect(rect, u.fg);
+
+
+//    for (int y = 0; y < img.height(); ++y)
+//    {
+//        QImage img; // image with an (A)RGB image format
+//        QRgb *line = reinterpret_cast<QRgb*>(img.scanLine(y));
+//        for (int x = 0; x < img.width(); ++x)
+//        {
+//            QRgb pixelRgb = line[x];
+//            // use qGreen()/qRed()/qBlue() to get value, manipulate to slider values and set it to newColor
+//            QColor newColor(...);
+//            line[x] = newColor.rgb();
+//        }
+//    }
 }
 
 const QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
@@ -33,7 +47,7 @@ const QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
     if (glyph.isNull()) {
         QFontMetrics * fmetric = MetricUnit::metric(fnt.family());
 
-        QPointF extent = fmetric -> boundingRect(ch).bottomRight();
+//        QPointF extent = fmetric -> boundingRect(ch).bottomRight();
         QSize glyph_size(fmetric -> width(ch), fmetric -> height());
 
 //        QPointF extent = m_fm.boundingRect(ch).translated(m_glyphPos).bottomRight();
