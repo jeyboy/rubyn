@@ -21,9 +21,6 @@ QHash<CharUnit, QImage> Chars::_glyphs;
 void Chars::drawChar(QPainter * p, DrawUnit u) {
     const QRectF rect(u.pos, u.glyph -> size());
 
-//    u.glyph -> setColorTable(QVector<QRgb> {u.bg.rgb(), u.fg.rgb()} );
-//    p -> drawImage(u.pos, *u.glyph);
-
     p -> setCompositionMode(QPainter::CompositionMode_Source);
     p -> drawImage(u.pos, *u.glyph);
     p -> setCompositionMode(QPainter::CompositionMode_SourceOut);
@@ -72,7 +69,7 @@ QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
         p.setRenderHint(QPainter::HighQualityAntialiasing, true);
 
         p.setFont(fnt);
-        p.translate(0, glyph_size.height());
+        p.translate(0, fmetric -> height() - fmetric -> descent());
 //        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),
 //                std::min(1.0, (glyph_size.height() - 1) / extent.y()));
 
