@@ -35,6 +35,7 @@ namespace Custom {
     };
 
     class Chars {
+        static QImage _empty;
         static QHash<CharUnit, QImage> _glyphs;
     public:
         static void drawChar(QPainter * p, const DrawUnit & u);

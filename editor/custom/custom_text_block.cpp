@@ -37,10 +37,14 @@ void TextBlock::draw(DrawContext * context) {
 //    It can be constructed by passing a QFont object to QRawFont::fromFont(). The function will return a QRawFont object representing the font that will be selected as response to the QFont query and the selected writing system.
 
     for(int i = 0; i < str.length(); i++) {
-        Custom::Chars::drawChar(
-            context -> _painter,
-            { offset, &Custom::Chars::glyph(str[i], context -> _painter -> font()), colors[ra.bounded(colors.length() - 1)], Qt::white }
-        );
+        const QChar & ch = str[i];
+
+        if (ch != ' ' && ch != '\t') {
+            Custom::Chars::drawChar(
+                context -> _painter,
+                { offset, &Custom::Chars::glyph(ch, context -> _painter -> font()), colors[ra.bounded(colors.length() - 1)], Qt::white }
+            );
+        }
 
         offset.rx() += context -> __letter_with_pad_width;
     }

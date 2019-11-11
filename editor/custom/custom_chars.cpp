@@ -6,6 +6,7 @@ using namespace Custom;
 
 QHash<QString, QFontMetrics *> MetricUnit::_metrics;
 
+QImage Chars::_empty;
 QHash<CharUnit, QImage> Chars::_glyphs;
 
 
@@ -17,7 +18,7 @@ QHash<CharUnit, QImage> Chars::_glyphs;
 //QChar::Nbsp
 
 
-void Chars::drawChar(QPainter * p, const DrawUnit & u) {
+void Chars::drawChar(QPainter * p, const DrawUnit & u) {   
     const QRectF rect(u.pos, u.glyph -> size());
     p -> setCompositionMode(QPainter::CompositionMode_Source);
     p -> drawImage(u.pos, *u.glyph);
@@ -42,6 +43,9 @@ void Chars::drawChar(QPainter * p, const DrawUnit & u) {
 }
 
 const QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
+    if (ch == ' ' || ch == '\t')
+        return _empty;
+
     auto & glyph = _glyphs[{ fnt.family(), fnt.pixelSize(), ch }];
 
     if (glyph.isNull()) {
