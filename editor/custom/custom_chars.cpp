@@ -27,8 +27,8 @@ void Chars::drawChar(QPainter * p, const DrawUnit & u) {
     p -> fillRect(rect, u.fg);
 }
 
-const QImage & Chars::glyph(const QChar & ch, const QFont & fnt, const int & size) {
-    auto & glyph = _glyphs[{ fnt.family(), size, ch }];
+const QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
+    auto & glyph = _glyphs[{ fnt.family(), fnt.pixelSize(), ch }];
 
     if (glyph.isNull()) {
         QFontMetrics * fmetric = MetricUnit::metric(fnt.family());
@@ -42,9 +42,9 @@ const QImage & Chars::glyph(const QChar & ch, const QFont & fnt, const int & siz
         QPainter p{&glyph};
         p.setPen(Qt::white);
         p.setFont(fnt);
-//        p.translate(m_glyphPos);
-        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),
-                std::min(1.0, (glyph_size.height() - 1) / extent.y()));
+        p.translate(0, glyph_size.height());
+//        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),
+//                std::min(1.0, (glyph_size.height() - 1) / extent.y()));
 
         p.drawText(QPointF{}, {ch});
     }

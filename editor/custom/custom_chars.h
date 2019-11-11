@@ -38,7 +38,7 @@ namespace Custom {
         static QHash<CharUnit, QImage> _glyphs;
     public:
         static void drawChar(QPainter * p, const DrawUnit & u);
-        static const QImage & glyph(const QChar & ch, const QFont & fnt, const int & size);
+        static const QImage & glyph(const QChar & ch, const QFont & fnt);
 //        static void drawChar(QPainter * p, const QChar & ch, const QPointF & pos, const QColor & color);
     };
 }
