@@ -4,8 +4,7 @@
 #include "custom_iblock.h"
 #include <qstring.h>
 
-
-#include <qpen.h>
+#include <qcolor.h>
 #include <qrandom.h>
 
 namespace Custom {
@@ -13,7 +12,7 @@ namespace Custom {
 
     class TextBlock : public IBlock {
         QString content;
-        QList<QPen *> pens;
+        QList<QColor> colors;
         QRandomGenerator ra;
     public:
         TextBlock(const QString & txt, IBlock * prev_block = nullptr);

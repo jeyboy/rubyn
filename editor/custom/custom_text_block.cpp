@@ -6,20 +6,18 @@
 using namespace Custom;
 
 TextBlock::TextBlock(const QString & txt, IBlock * prev_block) : IBlock(prev_block), content(txt) {
-    pens.append(new QPen(QColor(255, 0, 0), 1));
-    pens.append(new QPen(QColor(255, 0, 0), 2));
-    pens.append(new QPen(QColor(255, 0, 0), 3));
-
-    pens.append(new QPen(QColor(0, 255, 0), 1));
-    pens.append(new QPen(QColor(0, 255, 0), 2));
-    pens.append(new QPen(QColor(0, 255, 0), 3));
-
-    pens.append(new QPen(QColor(0, 0, 255), 1));
-    pens.append(new QPen(QColor(0, 0, 255), 2));
-    pens.append(new QPen(QColor(0, 0, 255), 3));
+    colors.append(QColor(0, 0, 0));
+    colors.append(QColor(255, 0, 0));
+    colors.append(QColor(0, 255, 0));
+    colors.append(QColor(0, 0, 255));
+    colors.append(QColor(255, 255, 0));
+    colors.append(QColor(0, 255, 255));
 }
 
 void TextBlock::draw(DrawContext * context) {
+    context -> _painter -> save();
+
+
     QString str;
 
     if (content.length() > context -> maxStrLength()) {
@@ -38,7 +36,7 @@ void TextBlock::draw(DrawContext * context) {
     for(int i = 0; i < str.length(); i++) {
         Custom::Chars::drawChar(
             context -> _painter,
-            { offset, &Custom::Chars::glyph(str[i], context -> _painter -> font(), context -> _painter -> font().pixelSize()), Qt::black, Qt::white }
+            { offset, &Custom::Chars::glyph(str[i], context -> _painter -> font(), context -> _painter -> font().pixelSize()), colors[ra.bounded(colors.length() - 1)], Qt::white }
         );
 
 
@@ -48,4 +46,5 @@ void TextBlock::draw(DrawContext * context) {
     }
 
 //
+    context -> _painter -> restore();
 }
