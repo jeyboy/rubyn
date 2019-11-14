@@ -11,7 +11,7 @@ void Document::openFile() {
 
     char ch;
     QByteArray buff;
-    buff.reserve(2048);
+    buff.reserve(4096);
 
     while(!source -> atEnd()) {
         if (_file -> source() -> getChar(&ch)) {
@@ -37,13 +37,13 @@ QPoint & Document::editorScrollPos(Editor * editor) {
 }
 
 Document::Document(File * file, QObject * parent) : QObject(parent), _root(nullptr), _last(nullptr), _inline_pos(0), _max_line_length(0), _lines_count(0), _file(file) {
-    _last = _root = new TextBlock(QString(), nullptr);
+    _last = _root = new TextBlock(/*QString*/QByteArray(), nullptr);
 
     if (file) {
         openFile();
     }
 
-    addLine(QString());
+    addLine(/*QString*/QByteArray());
 }
 
 Document::~Document() {
@@ -73,7 +73,7 @@ void Document::clear() {
     _inline_pos = 0;
 }
 
-void Document::addLine(const QString & line) {
+void Document::addLine(const QByteArray/*QString*/ & line) {
     _last = new TextBlock(line, _last);
     quint64 line_len = quint64(line.length());
 

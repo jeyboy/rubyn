@@ -9,41 +9,62 @@ QHash<QString, QFontMetrics *> MetricUnit::_metrics;
 QImage Chars::_empty;
 QHash<CharUnit, QImage> Chars::_glyphs;
 
+QList<QColor> Chars::_colors = {
+    QColor(0, 0, 0),
+    QColor(255, 0, 0),
+    QColor(0, 255, 0),
+    QColor(0, 0, 255)
+};
+QRandomGenerator Chars::_ra;
 
-//QChar::Null	0x0000	A QChar with this value isNull().
-//QChar::Tabulation	0x0009	Character tabulation.
-//QChar::LineFeed	0x000a
-//QChar::CarriageReturn	0x000d
-//QChar::Space	0x0020
-//QChar::Nbsp
+const QColor & Chars::randomColor() {
+    return _colors[_ra.bounded(_colors.length() - 1)];
+}
 
-
-void Chars::drawChar(QPainter * p, DrawUnit u) {
+void Chars::drawChar(QPainter * p, const DrawUnit & u) {
     const QRectF rect(u.pos, u.glyph -> size());
+
+//    if (u.bg == Qt::white && u.fg == Qt::black) {
+//        p -> drawImage(u.pos, *u.glyph);
+//        return;
+//    }
 
     p -> setCompositionMode(QPainter::CompositionMode_Source);
     p -> drawImage(u.pos, *u.glyph);
+
     p -> setCompositionMode(QPainter::CompositionMode_SourceOut);
     p -> fillRect(rect, u.bg);
+
     p -> setCompositionMode(QPainter::CompositionMode_DestinationOver);
     p -> fillRect(rect, u.fg);
 
+//    p -> setCompositionMode(QPainter::CompositionMode_Xor);
 
-//    for (int y = 0; y < img.height(); ++y)
-//    {
-//        QImage img; // image with an (A)RGB image format
-//        QRgb *line = reinterpret_cast<QRgb*>(img.scanLine(y));
-//        for (int x = 0; x < img.width(); ++x)
-//        {
-//            QRgb pixelRgb = line[x];
-//            // use qGreen()/qRed()/qBlue() to get value, manipulate to slider values and set it to newColor
-//            QColor newColor(...);
-//            line[x] = newColor.rgb();
+
+//    p -> setCompositionMode(QPainter::CompositionMode_Source);
+//    p -> drawImage(u.pos, *u.glyph);
+
+//    bool need_bg = u.bg != Qt::white;
+//    bool need_fg = u.fg != Qt::black;
+
+//    if (need_bg || need_fg) {
+////        p -> save();
+
+//        if (need_bg) {
+//            p -> setCompositionMode(QPainter::CompositionMode_SourceOut);
+//            p -> fillRect(rect, u.bg);
 //        }
+
+//        if (need_fg) {
+//            p -> setCompositionMode(QPainter::CompositionMode_DestinationOver);
+//            p -> fillRect(rect, u.fg);
+//        }
+
+////        p -> restore();
 //    }
 }
 
-QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
+const  QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
     if (ch == ' ' || ch == '\t')
         return _empty;
 
@@ -63,7 +84,7 @@ QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
         glyph.fill(Qt::transparent);
 
         QPainter p{&glyph};
-        p.setPen(Qt::white);
+        p.setPen(Qt::black);
 
         p.setRenderHint(QPainter::Antialiasing, true);
         p.setRenderHint(QPainter::HighQualityAntialiasing, true);

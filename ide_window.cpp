@@ -25,6 +25,8 @@
 #include "controls/dock_widget_search_connector.h"
 #include "controls/console_widget.h"
 
+#include "editor/custom/custom_chars.h"
+
 #include "debugging/debug.h"
 #include "debugging/debug_stub_interface.h"
 

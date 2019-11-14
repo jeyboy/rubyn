@@ -33,7 +33,7 @@ namespace Custom {
 
         void clear();
 
-        void addLine(const QString & line);
+        void addLine(const QByteArray/*QString*/ & line);
         quint64 linesCount() { return _lines_count; }
 
         friend class Editor;

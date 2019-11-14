@@ -1,3 +1,5 @@
+#include <qdebug.h>
+
 #include "custom_text_block.h"
 
 #include "custom_draw_context.h"
@@ -5,20 +7,14 @@
 
 using namespace Custom;
 
-TextBlock::TextBlock(const QString & txt, IBlock * prev_block) : IBlock(prev_block), content(txt) {
-    colors.append(QColor(0, 0, 0));
-    colors.append(QColor(255, 0, 0));
-//    colors.append(QColor(0, 255, 0));
-//    colors.append(QColor(0, 0, 255));
-//    colors.append(QColor(255, 255, 0));
-//    colors.append(QColor(0, 255, 255));
+TextBlock::TextBlock(const QByteArray/*QString*/ & txt, IBlock * prev_block) : IBlock(prev_block), content(txt) {
+    content.squeeze();
 }
 
 void TextBlock::draw(DrawContext * context) {
     bool simple = false;
 
     context -> _painter -> save();
-
 
     QString str;
 
@@ -48,7 +44,7 @@ void TextBlock::draw(DrawContext * context) {
             if (ch != ' ' && ch != '\t') {
                 Custom::Chars::drawChar(
                     context -> _painter,
-                    { offset, &Custom::Chars::glyph(ch, context -> _painter -> font()), colors[ra.bounded(colors.length() - 1)], Qt::white }
+                    { offset, &Custom::Chars::glyph(ch, context -> _painter -> font()), Chars::randomColor(), Qt::white }
                 );
             }
 
