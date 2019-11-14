@@ -9,7 +9,9 @@
 #include "custom_document.h"
 #include "custom_draw_context.h"
 #include "project/file.h"
+
 #include "controls/logger.h"
+#include "controls/completer.h"
 
 using namespace Custom;
 
@@ -107,6 +109,8 @@ void Editor::initTopBlock(const bool & recalc) {
 }
 
 void Editor::intialize() {
+    setFocusPolicy(Qt::StrongFocus);
+
     _context = new DrawContext(nullptr, size(), font());
 
     QPalette * line_num_section_pal = new QPalette();
@@ -223,6 +227,25 @@ void Editor::openDocument(File * file) {
     openDocument(file ? file -> asCustomText() : nullptr);
 }
 
+void Editor::setCompleter(Completer * new_completer) {
+    if (_completer)
+        disconnect(_completer, nullptr, this, nullptr);
+
+    _completer = new_completer;
+
+    if (!_completer)
+        return;
+
+    _completer -> setWidget(this);
+    _completer -> setCompletionMode(QCompleter::PopupCompletion);
+    _completer -> setCaseSensitivity(Qt::CaseInsensitive);
+
+    connect(_completer, SIGNAL(activated(QString)), this, SLOT(applyCompletion(QString)));
+}
+
+
+
+
 //  void Editor::searchIsShow(const bool & show) = 0;
 void Editor::searchInitiated(const QRegularExpression & pattern, const bool & scroll) {
 
@@ -264,6 +287,134 @@ void Editor::resizeEvent(QResizeEvent * e) {
     recalcScrolls();
 }
 void Editor::keyPressEvent(QKeyEvent * e) {
+    int curr_key = e -> key();
+
+    if (_completer && _completer -> isVisible()) {
+        switch (curr_key) {
+            case Qt::Key_Enter:
+            case Qt::Key_Return:
+            case Qt::Key_Escape:
+            case Qt::Key_Tab:
+            case Qt::Key_Backtab:
+                e -> ignore();
+                return; // let the completer do default behavior
+            default: break;
+        }
+    }
+
+    if (curr_key == Qt::Key_Escape && searcher.is_opened) {
+        emit searchRequired(false);
+        return;
+    }
+
+    if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier) { // && !searcher.is_active
+        QTextCursor cursor = textCursor();
+
+        if (cursor.hasSelection()) {
+            QString str = cursor.selectedText();
+
+            str.replace(QChar(8233), char(13));
+
+            emit searchRequestRequired(str);
+        }
+        else emit searchRequired(true);
+        return;
+    }
+
+    switch (curr_key) {
+        case Qt::Key_Delete: {
+            para_info.clear();
+            QPlainTextEdit::keyPressEvent(e);
+        break;}
+
+//        case Qt::Key_Backspace: {
+//            QPlainTextEdit::keyPressEvent(e);
+//        break;}
+
+        case Qt::Key_Return: {
+            emit wrapper -> enterPressed();
+
+            QPlainTextEdit::keyPressEvent(e);
+
+            QTextCursor cursor = textCursor();
+            int level = TextDocumentLayout::getBlockLevel(cursor.block());
+
+            if (level > DEFAULT_LEVEL) {
+                const QLatin1String & tab_str = wrapper -> tabSpace();
+                QString str = QString(level * tab_str.size(), tab_str[0].toLatin1());
+
+                cursor.insertText(str);
+            }
+        break;}
+
+        case Qt::Key_Tab: { procSelectionIndent(); break;}
+        case Qt::Key_Backtab: { procSelectionIndent(false); break; }
+
+        case Qt::Key_Right:
+        case Qt::Key_Left: {
+            QTextCursor cursor = textCursor();
+            QTextBlock blk = cursor.block();
+            int pos_in_block = cursor.positionInBlock();
+
+            if (curr_key == Qt::Key_Right && pos_in_block == blk.length() - 1) {
+                BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
+
+                if (udata && udata -> isFolded()) {
+                    wrapper -> layout -> toggleFolding(blk);
+                }
+            }
+
+            QPlainTextEdit::keyPressEvent(e);
+
+            if (curr_key == Qt::Key_Left && pos_in_block == 0) {
+                QTextBlock tail_blk = blk.previous();
+
+                if (!tail_blk.isVisible()) {
+                    cursor = textCursor();
+                    QTextBlock head_blk = cursor.block().previous();
+
+                    cursor.setPosition(tail_blk.position() + tail_blk.length() - 1);
+                    setTextCursor(cursor);
+                    wrapper -> layout -> toggleFolding(head_blk);
+                }
+            }
+
+            if (completer && completer -> isVisible()) {
+                QTextCursor tc = textCursor();
+                procCompleterForCursor(tc, false);
+            }
+        break;}
+
+        case Qt::Key_Escape: // ignore non printable keys
+        case Qt::Key_CapsLock:
+        case Qt::Key_NumLock:
+        case Qt::Key_ScrollLock:
+        case Qt::Key_Meta:
+        case Qt::Key_Alt:
+        case Qt::Key_Shift:
+        case Qt::Key_Control: { QPlainTextEdit::keyPressEvent(e); break;}
+
+        default: {
+            bool is_shortcut = e -> modifiers() == Qt::ControlModifier && curr_key == Qt::Key_Space;
+
+            if (!completer || (!completer -> isVisible() &&
+                    (curr_key < Qt::Key_Space || curr_key > Qt::Key_ydiaeresis)
+                ) || (e -> modifiers() != Qt::NoModifier && !is_shortcut)
+            ) {
+                QPlainTextEdit::keyPressEvent(e);
+//                procRevision();
+                return;
+            }
+
+            if (!is_shortcut)
+                QPlainTextEdit::keyPressEvent(e);
+
+            QTextCursor tc = textCursor();
+            procCompleterForCursor(tc, is_shortcut);
+        }
+    }
+
+
     QWidget::keyPressEvent(e);
 }
 void Editor::keyReleaseEvent(QKeyEvent * e) {
@@ -293,3 +444,83 @@ void Editor::wheelEvent(QWheelEvent * e) {
 void Editor::focusInEvent(QFocusEvent * e) {
     QWidget::focusInEvent(e);
 }
+
+//void Editor::procCompleter(QTextCursor & tc, const bool & initiate_popup) {
+//    QTextBlock block = tc.block();
+
+//    completer_info.cursor_pos = tc.positionInBlock();
+//    completer_info.word_start = 0;
+//    completer_info.word_length = 0;
+//    completer_info.lex = wrapper -> getWordBoundaries(completer_info.word_start, completer_info.word_length, block, completer_info.cursor_pos, false);
+//    completer_info.at_word_end = completer_info.cursor_pos - completer_info.word_start == completer_info.word_length;
+
+//    QString block_text = block.text();
+//    QStringRef completion_prefix = block_text.midRef(completer_info.word_start, completer_info.cursor_pos - completer_info.word_start);
+//    QStringRef text = block_text.midRef(completer_info.word_start, completer_info.word_length);
+
+//    if (!wrapper -> isCompleterInitiable(completer_info.lex, completer_info.at_word_end)) {
+//        completer -> hide();
+//        return;
+//    }
+
+//    if (initiate_popup && tc.hasSelection()) {
+//        completer -> reset();
+//        completer -> setCompletionPrefix(QString());
+//    } else {
+//        if (!initiate_popup && text.length() < 2) {
+//            completer -> hide();
+//            return;
+//        }
+
+//        if (completion_prefix != completer -> completionPrefix()) {
+//            completer -> reset();
+
+//            bool from_scratch = !wrapper -> isCompleterContinuable(completer_info.lex, completer_info.at_word_end);
+
+//            completer -> setCompletionPrefix(
+//                from_scratch ? QString() : completion_prefix.toString()
+//            );
+//        }
+//    }
+
+//    int completions_amount = completer -> completionCount();
+
+//    if (completions_amount == 0) {
+//        completer -> hide();
+//        return;
+//    }
+
+//    if (initiate_popup && completions_amount == 1 && completion_prefix == text) {
+//        applyCompletion(completer -> currentCompletion());
+//        completer -> hide();
+//    } else {
+//        QRect cr = cursorRect();
+//        cr.setLeft(cr.left() + extra_area -> width());
+//        cr.setWidth(completer -> execWidth());
+
+//        completer -> complete(cr);
+//    }
+//}
+
+void Editor::applyCompletion(const QString & completion) {
+    qDebug() << "CUSTOM EDITOR: applyCompletion";
+
+//    QTextCursor tc = textCursor();
+
+//    if (!tc.hasSelection()) {
+//        bool is_replaceable = wrapper -> isCompleterReplaceable(completer_info.lex, completer_info.cursor_pos == completer_info.word_start);
+
+//        if (is_replaceable) {
+//            int pos = tc.block().position();
+//            tc.setPosition(pos + completer_info.word_start, QTextCursor::MoveAnchor);
+//            tc.setPosition(pos + completer_info.word_start + completer_info.word_length, QTextCursor::KeepAnchor);
+//        }
+//    }
+
+////        wordUnderCursor(tc, wuco_remove_full);
+
+//    tc.insertText(completion);
+
+    _completer -> reset();
+}
+

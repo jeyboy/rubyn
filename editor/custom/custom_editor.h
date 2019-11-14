@@ -3,6 +3,7 @@
 
 #include <qwidget.h>
 #include "editor/ieditor.h"
+#include "editor/completer_info.h"
 
 class QEvent;
 class QPaintEvent;
@@ -10,6 +11,8 @@ class QResizeEvent;
 class QKeyEvent;
 class QWheelEvent;
 class QFocusEvent;
+
+class Completer;
 
 namespace Custom {
     class Document;
@@ -21,9 +24,13 @@ namespace Custom {
 
         IBlock * _select_block;
         IBlock * _top_block;
+
         qreal _top_block_offset;
         quint32 _top_block_number;
 
+//        CompleterInfo _completer_info;
+
+        Completer * _completer;
         Document * _document;
         DrawContext * _context;
 
@@ -43,6 +50,9 @@ namespace Custom {
 
         void openDocument(Document * doc = nullptr);
         void openDocument(File * file) Q_DECL_OVERRIDE;
+
+        void setCompleter(Completer * new_completer);
+
         void clear() { openDocument(); }
 
         QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
@@ -99,9 +109,16 @@ namespace Custom {
 
 
     signals:
+        void searchRequired(const bool & show = true);
+        void searchRequestRequired(const QString & pattern);
+        void searchResultsFinded(const int & count);
+
 
     public slots:
 
+
+    private slots:
+        void applyCompletion(const QString & completion);
     };
 }
 

@@ -16,6 +16,7 @@ SOURCES += main.cpp\
     editor/custom/custom_document.cpp \
     editor/custom/custom_editor.cpp \
     delegates/tree_view_item_delegate.cpp \
+    editor/custom/custom_editor_searcher.cpp \
     editor/custom/custom_iblock.cpp \
     editor/custom/custom_text_block.cpp \
     ide_window.cpp \
@@ -131,6 +132,7 @@ HEADERS  += ide_window.h \
     editor/custom/custom_draw_context.h \
     editor/custom/custom_editor.h \
     delegates/tree_view_item_delegate.h \
+    editor/custom/custom_editor_searcher.h \
     editor/custom/custom_iblock.h \
     editor/custom/custom_text_block.h \
     lexer/css/css_grammar.h \
