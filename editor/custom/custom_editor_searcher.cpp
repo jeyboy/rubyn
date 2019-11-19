@@ -7,101 +7,101 @@ EditorSearcher::EditorSearcher() : is_opened(false), is_active(false), search_re
 }
 
 
-Pair EditorSearcher::search(const QTextBlock & start_blk) {
-    Pair first_match(NO_INFO, NO_INFO);
-    is_opened = is_active = true;
-    bool has_mapping = false;
+//TextPart EditorSearcher::search(const QTextBlock & start_blk) {
+//    TextPart first_match(NO_INFO, NO_INFO);
+//    is_opened = is_active = true;
+//    bool has_mapping = false;
 
-    mappings.clear();
+//    mappings.clear();
 
-    QTextBlock blk(start_blk);
-    EDITOR_POS_TYPE blk_num = blk.blockNumber();
+//    QTextBlock blk(start_blk);
+//    EDITOR_POS_TYPE blk_num = blk.blockNumber();
 
-    while(blk.isValid()) {
-        PairList * mappings = procBlockSearch(blk);
+//    while(blk.isValid()) {
+//        PairList * mappings = procBlockSearch(blk);
 
-        if (!has_mapping && mappings) {
-            first_match = Pair(mappings -> first());
-            first_match.first += blk.position();
-            has_mapping = true;
-        }
+//        if (!has_mapping && mappings) {
+//            first_match = Pair(mappings -> first());
+//            first_match.first += blk.position();
+//            has_mapping = true;
+//        }
 
-        ++blk_num; blk = blk.next();
-    }
+//        ++blk_num; blk = blk.next();
+//    }
 
-    return first_match;
-}
+//    return first_match;
+//}
 
-PairList * EditorSearcher::procBlockSearch(const QTextBlock & blk) {
-    if (is_active) {
-        BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
+//TextParts * EditorSearcher::procBlockSearch(const QTextBlock & blk) {
+//    if (is_active) {
+//        BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-        if (udata && !mappings.contains(udata)) {
-            PairList row_mappings;
+//        if (udata && !mappings.contains(udata)) {
+//            TextParts row_mappings;
 
-            QString txt = blk.text();
-            QRegularExpressionMatchIterator i = search_regex.globalMatch(txt);
+//            QString txt = blk.text();
+//            QRegularExpressionMatchIterator i = search_regex.globalMatch(txt);
 
-            while (i.hasNext()) {
-                QRegularExpressionMatch match = i.next();
+//            while (i.hasNext()) {
+//                QRegularExpressionMatch match = i.next();
 
-                row_mappings.append(Pair(match.capturedStart(), match.capturedLength()));
-                search_results++;
-            }
+//                row_mappings.append(Pair(match.capturedStart(), match.capturedLength()));
+//                search_results++;
+//            }
 
-            if (!row_mappings.isEmpty()) {
-                mappings[udata] = row_mappings;
-                return &mappings[udata];
-            }
-        }
-    }
+//            if (!row_mappings.isEmpty()) {
+//                mappings[udata] = row_mappings;
+//                return &mappings[udata];
+//            }
+//        }
+//    }
 
-    return nullptr;
-}
+//    return nullptr;
+//}
 
-void EditorSearcher::procSearchReplace(QTextCursor & cursor, const QString & txt, const bool & back_move) {
-    QTextBlock block = cursor.block();
+//void EditorSearcher::procSearchReplace(QTextCursor & cursor, const QString & txt, const bool & back_move) {
+//    QTextBlock block = cursor.block();
 
-    PairList & mappings = searchResultsFor(block);
+//    TextParts & mappings = searchResultsFor(block);
 
-    int diff = 0;
-    int res_index = 0;
-    int mod_index = cursor.selectionStart();
-    EDITOR_POS_TYPE block_pos = block.position();
+//    int diff = 0;
+//    int res_index = 0;
+//    int mod_index = cursor.selectionStart();
+//    EDITOR_POS_TYPE block_pos = block.position();
 
 
-    QMutableListIterator<Pair> it(mappings);
-    while (it.hasNext()) {
-        Pair & pair = it.next();
+//    QMutableListIterator<TextPart> it(mappings);
+//    while (it.hasNext()) {
+//        TextPart & pair = it.next();
 
-        if ((mod_index - block_pos) == pair.first) {
-            diff = txt.length() - (cursor.selectionEnd() - mod_index);
+//        if ((mod_index - block_pos) == pair.first) {
+//            diff = txt.length() - (cursor.selectionEnd() - mod_index);
 
-            --search_results;
-            it.remove();
-        }
-        else if (diff != 0) {
-            pair.first += diff;
-        }
-        else ++res_index;
-    }
+//            --search_results;
+//            it.remove();
+//        }
+//        else if (diff != 0) {
+//            pair.first += diff;
+//        }
+//        else ++res_index;
+//    }
 
-    cursor.insertText(txt);
+//    cursor.insertText(txt);
 
-    if (back_move)
-        cursor.setPosition(mod_index);
+//    if (back_move)
+//        cursor.setPosition(mod_index);
 
-    procSearchMod(mappings, res_index, mod_index - block_pos, txt);
-}
+//    procSearchMod(mappings, res_index, mod_index - block_pos, txt);
+//}
 
-void EditorSearcher::procSearchMod(PairList & res, int res_index, int mod_index, const QString & txt) {
-    QRegularExpressionMatchIterator i = search_regex.globalMatch(txt);
+//void EditorSearcher::procSearchMod(TextParts & res, int res_index, int mod_index, const QString & txt) {
+//    QRegularExpressionMatchIterator i = search_regex.globalMatch(txt);
 
-    while (i.hasNext()) {
-        QRegularExpressionMatch match = i.next();
+//    while (i.hasNext()) {
+//        QRegularExpressionMatch match = i.next();
 
-        ++search_results;
-        res.insert(res_index, Pair(mod_index + match.capturedStart(), match.capturedLength()));
-    }
-}
+//        ++search_results;
+//        res.insert(res_index, Pair(mod_index + match.capturedStart(), match.capturedLength()));
+//    }
+//}
 

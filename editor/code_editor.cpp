@@ -521,11 +521,11 @@ void CodeEditor::drawSearchOverlays(QPainter & painter) {
         if (!it -> is_visible || !it -> user_data)
             continue;
 
-        PairList & mappings = searcher.searchResultsFor(it -> user_data);
+        TextParts & mappings = searcher.searchResultsFor(it -> user_data);
 
         if (mappings.isEmpty()) continue;
 
-        PairList::Iterator index_it = mappings.begin();
+        TextParts::Iterator index_it = mappings.begin();
 
         for(; index_it != mappings.end(); index_it++) {
             QRectF r = textRect(it, (*index_it).first, (*index_it).second);
@@ -1912,7 +1912,7 @@ void CodeEditor::searchInitiated(const QRegularExpression & pattern, const bool 
         emit searchResultsFinded(0);
     } else {
         searcher.beginSearch(pattern);
-        Pair match = searcher.search(wrapper -> firstBlock());
+        TextPart match = searcher.search(wrapper -> firstBlock());
 
         if (scroll && match.first != NO_INFO) {
             QTextCursor c = textCursor();
@@ -1949,12 +1949,12 @@ void CodeEditor::searchNextResult(QString * replace) {
     bool limited = true;
 
     for(QTextBlock block = cursor.block(); block.isValid(); limited = false, block = block.next()) {
-        PairList & mappings = searcher.searchResultsFor(block);
+        TextParts & mappings = searcher.searchResultsFor(block);
 
         if (mappings.isEmpty())
             continue;
 
-        PairList::ConstIterator index_it = mappings.constBegin();
+        TextParts::ConstIterator index_it = mappings.constBegin();
 
         for(; index_it != mappings.constEnd(); index_it++) {
             if (!limited || (has_selection && (cursor.selectionStart() - block.position()) < (*index_it).first) || (!has_selection && pos < (*index_it).first)) {
@@ -1993,12 +1993,12 @@ void CodeEditor::searchPrevResult(QString * replace) {
     bool limited = true;
 
     for(QTextBlock block = cursor.block(); block.isValid(); limited = false, block = block.previous()) {
-        PairList & mappings = searcher.searchResultsFor(block);
+        TextParts & mappings = searcher.searchResultsFor(block);
 
         if (mappings.isEmpty())
             continue;
 
-        PairList::const_reverse_iterator index_it = mappings.rbegin();
+        TextParts::const_reverse_iterator index_it = mappings.rbegin();
 
         for(; index_it != mappings.rend(); index_it++) {
             if (!limited || (has_selection && (cursor.selectionStart() - block.position()) > (*index_it).first) || (!has_selection && pos > (*index_it).first)) {
@@ -2031,12 +2031,12 @@ void CodeEditor::searchRepaceAll(const QString & replace) {
     cursor.beginEditBlock();
 
     for( QTextBlock block = wrapper -> lastBlock(); block.isValid(); block = block.previous()) {
-        PairList & mappings = searcher.searchResultsFor(block);
+        TextParts & mappings = searcher.searchResultsFor(block);
 
         if (mappings.isEmpty())
             continue;
 
-        PairList::const_reverse_iterator index_it = mappings.rbegin();
+        TextParts::const_reverse_iterator index_it = mappings.rbegin();
         EDITOR_POS_TYPE block_pos = block.position();
 
         for(; index_it != mappings.rend(); index_it++) {

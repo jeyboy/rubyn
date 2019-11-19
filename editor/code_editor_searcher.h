@@ -8,14 +8,14 @@
 #include <QTextBlock>
 
 struct CodeEditorSearcher {
-    static PairList default_mappings;
+    static TextParts default_mappings;
 
     bool is_opened;
     bool is_active;
     int search_results;
     QRegularExpression search_regex;
 
-    QHash<BlockUserData *, PairList> mappings;
+    QHash<BlockUserData *, TextParts> mappings;
 
     CodeEditorSearcher();
 
@@ -28,7 +28,7 @@ struct CodeEditorSearcher {
         is_opened = true;
         search_regex = predicate;
     }
-    Pair search(const QTextBlock & start_blk);
+    TextPart search(const QTextBlock & start_blk);
     void clearSearch() {
         search_results = 0;
         is_active = false;
@@ -37,11 +37,11 @@ struct CodeEditorSearcher {
         is_opened = false;
         clearSearch();
     }
-    inline PairList & searchResultsFor(const QTextBlock & blk) {
+    inline TextParts & searchResultsFor(const QTextBlock & blk) {
         BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
         return searchResultsFor(udata);
     }
-    inline PairList & searchResultsFor(BlockUserData * udata) {
+    inline TextParts & searchResultsFor(BlockUserData * udata) {
         if (!udata || !mappings.contains(udata)) {
             qDebug() << "NO UDATA";
             return default_mappings;
@@ -51,11 +51,11 @@ struct CodeEditorSearcher {
     }
 
 
-    PairList * procBlockSearch(const QTextBlock & blk);
+    TextParts * procBlockSearch(const QTextBlock & blk);
 
     void procSearchReplace(QTextCursor & cursor, const QString & txt, const bool & back_move);
 
-    void procSearchMod(PairList & res, int res_index, int mod_index, const QString & txt);
+    void procSearchMod(TextParts & res, int res_index, int mod_index, const QString & txt);
 };
 
 #endif // CODE_EDITOR_SEARCHER_H

@@ -12,10 +12,12 @@ namespace Custom {
         QRegularExpression search_regex;
 
     public:
-
         EditorSearcher();
 
         void openSearch() { is_opened = true; }
+
+        inline bool isOpened() { return is_opened; }
+        inline bool isActive() { return is_active; }
 
         inline bool hasResults() { return search_results > 0; }
         inline int searchResultsCount() { return search_results; }
@@ -24,7 +26,7 @@ namespace Custom {
             is_opened = true;
             search_regex = predicate;
         }
-        Pair search(const QTextBlock & start_blk);
+//        TextPart search(const QTextBlock & start_blk);
         void clearSearch() {
             search_results = 0;
             is_active = false;
@@ -34,25 +36,25 @@ namespace Custom {
             clearSearch();
         }
 
-        inline PairList & searchResultsFor(const QTextBlock & blk) {
-            BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
-            return searchResultsFor(udata);
-        }
-        inline PairList & searchResultsFor(BlockUserData * udata) {
-            if (!udata || !mappings.contains(udata)) {
-                qDebug() << "NO UDATA";
-                return default_mappings;
-            }
+//        inline TextParts & searchResultsFor(const QTextBlock & blk) {
+//            BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
+//            return searchResultsFor(udata);
+//        }
+//        inline TextParts & searchResultsFor(BlockUserData * udata) {
+//            if (!udata || !mappings.contains(udata)) {
+//                qDebug() << "NO UDATA";
+//                return default_mappings;
+//            }
 
-            return mappings[udata];
-        }
+//            return mappings[udata];
+//        }
 
 
-        PairList * procBlockSearch(const QTextBlock & blk);
+//        TextParts * procBlockSearch(const QTextBlock & blk);
 
-        void procSearchReplace(QTextCursor & cursor, const QString & txt, const bool & back_move);
+//        void procSearchReplace(QTextCursor & cursor, const QString & txt, const bool & back_move);
 
-        void procSearchMod(PairList & res, int res_index, int mod_index, const QString & txt);
+//        void procSearchMod(TextParts & res, int res_index, int mod_index, const QString & txt);
     };
 }
 

@@ -4,6 +4,7 @@
 #include <qwidget.h>
 #include "editor/ieditor.h"
 #include "editor/completer_info.h"
+#include "custom_editor_searcher.h"
 
 class QEvent;
 class QPaintEvent;
@@ -29,6 +30,7 @@ namespace Custom {
         quint32 _top_block_number;
 
 //        CompleterInfo _completer_info;
+        EditorSearcher searcher;
 
         Completer * _completer;
         Document * _document;

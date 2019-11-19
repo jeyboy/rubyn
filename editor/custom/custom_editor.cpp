@@ -302,29 +302,31 @@ void Editor::keyPressEvent(QKeyEvent * e) {
         }
     }
 
-    if (curr_key == Qt::Key_Escape && searcher.is_opened) {
+    if (curr_key == Qt::Key_Escape && searcher.isOpened()) {
         emit searchRequired(false);
         return;
     }
 
     if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier) { // && !searcher.is_active
-        QTextCursor cursor = textCursor();
+//        QTextCursor cursor = textCursor();
 
-        if (cursor.hasSelection()) {
-            QString str = cursor.selectedText();
+//        if (cursor.hasSelection()) {
+//            QString str = cursor.selectedText();
 
-            str.replace(QChar(8233), char(13));
+//            str.replace(QChar(8233), char(13));
 
-            emit searchRequestRequired(str);
-        }
-        else emit searchRequired(true);
+//            emit searchRequestRequired(str);
+//        }
+//        else emit searchRequired(true);
+
+        emit searchRequired(true);
         return;
     }
 
     switch (curr_key) {
         case Qt::Key_Delete: {
-            para_info.clear();
-            QPlainTextEdit::keyPressEvent(e);
+//            para_info.clear();
+            Editor::keyPressEvent(e);
         break;}
 
 //        case Qt::Key_Backspace: {
@@ -332,57 +334,55 @@ void Editor::keyPressEvent(QKeyEvent * e) {
 //        break;}
 
         case Qt::Key_Return: {
-            emit wrapper -> enterPressed();
+            Editor::keyPressEvent(e);
 
-            QPlainTextEdit::keyPressEvent(e);
+//            QTextCursor cursor = textCursor();
+//            int level = TextDocumentLayout::getBlockLevel(cursor.block());
 
-            QTextCursor cursor = textCursor();
-            int level = TextDocumentLayout::getBlockLevel(cursor.block());
+//            if (level > DEFAULT_LEVEL) {
+//                const QLatin1String & tab_str = wrapper -> tabSpace();
+//                QString str = QString(level * tab_str.size(), tab_str[0].toLatin1());
 
-            if (level > DEFAULT_LEVEL) {
-                const QLatin1String & tab_str = wrapper -> tabSpace();
-                QString str = QString(level * tab_str.size(), tab_str[0].toLatin1());
-
-                cursor.insertText(str);
-            }
+//                cursor.insertText(str);
+//            }
         break;}
 
-        case Qt::Key_Tab: { procSelectionIndent(); break;}
-        case Qt::Key_Backtab: { procSelectionIndent(false); break; }
+        case Qt::Key_Tab: { /*procSelectionIndent();*/ break;}
+        case Qt::Key_Backtab: { /*procSelectionIndent(false);*/ break; }
 
         case Qt::Key_Right:
         case Qt::Key_Left: {
-            QTextCursor cursor = textCursor();
-            QTextBlock blk = cursor.block();
-            int pos_in_block = cursor.positionInBlock();
+//            QTextCursor cursor = textCursor();
+//            QTextBlock blk = cursor.block();
+//            int pos_in_block = cursor.positionInBlock();
 
-            if (curr_key == Qt::Key_Right && pos_in_block == blk.length() - 1) {
-                BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
+//            if (curr_key == Qt::Key_Right && pos_in_block == blk.length() - 1) {
+//                BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
-                if (udata && udata -> isFolded()) {
-                    wrapper -> layout -> toggleFolding(blk);
-                }
-            }
+//                if (udata && udata -> isFolded()) {
+//                    wrapper -> layout -> toggleFolding(blk);
+//                }
+//            }
 
-            QPlainTextEdit::keyPressEvent(e);
+            Editor::keyPressEvent(e);
 
-            if (curr_key == Qt::Key_Left && pos_in_block == 0) {
-                QTextBlock tail_blk = blk.previous();
+//            if (curr_key == Qt::Key_Left && pos_in_block == 0) {
+//                QTextBlock tail_blk = blk.previous();
 
-                if (!tail_blk.isVisible()) {
-                    cursor = textCursor();
-                    QTextBlock head_blk = cursor.block().previous();
+//                if (!tail_blk.isVisible()) {
+//                    cursor = textCursor();
+//                    QTextBlock head_blk = cursor.block().previous();
 
-                    cursor.setPosition(tail_blk.position() + tail_blk.length() - 1);
-                    setTextCursor(cursor);
-                    wrapper -> layout -> toggleFolding(head_blk);
-                }
-            }
+//                    cursor.setPosition(tail_blk.position() + tail_blk.length() - 1);
+//                    setTextCursor(cursor);
+//                    wrapper -> layout -> toggleFolding(head_blk);
+//                }
+//            }
 
-            if (completer && completer -> isVisible()) {
-                QTextCursor tc = textCursor();
-                procCompleterForCursor(tc, false);
-            }
+//            if (completer && completer -> isVisible()) {
+//                QTextCursor tc = textCursor();
+//                procCompleterForCursor(tc, false);
+//            }
         break;}
 
         case Qt::Key_Escape: // ignore non printable keys
@@ -392,25 +392,25 @@ void Editor::keyPressEvent(QKeyEvent * e) {
         case Qt::Key_Meta:
         case Qt::Key_Alt:
         case Qt::Key_Shift:
-        case Qt::Key_Control: { QPlainTextEdit::keyPressEvent(e); break;}
+        case Qt::Key_Control: { Editor::keyPressEvent(e); break;}
 
         default: {
             bool is_shortcut = e -> modifiers() == Qt::ControlModifier && curr_key == Qt::Key_Space;
 
-            if (!completer || (!completer -> isVisible() &&
+            if (!_completer || (!_completer -> isVisible() &&
                     (curr_key < Qt::Key_Space || curr_key > Qt::Key_ydiaeresis)
                 ) || (e -> modifiers() != Qt::NoModifier && !is_shortcut)
             ) {
-                QPlainTextEdit::keyPressEvent(e);
+                Editor::keyPressEvent(e);
 //                procRevision();
                 return;
             }
 
             if (!is_shortcut)
-                QPlainTextEdit::keyPressEvent(e);
+                Editor::keyPressEvent(e);
 
-            QTextCursor tc = textCursor();
-            procCompleterForCursor(tc, is_shortcut);
+//            QTextCursor tc = textCursor();
+//            procCompleterForCursor(tc, is_shortcut);
         }
     }
 

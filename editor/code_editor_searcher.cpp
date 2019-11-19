@@ -1,13 +1,13 @@
 #include "code_editor_searcher.h"
 
-PairList CodeEditorSearcher::default_mappings;
+TextParts CodeEditorSearcher::default_mappings;
 
 CodeEditorSearcher::CodeEditorSearcher() : is_opened(false), is_active(false), search_results(0) {
 
 }
 
-Pair CodeEditorSearcher::search(const QTextBlock & start_blk) {
-    Pair first_match(NO_INFO, NO_INFO);
+TextPart CodeEditorSearcher::search(const QTextBlock & start_blk) {
+    TextPart first_match(NO_INFO, NO_INFO);
     is_opened = is_active = true;
     bool has_mapping = false;
 
@@ -17,10 +17,10 @@ Pair CodeEditorSearcher::search(const QTextBlock & start_blk) {
     EDITOR_POS_TYPE blk_num = blk.blockNumber();
 
     while(blk.isValid()) {
-        PairList * mappings = procBlockSearch(blk);
+        TextParts * mappings = procBlockSearch(blk);
 
         if (!has_mapping && mappings) {
-            first_match = Pair(mappings -> first());
+            first_match = TextPart(mappings -> first());
             first_match.first += blk.position();
             has_mapping = true;
         }
@@ -31,12 +31,12 @@ Pair CodeEditorSearcher::search(const QTextBlock & start_blk) {
     return first_match;
 }
 
-PairList * CodeEditorSearcher::procBlockSearch(const QTextBlock & blk) {
+TextParts * CodeEditorSearcher::procBlockSearch(const QTextBlock & blk) {
     if (is_active) {
         BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
 
         if (udata && !mappings.contains(udata)) {
-            PairList row_mappings;
+            TextParts row_mappings;
 
             QString txt = blk.text();
             QRegularExpressionMatchIterator i = search_regex.globalMatch(txt);
@@ -44,7 +44,7 @@ PairList * CodeEditorSearcher::procBlockSearch(const QTextBlock & blk) {
             while (i.hasNext()) {
                 QRegularExpressionMatch match = i.next();
 
-                row_mappings.append(Pair(match.capturedStart(), match.capturedLength()));
+                row_mappings.append(TextPart(match.capturedStart(), match.capturedLength()));
                 search_results++;
             }
 
@@ -61,7 +61,7 @@ PairList * CodeEditorSearcher::procBlockSearch(const QTextBlock & blk) {
 void CodeEditorSearcher::procSearchReplace(QTextCursor & cursor, const QString & txt, const bool & back_move) {
     QTextBlock block = cursor.block();
 
-    PairList & mappings = searchResultsFor(block);
+    TextParts & mappings = searchResultsFor(block);
 
     int diff = 0;
     int res_index = 0;
@@ -69,9 +69,9 @@ void CodeEditorSearcher::procSearchReplace(QTextCursor & cursor, const QString &
     EDITOR_POS_TYPE block_pos = block.position();
 
 
-    QMutableListIterator<Pair> it(mappings);
+    QMutableListIterator<TextPart> it(mappings);
     while (it.hasNext()) {
-        Pair & pair = it.next();
+        TextPart & pair = it.next();
 
         if ((mod_index - block_pos) == pair.first) {
             diff = txt.length() - (cursor.selectionEnd() - mod_index);
@@ -93,13 +93,13 @@ void CodeEditorSearcher::procSearchReplace(QTextCursor & cursor, const QString &
     procSearchMod(mappings, res_index, mod_index - block_pos, txt);
 }
 
-void CodeEditorSearcher::procSearchMod(PairList & res, int res_index, int mod_index, const QString & txt) {
+void CodeEditorSearcher::procSearchMod(TextParts & res, int res_index, int mod_index, const QString & txt) {
     QRegularExpressionMatchIterator i = search_regex.globalMatch(txt);
 
     while (i.hasNext()) {
         QRegularExpressionMatch match = i.next();
 
         ++search_results;
-        res.insert(res_index, Pair(mod_index + match.capturedStart(), match.capturedLength()));
+        res.insert(res_index, TextPart(mod_index + match.capturedStart(), match.capturedLength()));
     }
 }
