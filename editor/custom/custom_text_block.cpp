@@ -44,7 +44,7 @@ void TextBlock::draw(DrawContext * context) {
             if (ch != ' ' && ch != '\t') {
                 Custom::Chars::drawChar(
                     context -> _painter,
-                    { offset, &Custom::Chars::glyph(ch, context -> _painter -> font()), Chars::randomColor(), Qt::white }
+                    { offset, &Custom::Chars::glyph(ch, context -> _painter -> font()), Qt::black/*Chars::randomColor()*/, Qt::white }
                 );
             }
 

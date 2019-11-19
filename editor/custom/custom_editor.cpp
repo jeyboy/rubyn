@@ -163,7 +163,7 @@ void Editor::intialize() {
     _context -> setScrolls(hscroll, vscroll);
 }
 
-Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
+Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
     intialize();
     openDocument();
 }
@@ -326,15 +326,15 @@ void Editor::keyPressEvent(QKeyEvent * e) {
     switch (curr_key) {
         case Qt::Key_Delete: {
 //            para_info.clear();
-            Editor::keyPressEvent(e);
+            QWidget::keyPressEvent(e);
         break;}
 
 //        case Qt::Key_Backspace: {
-//            QPlainTextEdit::keyPressEvent(e);
+//            QWidget::keyPressEvent(e);
 //        break;}
 
         case Qt::Key_Return: {
-            Editor::keyPressEvent(e);
+            QWidget::keyPressEvent(e);
 
 //            QTextCursor cursor = textCursor();
 //            int level = TextDocumentLayout::getBlockLevel(cursor.block());
@@ -364,7 +364,7 @@ void Editor::keyPressEvent(QKeyEvent * e) {
 //                }
 //            }
 
-            Editor::keyPressEvent(e);
+            QWidget::keyPressEvent(e);
 
 //            if (curr_key == Qt::Key_Left && pos_in_block == 0) {
 //                QTextBlock tail_blk = blk.previous();
@@ -392,7 +392,7 @@ void Editor::keyPressEvent(QKeyEvent * e) {
         case Qt::Key_Meta:
         case Qt::Key_Alt:
         case Qt::Key_Shift:
-        case Qt::Key_Control: { Editor::keyPressEvent(e); break;}
+        case Qt::Key_Control: { QWidget::keyPressEvent(e); break;}
 
         default: {
             bool is_shortcut = e -> modifiers() == Qt::ControlModifier && curr_key == Qt::Key_Space;
@@ -401,13 +401,13 @@ void Editor::keyPressEvent(QKeyEvent * e) {
                     (curr_key < Qt::Key_Space || curr_key > Qt::Key_ydiaeresis)
                 ) || (e -> modifiers() != Qt::NoModifier && !is_shortcut)
             ) {
-                Editor::keyPressEvent(e);
+                QWidget::keyPressEvent(e);
 //                procRevision();
                 return;
             }
 
             if (!is_shortcut)
-                Editor::keyPressEvent(e);
+                QWidget::keyPressEvent(e);
 
 //            QTextCursor tc = textCursor();
 //            procCompleterForCursor(tc, is_shortcut);

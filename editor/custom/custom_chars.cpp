@@ -24,10 +24,11 @@ const QColor & Chars::randomColor() {
 void Chars::drawChar(QPainter * p, const DrawUnit & u) {
     const QRectF rect(u.pos, u.glyph -> size());
 
-//    if (u.bg == Qt::white && u.fg == Qt::black) {
-//        p -> drawImage(u.pos, *u.glyph);
-//        return;
-//    }
+    if (u.bg == Qt::white && u.fg == Qt::black) {
+        p -> setCompositionMode(QPainter::CompositionMode_SourceOver);
+        p -> drawImage(u.pos, *u.glyph);
+        return;
+    }
 
     p -> setCompositionMode(QPainter::CompositionMode_Source);
     p -> drawImage(u.pos, *u.glyph);
