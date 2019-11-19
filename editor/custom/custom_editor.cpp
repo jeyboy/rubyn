@@ -303,11 +303,13 @@ void Editor::keyPressEvent(QKeyEvent * e) {
     }
 
     if (curr_key == Qt::Key_Escape && searcher.isOpened()) {
+        qDebug() << "----------------------- JOJ";
         emit searchRequired(false);
         return;
     }
 
     if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier) { // && !searcher.is_active
+        qDebug() << "----------------------- SOS";
 //        QTextCursor cursor = textCursor();
 
 //        if (cursor.hasSelection()) {

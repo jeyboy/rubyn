@@ -123,24 +123,24 @@ void UniversalEditor::setupCustomEditor() {
 
     col_layout -> insertWidget(0, _custom_editor, 1);
 
-//    connect(_tree_editor, &TreeEditor::searchResultsFinded, [=](const int & count) {
-//        if (_active_editor == _tree_editor)
-//            _search_bar -> finded(count);
-//    });
-//    connect(_tree_editor, &TreeEditor::searchRequired, [=](const bool & show) { showSearchPanel(show); });
+    connect(_custom_editor, &Custom::Editor::searchResultsFinded, [=](const int & count) {
+        if (_active_editor == _custom_editor)
+            _search_bar -> finded(count);
+    });
+    connect(_custom_editor, &Custom::Editor::searchRequired, [=](const bool & show) { showSearchPanel(show); });
 
-//    connect(_tree_editor, &TreeEditor::searchRequestRequired, [=](const QString & pattern) {
-//        if (_active_editor == _tree_editor)
-//            _search_bar -> initiateSearch(pattern);
-//    });
+    connect(_custom_editor, &Custom::Editor::searchRequestRequired, [=](const QString & pattern) {
+        if (_active_editor == _custom_editor)
+            _search_bar -> initiateSearch(pattern);
+    });
 
-//    connect(_tree_editor, &TreeEditor::inFocus, [=]() {
-//        if (_active_editor == _tree_editor)
+//    connect(_custom_editor, &Custom::Editor::inFocus, [=]() {
+//        if (_active_editor == _custom_editor)
 //            emit inFocus();
 //    });
 
-//    connect(_tree_editor, &TreeEditor::fileDropped, [=](const QUrl & uri) {
-//        if (_active_editor == _tree_editor)
+//    connect(_custom_editor, &Custom::Editor::fileDropped, [=](const QUrl & uri) {
+//        if (_active_editor == _custom_editor)
 //            emit fileDropped(uri);
 //    });
 }
