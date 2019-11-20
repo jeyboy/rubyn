@@ -17,6 +17,7 @@ QList<QColor> Chars::_colors = {
 };
 QRandomGenerator Chars::_ra;
 
+
 const QColor & Chars::randomColor() {
     return _colors[_ra.bounded(_colors.length() - 1)];
 }
@@ -25,7 +26,6 @@ void Chars::drawChar(QPainter * p, const DrawUnit & u) {
     const QRectF rect(u.pos, u.glyph -> size());
 
     if (u.bg == Qt::white && u.fg == Qt::black) {
-        p -> setCompositionMode(QPainter::CompositionMode_SourceOver);
         p -> drawImage(u.pos, *u.glyph);
         return;
     }
@@ -39,37 +39,16 @@ void Chars::drawChar(QPainter * p, const DrawUnit & u) {
     p -> setCompositionMode(QPainter::CompositionMode_DestinationOver);
     p -> fillRect(rect, u.fg);
 
-//    p -> setCompositionMode(QPainter::CompositionMode_Xor);
-
-
-//    p -> setCompositionMode(QPainter::CompositionMode_Source);
-//    p -> drawImage(u.pos, *u.glyph);
-
-//    bool need_bg = u.bg != Qt::white;
-//    bool need_fg = u.fg != Qt::black;
-
-//    if (need_bg || need_fg) {
-////        p -> save();
-
-//        if (need_bg) {
-//            p -> setCompositionMode(QPainter::CompositionMode_SourceOut);
-//            p -> fillRect(rect, u.bg);
-//        }
-
-//        if (need_fg) {
-//            p -> setCompositionMode(QPainter::CompositionMode_DestinationOver);
-//            p -> fillRect(rect, u.fg);
-//        }
-
-////        p -> restore();
-//    }
+    p -> setCompositionMode(QPainter::CompositionMode_SourceOver);
 }
 
-const  QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
-    if (ch == ' ' || ch == '\t')
+const  QImage & Chars::glyph(const QChar & ch, const QFont & fnt, const CharVisualization & visualization) {
+    bool visualize = false;
+
+    if ((ch == ' ' && !(visualize = (visualization & cv_show_space))) || (ch == '\t' && !(visualize = (visualization & cv_show_tab))))
         return _empty;
 
-    auto & glyph = _glyphs[{ fnt.family(), fnt.pixelSize(), ch }];
+    auto & glyph = _glyphs[{ fnt.family(), fnt.pixelSize(), ch, visualize }];
 
     if (glyph.isNull()) {
         QFontMetrics * fmetric = MetricUnit::metric(fnt.family());
@@ -79,23 +58,45 @@ const  QImage & Chars::glyph(const QChar & ch, const QFont & fnt) {
 
 //        QPointF extent = m_fm.boundingRect(ch).translated(m_glyphPos).bottomRight();
 
-
-
         glyph = QImage(glyph_size, QImage::Format_ARGB32_Premultiplied);
         glyph.fill(Qt::transparent);
 
         QPainter p{&glyph};
-        p.setPen(Qt::black);
 
         p.setRenderHint(QPainter::Antialiasing, true);
         p.setRenderHint(QPainter::HighQualityAntialiasing, true);
 
         p.setFont(fnt);
-        p.translate(0, fmetric -> height() - fmetric -> descent());
-//        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),
-//                std::min(1.0, (glyph_size.height() - 1) / extent.y()));
 
-        p.drawText(QPointF{}, {ch});
+        if (visualize) {
+            if (ch == ' ') {
+                p.setPen(Qt::black);
+
+                p.translate(0, fmetric -> height() - fmetric -> descent());
+        //        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),
+        //                std::min(1.0, (glyph_size.height() - 1) / extent.y()));
+                p.drawText(QPointF{}, {QChar(8594)});
+
+//                p.setPen(Qt::transparent);
+//                p.setBrush(Qt::black);
+//                p.drawEllipse(glyph_size.width() / 2 - 1, glyph_size.height() / 2 - 1, 2, 2);
+            } else {
+                p.setPen(Qt::black);
+
+                p.translate(0, fmetric -> height() - fmetric -> descent());
+        //        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),
+        //                std::min(1.0, (glyph_size.height() - 1) / extent.y()));
+                p.drawText(QPointF{}, {QChar(8594)});
+            }
+        }
+        else {
+            p.setPen(Qt::black);
+
+            p.translate(0, fmetric -> height() - fmetric -> descent());
+    //        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),
+    //                std::min(1.0, (glyph_size.height() - 1) / extent.y()));
+            p.drawText(QPointF{}, {ch});
+        }
     }
 
     return glyph;

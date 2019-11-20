@@ -9,6 +9,7 @@
 #include <qdebug.h>
 
 #include "custom_iblock.h"
+#include "custom_visualization.h"
 
 namespace Custom {
     struct DrawContext {
@@ -24,6 +25,8 @@ namespace Custom {
         QFontMetricsF * _fmetrics;
         QPointF _pos;
 
+        CharVisualization _visualization;
+
         qreal _letter_spacing;
         qint32 _left_margin;
         qint32 _right_margin;
@@ -32,7 +35,7 @@ namespace Custom {
         qint32 __max_str_length;
         qint32 __line_height;
         qreal __symbol_width;
-        qreal __letter_with_pad_width;
+        int __letter_with_pad_width;
 
         void drawGrid() {
             _painter -> save();
@@ -84,6 +87,8 @@ namespace Custom {
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
             : _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _letter_spacing(letter_spacing), _left_margin(0)
         {
+            _visualization = CharVisualization(cv_show_space | cv_show_tab);
+
             setFont(font);
             setLeftMargin();
             setRightMargin();
@@ -111,7 +116,7 @@ namespace Custom {
                 _painter -> setFont(_font);
             }
 
-            __letter_with_pad_width = __symbol_width + _letter_spacing;
+            __letter_with_pad_width = qCeil(__symbol_width + _letter_spacing);
 
             setRightMargin(_vscroll -> isVisible() ? _vscroll -> width() + 3 : 0);
             QPointF pos = QPointF(-_hscroll -> value() * __letter_with_pad_width, 0);

@@ -34,19 +34,18 @@ void TextBlock::draw(DrawContext * context) {
         for(int i = 0; i < str.length(); i++) {
             const QChar & ch = str[i];
 
+            Custom::Chars::drawChar(
+                context -> _painter,
+                { offset, &Custom::Chars::glyph(ch, context -> _painter -> font(), context -> _visualization), Qt::black/*Chars::randomColor()*/, Qt::white/*Chars::randomColor()*/ /*Qt::blue*/ }
+            );
 
-            //QChar::Tabulation	0x0009	Character tabulation.
-            //QChar::LineFeed	0x000a
-            //QChar::CarriageReturn	0x000d
-            //QChar::Space	0x0020
-            //QChar::Nbsp
 
-            if (ch != ' ' && ch != '\t') {
-                Custom::Chars::drawChar(
-                    context -> _painter,
-                    { offset, &Custom::Chars::glyph(ch, context -> _painter -> font()), Qt::black/*Chars::randomColor()*/, Qt::white }
-                );
-            }
+//            if (ch != ' ' && ch != '\t') {
+//                Custom::Chars::drawChar(
+//                    context -> _painter,
+//                    { offset, &Custom::Chars::glyph(ch, context -> _painter -> font()), /*Qt::black*/Chars::randomColor(), /*Qt::white*//*Chars::randomColor()*/ Qt::blue }
+//                );
+//            }
 
             offset.rx() += context -> __letter_with_pad_width;
         }

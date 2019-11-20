@@ -324,7 +324,9 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
                     else {
                         active_folding.level = user_data -> level;
                         active_folding.start_block_num = cache -> block_number;
-                        active_folding.end_block_num = NO_INFO - (user_data -> para_control -> is_blockator ? 0 : 1);
+                        active_folding.end_block_num = NO_INFO - (user_data -> para_control ? user_data -> para_control -> is_blockator ? 0 : 1 : 1);
+                        // костыль
+//                        active_folding.end_block_num = NO_INFO - (user_data -> para_control -> is_blockator ? 0 : 1);
                         initiated = true;
                     }
                 }

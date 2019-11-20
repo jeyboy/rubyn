@@ -1,6 +1,8 @@
 #ifndef CUSTOM_CHARS_H
 #define CUSTOM_CHARS_H
 
+#include "custom_visualization.h"
+
 #include <qhash.h>
 #include <qimage.h>
 #include <qfontmetrics.h>
@@ -9,12 +11,13 @@
 #include <qrandom.h>
 
 namespace Custom {
-    struct CharUnit { QString family; int size; QChar ch; };
+    struct CharUnit { QString family; int size; QChar ch; bool visualize; };
 
     inline bool operator==(const CharUnit & e1, const CharUnit & e2) {
         return e1.family == e2.family &&
                 e1.size == e2.size &&
-                e1.ch == e2.ch;
+                e1.ch == e2.ch &&
+                e1.visualize == e2.visualize;
     }
 
     inline uint qHash(const CharUnit & key, uint seed) {
@@ -42,10 +45,11 @@ namespace Custom {
         static QHash<CharUnit, QImage> _glyphs;
         static QList<QColor> _colors;
         static QRandomGenerator _ra;
+
     public:
         static const QColor & randomColor();
         static void drawChar(QPainter * p, const DrawUnit & u);
-        static const QImage & glyph(const QChar & ch, const QFont & fnt);
+        static const QImage & glyph(const QChar & ch, const QFont & fnt, const CharVisualization & visualization);
 //        static void drawChar(QPainter * p, const QChar & ch, const QPointF & pos, const QColor & color);
     };
 }

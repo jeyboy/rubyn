@@ -135,6 +135,7 @@ HEADERS  += ide_window.h \
     editor/custom/custom_editor_searcher.h \
     editor/custom/custom_iblock.h \
     editor/custom/custom_text_block.h \
+    editor/custom/custom_visualization.h \
     lexer/css/css_grammar.h \
     lexer/css/css_lexer_control.h \
     lexer/css/css_lexer_frontend.h \
