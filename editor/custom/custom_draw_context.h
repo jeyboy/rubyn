@@ -6,6 +6,7 @@
 #include <qpainter.h>
 #include <qscrollbar.h>
 #include <qmath.h>
+#include <qhash.h>
 #include <qdebug.h>
 
 #include "custom_iblock.h"
@@ -13,6 +14,8 @@
 
 namespace Custom {
     struct DrawContext {
+        QHash<IBlock *, QRectF> _on_screen;
+
         QScrollBar * _vscroll;
         QScrollBar * _hscroll;
 
@@ -111,6 +114,7 @@ namespace Custom {
 
         void prepare(QPainter * curr_painter, const QSize & screen_size) {
             _painter = curr_painter;
+            _on_screen.clear();
 
             if (_painter) {
                 _painter -> setFont(_font);

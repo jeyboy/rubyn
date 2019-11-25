@@ -14,6 +14,7 @@ namespace Custom {
     public:
         TextBlock(const QByteArray/*QString*/ & txt, IBlock * prev_block = nullptr);
 //        virtual ~TextBlock() = default;
+        QString text() { return content; }
 
         BlockType blockType() { return bt_text; }
         void draw(DrawContext * context);

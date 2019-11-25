@@ -13,6 +13,8 @@
 #include "controls/logger.h"
 #include "controls/completer.h"
 
+#include "highlighter/highlight_format_factory.h"
+
 using namespace Custom;
 
 void Editor::drawDocument(QPainter & painter) {
@@ -248,7 +250,25 @@ void Editor::setCompleter(Completer * new_completer) {
 
 //  void Editor::searchIsShow(const bool & show) = 0;
 void Editor::searchInitiated(const QRegularExpression & pattern, const bool & scroll) {
+    qDebug() << "Custom::Editor::searchInitiated" << pattern.pattern();
 
+    if (pattern.pattern().isEmpty()) {
+        searcher.clearSearch();
+        emit searchResultsFinded(0);
+    } else {
+        searcher.beginSearch(pattern);
+        TextPart match = searcher.search(_document -> first());
+
+//        if (scroll && match.first != NO_INFO) {
+//            QTextCursor c = textCursor();
+//            c.setPosition(match.first);
+
+//            setTextCursor(c);
+//            ensureCursorVisible();
+//        }
+
+        emit searchResultsFinded(searcher.foundResultsAmount());
+    }
 }
 void Editor::searchNextResult(QString * replace) {
 
@@ -446,6 +466,35 @@ void Editor::wheelEvent(QWheelEvent * e) {
 void Editor::focusInEvent(QFocusEvent * e) {
     QWidget::focusInEvent(e);
 }
+
+
+QRectF Editor::blockRect(IBlock * block) {
+    if (!_context -> _on_screen.contains(block))
+        return QRectF();
+
+    return _context -> _on_screen[block];
+}
+
+void Editor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+    drawTextOverlay(draw_uid, painter, textRect(block, pos, length));
+}
+
+void Editor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRectF & fold_rect) {
+    painter.save();
+    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(static_cast<Identifier>(draw_uid));
+
+    painter.setPen(format.foreground().color());
+    painter.setBrush(format.background().color());
+
+    painter.drawRoundedRect(fold_rect.adjusted(1, 1, -1, -1), 3, 3);
+    painter.restore();
+}
+
+
+
 
 //void Editor::procCompleter(QTextCursor & tc, const bool & initiate_popup) {
 //    QTextBlock block = tc.block();

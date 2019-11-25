@@ -1,6 +1,8 @@
 #ifndef CUSTOM_IBLOCK_H
 #define CUSTOM_IBLOCK_H
 
+#include <qstring.h>
+
 namespace Custom {
     class Document;
     class DrawContext;
@@ -21,6 +23,8 @@ namespace Custom {
 
         IBlock * next() { return _next; }
         IBlock * prev() { return _prev; }
+        virtual QString text() = 0;
+        int blockNumber();
 
         friend class Document;
     };

@@ -18,3 +18,16 @@ IBlock::~IBlock() {
     if (_next)
         _next -> _prev = _prev;
 }
+
+int IBlock::blockNumber() {
+    int n = 0;
+    IBlock * it = this;
+
+
+    while(it) {
+        it = it -> prev();
+        ++n;
+    }
+
+    return n;
+}

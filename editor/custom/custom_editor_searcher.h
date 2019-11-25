@@ -5,12 +5,17 @@
 #include <qregularexpression.h>
 
 namespace Custom {
+    class IBlock;
+
     class EditorSearcher {
+        static TextParts default_mappings;
+
         bool is_opened;
         bool is_active;
         int search_results;
         QRegularExpression search_regex;
 
+        QHash<IBlock *, TextParts> mappings;
     public:
         EditorSearcher();
 
@@ -18,6 +23,7 @@ namespace Custom {
 
         inline bool isOpened() { return is_opened; }
         inline bool isActive() { return is_active; }
+        inline int foundResultsAmount() { return search_results; }
 
         inline bool hasResults() { return search_results > 0; }
         inline int searchResultsCount() { return search_results; }
@@ -26,7 +32,7 @@ namespace Custom {
             is_opened = true;
             search_regex = predicate;
         }
-//        TextPart search(const QTextBlock & start_blk);
+        TextPart search(IBlock * start_blk);
         void clearSearch() {
             search_results = 0;
             is_active = false;
@@ -36,21 +42,17 @@ namespace Custom {
             clearSearch();
         }
 
-//        inline TextParts & searchResultsFor(const QTextBlock & blk) {
-//            BlockUserData * udata = TextDocumentLayout::getUserDataForBlock(blk);
-//            return searchResultsFor(udata);
-//        }
-//        inline TextParts & searchResultsFor(BlockUserData * udata) {
-//            if (!udata || !mappings.contains(udata)) {
-//                qDebug() << "NO UDATA";
-//                return default_mappings;
-//            }
+        inline TextParts & searchResultsFor(IBlock * blk) {
+            if (!blk || !mappings.contains(blk)) {
+                qDebug() << "NO UDATA";
+                return default_mappings;
+            }
 
-//            return mappings[udata];
-//        }
+            return mappings[blk];
+        }
 
 
-//        TextParts * procBlockSearch(const QTextBlock & blk);
+        TextParts * procBlockSearch(IBlock * blk);
 
 //        void procSearchReplace(QTextCursor & cursor, const QString & txt, const bool & back_move);
 
