@@ -20,6 +20,7 @@ namespace Custom {
     class Document;
     class DrawContext;
     class IBlock;
+    class LineAttrs;
 
     class Editor : public QWidget, public IEditor {
         Q_OBJECT
@@ -110,43 +111,8 @@ namespace Custom {
 //        virtual void showEvent(QShowEvent *event);
 //        virtual void hideEvent(QHideEvent *event);
 
-        QRectF blockRect(IBlock * block);
-
-        QRectF textRect(IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
-            if (!block.isValid() || !block.isVisible())
-                return QRect();
-
-            QTextLine line = block.layout() -> lineForTextPosition(pos);
-
-            if (!line.isValid())
-                return QRect();
-
-            QRectF rect = blockRect(block);
-
-            return textRect(rect, line, pos, length);
-        }
-
-//        QRectF CodeEditor::textRect(CodeEditorCacheCell * cache, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
-//            if (cache -> is_service || !cache -> is_visible)
-//                return QRect();
-
-//            QTextLine line = cache -> layout -> lineForTextPosition(pos);
-//            QRectF rect = cache -> bounding_rect;
-
-//            return textRect(rect, line, pos, length);
-//        }
-
-//        QRectF CodeEditor::textRect(QRectF & block_rect, const QTextLine & line, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
-//            if (!line.isValid())
-//                return QRect();
-
-//            qreal x_offset = -horizontalScrollBar() -> value();
-//            block_rect.setLeft(line.cursorToX(pos) + x_offset - 1);
-//            block_rect.setRight(line.cursorToX(pos + length) + x_offset + 2);
-
-//            return block_rect;
-//        }
-
+        const LineAttrs & blockRect(IBlock * block);
+        QRectF textRect(IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
 
         void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
         void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRectF & fold_rect);

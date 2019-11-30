@@ -25,6 +25,23 @@ void Editor::drawDocument(QPainter & painter) {
     Logger::obj().startMark();
     _context -> draw(&painter, size(), _top_block, _top_block_number);
     Logger::obj() .endMark(false, "drawDocument");
+
+    //// TEST
+
+    drawTextOverlay(hid_search_results_overlay, painter, textRect(_top_block, 1, 5));
+
+    IBlock * it = _top_block -> next();
+
+    for(int i = 2; i < 20; i++) {
+        if (!it) break;
+
+        drawTextOverlay(hid_search_results_overlay, painter, textRect(it, i, 5));
+
+        it = it -> next();
+    }
+
+    //// TEST
+
     _context -> _painter = nullptr;
 }
 
@@ -468,11 +485,14 @@ void Editor::focusInEvent(QFocusEvent * e) {
 }
 
 
-QRectF Editor::blockRect(IBlock * block) {
-    if (!_context -> _on_screen.contains(block))
-        return QRectF();
+const LineAttrs & Editor::blockRect(IBlock * block) {
+    return _context -> blockLineAttrs(block);
+}
 
-    return _context -> _on_screen[block];
+QRectF Editor::textRect(IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+    const LineAttrs attrs = blockRect(block);
+
+    return attrs.partRect(pos, length);
 }
 
 void Editor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {

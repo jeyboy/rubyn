@@ -18,14 +18,18 @@ void TextBlock::draw(DrawContext * context) {
 
     QString str;
 
+    qint32 left_offset = context -> leftStrPad();
+    qint32 str_len = context -> maxStrLength();
+
     if (content.length() > context -> maxStrLength()) {
-        str = content.mid(context -> leftStrPad(), context -> maxStrLength());
+        str = content.mid(left_offset, str_len);
     } else {
-        str = content.mid(context -> leftStrPad());
+        str = content.mid(left_offset);
     }
 
-
-    context -> _on_screen.insert(this, QRectF(1111));
+    context -> _on_screen.insert(
+        this, { QRectF(context -> _pos, QSizeF(context -> __content_width, context -> __line_height)), left_offset, str_len, context -> __letter_with_pad_width, context -> _letter_spacing }
+    );
 
     if (simple) {
       context -> _painter -> drawText(context -> _pos, str);

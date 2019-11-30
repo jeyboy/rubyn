@@ -9,12 +9,43 @@
 #include <qhash.h>
 #include <qdebug.h>
 
+#include "misc/defines.h"
 #include "custom_iblock.h"
 #include "custom_visualization.h"
 
 namespace Custom {
+    struct LineAttrs {
+        QRectF rect; qint32 left_offset; qint32 width; int letter_with_pad_width; qreal pad;
+
+        QRectF partRect(const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) const {
+            if (rect.isNull() || pos + length <= left_offset || pos >= left_offset + width)
+                return QRectF();
+
+            QRectF res(rect);
+
+            if (pos < left_offset) {
+                EDITOR_LEN_TYPE len = (pos - left_offset) + length;
+
+                res.setLeft(res.left() - pad);
+                res.setRight(res.left() + letter_with_pad_width * len);
+            } else {
+                res.setLeft(res.left() + (letter_with_pad_width * (pos - left_offset) - pad));
+
+                EDITOR_LEN_TYPE len = (left_offset + width) - (pos + length);
+
+                if (len > 0) {
+                    res.setWidth(length * letter_with_pad_width);
+                }
+            }
+
+            return res;
+        }
+    };
+
     struct DrawContext {
-        QHash<IBlock *, QRectF> _on_screen;
+        QHash<IBlock *, LineAttrs> _on_screen;
+
+        const LineAttrs _default_line_attrs = { QRectF(), 0, 0, 0, 0 };
 
         QScrollBar * _vscroll;
         QScrollBar * _hscroll;
@@ -38,7 +69,15 @@ namespace Custom {
         qint32 __max_str_length;
         qint32 __line_height;
         qreal __symbol_width;
+        qreal __content_width;
         int __letter_with_pad_width;
+
+        const LineAttrs & blockLineAttrs(IBlock * block) {
+            if (!_on_screen.contains(block))
+                return _default_line_attrs;
+
+            return _on_screen[block];
+        }
 
         void drawGrid() {
             _painter -> save();
@@ -126,6 +165,7 @@ namespace Custom {
             QPointF pos = QPointF(-_hscroll -> value() * __letter_with_pad_width, 0);
 
             _screen_size = screen_size;
+            __content_width = contentWidth();
             __max_str_length = qCeil(_screen_size.width() / __letter_with_pad_width);
             __left_str_pad = pos.x() == 0 ? 0 : qAbs(qFloor(pos.x() / __letter_with_pad_width));
 
@@ -145,6 +185,10 @@ namespace Custom {
             _right_margin = margin;
         }
 
+        qreal contentWidth() {
+            return _screen_size.width() - _left_margin - _right_margin - 2;
+        }
+
         qint32 leftContentBorder() { return _left_margin + 2; }
 
         QRectF numbersAreaRect() {
@@ -152,7 +196,7 @@ namespace Custom {
         }
 
         QRectF contentAreaRect() {
-            return QRectF(leftContentBorder(), 0, _screen_size.width() - _left_margin - _right_margin - 2, _screen_size.height());
+            return QRectF(leftContentBorder(), 0, contentWidth(), _screen_size.height());
         }
 
         qint32 verticalSingleStep() {
