@@ -43,7 +43,7 @@ void TextBlock::draw(DrawContext * context) {
 
             Custom::Chars::drawChar(
                 context -> _painter,
-                { offset, &Custom::Chars::glyph(ch, context -> _painter -> font(), context -> _visualization), /*Qt::black*/Chars::randomColor(), Qt::white/*Chars::randomColor()*/ /*Qt::blue*/ }
+                { offset, &Custom::Chars::glyph(ch, context -> _painter -> font(), context -> _visualization), Qt::black/*Chars::randomColor()*/, Qt::white/*Chars::randomColor()*/ /*Qt::blue*/ }
             );
 
 

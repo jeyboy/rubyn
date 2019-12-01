@@ -12,6 +12,7 @@ TARGET = rubyn
 TEMPLATE = app
 
 SOURCES += main.cpp\
+    controls/line_dialog.cpp \
     editor/custom/custom_chars.cpp \
     editor/custom/custom_document.cpp \
     editor/custom/custom_editor.cpp \
@@ -127,6 +128,7 @@ SOURCES += main.cpp\
     controls/console_widget.cpp
 
 HEADERS  += ide_window.h \
+    controls/line_dialog.h \
     editor/custom/custom_chars.h \
     editor/custom/custom_document.h \
     editor/custom/custom_draw_context.h \

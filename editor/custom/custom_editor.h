@@ -43,9 +43,12 @@ namespace Custom {
         QScrollBar * hscroll;
         uint hscroll_factor;
 
+        void drawSearchOverlays(QPainter & painter);
         void drawDocument(QPainter & painter);
         void recalcScrolls();
         void initTopBlock(const bool & recalc = false);
+        void initTopBlock(IBlock * new_block);
+        void initTopBlock(const quint32 & block_num);
     public:
         void intialize();
 
@@ -72,6 +75,9 @@ namespace Custom {
 //        void setColor(const QPalette::ColorRole & acr, const QColor & acolor);
 
         void setVisible(bool visible) Q_DECL_OVERRIDE;
+
+        void ensureVisible(IBlock * block);
+        void ensureVisible(const quint32 & block_num);
 
     //  void searchIsShow(const bool & show) = 0;
         void searchInitiated(const QRegularExpression & pattern, const bool & scroll = true) Q_DECL_OVERRIDE;

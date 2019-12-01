@@ -17,17 +17,7 @@
 
 using namespace Custom;
 
-void Editor::drawDocument(QPainter & painter) {
-    if (!_document) return;
-
-    initTopBlock(true);
-
-    Logger::obj().startMark();
-    _context -> draw(&painter, size(), _top_block, _top_block_number);
-    Logger::obj() .endMark(false, "drawDocument");
-
-    //// TEST
-
+void Editor::drawSearchOverlays(QPainter & painter) {
     drawTextOverlay(hid_search_results_overlay, painter, textRect(_top_block, 1, 5));
 
     IBlock * it = _top_block -> next();
@@ -40,7 +30,19 @@ void Editor::drawDocument(QPainter & painter) {
         it = it -> next();
     }
 
-    //// TEST
+}
+
+void Editor::drawDocument(QPainter & painter) {
+    if (!_document) return;
+
+    initTopBlock(true);
+
+    Logger::obj().startMark();
+    _context -> draw(&painter, size(), _top_block, _top_block_number);
+    Logger::obj() .endMark(false, "drawDocument");
+
+
+    drawSearchOverlays(painter);
 
     _context -> _painter = nullptr;
 }
@@ -127,6 +129,59 @@ void Editor::initTopBlock(const bool & recalc) {
     _top_block = it;
 }
 
+void Editor::initTopBlock(IBlock * new_block) {
+    if (new_block == nullptr)
+        return;
+
+    IBlock * it = _document ? _document -> first() : nullptr;
+
+    qint32 number_offset = 0;
+    qreal block_top = 0;
+
+
+    while(it) {
+        if (it == new_block) {
+            _top_block_offset = block_top;
+            _top_block_number = number_offset;
+            _top_block = it;
+
+            return;
+        }
+
+        block_top += 1;//_context -> __line_height;
+        ++number_offset;
+
+        it = it -> next();
+    }
+}
+
+void Editor::initTopBlock(const quint32 & block_num) {
+    if (block_num > _document -> linesCount())
+        return;
+
+    IBlock * it = _document ? _document -> first() : nullptr;
+
+    qint32 number_offset = 0;
+    qreal block_top = 0;
+
+
+    while(it) {
+        if (number_offset == block_num) {
+            _top_block_offset = block_top;
+            _top_block_number = number_offset;
+            _top_block = it;
+
+            return;
+        }
+
+        block_top += 1;//_context -> __line_height;
+        ++number_offset;
+
+        it = it -> next();
+    }
+}
+
+
 void Editor::intialize() {
     setFocusPolicy(Qt::StrongFocus);
 
@@ -207,6 +262,15 @@ void Editor::setLeftMargin(const qint32 & margin) { _context -> setLeftMargin(ma
 void Editor::setVisible(bool visible) {
     QWidget::setVisible(visible);
 }
+
+void Editor::ensureVisible(IBlock * block) {
+    initTopBlock(block);
+}
+
+void Editor::ensureVisible(const quint32 & block_num) {
+
+}
+
 
 void Editor::openDocument(Document * doc) {
     qDebug() << this << "setDocument";
