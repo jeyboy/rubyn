@@ -32,7 +32,7 @@ void Editor::drawDocument(QPainter & painter) {
 
     IBlock * it = _top_block -> next();
 
-    for(int i = 2; i < 20; i++) {
+    for(int i = 40; i < 80; i++) {
         if (!it) break;
 
         drawTextOverlay(hid_search_results_overlay, painter, textRect(it, i, 5));

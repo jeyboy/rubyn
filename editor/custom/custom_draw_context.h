@@ -26,8 +26,8 @@ namespace Custom {
             if (pos < left_offset) {
                 EDITOR_LEN_TYPE len = (pos - left_offset) + length;
 
-                res.setLeft(res.left() - pad);
-                res.setRight(res.left() + letter_with_pad_width * len);
+                res.setLeft(res.left() - 10);
+                res.setRight(res.left() + 10 + letter_with_pad_width * len);
             } else {
                 res.setLeft(res.left() + (letter_with_pad_width * (pos - left_offset) - pad));
 
