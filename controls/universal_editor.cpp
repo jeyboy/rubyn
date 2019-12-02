@@ -3,6 +3,7 @@
 #include "completer_factory.h"
 
 #include "controls/logger.h"
+#include "controls/line_dialog.h"
 
 #include "project/file.h"
 
@@ -173,6 +174,8 @@ UniversalEditor::UniversalEditor(QWidget * parent) : QWidget(parent), _active_ed
     setupLayout();
 
     setupCompleter();
+
+    _line_dialog = new LineDialog(this);
 }
 
 UniversalEditor::~UniversalEditor() {
@@ -248,6 +251,14 @@ const QString & UniversalEditor::documentUid() {
 int UniversalEditor::verticalScrollBar() {
     QScrollBar * scroll = _active_editor -> verticalScrollBar();
     return scroll ? scroll -> value() : 0;
+}
+
+void UniversalEditor::askLineNumber() {
+    if (_active_editor) {
+        if (_line_dialog -> exec() == QDialog::Accepted) {
+            _active_editor -> ensureVisibleBlock(_line_dialog -> lineNumber());
+        }
+    }
 }
 
 void UniversalEditor::showSearchPanel(const bool & show) {

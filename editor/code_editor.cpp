@@ -192,6 +192,17 @@ void CodeEditor::setCharsLimiterLineAt(const uint & char_pos) {
     update();
 }
 
+void CodeEditor::ensureVisibleBlock(const qint64 & block_num) {
+    QTextBlock block = wrapper -> findBlockByNumber(block_num);
+
+    if (block.isValid() && block.isVisible()) {
+        QTextCursor c = textCursor();
+        c.setPosition(block.position());
+        setTextCursor(c);
+        ensureCursorVisible();
+    }
+}
+
 ///////////////////////// PROTECTED ///////////////////////
 
 void CodeEditor::fillBackground(QPainter * p, const QRectF & rect, QBrush brush, const QRectF & gradientRect) {

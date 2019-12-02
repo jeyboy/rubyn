@@ -13,6 +13,7 @@ class QVBoxLayout;
 class File;
 class Completer;
 class EditorSearch;
+class LineDialog;
 
 class UniversalEditor : public QWidget {
     Q_OBJECT
@@ -27,6 +28,7 @@ class UniversalEditor : public QWidget {
     File * _file;
     Completer * _completer;
     EditorSearch * _search_bar;
+    LineDialog * _line_dialog;
 
     void setupLayout();
     void setupCodeEditor();
@@ -46,6 +48,9 @@ signals:
   void cursorPosChanged(const QString &);
   void inFocus();
   void fileDropped(const QUrl &);
+
+public slots:
+  void askLineNumber();
 
 protected slots:
     void showSearchPanel(const bool & show = true);
