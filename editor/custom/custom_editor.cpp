@@ -155,7 +155,7 @@ void Editor::initTopBlock(IBlock * new_block) {
     }
 }
 
-void Editor::initTopBlock(const quint32 & block_num) {
+void Editor::initTopBlock(const qint64 & block_num) {
     if (block_num > _document -> linesCount())
         return;
 
@@ -248,6 +248,10 @@ Editor::~Editor() {
     delete _context;
 }
 
+void Editor::ensureVisibleBlock(const qint64 & block_num) {
+    ensureVisible(block_num);
+}
+
 QScrollBar * Editor::verticalScrollBar() { return vscroll; }
 
 void Editor::setLeftMargin(const qint32 & margin) { _context -> setLeftMargin(margin); }
@@ -267,8 +271,8 @@ void Editor::ensureVisible(IBlock * block) {
     initTopBlock(block);
 }
 
-void Editor::ensureVisible(const quint32 & block_num) {
-
+void Editor::ensureVisible(const qint64 & block_num) {
+    initTopBlock(block_num);
 }
 
 
@@ -408,6 +412,17 @@ void Editor::keyPressEvent(QKeyEvent * e) {
         emit searchRequired(false);
         return;
     }
+
+
+
+
+    if (curr_key == Qt::Key_L && e -> modifiers() == Qt::ControlModifier) {
+        emit lineChooseModalRequired();
+        return;
+    }
+
+
+
 
     if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier) { // && !searcher.is_active
         qDebug() << "----------------------- SOS";

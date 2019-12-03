@@ -14,6 +14,9 @@ public:
 
     void setLineNumber(const qint64 & val);
     qint64 lineNumber();
+
+protected:
+    void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
 };
 
 #endif // LINEDIALOG_H

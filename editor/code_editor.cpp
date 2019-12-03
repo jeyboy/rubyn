@@ -1508,6 +1508,11 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
         return;
     }
 
+    if (curr_key == Qt::Key_L && e -> modifiers() == Qt::ControlModifier) {
+        emit lineChooseModalRequired();
+        return;
+    }
+
     if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier) { // && !searcher.is_active
         QTextCursor cursor = textCursor();
 

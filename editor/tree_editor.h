@@ -20,6 +20,8 @@ public:
 
     QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
 
+    void ensureVisibleBlock(const qint64 & block_num) Q_DECL_OVERRIDE;
+
     void focusInEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
 
     void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;

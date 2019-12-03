@@ -48,7 +48,7 @@ namespace Custom {
         void recalcScrolls();
         void initTopBlock(const bool & recalc = false);
         void initTopBlock(IBlock * new_block);
-        void initTopBlock(const quint32 & block_num);
+        void initTopBlock(const qint64 & block_num);
     public:
         void intialize();
 
@@ -61,6 +61,8 @@ namespace Custom {
         void setCompleter(Completer * new_completer);
 
         void clear() { openDocument(); }
+
+        void ensureVisibleBlock(const qint64 & block_num) Q_DECL_OVERRIDE;
 
         QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
 
@@ -77,7 +79,7 @@ namespace Custom {
         void setVisible(bool visible) Q_DECL_OVERRIDE;
 
         void ensureVisible(IBlock * block);
-        void ensureVisible(const quint32 & block_num);
+        void ensureVisible(const qint64 & block_num);
 
     //  void searchIsShow(const bool & show) = 0;
         void searchInitiated(const QRegularExpression & pattern, const bool & scroll = true) Q_DECL_OVERRIDE;
@@ -124,6 +126,8 @@ namespace Custom {
         void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRectF & fold_rect);
 
     signals:
+        void lineChooseModalRequired();
+
         void searchRequired(const bool & show = true);
         void searchRequestRequired(const QString & pattern);
         void searchResultsFinded(const int & count);

@@ -564,6 +564,8 @@ signals:
     void fileDropped(const QUrl & uri/*, bool multiple*/); // Multiple files are dropped?
     void cursorPosChanged(const QString & pos_coords);
 
+    void lineChooseModalRequired();
+
     void searchRequired(const bool & show = true);
     void searchRequestRequired(const QString & pattern);
     void searchResultsFinded(const int & count);

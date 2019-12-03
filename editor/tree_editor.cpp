@@ -83,6 +83,10 @@ void TreeEditor::setVisible(bool visible) { QTreeView::setVisible(visible); }
 
 QScrollBar * TreeEditor::verticalScrollBar() { return QTreeView::verticalScrollBar(); }
 
+void TreeEditor::ensureVisibleBlock(const qint64 & block_num) {
+
+}
+
 void TreeEditor::focusInEvent(QFocusEvent * e) {
     emit inFocus();
 

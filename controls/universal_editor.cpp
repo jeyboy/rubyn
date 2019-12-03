@@ -63,6 +63,9 @@ void UniversalEditor::setupCodeEditor() {
 
     col_layout -> insertWidget(0, _code_editor, 1);
 
+
+    connect(_code_editor, &CodeEditor::lineChooseModalRequired, this, &UniversalEditor::askLineNumber);
+
     connect(_code_editor, &CodeEditor::searchResultsFinded, [=](const int & count) {
         if (_active_editor == _code_editor)
             _search_bar -> finded(count);
@@ -96,6 +99,8 @@ void UniversalEditor::setupTreeEditor() {
 
     col_layout -> insertWidget(0, _tree_editor, 1);
 
+//    connect(_tree_editor, &TreeEditor::lineChooseModalRequired, this, &UniversalEditor::askLineNumber);
+
     connect(_tree_editor, &TreeEditor::searchResultsFinded, [=](const int & count) {
         if (_active_editor == _tree_editor)
             _search_bar -> finded(count);
@@ -123,6 +128,8 @@ void UniversalEditor::setupCustomEditor() {
     _custom_editor -> setFont(font());
 
     col_layout -> insertWidget(0, _custom_editor, 1);
+
+    connect(_custom_editor, &Custom::Editor::lineChooseModalRequired, this, &UniversalEditor::askLineNumber);
 
     connect(_custom_editor, &Custom::Editor::searchResultsFinded, [=](const int & count) {
         if (_active_editor == _custom_editor)
