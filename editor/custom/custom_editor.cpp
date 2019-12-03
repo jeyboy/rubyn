@@ -250,6 +250,8 @@ Editor::~Editor() {
 
 void Editor::ensureVisibleBlock(const qint64 & block_num) {
     ensureVisible(block_num);
+
+    vscroll -> setValue(_top_block_offset);
 }
 
 QScrollBar * Editor::verticalScrollBar() { return vscroll; }
@@ -414,14 +416,10 @@ void Editor::keyPressEvent(QKeyEvent * e) {
     }
 
 
-
-
     if (curr_key == Qt::Key_L && e -> modifiers() == Qt::ControlModifier) {
         emit lineChooseModalRequired();
         return;
     }
-
-
 
 
     if (curr_key == Qt::Key_F && e -> modifiers() == Qt::ControlModifier) { // && !searcher.is_active

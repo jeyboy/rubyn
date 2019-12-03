@@ -21,7 +21,7 @@ void LineDialog::setLineNumber(const qint64 & val) {
 }
 
 qint64 LineDialog::lineNumber() {
-    return input -> text().toLongLong();
+    return qMax(input -> text().toLongLong() - 1, 1LL);
 }
 
 void LineDialog::keyPressEvent(QKeyEvent * e) {
