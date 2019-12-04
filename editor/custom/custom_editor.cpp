@@ -232,13 +232,21 @@ Editor::~Editor() {
 void Editor::ensureVisibleBlock(const qint64 & block_num) {
     ensureVisible(block_num);
 
-    vscroll -> setValue(_top_block_offset);
+    if (vscroll -> value() == _top_block_offset) {
+        update();
+    } else {
+        vscroll -> setValue(_top_block_offset);
+    }
 }
 
 void Editor::ensureVisibleBlock(IBlock * block) {
     ensureVisible(block);
 
-    vscroll -> setValue(_top_block_offset);
+    if (vscroll -> value() == _top_block_offset) {
+        update();
+    } else {
+        vscroll -> setValue(_top_block_offset);
+    }
 }
 
 QScrollBar * Editor::verticalScrollBar() { return vscroll; }
