@@ -13,24 +13,7 @@
 #include "controls/logger.h"
 #include "controls/completer.h"
 
-#include "highlighter/highlight_format_factory.h"
-
 using namespace Custom;
-
-void Editor::drawSearchOverlays(QPainter & painter) {
-    drawTextOverlay(hid_search_results_overlay, painter, textRect(_top_block, 1, 5));
-
-    IBlock * it = _top_block -> next();
-
-    for(int i = 40; i < 80; i++) {
-        if (!it) break;
-
-        drawTextOverlay(hid_search_results_overlay, painter, textRect(it, i, 5));
-
-        it = it -> next();
-    }
-
-}
 
 void Editor::drawDocument(QPainter & painter) {
     if (!_document) return;
@@ -40,9 +23,6 @@ void Editor::drawDocument(QPainter & painter) {
     Logger::obj().startMark();
     _context -> draw(&painter, size(), _top_block, _top_block_number);
     Logger::obj() .endMark(false, "drawDocument");
-
-
-    drawSearchOverlays(painter);
 
     _context -> _painter = nullptr;
 }
@@ -235,6 +215,7 @@ void Editor::intialize() {
     l -> addWidget(hscroll, 0, Qt::AlignBottom);
 
     _context -> setScrolls(hscroll, vscroll);
+    _context -> setSearcher(&searcher);
 }
 
 Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
@@ -562,38 +543,6 @@ void Editor::wheelEvent(QWheelEvent * e) {
 void Editor::focusInEvent(QFocusEvent * e) {
     QWidget::focusInEvent(e);
 }
-
-
-const LineAttrs & Editor::blockRect(IBlock * block) {
-    return _context -> blockLineAttrs(block);
-}
-
-QRectF Editor::textRect(IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
-    const LineAttrs attrs = blockRect(block);
-
-    return attrs.partRect(pos, length);
-}
-
-void Editor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
-    drawTextOverlay(draw_uid, painter, textRect(block, pos, length));
-}
-
-void Editor::drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRectF & fold_rect) {
-    painter.save();
-    painter.setCompositionMode(QPainter::CompositionMode_Multiply);
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(static_cast<Identifier>(draw_uid));
-
-    painter.setPen(format.foreground().color());
-    painter.setBrush(format.background().color());
-
-    painter.drawRoundedRect(fold_rect.adjusted(1, 1, -1, -1), 3, 3);
-    painter.restore();
-}
-
-
-
 
 //void Editor::procCompleter(QTextCursor & tc, const bool & initiate_popup) {
 //    QTextBlock block = tc.block();

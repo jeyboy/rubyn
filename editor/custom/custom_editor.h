@@ -20,7 +20,6 @@ namespace Custom {
     class Document;
     class DrawContext;
     class IBlock;
-    class LineAttrs;
 
     class Editor : public QWidget, public IEditor {
         Q_OBJECT
@@ -43,7 +42,6 @@ namespace Custom {
         QScrollBar * hscroll;
         uint hscroll_factor;
 
-        void drawSearchOverlays(QPainter & painter);
         void drawDocument(QPainter & painter);
         void recalcScrolls();
         void initTopBlock(const bool & recalc = false);
@@ -119,12 +117,6 @@ namespace Custom {
 
 //        virtual void showEvent(QShowEvent *event);
 //        virtual void hideEvent(QHideEvent *event);
-
-        const LineAttrs & blockRect(IBlock * block);
-        QRectF textRect(IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
-
-        void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length);
-        void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRectF & fold_rect);
 
     signals:
         void lineChooseModalRequired();

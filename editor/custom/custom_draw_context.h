@@ -12,6 +12,8 @@
 #include "misc/defines.h"
 #include "custom_iblock.h"
 #include "custom_visualization.h"
+#include "highlighter/highlight_format_factory.h"
+#include "custom_editor_searcher.h"
 
 namespace Custom {
     struct LineAttrs {
@@ -47,6 +49,8 @@ namespace Custom {
 
         const LineAttrs _default_line_attrs = { QRectF(), 0, 0, 0, 0 };
 
+        EditorSearcher * _searcher;
+
         QScrollBar * _vscroll;
         QScrollBar * _hscroll;
 
@@ -72,6 +76,36 @@ namespace Custom {
         qreal __content_width;
         int __letter_with_pad_width;
 
+
+        const LineAttrs & blockRect(IBlock * block) {
+            return blockLineAttrs(block);
+        }
+
+        QRectF textRect(IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+            const LineAttrs attrs = blockRect(block);
+
+            return attrs.partRect(pos, length);
+        }
+
+        void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
+            drawTextOverlay(draw_uid, painter, textRect(block, pos, length));
+        }
+
+        void drawTextOverlay(const UID_TYPE & draw_uid, QPainter & painter, const QRectF & fold_rect) {
+            painter.save();
+            painter.setCompositionMode(QPainter::CompositionMode_Multiply);
+            painter.setRenderHint(QPainter::Antialiasing);
+
+            const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(static_cast<Identifier>(draw_uid));
+
+            painter.setPen(format.foreground().color());
+            painter.setBrush(format.background().color());
+
+            painter.drawRoundedRect(fold_rect.adjusted(1, 1, -1, -1), 3, 3);
+            painter.restore();
+        }
+
+
         const LineAttrs & blockLineAttrs(IBlock * block) {
             if (!_on_screen.contains(block))
                 return _default_line_attrs;
@@ -95,6 +129,8 @@ namespace Custom {
 
             qDebug() << "-------------------------------";
 
+            bool search_draw_requires = _searcher && _searcher -> isActive() && _searcher -> isOpened() && _searcher -> hasResults();
+
             IBlock * it = _top_block;
             int c = 0;
             quint32 block_num = top_block_number;
@@ -117,6 +153,21 @@ namespace Custom {
 
                 _painter -> restore();
 
+
+                if (search_draw_requires) {
+                    TextParts & mappings = _searcher -> searchResultsFor(it);
+
+                    if (!mappings.isEmpty()) {
+                        TextParts::Iterator index_it = mappings.begin();
+
+                        for(; index_it != mappings.end(); index_it++) {
+                            QRectF r = textRect(it, (*index_it).first, (*index_it).second);
+                            drawTextOverlay(hid_search_results_overlay, *_painter, r);
+                        }
+                    }
+                }
+
+
                 if (screenCovered())
                     break;
 
@@ -127,7 +178,7 @@ namespace Custom {
         }
 
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
-            : _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _letter_spacing(letter_spacing), _left_margin(0)
+            : _searcher(nullptr), _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _letter_spacing(letter_spacing), _left_margin(0)
         {
             _visualization = CharVisualization(cv_show_space | cv_show_tab);
 
@@ -139,6 +190,10 @@ namespace Custom {
         ~DrawContext() {
             delete _line_num_section_pal;
             delete _content_section_pal;
+        }
+
+        void setSearcher(EditorSearcher * searcher) {
+            _searcher = searcher;
         }
 
         void setScrolls(QScrollBar * hscroll, QScrollBar * vscroll) {
