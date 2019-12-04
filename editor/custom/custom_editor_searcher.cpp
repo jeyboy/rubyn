@@ -10,8 +10,8 @@ EditorSearcher::EditorSearcher() : is_opened(false), is_active(false), search_re
 }
 
 
-TextPart EditorSearcher::search(IBlock * start_blk) {
-    TextPart first_match(NO_INFO, NO_INFO);
+EditorSearcherResult EditorSearcher::search(IBlock * start_blk) {
+    EditorSearcherResult first_match;
     is_opened = is_active = true;
     bool has_mapping = false;
 
@@ -24,8 +24,7 @@ TextPart EditorSearcher::search(IBlock * start_blk) {
         TextParts * mappings = procBlockSearch(blk);
 
         if (!has_mapping && mappings) {
-            first_match = TextPart(mappings -> first());
-//            first_match.first += blk.position();
+            first_match = EditorSearcherResult(blk, TextPart(mappings -> first()));
             has_mapping = true;
         }
 

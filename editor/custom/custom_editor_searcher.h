@@ -7,6 +7,15 @@
 namespace Custom {
     class IBlock;
 
+    struct EditorSearcherResult {
+        IBlock * block;
+        TextPart text_part;
+
+        EditorSearcherResult(IBlock * block = nullptr, const TextPart & text_part = {NO_INFO, NO_INFO}) : block(block), text_part(text_part) {}
+
+        bool isValid() { return !!block; }
+    };
+
     class EditorSearcher {
         static TextParts default_mappings;
 
@@ -32,7 +41,7 @@ namespace Custom {
             is_opened = true;
             search_regex = predicate;
         }
-        TextPart search(IBlock * start_blk);
+        EditorSearcherResult search(IBlock * start_blk);
         void clearSearch() {
             search_results = 0;
             is_active = false;

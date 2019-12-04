@@ -54,7 +54,7 @@ void SearchPanel::buildLayout() {
     menu -> addAction(flag_case_sensitive_action);
     connect(flag_case_sensitive, &QCheckBox::clicked, [=](bool) {
         QRegularExpression regex = buildRegex(text());
-        if (regex.isValid())
+        if (!regex.pattern().isEmpty() && regex.isValid())
             emit find(regex);
     });
 
@@ -64,7 +64,7 @@ void SearchPanel::buildLayout() {
     menu -> addAction(flag_whole_word_only_action);
     connect(flag_whole_word_only, &QCheckBox::clicked, [=](bool) {
         QRegularExpression regex = buildRegex(text());
-        if (regex.isValid())
+        if (!regex.pattern().isEmpty() && regex.isValid())
             emit find(regex);
     });
 
@@ -74,7 +74,7 @@ void SearchPanel::buildLayout() {
     menu -> addAction(flag_reg_exp_action);
     connect(flag_reg_exp, &QCheckBox::clicked, [=](bool) {
         QRegularExpression regex = buildRegex(text());
-        if (regex.isValid())
+        if (!regex.pattern().isEmpty() && regex.isValid())
             emit find(regex);
     });
 
@@ -84,16 +84,16 @@ void SearchPanel::buildLayout() {
     menu -> addAction(flag_unicode_action);
     connect(flag_unicode, &QCheckBox::clicked, [=](bool) {
         QRegularExpression regex = buildRegex(text());
-        if (regex.isValid())
+        if (!regex.pattern().isEmpty() && regex.isValid())
             emit find(regex);
     });
 }
 
 QRegularExpression SearchPanel::buildRegex(const QString & pattern) {
     if (pattern.isEmpty()) {
+        emit clearRequires();
         return QRegularExpression();
     }
-
 
     QString val = pattern;
     bool is_multiline = false;
@@ -136,7 +136,7 @@ SearchPanel::SearchPanel(QWidget * parent) : QLineEdit(parent), infinity_pad(fal
 
     connect(this, &SearchPanel::textChanged, [=](const QString & text) {
         QRegularExpression regex = buildRegex(text);
-        if (regex.isValid())
+        if (!regex.pattern().isEmpty() && regex.isValid())
             emit find(regex);
     });
 }

@@ -131,6 +131,8 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
     connect(predicate, &SearchPanel::toNextResult, [=](QString * replace) { emit toNextResult(replace); });
     connect(predicate, &SearchPanel::toPrevResult, [=](QString * replace) { emit toPrevResult(replace); });
     connect(predicate, &SearchPanel::closed, [=]() { emit close(); });
+    connect(predicate, &SearchPanel::clearRequires, [=]() { l1 -> setText(SEARCH_LABEL_TEXT); });
+
 
     btn = new QToolButton(this);
     btn -> setIcon(QPixmap(":/tools/close").scaled(btn -> iconSize().width(), btn -> iconSize().height(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -172,7 +174,7 @@ void EditorSearch::finded(const int & count) {
 
     if (count > 0) {
         predicate -> setStyleSheet(QLatin1Literal());
-        l1 -> setText(SEARCH_LABEL_TEXT % ' ' % '(' % QString::number(count) % ')');
+        l1 -> setText(SEARCH_LABEL_TEXT % '\n' % '(' % QString::number(count) % ')');
     } else if (!predicate -> text().isEmpty()) {
         predicate -> setStyleSheet(QLatin1Literal("QLineEdit { color: #FFFFFF; background-color: rgba(255, 0, 0, .4);}"));
         l1 -> setText(SEARCH_LABEL_TEXT);

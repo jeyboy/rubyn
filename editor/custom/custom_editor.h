@@ -63,6 +63,7 @@ namespace Custom {
         void clear() { openDocument(); }
 
         void ensureVisibleBlock(const qint64 & block_num) Q_DECL_OVERRIDE;
+        void ensureVisibleBlock(IBlock * block);
 
         QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
 

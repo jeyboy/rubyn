@@ -254,6 +254,12 @@ void Editor::ensureVisibleBlock(const qint64 & block_num) {
     vscroll -> setValue(_top_block_offset);
 }
 
+void Editor::ensureVisibleBlock(IBlock * block) {
+    ensureVisible(block);
+
+    vscroll -> setValue(_top_block_offset);
+}
+
 QScrollBar * Editor::verticalScrollBar() { return vscroll; }
 
 void Editor::setLeftMargin(const qint32 & margin) { _context -> setLeftMargin(margin); }
@@ -344,15 +350,11 @@ void Editor::searchInitiated(const QRegularExpression & pattern, const bool & sc
         emit searchResultsFinded(0);
     } else {
         searcher.beginSearch(pattern);
-        TextPart match = searcher.search(_document -> first());
+        EditorSearcherResult match = searcher.search(_document -> first());
 
-//        if (scroll && match.first != NO_INFO) {
-//            QTextCursor c = textCursor();
-//            c.setPosition(match.first);
-
-//            setTextCursor(c);
-//            ensureCursorVisible();
-//        }
+        if (match.isValid()) {
+            ensureVisibleBlock(match.block);
+        }
 
         emit searchResultsFinded(searcher.foundResultsAmount());
     }
