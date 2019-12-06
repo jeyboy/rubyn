@@ -349,16 +349,132 @@ void Editor::searchInitiated(const QRegularExpression & pattern, const bool & sc
     }
 }
 void Editor::searchNextResult(QString * replace) {
+    qDebug() << "CustomEditor::searchNextResult" << replace;
 
+//    if (searcher.searchResultsCount() == 0) {
+//        qDebug() << "CodeEditor::searchNextResult" << "NO RESULTS";
+//        return;
+//    }
+
+//    QTextCursor cursor = textCursor();
+//    bool has_selection = cursor.hasSelection();
+
+//    if (replace && has_selection) {
+//        searcher.procSearchReplace(cursor, *replace, false);
+//        delete replace;
+
+//        has_selection = false;
+//    }
+
+//    EDITOR_POS_TYPE pos = cursor.positionInBlock();
+//    bool limited = true;
+
+//    for(QTextBlock block = cursor.block(); block.isValid(); limited = false, block = block.next()) {
+//        TextParts & mappings = searcher.searchResultsFor(block);
+
+//        if (mappings.isEmpty())
+//            continue;
+
+//        TextParts::ConstIterator index_it = mappings.constBegin();
+
+//        for(; index_it != mappings.constEnd(); index_it++) {
+//            if (!limited || (has_selection && (cursor.selectionStart() - block.position()) < (*index_it).first) || (!has_selection && pos < (*index_it).first)) {
+//                EDITOR_POS_TYPE block_pos = block.position();
+
+//                cursor.setPosition(block_pos + (*index_it).first, QTextCursor::MoveAnchor);
+//                cursor.setPosition(block_pos + (*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
+//                setTextCursor(cursor);
+
+//                return;
+//            }
+//        }
+//    }
+
+//    emit searchResultsFinded(searcher.search_results);
 }
 void Editor::searchPrevResult(QString * replace) {
+    qDebug() << "CustomEditor::searchPrevResult" << replace;
 
+//    if (searcher.searchResultsCount() == 0) {
+//        qDebug() << "CodeEditor::searchPrevResult" << "NO RESULTS";
+//        return;
+//    }
+
+//    QTextCursor cursor = textCursor();
+//    bool has_selection = cursor.hasSelection();
+
+//    if (replace && has_selection) {
+//        searcher.procSearchReplace(cursor, *replace, true);
+//        delete replace;
+
+//        has_selection = false;
+//    }
+
+//    EDITOR_POS_TYPE pos = cursor.positionInBlock();
+//    bool limited = true;
+
+//    for(QTextBlock block = cursor.block(); block.isValid(); limited = false, block = block.previous()) {
+//        TextParts & mappings = searcher.searchResultsFor(block);
+
+//        if (mappings.isEmpty())
+//            continue;
+
+//        TextParts::const_reverse_iterator index_it = mappings.rbegin();
+
+//        for(; index_it != mappings.rend(); index_it++) {
+//            if (!limited || (has_selection && (cursor.selectionStart() - block.position()) > (*index_it).first) || (!has_selection && pos > (*index_it).first)) {
+//                EDITOR_POS_TYPE block_pos = block.position();
+
+//                cursor.setPosition(block_pos + (*index_it).first, QTextCursor::MoveAnchor);
+//                cursor.setPosition(block_pos + (*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
+//                setTextCursor(cursor);
+
+//                return;
+//            }
+//        }
+//    }
+
+//    emit searchResultsFinded(searcher.search_results);
 }
 void Editor::searchRepaceAll(const QString & replace) {
+    qDebug() << "CustomEditor::searchRepaceAll" << replace;
 
+//    if (searcher.hasResults()) {
+//        qDebug() << "CodeEditor::searchRepaceAll" << "NO RESULTS";
+//        return;
+//    }
+
+//    QTextCursor cursor = textCursor();
+
+////    EDITOR_POS_TYPE block_num = cursor.blockNumber();
+////    EDITOR_POS_TYPE pos = cursor.positionInBlock();
+
+//    cursor.beginEditBlock();
+
+//    for( QTextBlock block = wrapper -> lastBlock(); block.isValid(); block = block.previous()) {
+//        TextParts & mappings = searcher.searchResultsFor(block);
+
+//        if (mappings.isEmpty())
+//            continue;
+
+//        TextParts::const_reverse_iterator index_it = mappings.rbegin();
+//        EDITOR_POS_TYPE block_pos = block.position();
+
+//        for(; index_it != mappings.rend(); index_it++) {
+//            cursor.setPosition(block_pos + (*index_it).first, QTextCursor::MoveAnchor);
+//            cursor.setPosition(block_pos + (*index_it).first + (*index_it).second, QTextCursor::KeepAnchor);
+//            cursor.insertText(replace);
+//        }
+//    }
+
+//    cursor.endEditBlock();
+
+//    emit searchResultsFinded(searcher.search_results);
 }
 void Editor::searchClosed() {
-
+    searcher.closeSearch();
+    emit searchResultsFinded(0);
+    update();
 }
 
 
