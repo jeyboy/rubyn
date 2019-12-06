@@ -1948,7 +1948,7 @@ void CodeEditor::searchInitiated(const QRegularExpression & pattern, const bool 
 void CodeEditor::searchNextResult(QString * replace) {
     qDebug() << "CodeEditor::searchNextResult" << replace;
 
-    if (searcher.searchResultsCount() == 0) {
+    if (!searcher.hasResults()) {
         qDebug() << "CodeEditor::searchNextResult" << "NO RESULTS";
         return;
     }
@@ -1992,7 +1992,7 @@ void CodeEditor::searchNextResult(QString * replace) {
 void CodeEditor::searchPrevResult(QString * replace) {
     qDebug() << "CodeEditor::searchPrevResult" << replace;
 
-    if (searcher.searchResultsCount() == 0) {
+    if (!searcher.hasResults()) {
         qDebug() << "CodeEditor::searchPrevResult" << "NO RESULTS";
         return;
     }
@@ -2036,7 +2036,7 @@ void CodeEditor::searchPrevResult(QString * replace) {
 void CodeEditor::searchRepaceAll(const QString & replace) {
     qDebug() << "CodeEditor::searchRepaceAll" << replace;
 
-    if (searcher.hasResults()) {
+    if (!searcher.hasResults()) {
         qDebug() << "CodeEditor::searchRepaceAll" << "NO RESULTS";
         return;
     }

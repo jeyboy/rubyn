@@ -351,10 +351,10 @@ void Editor::searchInitiated(const QRegularExpression & pattern, const bool & sc
 void Editor::searchNextResult(QString * replace) {
     qDebug() << "CustomEditor::searchNextResult" << replace;
 
-//    if (searcher.searchResultsCount() == 0) {
-//        qDebug() << "CodeEditor::searchNextResult" << "NO RESULTS";
-//        return;
-//    }
+    if (!searcher.hasResults()) {
+        qDebug() << "CustomEditor::searchNextResult" << "NO RESULTS";
+        return;
+    }
 
 //    QTextCursor cursor = textCursor();
 //    bool has_selection = cursor.hasSelection();
@@ -395,10 +395,10 @@ void Editor::searchNextResult(QString * replace) {
 void Editor::searchPrevResult(QString * replace) {
     qDebug() << "CustomEditor::searchPrevResult" << replace;
 
-//    if (searcher.searchResultsCount() == 0) {
-//        qDebug() << "CodeEditor::searchPrevResult" << "NO RESULTS";
-//        return;
-//    }
+    if (!searcher.hasResults()) {
+        qDebug() << "CustomEditor::searchPrevResult" << "NO RESULTS";
+        return;
+    }
 
 //    QTextCursor cursor = textCursor();
 //    bool has_selection = cursor.hasSelection();
@@ -439,10 +439,10 @@ void Editor::searchPrevResult(QString * replace) {
 void Editor::searchRepaceAll(const QString & replace) {
     qDebug() << "CustomEditor::searchRepaceAll" << replace;
 
-//    if (searcher.hasResults()) {
-//        qDebug() << "CodeEditor::searchRepaceAll" << "NO RESULTS";
-//        return;
-//    }
+    if (!searcher.hasResults()) {
+        qDebug() << "CustomEditor::searchRepaceAll" << "NO RESULTS";
+        return;
+    }
 
 //    QTextCursor cursor = textCursor();
 
