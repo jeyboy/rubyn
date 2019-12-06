@@ -32,39 +32,39 @@ void Editor::recalcScrolls() {
     qint32 hmax = _document ? _context -> calcHScrollWidth(_document -> _max_line_length) : -1;
 
     //    vscroll -> setPageStep(_context -> __line_height);
-    vscroll -> setSingleStep(_context -> verticalSingleStep());
-    hscroll -> setSingleStep(_context -> horizontalSingleStep());
+    _vscroll -> setSingleStep(_context -> verticalSingleStep());
+    _hscroll -> setSingleStep(_context -> horizontalSingleStep());
 
 
-    vscroll -> setVisible(vmax > 0);
+    _vscroll -> setVisible(vmax > 0);
     if (vmax > 0) {
-        vscroll -> setRange(0, vmax);
+        _vscroll -> setRange(0, vmax);
     } else {
-        vscroll -> setValue(0);
+        _vscroll -> setValue(0);
     }
 
 
-    hscroll -> setVisible(hmax > 0);
+    _hscroll -> setVisible(hmax > 0);
     if (hmax > 0) {
-        hscroll -> setRange(0, hmax);
+        _hscroll -> setRange(0, hmax);
     } else {
-        hscroll -> setValue(0);
+        _hscroll -> setValue(0);
     }
 }
 
 void Editor::ensureVisibleCurrentBlock(const qint64 & char_in_line) {
     bool update_requires = false;
 
-    if (vscroll -> value() == _top_block_offset) {
+    if (_vscroll -> value() == _top_block_offset) {
         update_requires = true;
     } else {
-        vscroll -> setValue(_top_block_offset);
+        _vscroll -> setValue(_top_block_offset);
     }
 
-    if (hscroll -> value() == char_in_line) {
+    if (_hscroll -> value() == char_in_line) {
         update_requires = true;
     } else {
-        hscroll -> setValue(char_in_line);
+        _hscroll -> setValue(char_in_line);
     }
 
     if (update_requires) {
@@ -81,7 +81,7 @@ void Editor::initTopBlock(const bool & recalc) {
         it = _document ? _document -> first() : nullptr;
     }
 
-    qreal scroll_offset = vscroll -> value();
+    qreal scroll_offset = _vscroll -> value();
 
     if (scroll_offset <= 0) {
         _top_block = _document ? _document -> first() : nullptr;
@@ -201,44 +201,48 @@ void Editor::intialize() {
     setPalette(*content_section_pal);
     setLeftMargin();
 
-    vscroll = new QScrollBar(Qt::Vertical, this);
-    hscroll = new QScrollBar(Qt::Horizontal, this);
+    _vscroll = new QScrollBar(Qt::Vertical, this);
+    _hscroll = new QScrollBar(Qt::Horizontal, this);
 
-    vscroll -> setRange(-1, -1);
-    hscroll -> setRange(-1, -1);
+    _vscroll -> setRange(-1, -1);
+    _hscroll -> setRange(-1, -1);
 
     setVerticalScrollFactor();
     setHorizontalScrollFactor();
 
-    connect(hscroll, &QScrollBar::valueChanged, [=]() {
+    connect(_hscroll, &QScrollBar::valueChanged, [=]() {
         if (_document) {
-            _document -> editorScrollPos(this).rx() = hscroll -> value();
+            _document -> editorScrollPos(this).rx() = _hscroll -> value();
         }
 
         emit update();
     });
-    connect(hscroll, &QScrollBar::rangeChanged, [=]() { emit update(); });
+    connect(_hscroll, &QScrollBar::rangeChanged, [=]() { emit update(); });
 
-    connect(vscroll, &QScrollBar::valueChanged, [=]() {
+    connect(_vscroll, &QScrollBar::valueChanged, [=]() {
         if (_document) {
-            _document -> editorScrollPos(this).ry() = vscroll -> value();
+            _document -> editorScrollPos(this).ry() = _vscroll -> value();
         }
         emit update();
     });
-    connect(vscroll, &QScrollBar::rangeChanged, [=]() { emit update(); });
+    connect(_vscroll, &QScrollBar::rangeChanged, [=]() { emit update(); });
 
     QVBoxLayout * l = new QVBoxLayout(this);
     l -> setContentsMargins(0, 0, 0, 0);
     l -> setSpacing(0);
 
-    l -> addWidget(vscroll, 1, Qt::AlignRight);
-    l -> addWidget(hscroll, 0, Qt::AlignBottom);
+    l -> addWidget(_vscroll, 1, Qt::AlignRight);
+    l -> addWidget(_hscroll, 0, Qt::AlignBottom);
 
-    _context -> setScrolls(hscroll, vscroll);
+    _context -> setScrolls(_hscroll, _vscroll);
     _context -> setSearcher(&searcher);
+    _context -> serCursors(&_cursors);
+
+
+    _cursors.append(Cursor(_document));
 }
 
-Editor::Editor(QWidget * parent) : QWidget(parent), _default_cursor(nullptr), _select_block(nullptr), _top_block(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
+Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), _vscroll(nullptr), _hscroll(nullptr) {
     intialize();
     openDocument();
 }
@@ -261,7 +265,7 @@ void Editor::ensureVisibleBlock(IBlock * block, const qint64 & char_in_line) {
     ensureVisibleCurrentBlock(char_in_line);
 }
 
-QScrollBar * Editor::verticalScrollBar() { return vscroll; }
+QScrollBar * Editor::verticalScrollBar() { return _vscroll; }
 
 void Editor::setLeftMargin(const qint32 & margin) { _context -> setLeftMargin(margin); }
 
@@ -313,8 +317,8 @@ void Editor::openDocument(Document * doc) {
 
     recalcScrolls();
 
-    hscroll -> setValue(scroll_pos.x());
-    vscroll -> setValue(scroll_pos.y());
+    _hscroll -> setValue(scroll_pos.x());
+    _vscroll -> setValue(scroll_pos.y());
 
     initTopBlock();
 }
@@ -339,7 +343,16 @@ void Editor::setCompleter(Completer * new_completer) {
     connect(_completer, SIGNAL(activated(QString)), this, SLOT(applyCompletion(QString)));
 }
 
+void Editor::setTextCursorWidth(const qreal & new_width) {
+    if (_context -> _cursor_width == new_width)
+        return;
 
+    _context -> setCursorWidth(new_width);
+    update();
+}
+
+void Editor::setTextCursor(const Cursor & cursor) { _cursors[0] = cursor; }
+Cursor & Editor::textCursor() { return _cursors[0]; }
 
 
 //  void Editor::searchIsShow(const bool & show) = 0;
@@ -665,7 +678,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
             offset = -offset;
         }
 
-        vscroll -> setValue(vscroll -> value() + qint32(offset));
+        _vscroll -> setValue(_vscroll -> value() + qint32(offset));
     } else {
         qint32 offset = -1/*_context -> __symbol_width*/ * hscroll_factor;
 
@@ -673,7 +686,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
             offset = -offset;
         }
 
-        hscroll -> setValue(vscroll -> value() + qint32(offset));
+        _hscroll -> setValue(_hscroll -> value() + qint32(offset));
     }
 }
 void Editor::focusInEvent(QFocusEvent * e) {

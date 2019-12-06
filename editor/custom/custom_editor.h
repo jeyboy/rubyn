@@ -6,6 +6,7 @@
 #include "editor/ieditor.h"
 #include "editor/completer_info.h"
 #include "custom_editor_searcher.h"
+#include "custom_cursor.h"
 
 class QEvent;
 class QPaintEvent;
@@ -20,12 +21,11 @@ namespace Custom {
     class Document;
     class DrawContext;
     class IBlock;
-    class Cursor;
 
     class Editor : public QWidget, public IEditor {
         Q_OBJECT
 
-        Cursor * _default_cursor;
+        QList<Cursor> _cursors;
 
         IBlock * _select_block;
         IBlock * _top_block;
@@ -40,9 +40,9 @@ namespace Custom {
         Document * _document;
         DrawContext * _context;
 
-        QScrollBar * vscroll;
+        QScrollBar * _vscroll;
         uint vscroll_factor;
-        QScrollBar * hscroll;
+        QScrollBar * _hscroll;
         uint hscroll_factor;
 
         void drawDocument(QPainter & painter);
@@ -61,6 +61,11 @@ namespace Custom {
         void openDocument(File * file) Q_DECL_OVERRIDE;
 
         void setCompleter(Completer * new_completer);
+
+        void setTextCursorWidth(const qreal & new_width);
+
+        void setTextCursor(const Cursor & cursor);
+        Cursor & textCursor();
 
         void clear() { openDocument(); }
 

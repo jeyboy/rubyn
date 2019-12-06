@@ -14,6 +14,7 @@
 #include "custom_visualization.h"
 #include "highlighter/highlight_format_factory.h"
 #include "custom_editor_searcher.h"
+#include "custom_cursor.h"
 
 namespace Custom {
     struct LineAttrs {
@@ -54,6 +55,8 @@ namespace Custom {
         QScrollBar * _vscroll;
         QScrollBar * _hscroll;
 
+        QList<Cursor> * _cursors;
+
         QPalette * _line_num_section_pal;
         QPalette * _content_section_pal;
 
@@ -65,6 +68,7 @@ namespace Custom {
 
         CharVisualization _visualization;
 
+        qreal _cursor_width;
         qreal _letter_spacing;
         qint32 _left_margin;
         qint32 _right_margin;
@@ -178,7 +182,7 @@ namespace Custom {
         }
 
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
-            : _searcher(nullptr), _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _letter_spacing(letter_spacing), _left_margin(0)
+            : _searcher(nullptr), _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(2), _letter_spacing(letter_spacing), _left_margin(0)
         {
             _visualization = CharVisualization(cv_show_space | cv_show_tab);
 
@@ -196,9 +200,17 @@ namespace Custom {
             _searcher = searcher;
         }
 
+        void serCursors(QList<Cursor> * cursors) {
+            _cursors = cursors;
+        }
+
         void setScrolls(QScrollBar * hscroll, QScrollBar * vscroll) {
             _hscroll = hscroll;
             _vscroll = vscroll;
+        }
+
+        void setCursorWidth(const qreal & new_cursor_width) {
+            _cursor_width = new_cursor_width;
         }
 
         void setPaletes(QPalette * line_num_section_pal, QPalette * content_section_pal) {
@@ -217,7 +229,7 @@ namespace Custom {
             __letter_with_pad_width = qCeil(__symbol_width + _letter_spacing);
 
             setRightMargin(_vscroll -> isVisible() ? _vscroll -> width() + 3 : 0);
-            QPointF pos = QPointF(-_hscroll -> value() * __letter_with_pad_width, 0);
+            QPointF pos = QPointF((-_hscroll -> value() * __letter_with_pad_width)/* + leftContentBorder()*/, 0);
 
             _screen_size = screen_size;
             __content_width = contentWidth();
@@ -233,7 +245,7 @@ namespace Custom {
 
         void setLeftMargin(const qint32 & margin = 0) {
             qDebug() << "setLeftMargin" << margin;
-            _left_margin = margin;
+            _left_margin = margin + qCeil(_cursor_width);
         }
 
         void setRightMargin(const qint32 & margin = 0) {
