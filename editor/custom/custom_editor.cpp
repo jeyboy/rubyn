@@ -52,6 +52,26 @@ void Editor::recalcScrolls() {
     }
 }
 
+void Editor::ensureVisibleCurrentBlock(const qint64 & char_in_line) {
+    bool update_requires = false;
+
+    if (vscroll -> value() == _top_block_offset) {
+        update_requires = true;
+    } else {
+        vscroll -> setValue(_top_block_offset);
+    }
+
+    if (hscroll -> value() == char_in_line) {
+        update_requires = true;
+    } else {
+        hscroll -> setValue(char_in_line);
+    }
+
+    if (update_requires) {
+        update();
+    }
+}
+
 void Editor::initTopBlock(const bool & recalc) {
     IBlock * it;
 
@@ -218,7 +238,7 @@ void Editor::intialize() {
     _context -> setSearcher(&searcher);
 }
 
-Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
+Editor::Editor(QWidget * parent) : QWidget(parent), _default_cursor(nullptr), _select_block(nullptr), _top_block(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), vscroll(nullptr), hscroll(nullptr) {
     intialize();
     openDocument();
 }
@@ -229,24 +249,16 @@ Editor::~Editor() {
     delete _context;
 }
 
-void Editor::ensureVisibleBlock(const qint64 & block_num) {
+void Editor::ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line) {
     ensureVisible(block_num);
 
-    if (vscroll -> value() == _top_block_offset) {
-        update();
-    } else {
-        vscroll -> setValue(_top_block_offset);
-    }
+    ensureVisibleCurrentBlock(char_in_line);
 }
 
-void Editor::ensureVisibleBlock(IBlock * block) {
+void Editor::ensureVisibleBlock(IBlock * block, const qint64 & char_in_line) {
     ensureVisible(block);
 
-    if (vscroll -> value() == _top_block_offset) {
-        update();
-    } else {
-        vscroll -> setValue(_top_block_offset);
-    }
+    ensureVisibleCurrentBlock(char_in_line);
 }
 
 QScrollBar * Editor::verticalScrollBar() { return vscroll; }
@@ -342,7 +354,7 @@ void Editor::searchInitiated(const QRegularExpression & pattern, const bool & sc
         EditorSearcherResult match = searcher.search(_document -> first());
 
         if (match.isValid()) {
-            ensureVisibleBlock(match.block);
+            ensureVisibleBlock(match.block, match.text_part.first);
         }
 
         emit searchResultsFinded(searcher.foundResultsAmount());

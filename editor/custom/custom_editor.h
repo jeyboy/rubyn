@@ -20,9 +20,12 @@ namespace Custom {
     class Document;
     class DrawContext;
     class IBlock;
+    class Cursor;
 
     class Editor : public QWidget, public IEditor {
         Q_OBJECT
+
+        Cursor * _default_cursor;
 
         IBlock * _select_block;
         IBlock * _top_block;
@@ -44,6 +47,7 @@ namespace Custom {
 
         void drawDocument(QPainter & painter);
         void recalcScrolls();
+        void ensureVisibleCurrentBlock(const qint64 & char_in_line = 0);
         void initTopBlock(const bool & recalc = false);
         void initTopBlock(IBlock * new_block);
         void initTopBlock(const qint64 & block_num);
@@ -60,8 +64,8 @@ namespace Custom {
 
         void clear() { openDocument(); }
 
-        void ensureVisibleBlock(const qint64 & block_num) Q_DECL_OVERRIDE;
-        void ensureVisibleBlock(IBlock * block);
+        void ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line = 0) Q_DECL_OVERRIDE;
+        void ensureVisibleBlock(IBlock * block, const qint64 & char_in_line = 0);
 
         QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
 

@@ -14,6 +14,7 @@ TEMPLATE = app
 SOURCES += main.cpp\
     controls/line_dialog.cpp \
     editor/custom/custom_chars.cpp \
+    editor/custom/custom_cursor.cpp \
     editor/custom/custom_document.cpp \
     editor/custom/custom_editor.cpp \
     delegates/tree_view_item_delegate.cpp \
@@ -130,6 +131,7 @@ SOURCES += main.cpp\
 HEADERS  += ide_window.h \
     controls/line_dialog.h \
     editor/custom/custom_chars.h \
+    editor/custom/custom_cursor.h \
     editor/custom/custom_document.h \
     editor/custom/custom_draw_context.h \
     editor/custom/custom_editor.h \

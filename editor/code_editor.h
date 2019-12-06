@@ -312,7 +312,7 @@ public:
     inline uint charsLimiterLineAt() { return chars_limit_line; }
     void setCharsLimiterLineAt(const uint & char_pos);
 
-    void ensureVisibleBlock(const qint64 & block_num) Q_DECL_OVERRIDE;
+    void ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line = 0) Q_DECL_OVERRIDE;
 
     inline bool showFoldingScopeLines() { return show_folding_scope_lines; }
     inline void setShowFoldingScopeLines(const bool & show) {

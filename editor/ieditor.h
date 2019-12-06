@@ -16,7 +16,7 @@ public:
     virtual void setVisible(bool visible) = 0;
 
     virtual void openDocument(File * file) = 0;
-    virtual void ensureVisibleBlock(const qint64 & block_num) = 0;
+    virtual void ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line = 0) = 0;
 
 //    virtual void searchIsShow(const bool & show) = 0;
     virtual void searchInitiated(const QRegularExpression & pattern, const bool & scroll = true) = 0;
