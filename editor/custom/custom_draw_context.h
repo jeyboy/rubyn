@@ -70,6 +70,7 @@ namespace Custom {
 
         qreal _cursor_width;
         qreal _letter_spacing;
+        qint32 _left_padding;
         qint32 _left_margin;
         qint32 _right_margin;
 
@@ -187,6 +188,7 @@ namespace Custom {
             _visualization = CharVisualization(cv_show_space | cv_show_tab);
 
             setFont(font);
+            setLeftPadding(1);
             setLeftMargin();
             setRightMargin();
         }
@@ -229,23 +231,27 @@ namespace Custom {
             __letter_with_pad_width = qCeil(__symbol_width + _letter_spacing);
 
             setRightMargin(_vscroll -> isVisible() ? _vscroll -> width() + 3 : 0);
-            QPointF pos = QPointF((-_hscroll -> value() * __letter_with_pad_width)/* + leftContentBorder()*/, 0);
+            QPointF pos = QPointF((-_hscroll -> value() * __letter_with_pad_width), 0);
 
             _screen_size = screen_size;
             __content_width = contentWidth();
             __max_str_length = qCeil(_screen_size.width() / __letter_with_pad_width);
             __left_str_pad = pos.x() == 0 ? 0 : qAbs(qFloor(pos.x() / __letter_with_pad_width));
 
-            _pos = pos + QPointF(leftContentBorder() + (__left_str_pad * __letter_with_pad_width), 0);
+            _pos = pos + QPointF(leftContentBorder() + _left_padding + (__left_str_pad * __letter_with_pad_width), 0);
         }
 
         bool screenCovered() {
             return _pos.y() >= _screen_size.height();
         }
 
+        void setLeftPadding(const qint32 & padding = 0) {
+            _left_padding = padding + qCeil(_cursor_width);
+        }
+
         void setLeftMargin(const qint32 & margin = 0) {
             qDebug() << "setLeftMargin" << margin;
-            _left_margin = margin + qCeil(_cursor_width);
+            _left_margin = margin;
         }
 
         void setRightMargin(const qint32 & margin = 0) {
@@ -253,10 +259,10 @@ namespace Custom {
         }
 
         qreal contentWidth() {
-            return _screen_size.width() - _left_margin - _right_margin - 2;
+            return _screen_size.width() - _left_padding - _left_margin - _right_margin - 2;
         }
 
-        qint32 leftContentBorder() { return _left_margin + 2; }
+        qint32 leftContentBorder() { return _left_padding + _left_margin + 2; }
 
         QRectF numbersAreaRect() {
             return QRectF(0, 0, _left_margin, _screen_size.height());

@@ -5,6 +5,7 @@
 #include <qstyleoption.h>
 #include <qscrollbar.h>
 #include <qlayout.h>
+#include <qtimer.h>
 
 #include "custom_document.h"
 #include "custom_draw_context.h"
@@ -25,6 +26,10 @@ void Editor::drawDocument(QPainter & painter) {
     Logger::obj() .endMark(false, "drawDocument");
 
     _context -> _painter = nullptr;
+}
+
+void Editor::drawCursors(QPainter & painter) {
+    qDebug() << "drawCursors";
 }
 
 void Editor::recalcScrolls() {
@@ -199,7 +204,7 @@ void Editor::intialize() {
 
     setAutoFillBackground(true);
     setPalette(*content_section_pal);
-    setLeftMargin();
+    setLeftMargin(10);
 
     _vscroll = new QScrollBar(Qt::Vertical, this);
     _hscroll = new QScrollBar(Qt::Horizontal, this);
@@ -240,9 +245,16 @@ void Editor::intialize() {
 
 
     _cursors.append(Cursor(_document));
+
+    _back_timer = new QTimer(this);
+    connect(_back_timer, &QTimer::timeout, [=]() {
+        qDebug() << "QTimer::timeout";
+    });
+
+    _back_timer -> start(500);
 }
 
-Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), _vscroll(nullptr), _hscroll(nullptr) {
+Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), _vscroll(nullptr), _hscroll(nullptr), _back_timer(nullptr) {
     intialize();
     openDocument();
 }
@@ -514,6 +526,8 @@ void Editor::paintEvent(QPaintEvent * e) {
     QStyleOption opt;
     opt.init(this);
     style() -> drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+
+    qDebug() << opt.rect;
 
     if (_document) {
         drawDocument(painter);

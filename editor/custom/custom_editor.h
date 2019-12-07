@@ -14,6 +14,7 @@ class QResizeEvent;
 class QKeyEvent;
 class QWheelEvent;
 class QFocusEvent;
+class QTimer;
 
 class Completer;
 
@@ -45,7 +46,11 @@ namespace Custom {
         QScrollBar * _hscroll;
         uint hscroll_factor;
 
+        QTimer * _back_timer;
+
         void drawDocument(QPainter & painter);
+        void drawCursors(QPainter & painter);
+
         void recalcScrolls();
         void ensureVisibleCurrentBlock(const qint64 & char_in_line = 0);
         void initTopBlock(const bool & recalc = false);
