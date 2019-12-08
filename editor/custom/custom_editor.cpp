@@ -22,6 +22,11 @@ void Editor::blickCursor() {
     _back_timer -> start(500);
 }
 
+void Editor::nonBlickCursor() {
+    _back_timer -> stop();
+    _context -> _show_cursors = true;
+}
+
 void Editor::drawDocument(QPainter & painter) {
     if (!_document) return;
 
@@ -562,6 +567,73 @@ void Editor::resizeEvent(QResizeEvent * e) {
     _context -> prepare(nullptr, size());
     recalcScrolls();
 }
+
+void Editor::customKeyPressEvent(QKeyEvent * e) {
+    int curr_key = e -> key();
+
+    switch (curr_key) {
+        case Qt::Key_Delete: {
+            nonBlickCursor();
+        break;}
+
+        case Qt::Key_Backspace: {
+            nonBlickCursor();
+        break;}
+
+        case Qt::Key_Return: {
+            nonBlickCursor();
+        break;}
+
+        case Qt::Key_Tab: {
+            nonBlickCursor();
+        break;}
+
+        case Qt::Key_Backtab: {
+            nonBlickCursor();
+        break; }
+
+        case Qt::Key_Right: {
+            nonBlickCursor();
+            _cursors[0].toNextChar();
+            repaint();
+        break;}
+
+        case Qt::Key_Left: {
+            nonBlickCursor();
+            _cursors[0].toPrevChar();
+            repaint();
+        break;}
+
+        case Qt::Key_Up: {
+            nonBlickCursor();
+            _cursors[0].toPrevLine();
+            repaint();
+        break;}
+
+        case Qt::Key_Down: {
+            nonBlickCursor();
+            _cursors[0].toNextLine();
+            repaint();
+        break;}
+
+        case Qt::Key_Escape: // ignore non printable keys
+        case Qt::Key_CapsLock:
+        case Qt::Key_NumLock:
+        case Qt::Key_ScrollLock:
+        case Qt::Key_Meta:
+        case Qt::Key_Alt:
+        case Qt::Key_Shift:
+        case Qt::Key_Control: { QWidget::keyPressEvent(e); break;}
+
+        default: {
+//            bool is_shortcut = e -> modifiers() == Qt::ControlModifier && curr_key == Qt::Key_Space;
+
+        }
+    }
+
+    e -> accept();
+}
+
 void Editor::keyPressEvent(QKeyEvent * e) {
     int curr_key = e -> key();
 
@@ -611,15 +683,15 @@ void Editor::keyPressEvent(QKeyEvent * e) {
     switch (curr_key) {
         case Qt::Key_Delete: {
 //            para_info.clear();
-            QWidget::keyPressEvent(e);
+            customKeyPressEvent(e);
         break;}
 
 //        case Qt::Key_Backspace: {
-//            QWidget::keyPressEvent(e);
+//            customKeyPressEvent(e);
 //        break;}
 
         case Qt::Key_Return: {
-            QWidget::keyPressEvent(e);
+            customKeyPressEvent(e);
 
 //            QTextCursor cursor = textCursor();
 //            int level = TextDocumentLayout::getBlockLevel(cursor.block());
@@ -649,7 +721,7 @@ void Editor::keyPressEvent(QKeyEvent * e) {
 //                }
 //            }
 
-            QWidget::keyPressEvent(e);
+            customKeyPressEvent(e);
 
 //            if (curr_key == Qt::Key_Left && pos_in_block == 0) {
 //                QTextBlock tail_blk = blk.previous();
@@ -677,7 +749,7 @@ void Editor::keyPressEvent(QKeyEvent * e) {
         case Qt::Key_Meta:
         case Qt::Key_Alt:
         case Qt::Key_Shift:
-        case Qt::Key_Control: { QWidget::keyPressEvent(e); break;}
+        case Qt::Key_Control: { customKeyPressEvent(e); break;}
 
         default: {
             bool is_shortcut = e -> modifiers() == Qt::ControlModifier && curr_key == Qt::Key_Space;
@@ -686,23 +758,66 @@ void Editor::keyPressEvent(QKeyEvent * e) {
                     (curr_key < Qt::Key_Space || curr_key > Qt::Key_ydiaeresis)
                 ) || (e -> modifiers() != Qt::NoModifier && !is_shortcut)
             ) {
-                QWidget::keyPressEvent(e);
+                customKeyPressEvent(e);
 //                procRevision();
                 return;
             }
 
             if (!is_shortcut)
-                QWidget::keyPressEvent(e);
+                customKeyPressEvent(e);
 
 //            QTextCursor tc = textCursor();
 //            procCompleterForCursor(tc, is_shortcut);
+
+            if (!is_shortcut)
+                return;
         }
     }
 
-
-    QWidget::keyPressEvent(e);
+    customKeyPressEvent(e);
 }
+
 void Editor::keyReleaseEvent(QKeyEvent * e) {
+    int curr_key = e -> key();
+
+    switch (curr_key) {
+        case Qt::Key_Delete: {
+            blickCursor();
+        break;}
+
+        case Qt::Key_Backspace: {
+            blickCursor();
+        break;}
+
+        case Qt::Key_Return: {
+            blickCursor();
+        break;}
+
+        case Qt::Key_Tab: {
+            blickCursor();
+        break;}
+
+        case Qt::Key_Backtab: {
+            blickCursor();
+        break; }
+
+        case Qt::Key_Right: {
+            blickCursor();
+        break;}
+
+        case Qt::Key_Left: {
+            blickCursor();
+        break;}
+
+        case Qt::Key_Up: {
+            blickCursor();
+        break;}
+
+        case Qt::Key_Down: {
+            blickCursor();
+        break;}
+    }
+
     QWidget::keyReleaseEvent(e);
 }
 void Editor::wheelEvent(QWheelEvent * e) {

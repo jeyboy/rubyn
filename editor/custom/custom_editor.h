@@ -49,6 +49,7 @@ namespace Custom {
         QTimer * _back_timer;
 
         void blickCursor();
+        void nonBlickCursor();
 
         void drawDocument(QPainter & painter);
         void drawCursors(QPainter & painter);
@@ -108,6 +109,7 @@ namespace Custom {
         bool event(QEvent * e) Q_DECL_OVERRIDE;
         void paintEvent(QPaintEvent * e) Q_DECL_OVERRIDE;
         void resizeEvent(QResizeEvent * e) Q_DECL_OVERRIDE;
+        void customKeyPressEvent(QKeyEvent * e);
         void keyPressEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
         void keyReleaseEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
         void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;

@@ -22,6 +22,11 @@ namespace Custom {
         IBlock * block() { return _block; }
         qint64 posInBlock() { return _pos_in_block; }
 
+        void toPrevChar();
+        void toNextChar();
+        void toPrevLine();
+        void toNextLine();
+
 //        void select();
     };
 };
