@@ -16,6 +16,12 @@
 
 using namespace Custom;
 
+void Editor::blickCursor() {
+    _back_timer -> stop();
+    _context -> _show_cursors = true;
+    _back_timer -> start(500);
+}
+
 void Editor::drawDocument(QPainter & painter) {
     if (!_document) return;
 
@@ -248,10 +254,9 @@ void Editor::intialize() {
 
     _back_timer = new QTimer(this);
     connect(_back_timer, &QTimer::timeout, [=]() {
-        qDebug() << "QTimer::timeout";
+        _context -> _show_cursors = !_context -> _show_cursors;
+        emit update();
     });
-
-    _back_timer -> start(500);
 }
 
 Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), _vscroll(nullptr), _hscroll(nullptr), _back_timer(nullptr) {
@@ -365,7 +370,25 @@ void Editor::setTextCursorWidth(const qreal & new_width) {
 
 void Editor::setTextCursor(const Cursor & cursor) { _cursors[0] = cursor; }
 Cursor & Editor::textCursor() { return _cursors[0]; }
+Cursor Editor::textCursorForPos(const QPointF & pos) {
+    QHash<IBlock *, LineAttrs>::Iterator it = _context -> _on_screen.begin();
+    QHash<IBlock *, LineAttrs>::Iterator target = _context -> _on_screen.end();
 
+    IBlock * active_block = nullptr;
+
+    for(; it != target; it++) {
+        if (pos.y() >= it.value().rect.top() && pos.y() <= it.value().rect.bottom()) {
+            active_block = it.key();
+            break;
+        }
+    }
+
+    if (active_block) {
+        return Cursor(_document, active_block, _context -> mouseXToCharPos(pos.x()));
+    }
+
+    return Cursor(_document);
+}
 
 //  void Editor::searchIsShow(const bool & show) = 0;
 void Editor::searchInitiated(const QRegularExpression & pattern, const bool & scroll) {
@@ -705,6 +728,24 @@ void Editor::wheelEvent(QWheelEvent * e) {
 }
 void Editor::focusInEvent(QFocusEvent * e) {
     QWidget::focusInEvent(e);
+}
+
+void Editor::mousePressEvent(QMouseEvent * e) {
+    Cursor c = textCursorForPos(e -> localPos());
+
+    if (c.isValid()) {
+        _cursors[0] = c;
+
+        blickCursor();
+        emit update();
+    }
+
+    QWidget::mousePressEvent(e);
+}
+
+void Editor::mouseDoubleClickEvent(QMouseEvent * e) {
+
+    QWidget::mouseDoubleClickEvent(e);
 }
 
 //void Editor::procCompleter(QTextCursor & tc, const bool & initiate_popup) {

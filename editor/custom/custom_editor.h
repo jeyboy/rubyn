@@ -48,6 +48,8 @@ namespace Custom {
 
         QTimer * _back_timer;
 
+        void blickCursor();
+
         void drawDocument(QPainter & painter);
         void drawCursors(QPainter & painter);
 
@@ -71,6 +73,7 @@ namespace Custom {
 
         void setTextCursor(const Cursor & cursor);
         Cursor & textCursor();
+        Cursor textCursorForPos(const QPointF & pos);
 
         void clear() { openDocument(); }
 
@@ -110,9 +113,10 @@ namespace Custom {
         void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
         void focusInEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
 
-//        virtual void mousePressEvent(QMouseEvent *event);
+        void mousePressEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
+        void mouseDoubleClickEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
+
 //        virtual void mouseReleaseEvent(QMouseEvent *event);
-//        virtual void mouseDoubleClickEvent(QMouseEvent *event);
 //        virtual void mouseMoveEvent(QMouseEvent *event);
 //        virtual void focusOutEvent(QFocusEvent *event);
 //        virtual void enterEvent(QEvent *event);

@@ -56,6 +56,7 @@ namespace Custom {
         QScrollBar * _hscroll;
 
         QList<Cursor> * _cursors;
+        bool _show_cursors;
 
         QPalette * _line_num_section_pal;
         QPalette * _content_section_pal;
@@ -85,6 +86,22 @@ namespace Custom {
         const LineAttrs & blockRect(IBlock * block) {
             return blockLineAttrs(block);
         }
+
+        qint64 mouseXToCharPos(const qreal & mouse_x) {
+            qreal res = (mouse_x - contentAreaRect().left());
+
+            if (res <= 0)
+                return 0;
+
+            return qRound(res / __letter_with_pad_width);
+        }
+
+//        qint64 mouseToBlockCharPos(IBlock * block, const qint64 & char_pos) {
+//            QString txt = block -> text();
+
+//            if ()
+//        }
+
 
         QRectF textRect(IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
             const LineAttrs attrs = blockRect(block);
@@ -129,6 +146,29 @@ namespace Custom {
             _painter -> restore();
         }
 
+        void drawCursors(QPainter * curr_painter) {
+            if (!_show_cursors) return;
+
+            curr_painter -> save();
+
+            curr_painter -> setPen(Qt::black);
+            curr_painter -> setBrush(Qt::black);
+            QList<Cursor>::Iterator it = _cursors -> begin();
+
+            for(; it != _cursors -> end(); it++) {
+                if (!_on_screen.contains((*it).block()))
+                    continue;
+
+                const LineAttrs & attrs = _on_screen[(*it).block()];
+
+                int left_offset = attrs.rect.left() - _cursor_width + ((*it).posInBlock() * __letter_with_pad_width);
+
+                curr_painter -> drawRect(left_offset, attrs.rect.top(), _cursor_width, __line_height);
+            }
+
+            curr_painter -> restore();
+        }
+
         void draw(QPainter * curr_painter, const QSize & screen_size, IBlock * _top_block, const quint32 & top_block_number = 1) {
             prepare(curr_painter, screen_size);
 
@@ -145,9 +185,10 @@ namespace Custom {
             _painter -> setClipRect(contentAreaRect());
 
             while(it) {
-                _pos.ry() += __line_height;
                 it -> draw(this);
                 ++c;
+
+                _pos.ry() += __line_height;
 
                 _painter -> save();
 
@@ -172,18 +213,19 @@ namespace Custom {
                     }
                 }
 
-
                 if (screenCovered())
                     break;
 
                 it = it -> next();
             }
 
+            drawCursors(curr_painter);
+
             qDebug() << c;
         }
 
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
-            : _searcher(nullptr), _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(2), _letter_spacing(letter_spacing), _left_margin(0)
+            : _searcher(nullptr), _show_cursors(false), _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(2), _letter_spacing(letter_spacing), _left_margin(0)
         {
             _visualization = CharVisualization(cv_show_space | cv_show_tab);
 
