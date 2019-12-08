@@ -595,25 +595,25 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_Right: {
             nonBlickCursor();
             _cursors[0].toNextChar();
-            repaint();
+            update();
         break;}
 
         case Qt::Key_Left: {
             nonBlickCursor();
             _cursors[0].toPrevChar();
-            repaint();
+            update();
         break;}
 
         case Qt::Key_Up: {
             nonBlickCursor();
             _cursors[0].toPrevLine();
-            repaint();
+            update();
         break;}
 
         case Qt::Key_Down: {
             nonBlickCursor();
             _cursors[0].toNextLine();
-            repaint();
+            update();
         break;}
 
         case Qt::Key_Escape: // ignore non printable keys
@@ -684,11 +684,11 @@ void Editor::keyPressEvent(QKeyEvent * e) {
         case Qt::Key_Delete: {
 //            para_info.clear();
             customKeyPressEvent(e);
-        break;}
+        return;}
 
 //        case Qt::Key_Backspace: {
 //            customKeyPressEvent(e);
-//        break;}
+//        return;}
 
         case Qt::Key_Return: {
             customKeyPressEvent(e);
@@ -702,7 +702,7 @@ void Editor::keyPressEvent(QKeyEvent * e) {
 
 //                cursor.insertText(str);
 //            }
-        break;}
+        return;}
 
         case Qt::Key_Tab: { /*procSelectionIndent();*/ break;}
         case Qt::Key_Backtab: { /*procSelectionIndent(false);*/ break; }
@@ -740,7 +740,7 @@ void Editor::keyPressEvent(QKeyEvent * e) {
 //                QTextCursor tc = textCursor();
 //                procCompleterForCursor(tc, false);
 //            }
-        break;}
+        return;}
 
         case Qt::Key_Escape: // ignore non printable keys
         case Qt::Key_CapsLock:
@@ -749,7 +749,7 @@ void Editor::keyPressEvent(QKeyEvent * e) {
         case Qt::Key_Meta:
         case Qt::Key_Alt:
         case Qt::Key_Shift:
-        case Qt::Key_Control: { customKeyPressEvent(e); break;}
+        case Qt::Key_Control: { customKeyPressEvent(e); return;}
 
         default: {
             bool is_shortcut = e -> modifiers() == Qt::ControlModifier && curr_key == Qt::Key_Space;
