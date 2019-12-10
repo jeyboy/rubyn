@@ -11,15 +11,23 @@ namespace Custom {
     class IBlock;
 
     class Cursor {
+        enum MoveFlag {
+            mf_none = 0,
+            mf_char_move,
+            mf_line_move
+        };
+
         Document * _doc;
         IBlock * _block;
         IBlock * _select_end_block;
 
+//        qint64 _move_pos_in_block;
         qint64 _pos_in_block;
         qint64 _select_end_pos_in_block;
 
         QRectF _rect;
-    public:
+        MoveFlag _move_state;
+    public:       
         Cursor(Document * doc, IBlock * block = nullptr, const qint64 & pos_in_block = 0);
 
         inline bool isValid() { return _doc && _block; }
