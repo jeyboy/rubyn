@@ -52,7 +52,6 @@ namespace Custom {
         void nonBlickCursor();
 
         void drawDocument(QPainter & painter);
-        void drawCursors(QPainter & painter);
 
         void recalcScrolls();
         void ensureVisibleCurrentBlock(const qint64 & char_in_line = 0);
@@ -94,6 +93,7 @@ namespace Custom {
 //        void setColor(const QPalette::ColorRole & acr, const QColor & acolor);
 
         void setVisible(bool visible) Q_DECL_OVERRIDE;
+        bool blockIsVisible(IBlock * block);
 
         void ensureVisible(IBlock * block);
         void ensureVisible(const qint64 & block_num);

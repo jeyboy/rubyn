@@ -1,6 +1,9 @@
 #ifndef CUSTOM_CURSOR_H
 #define CUSTOM_CURSOR_H
 
+#include <qrect.h>
+#include <qdebug.h>
+
 #include "misc/defines.h"
 
 namespace Custom {
@@ -14,6 +17,8 @@ namespace Custom {
 
         qint64 _pos_in_block;
         qint64 _select_end_pos_in_block;
+
+        QRectF _rect;
     public:
         Cursor(Document * doc, IBlock * block = nullptr, const qint64 & pos_in_block = 0);
 
@@ -21,11 +26,17 @@ namespace Custom {
 
         IBlock * block() { return _block; }
         qint64 posInBlock() { return _pos_in_block; }
+        QRectF rect() { return _rect; }
+        void drawInRect(const QRectF & rect) {
+            qDebug() << "*** drawInRect" << rect;
+            _rect = rect;
+        }
+        bool isDrawn();
 
-        void toPrevChar();
-        void toNextChar();
-        void toPrevLine();
-        void toNextLine();
+        bool toPrevChar();
+        bool toNextChar();
+        bool toPrevLine();
+        bool toNextLine();
 
 //        void select();
     };

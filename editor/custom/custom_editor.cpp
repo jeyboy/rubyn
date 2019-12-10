@@ -23,8 +23,10 @@ void Editor::blickCursor() {
 }
 
 void Editor::nonBlickCursor() {
-    _back_timer -> stop();
-    _context -> _show_cursors = true;
+    if (_back_timer -> isActive() || !_context -> _show_cursors) {
+        _back_timer -> stop();
+        _context -> _show_cursors = true;
+    }
 }
 
 void Editor::drawDocument(QPainter & painter) {
@@ -37,10 +39,6 @@ void Editor::drawDocument(QPainter & painter) {
     Logger::obj() .endMark(false, "drawDocument");
 
     _context -> _painter = nullptr;
-}
-
-void Editor::drawCursors(QPainter & painter) {
-    qDebug() << "drawCursors";
 }
 
 void Editor::recalcScrolls() {
@@ -211,7 +209,7 @@ void Editor::intialize() {
     content_section_pal -> setColor(QPalette::Background, Qt::white);
     content_section_pal -> setColor(QPalette::Foreground, Qt::black);
 
-    _context -> setPaletes(line_num_section_pal, content_section_pal);
+    _context -> setPalettes(line_num_section_pal, content_section_pal);
 
     setAutoFillBackground(true);
     setPalette(*content_section_pal);
@@ -300,6 +298,10 @@ void Editor::setLeftMargin(const qint32 & margin) { _context -> setLeftMargin(ma
 
 void Editor::setVisible(bool visible) {
     QWidget::setVisible(visible);
+}
+
+bool Editor::blockIsVisible(IBlock * block) {
+    return _context -> _on_screen.contains(block);
 }
 
 void Editor::ensureVisible(IBlock * block) {
@@ -594,26 +596,46 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
 
         case Qt::Key_Right: {
             nonBlickCursor();
-            _cursors[0].toNextChar();
-            update();
+
+            if (_cursors[0].toNextChar()) {
+                if (_context -> contentAreaRect().right() < _cursors[0].rect().right() + _context -> __letter_with_pad_width)
+                    _hscroll -> setValue(_hscroll -> value() + 1);
+
+                update();
+            }
         break;}
 
         case Qt::Key_Left: {
             nonBlickCursor();
-            _cursors[0].toPrevChar();
-            update();
+
+            if (_cursors[0].toPrevChar()) {
+                if (_context -> contentAreaRect().left() > _cursors[0].rect().left() - _context -> __letter_with_pad_width)
+                    _hscroll -> setValue(_hscroll -> value() - 1);
+
+                update();
+            }
         break;}
 
         case Qt::Key_Up: {
             nonBlickCursor();
-            _cursors[0].toPrevLine();
-            update();
+
+            if (_cursors[0].toPrevLine()) {
+                if (_context -> contentAreaRect().top() > _cursors[0].rect().top() - _context -> __line_height)
+                    _vscroll -> setValue(_vscroll -> value() - 1);
+
+                update();
+            }
         break;}
 
         case Qt::Key_Down: {
             nonBlickCursor();
-            _cursors[0].toNextLine();
-            update();
+
+            if (_cursors[0].toNextLine()) {               
+                if (_context -> contentAreaRect().bottom() < _cursors[0].rect().bottom() + _context -> __line_height)
+                    _vscroll -> setValue(_vscroll -> value() + 1);
+
+                update();
+            }
         break;}
 
         case Qt::Key_Escape: // ignore non printable keys

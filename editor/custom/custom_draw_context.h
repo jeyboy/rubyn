@@ -163,7 +163,10 @@ namespace Custom {
 
                 int left_offset = attrs.rect.left() - _cursor_width + ((*it).posInBlock() * __letter_with_pad_width);
 
-                curr_painter -> drawRect(left_offset, attrs.rect.top(), _cursor_width, __line_height);
+                QRectF rect(left_offset, attrs.rect.top(), _cursor_width, __line_height);
+                (*it).drawInRect(rect);
+
+                curr_painter -> drawRect(rect);
             }
 
             curr_painter -> restore();
@@ -257,7 +260,7 @@ namespace Custom {
             _cursor_width = new_cursor_width;
         }
 
-        void setPaletes(QPalette * line_num_section_pal, QPalette * content_section_pal) {
+        void setPalettes(QPalette * line_num_section_pal, QPalette * content_section_pal) {
             _line_num_section_pal = line_num_section_pal;
             _content_section_pal = content_section_pal;
         }
@@ -311,7 +314,7 @@ namespace Custom {
         }
 
         QRectF contentAreaRect() {
-            return QRectF(leftContentBorder(), 0, contentWidth(), _screen_size.height());
+            return QRectF(leftContentBorder(), 0, contentWidth(), _screen_size.height() - _hscroll -> height());
         }
 
         qint32 verticalSingleStep() {
