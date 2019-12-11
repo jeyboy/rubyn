@@ -128,6 +128,27 @@ namespace Custom {
         }
 
 
+        void ensureVisibleCursorAfterMoveRight() {
+            if (contentAreaRect().right() < _cursors -> operator[](0).rect().right() + __letter_with_pad_width)
+                _hscroll -> setValue(_hscroll -> value() + 1);
+        }
+
+        void ensureVisibleCursorAfterMoveLeft() {
+            if (contentAreaRect().left() > _cursors -> operator[](0).rect().left() - __letter_with_pad_width)
+                _hscroll -> setValue(_hscroll -> value() - 1);
+        }
+
+        void ensureVisibleCursorAfterMoveUp() {
+            if (contentAreaRect().top() > _cursors -> operator[](0).rect().top() - __line_height)
+                _vscroll -> setValue(_vscroll -> value() - 1);
+        }
+
+        void ensureVisibleCursorAfterMoveDown() {
+            if (contentAreaRect().bottom() < _cursors -> operator[](0).rect().bottom() + __line_height)
+                _vscroll -> setValue(_vscroll -> value() + 1);
+        }
+
+
         const LineAttrs & blockLineAttrs(IBlock * block) {
             if (!_on_screen.contains(block))
                 return _default_line_attrs;

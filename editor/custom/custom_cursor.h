@@ -11,12 +11,14 @@ namespace Custom {
     class IBlock;
 
     class Cursor {
+    public:
         enum MoveFlag {
             mf_none = 0,
             mf_char_move,
             mf_line_move
         };
 
+    private:
         Document * _doc;
         IBlock * _block;
         IBlock * _select_end_block;
@@ -45,6 +47,8 @@ namespace Custom {
         bool toNextChar();
         bool toPrevLine();
         bool toNextLine();
+
+        MoveFlag moveFlag() { return _move_state; }
 
 //        void select();
     };
