@@ -161,7 +161,8 @@ namespace Custom {
 
                 const LineAttrs & attrs = _on_screen[(*it).block()];
 
-                int left_offset = attrs.rect.left() - _cursor_width + ((*it).posInBlock() * __letter_with_pad_width);
+                int left_offset =
+                    attrs.rect.left() - _cursor_width + (((*it).posInBlock() - _hscroll -> value()) * __letter_with_pad_width);
 
                 QRectF rect(left_offset, attrs.rect.top(), _cursor_width, __line_height);
                 (*it).drawInRect(rect);
