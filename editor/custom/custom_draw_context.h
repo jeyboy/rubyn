@@ -128,6 +128,15 @@ namespace Custom {
         }
 
 
+
+        void ensureVisibleCursorLineBegin() {
+            _hscroll -> setValue(0);
+        }
+
+        void ensureVisibleCursorLineEnd() {
+            _hscroll -> setValue(_cursors -> operator[](0).block() -> text().length() - (__max_str_length - 6));
+        }
+
         void ensureVisibleCursorAfterMoveRight() {
             if (contentAreaRect().right() < _cursors -> operator[](0).rect().right() + __letter_with_pad_width)
                 _hscroll -> setValue(_hscroll -> value() + 1);
@@ -138,20 +147,14 @@ namespace Custom {
                 _hscroll -> setValue(_hscroll -> value() - 1);
         }
 
-        void ensureVisibleCursorAfterMoveUp(const bool & to_begin = false) {
+        void ensureVisibleCursorAfterMoveUp() {
             if (contentAreaRect().top() > _cursors -> operator[](0).rect().top() - __line_height)
                 _vscroll -> setValue(_vscroll -> value() - 1);
-
-            if (to_begin)
-                _hscroll -> setValue(_cursors -> operator[](0).block() -> text().length() - (__max_str_length - 6));
         }
 
-        void ensureVisibleCursorAfterMoveDown(const bool & to_begin = false) {
+        void ensureVisibleCursorAfterMoveDown() {
             if (contentAreaRect().bottom() < _cursors -> operator[](0).rect().bottom() + __line_height)
                 _vscroll -> setValue(_vscroll -> value() + 1);
-
-            if (to_begin)
-                _hscroll -> setValue(0);
         }
 
 

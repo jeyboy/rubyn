@@ -45,6 +45,9 @@ namespace Custom {
 
         bool toPrevChar();
         bool toNextChar();
+
+        bool toLineStart();
+        bool toLineEnd();
         bool toPrevLine();
         bool toNextLine();
 

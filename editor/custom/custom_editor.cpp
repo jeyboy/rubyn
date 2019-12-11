@@ -599,7 +599,8 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
 
             if (_cursors[0].toNextChar()) {
                 if (_cursors[0].moveFlag() == Cursor::mf_line_move) {
-                    _context -> ensureVisibleCursorAfterMoveDown(true);
+                    _context -> ensureVisibleCursorAfterMoveDown();
+                    _context -> ensureVisibleCursorLineBegin();
                 } else {
                     _context -> ensureVisibleCursorAfterMoveRight();
                 }
@@ -613,7 +614,8 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
 
             if (_cursors[0].toPrevChar()) {
                 if (_cursors[0].moveFlag() == Cursor::mf_line_move) {
-                    _context -> ensureVisibleCursorAfterMoveUp(true);
+                    _context -> ensureVisibleCursorAfterMoveUp();
+                    _context -> ensureVisibleCursorLineEnd();
                 } else {
                     _context -> ensureVisibleCursorAfterMoveLeft();
                 }
@@ -640,6 +642,24 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
 
                 update();
             }
+        break;}
+
+        case Qt::Key_Home: {
+            nonBlickCursor();
+
+            _cursors[0].toLineStart();
+            _context -> ensureVisibleCursorLineBegin();
+
+            update();
+        break;}
+
+        case Qt::Key_End: {
+            nonBlickCursor();
+
+            _cursors[0].toLineEnd();
+            _context -> ensureVisibleCursorLineEnd();
+
+            update();
         break;}
 
         case Qt::Key_Escape: // ignore non printable keys
@@ -733,6 +753,10 @@ void Editor::keyPressEvent(QKeyEvent * e) {
         case Qt::Key_Tab: { /*procSelectionIndent();*/ break;}
         case Qt::Key_Backtab: { /*procSelectionIndent(false);*/ break; }
 
+
+        case Qt::Key_Home: { break;}
+        case Qt::Key_End: { break;}
+
         case Qt::Key_Right:
         case Qt::Key_Left: {
 //            QTextCursor cursor = textCursor();
@@ -807,38 +831,16 @@ void Editor::keyReleaseEvent(QKeyEvent * e) {
     int curr_key = e -> key();
 
     switch (curr_key) {
-        case Qt::Key_Delete: {
-            blickCursor();
-        break;}
-
-        case Qt::Key_Backspace: {
-            blickCursor();
-        break;}
-
-        case Qt::Key_Return: {
-            blickCursor();
-        break;}
-
-        case Qt::Key_Tab: {
-            blickCursor();
-        break;}
-
-        case Qt::Key_Backtab: {
-            blickCursor();
-        break; }
-
-        case Qt::Key_Right: {
-            blickCursor();
-        break;}
-
-        case Qt::Key_Left: {
-            blickCursor();
-        break;}
-
-        case Qt::Key_Up: {
-            blickCursor();
-        break;}
-
+        case Qt::Key_Home:
+        case Qt::Key_End:
+        case Qt::Key_Delete:
+        case Qt::Key_Backspace:
+        case Qt::Key_Return:
+        case Qt::Key_Tab:
+        case Qt::Key_Backtab:
+        case Qt::Key_Right:
+        case Qt::Key_Left:
+        case Qt::Key_Up:
         case Qt::Key_Down: {
             blickCursor();
         break;}

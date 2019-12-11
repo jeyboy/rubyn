@@ -44,6 +44,31 @@ bool Cursor::toNextChar() {
 
     return true;
 }
+
+bool Cursor::toLineStart() {
+    if (_pos_in_block <= 0) {
+        _move_state = mf_none;
+        return false;
+    }
+
+    _pos_in_block = 0;
+    _move_state = mf_char_move;
+    return true;
+}
+
+bool Cursor::toLineEnd() {
+    qint64 txt_len = block() -> text().length();
+
+    if (_pos_in_block == txt_len) {
+        _move_state = mf_none;
+        return false;
+    }
+
+    _pos_in_block = txt_len;
+    _move_state = mf_char_move;
+    return true;
+}
+
 bool Cursor::toPrevLine() {
     if (!_block -> prev() || !_block -> prev() -> prev()) {
         _move_state = mf_none;
