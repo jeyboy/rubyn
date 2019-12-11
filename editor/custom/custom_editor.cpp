@@ -598,10 +598,10 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
             nonBlickCursor();
 
             if (_cursors[0].toNextChar()) {
-                _context -> ensureVisibleCursorAfterMoveRight();
-
                 if (_cursors[0].moveFlag() == Cursor::mf_line_move) {
-                    _context -> ensureVisibleCursorAfterMoveDown();
+                    _context -> ensureVisibleCursorAfterMoveDown(true);
+                } else {
+                    _context -> ensureVisibleCursorAfterMoveRight();
                 }
 
                 update();
@@ -612,10 +612,10 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
             nonBlickCursor();
 
             if (_cursors[0].toPrevChar()) {
-                _context -> ensureVisibleCursorAfterMoveLeft();
-
                 if (_cursors[0].moveFlag() == Cursor::mf_line_move) {
-                    _context -> ensureVisibleCursorAfterMoveUp();
+                    _context -> ensureVisibleCursorAfterMoveUp(true);
+                } else {
+                    _context -> ensureVisibleCursorAfterMoveLeft();
                 }
 
                 update();
