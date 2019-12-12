@@ -598,7 +598,9 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
             nonBlickCursor();
 
             if (_cursors[0].toNextChar()) {
-                if (_cursors[0].moveFlag() == Cursor::mf_line_move) {
+                Cursor::MoveFlag move_flag = _cursors[0].moveFlag();
+
+                if (move_flag & Cursor::mf_line_move) {
                     _context -> ensureVisibleCursorAfterMoveDown();
                     _context -> ensureVisibleCursorLineBegin();
                 } else {
@@ -613,7 +615,9 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
             nonBlickCursor();
 
             if (_cursors[0].toPrevChar()) {
-                if (_cursors[0].moveFlag() == Cursor::mf_line_move) {
+                Cursor::MoveFlag move_flag = _cursors[0].moveFlag();
+
+                if (move_flag & Cursor::mf_line_move) {
                     _context -> ensureVisibleCursorAfterMoveUp();
                     _context -> ensureVisibleCursorLineEnd();
                 } else {
@@ -628,7 +632,13 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
             nonBlickCursor();
 
             if (_cursors[0].toPrevLine()) {
+                Cursor::MoveFlag move_flag = _cursors[0].moveFlag();
+
                 _context -> ensureVisibleCursorAfterMoveUp();
+
+                if (move_flag & Cursor::mf_pos_move) {
+                    _context -> ensureVisibleCursorLineEnd();
+                }
 
                 update();
             }
@@ -637,8 +647,14 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_Down: {
             nonBlickCursor();
 
-            if (_cursors[0].toNextLine()) {               
+            if (_cursors[0].toNextLine()) {
+                Cursor::MoveFlag move_flag = _cursors[0].moveFlag();
+
                 _context -> ensureVisibleCursorAfterMoveDown();
+
+                if (move_flag & Cursor::mf_pos_move) {
+                    _context -> ensureVisibleCursorLineEnd();
+                }
 
                 update();
             }

@@ -134,7 +134,7 @@ namespace Custom {
         }
 
         void ensureVisibleCursorLineEnd() {
-            _hscroll -> setValue(_cursors -> operator[](0).block() -> text().length() - (__max_str_length - 6));
+            _hscroll -> setValue(_cursors -> operator[](0).block() -> text().length() - (__max_str_length - 7));
         }
 
         void ensureVisibleCursorAfterMoveRight() {

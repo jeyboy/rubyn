@@ -21,7 +21,7 @@ bool Cursor::toPrevChar() {
         _block = _block -> prev();
         _pos_in_block = _block -> text().length();
     } else {
-        _move_state = mf_char_move;
+        _move_state = mf_pos_move;
         --_pos_in_block;
     }
 
@@ -38,7 +38,7 @@ bool Cursor::toNextChar() {
         _block = _block -> next();
         _pos_in_block = 0;
     } else {
-        _move_state = mf_char_move;
+        _move_state = mf_pos_move;
         ++_pos_in_block;
     }
 
@@ -52,7 +52,7 @@ bool Cursor::toLineStart() {
     }
 
     _pos_in_block = 0;
-    _move_state = mf_char_move;
+    _move_state = mf_pos_move;
     return true;
 }
 
@@ -65,7 +65,7 @@ bool Cursor::toLineEnd() {
     }
 
     _pos_in_block = txt_len;
-    _move_state = mf_char_move;
+    _move_state = mf_pos_move;
     return true;
 }
 
@@ -78,7 +78,11 @@ bool Cursor::toPrevLine() {
     _move_state = mf_line_move;
     _block = _block -> prev();
     int len = _block -> text().length();
-    _pos_in_block = _pos_in_block <= len ? _pos_in_block : len;
+
+    if (_pos_in_block >= len) {
+        _move_state = MoveFlag(_move_state | mf_pos_move);
+        _pos_in_block = len;
+    }
 
     return true;
 }
@@ -91,7 +95,11 @@ bool Cursor::toNextLine() {
     _move_state = mf_line_move;
     _block = _block -> next();
     int len = _block -> text().length();
-    _pos_in_block = _pos_in_block <= len ? _pos_in_block : len;
+
+    if (_pos_in_block >= len) {
+        _move_state = MoveFlag(_move_state | mf_pos_move);
+        _pos_in_block = len;
+    }
 
     return true;
 }

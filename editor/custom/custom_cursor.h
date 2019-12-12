@@ -12,10 +12,10 @@ namespace Custom {
 
     class Cursor {
     public:
-        enum MoveFlag {
+        enum MoveFlag : int {
             mf_none = 0,
-            mf_char_move,
-            mf_line_move
+            mf_pos_move = 1,
+            mf_line_move = 2
         };
 
     private:
