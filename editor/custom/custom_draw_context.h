@@ -57,6 +57,7 @@ namespace Custom {
 
         QList<Cursor> * _cursors;
         bool _show_cursors;
+        bool _has_cursor_on_screen;
 
         QPalette * _line_num_section_pal;
         QPalette * _content_section_pal;
@@ -129,6 +130,13 @@ namespace Custom {
 
 
 
+        void ensureVisibleCursor() {
+//            if (contentAreaRect().top() > _cursors -> operator[](0).rect().top() - __line_height)
+
+
+//            _vscroll -> setValue(_vscroll -> value() - 1);
+        }
+
         void ensureVisibleCursorLineBegin() {
             _hscroll -> setValue(0);
         }
@@ -198,6 +206,7 @@ namespace Custom {
                 (*it).drawInRect(rect);
 
                 curr_painter -> drawRect(rect);
+                _has_cursor_on_screen = true;
             }
 
             curr_painter -> restore();
@@ -259,7 +268,7 @@ namespace Custom {
         }
 
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
-            : _searcher(nullptr), _show_cursors(false), _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(2), _letter_spacing(letter_spacing), _left_margin(0)
+            : _searcher(nullptr), _show_cursors(false), _has_cursor_on_screen(false), _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(2), _letter_spacing(letter_spacing), _left_margin(0)
         {
             _visualization = CharVisualization(cv_show_space | cv_show_tab);
 

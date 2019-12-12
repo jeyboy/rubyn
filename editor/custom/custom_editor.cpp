@@ -573,6 +573,11 @@ void Editor::resizeEvent(QResizeEvent * e) {
 void Editor::customKeyPressEvent(QKeyEvent * e) {
     int curr_key = e -> key();
 
+    if (!_context -> _has_cursor_on_screen) {
+        _context -> ensureVisibleCursor();
+    }
+
+
     switch (curr_key) {
         case Qt::Key_Delete: {
             nonBlickCursor();
@@ -597,7 +602,7 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_Right: {
             nonBlickCursor();
 
-            if (_cursors[0].toNextChar()) {
+            if (_cursors[0].toNextChar()) {               
                 Cursor::MoveFlag move_flag = _cursors[0].moveFlag();
 
                 if (move_flag & Cursor::mf_line_move) {
