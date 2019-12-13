@@ -94,7 +94,9 @@ namespace Custom {
             if (res <= 0)
                 return 0;
 
-            return qRound(res / __letter_with_pad_width);
+            qDebug() << "mouseXToCharPos" << (res / __letter_with_pad_width);
+
+            return qRound(res / __letter_with_pad_width) + _hscroll -> value();
         }
 
 //        qint64 mouseToBlockCharPos(IBlock * block, const qint64 & char_pos) {
@@ -131,6 +133,9 @@ namespace Custom {
 
 
         void ensureVisibleCursor() {
+            qDebug() << "ensureVisibleCursor";
+
+
 //            if (contentAreaRect().top() > _cursors -> operator[](0).rect().top() - __line_height)
 
 
@@ -185,7 +190,10 @@ namespace Custom {
         }
 
         void drawCursors(QPainter * curr_painter) {
-            if (!_show_cursors) return;
+            _has_cursor_on_screen = false;
+
+            if (!_show_cursors)
+                return;
 
             curr_painter -> save();
 
@@ -215,7 +223,7 @@ namespace Custom {
         void draw(QPainter * curr_painter, const QSize & screen_size, IBlock * _top_block, const quint32 & top_block_number = 1) {
             prepare(curr_painter, screen_size);
 
-            qDebug() << "-------------------------------";
+//            qDebug() << "-------------------------------";
 
             bool search_draw_requires = _searcher && _searcher -> isActive() && _searcher -> isOpened() && _searcher -> hasResults();
 
@@ -264,7 +272,7 @@ namespace Custom {
 
             drawCursors(curr_painter);
 
-            qDebug() << c;
+//            qDebug() << c;
         }
 
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
