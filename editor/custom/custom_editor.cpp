@@ -6,6 +6,8 @@
 #include <qscrollbar.h>
 #include <qlayout.h>
 #include <qtimer.h>
+#include <qclipboard.h>
+#include <qapplication.h>
 
 #include "custom_document.h"
 #include "custom_draw_context.h"
@@ -36,7 +38,7 @@ void Editor::drawDocument(QPainter & painter) {
 
     Logger::obj().startMark();
     _context -> draw(&painter, size());
-    Logger::obj() .endMark(false, "drawDocument");
+    Logger::obj().endMark(false, "drawDocument");
 
     _context -> _painter = nullptr;
 }
@@ -451,11 +453,14 @@ void Editor::paintEvent(QPaintEvent * e) {
 
     QPainter painter(this);
 
-    QStyleOption opt;
-    opt.init(this);
-    style() -> drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+//    qDebug() << "**********************************paintEvent" << e -> rect().size() << contentsRect().size();
 
-    qDebug() << opt.rect;
+//    if (e -> rect().size() == size()) {
+//        QStyleOption opt;
+//        opt.init(this);
+//        style() -> drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+//        qDebug() << "**********************************paintEvent";
+//    }
 
     if (_document) {
         drawDocument(painter);
@@ -479,10 +484,29 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
     switch (curr_key) {
         case Qt::Key_Delete: {
             nonBlickCursor();
+
+            Cursor & cursor = _context -> _cursors[0];
+
+            cursor.block() -> removeText(
+                cursor.posInBlock(),
+                1
+            );
+
+            update();
         break;}
 
         case Qt::Key_Backspace: {
             nonBlickCursor();
+
+            Cursor & cursor = _context -> _cursors[0];
+
+            cursor.block() -> removeText(
+                cursor.posInBlock() - 1,
+                1
+            );
+
+            cursor.toPrevChar();
+            update();
         break;}
 
         case Qt::Key_Return: {
@@ -600,9 +624,35 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_Shift:
         case Qt::Key_Control: { QWidget::keyPressEvent(e); break;}
 
-        default: {
-//            bool is_shortcut = e -> modifiers() == Qt::ControlModifier && curr_key == Qt::Key_Space;
+        case Qt::Key_C: {
+            if (e -> modifiers() == Qt::ControlModifier) {
+                QClipboard * clipboard = QApplication::clipboard();
+                // get selection and put to clipboard
+                // clipboard -> setText();
 
+                break;
+            }
+        }
+        case Qt::Key_V: {
+            if (e -> modifiers() == Qt::ControlModifier) {
+                QClipboard * clipboard = QApplication::clipboard();
+                QString clipboard_text = clipboard -> text();
+
+                qDebug() << "customKeyPressEvent" << clipboard_text;
+                break;
+            }
+        }
+
+        default: {
+            Cursor & cursor = _context -> _cursors[0];
+
+            cursor.block() -> insertChar(
+                cursor.posInBlock(),
+                QChar(curr_key)
+            );
+
+            cursor.toNextChar();
+            update();
         }
     }
 

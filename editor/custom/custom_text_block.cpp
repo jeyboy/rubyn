@@ -7,8 +7,31 @@
 
 using namespace Custom;
 
-TextBlock::TextBlock(const QByteArray/*QString*/ & txt, IBlock * prev_block) : IBlock(prev_block), content(txt) {
-    content.squeeze();
+TextBlock::TextBlock(const QByteArray/*QString*/ & txt, IBlock * prev_block) : IBlock(prev_block), _content(txt) {
+    _content.squeeze();
+}
+
+void TextBlock::insertChar(const int & pos, const QChar & ch) {
+    if (pos > _content.length()) {
+        _content += QString(pos - _content.length(), QChar(' '));
+        _content.append(ch);
+    }
+    else _content.insert(pos, ch);
+}
+
+void TextBlock::insertText(const int & pos, const QByteArray & text) {
+    if (pos > _content.length()) {
+        _content += QString(pos - _content.length(), QChar(' '));
+        _content.append(text);
+    }
+    else _content.insert(pos, text);
+}
+
+void TextBlock::removeText(const int & pos, const int & len) {
+    if (pos >= _content.length())
+        return;
+
+    _content.remove(pos, len);
 }
 
 void TextBlock::draw(DrawContext * context) {
@@ -21,10 +44,10 @@ void TextBlock::draw(DrawContext * context) {
     qint32 left_offset = context -> leftStrPad();
     qint32 str_len = context -> maxStrLength();
 
-    if (content.length() > context -> maxStrLength()) {
-        str = content.mid(left_offset, str_len);
+    if (_content.length() > context -> maxStrLength()) {
+        str = _content.mid(left_offset, str_len);
     } else {
-        str = content.mid(left_offset);
+        str = _content.mid(left_offset);
     }
 
     context -> _on_screen.insert(
