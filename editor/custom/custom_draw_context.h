@@ -15,6 +15,7 @@
 #include "highlighter/highlight_format_factory.h"
 #include "custom_editor_searcher.h"
 #include "custom_cursor.h"
+#include "custom_document.h"
 
 namespace Custom {
     struct LineAttrs {
@@ -51,11 +52,20 @@ namespace Custom {
         const LineAttrs _default_line_attrs = { QRectF(), 0, 0, 0, 0 };
 
         EditorSearcher * _searcher;
+        QList<Cursor> _cursors;
 
         QScrollBar * _vscroll;
         QScrollBar * _hscroll;
 
-        QList<Cursor> * _cursors;
+        uint _vscroll_factor;
+        uint _hscroll_factor;
+
+        IBlock * _select_block;
+        IBlock * _top_block;
+
+        qreal _top_block_offset;
+        quint32 _top_block_number;
+
         bool _show_cursors;
         bool _has_cursor_on_screen;
 
@@ -106,6 +116,118 @@ namespace Custom {
 //        }
 
 
+
+        void initTopBlock(Document * _document, const bool & recalc = false) {
+            IBlock * it;
+
+            if (recalc) {
+                it = _top_block;
+            } else {
+                it = _document ? _document -> first() : nullptr;
+            }
+
+            qreal scroll_offset = _vscroll -> value();
+
+            if (scroll_offset <= 0) {
+                _top_block = _document ? _document -> first() : nullptr;
+                _top_block_number = 0;
+                _top_block_offset = 0;
+                return;
+            }
+
+            qint32 number_offset = 0;
+            qreal block_top = _top_block_offset;
+            qreal next_top = block_top;
+
+            if (_top_block_offset < scroll_offset) {
+                while(it) {
+                    next_top += 1;//_context -> __line_height;
+
+                    if (next_top > scroll_offset)
+                        break;
+
+                    block_top = next_top;
+                    ++number_offset;
+                    it = it -> next();
+                }
+
+                if (!it) {
+                    it = _document -> last();
+                    --number_offset;
+                }
+            } else {
+                while(it != _document -> _root) {
+                    next_top -= 1;//_context -> __line_height;
+
+                    if (next_top < scroll_offset)
+                        break;
+
+                    block_top = next_top;
+                    --number_offset;
+                    it = it -> prev();
+                }
+            }
+
+
+            _top_block_offset = block_top;
+            _top_block_number += number_offset;
+            _top_block = it;
+        }
+
+        void initTopBlock(Document * _document, IBlock * new_block) {
+            if (new_block == nullptr)
+                return;
+
+            IBlock * it = _document ? _document -> first() : nullptr;
+
+            qint32 number_offset = 0;
+            qreal block_top = 0;
+
+
+            while(it) {
+                if (it == new_block) {
+                    _top_block_offset = block_top;
+                    _top_block_number = number_offset;
+                    _top_block = it;
+
+                    return;
+                }
+
+                block_top += 1;//_context -> __line_height;
+                ++number_offset;
+
+                it = it -> next();
+            }
+        }
+
+        void initTopBlock(Document * _document, const qint64 & block_num) {
+            if (block_num > _document -> linesCount())
+                return;
+
+            IBlock * it = _document ? _document -> first() : nullptr;
+
+            qint32 number_offset = 0;
+            qreal block_top = 0;
+
+
+            while(it) {
+                if (number_offset == block_num) {
+                    _top_block_offset = block_top;
+                    _top_block_number = number_offset;
+                    _top_block = it;
+
+                    return;
+                }
+
+                block_top += 1;//_context -> __line_height;
+                ++number_offset;
+
+                it = it -> next();
+            }
+        }
+
+
+
         QRectF textRect(IBlock * block, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length) {
             const LineAttrs attrs = blockRect(block);
 
@@ -147,26 +269,26 @@ namespace Custom {
         }
 
         void ensureVisibleCursorLineEnd() {
-            _hscroll -> setValue(_cursors -> operator[](0).block() -> text().length() - (__max_str_length - 7));
+            _hscroll -> setValue(_cursors[0].block() -> text().length() - (__max_str_length - 7));
         }
 
         void ensureVisibleCursorAfterMoveRight() {
-            if (contentAreaRect().right() < _cursors -> operator[](0).rect().right() + __letter_with_pad_width)
+            if (contentAreaRect().right() < _cursors[0].rect().right() + __letter_with_pad_width)
                 _hscroll -> setValue(_hscroll -> value() + 1);
         }
 
         void ensureVisibleCursorAfterMoveLeft() {
-            if (contentAreaRect().left() > _cursors -> operator[](0).rect().left() - __letter_with_pad_width)
+            if (contentAreaRect().left() > _cursors[0].rect().left() - __letter_with_pad_width)
                 _hscroll -> setValue(_hscroll -> value() - 1);
         }
 
         void ensureVisibleCursorAfterMoveUp() {
-            if (contentAreaRect().top() > _cursors -> operator[](0).rect().top() - __line_height)
+            if (contentAreaRect().top() > _cursors[0].rect().top() - __line_height)
                 _vscroll -> setValue(_vscroll -> value() - 1);
         }
 
         void ensureVisibleCursorAfterMoveDown() {
-            if (contentAreaRect().bottom() < _cursors -> operator[](0).rect().bottom() + __line_height)
+            if (contentAreaRect().bottom() < _cursors[0].rect().bottom() + __line_height)
                 _vscroll -> setValue(_vscroll -> value() + 1);
         }
 
@@ -199,9 +321,9 @@ namespace Custom {
 
             curr_painter -> setPen(Qt::black);
             curr_painter -> setBrush(Qt::black);
-            QList<Cursor>::Iterator it = _cursors -> begin();
+            QList<Cursor>::Iterator it = _cursors.begin();
 
-            for(; it != _cursors -> end(); it++) {
+            for(; it != _cursors.end(); it++) {
                 if (!_on_screen.contains((*it).block()))
                     continue;
 
@@ -220,7 +342,7 @@ namespace Custom {
             curr_painter -> restore();
         }
 
-        void draw(QPainter * curr_painter, const QSize & screen_size, IBlock * _top_block, const quint32 & top_block_number = 1) {
+        void draw(QPainter * curr_painter, const QSize & screen_size) {
             prepare(curr_painter, screen_size);
 
 //            qDebug() << "-------------------------------";
@@ -229,7 +351,7 @@ namespace Custom {
 
             IBlock * it = _top_block;
             int c = 0;
-            quint32 block_num = top_block_number;
+            quint32 block_num = _top_block_number;
 
             _painter -> setPen(_content_section_pal -> color(QPalette::Foreground));
             _painter -> fillRect(numbersAreaRect(), _line_num_section_pal -> background());
@@ -239,13 +361,11 @@ namespace Custom {
                 it -> draw(this);
                 ++c;
 
-                _pos.ry() += __line_height;
-
                 _painter -> save();
 
                 _painter -> setClipping(false);
                 _painter -> setPen(_line_num_section_pal -> color(QPalette::Foreground));
-                _painter -> drawText(1, qint32(_pos.y()), QString::number(++block_num));
+                _painter -> drawText(1, qint32(_pos.y()), _left_margin, __line_height, Qt::AlignVCenter, QString::number(++block_num));
                 _painter -> setClipping(true);
 
                 _painter -> restore();
@@ -267,6 +387,7 @@ namespace Custom {
                 if (screenCovered())
                     break;
 
+                _pos.ry() += __line_height;
                 it = it -> next();
             }
 
@@ -276,7 +397,7 @@ namespace Custom {
         }
 
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
-            : _searcher(nullptr), _show_cursors(false), _has_cursor_on_screen(false), _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(2), _letter_spacing(letter_spacing), _left_margin(0)
+            : _searcher(nullptr), _select_block(nullptr), _top_block(nullptr), _show_cursors(false), _has_cursor_on_screen(false), _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(2), _letter_spacing(letter_spacing), _left_margin(0)
         {
             _visualization = CharVisualization(cv_show_space | cv_show_tab);
 
@@ -293,10 +414,6 @@ namespace Custom {
 
         void setSearcher(EditorSearcher * searcher) {
             _searcher = searcher;
-        }
-
-        void serCursors(QList<Cursor> * cursors) {
-            _cursors = cursors;
         }
 
         void setScrolls(QScrollBar * hscroll, QScrollBar * vscroll) {

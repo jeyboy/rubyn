@@ -32,10 +32,10 @@ void Editor::nonBlickCursor() {
 void Editor::drawDocument(QPainter & painter) {
     if (!_document) return;
 
-    initTopBlock(true);
+    _context -> initTopBlock(_document, true);
 
     Logger::obj().startMark();
-    _context -> draw(&painter, size(), _top_block, _top_block_number);
+    _context -> draw(&painter, size());
     Logger::obj() .endMark(false, "drawDocument");
 
     _context -> _painter = nullptr;
@@ -69,10 +69,10 @@ void Editor::recalcScrolls() {
 void Editor::ensureVisibleCurrentBlock(const qint64 & char_in_line) {
     bool update_requires = false;
 
-    if (_vscroll -> value() == _top_block_offset) {
+    if (_vscroll -> value() == _context -> _top_block_offset) {
         update_requires = true;
     } else {
-        _vscroll -> setValue(_top_block_offset);
+        _vscroll -> setValue(_context -> _top_block_offset);
     }
 
     if (_hscroll -> value() == char_in_line) {
@@ -85,116 +85,6 @@ void Editor::ensureVisibleCurrentBlock(const qint64 & char_in_line) {
         update();
     }
 }
-
-void Editor::initTopBlock(const bool & recalc) {
-    IBlock * it;
-
-    if (recalc) {
-        it = _top_block;
-    } else {
-        it = _document ? _document -> first() : nullptr;
-    }
-
-    qreal scroll_offset = _vscroll -> value();
-
-    if (scroll_offset <= 0) {
-        _top_block = _document ? _document -> first() : nullptr;
-        _top_block_number = 0;
-        _top_block_offset = 0;
-        return;
-    }
-
-    qint32 number_offset = 0;
-    qreal block_top = _top_block_offset;
-    qreal next_top = block_top;
-
-    if (_top_block_offset < scroll_offset) {
-        while(it) {
-            next_top += 1;//_context -> __line_height;
-
-            if (next_top > scroll_offset)
-                break;
-
-            block_top = next_top;
-            ++number_offset;
-            it = it -> next();
-        }
-
-        if (!it) {
-            it = _document -> last();
-            --number_offset;
-        }
-    } else {
-        while(it != _document -> _root) {
-            next_top -= 1;//_context -> __line_height;
-
-            if (next_top < scroll_offset)
-                break;
-
-            block_top = next_top;
-            --number_offset;
-            it = it -> prev();
-        }
-    }
-
-
-    _top_block_offset = block_top;
-    _top_block_number += number_offset;
-    _top_block = it;
-}
-
-void Editor::initTopBlock(IBlock * new_block) {
-    if (new_block == nullptr)
-        return;
-
-    IBlock * it = _document ? _document -> first() : nullptr;
-
-    qint32 number_offset = 0;
-    qreal block_top = 0;
-
-
-    while(it) {
-        if (it == new_block) {
-            _top_block_offset = block_top;
-            _top_block_number = number_offset;
-            _top_block = it;
-
-            return;
-        }
-
-        block_top += 1;//_context -> __line_height;
-        ++number_offset;
-
-        it = it -> next();
-    }
-}
-
-void Editor::initTopBlock(const qint64 & block_num) {
-    if (block_num > _document -> linesCount())
-        return;
-
-    IBlock * it = _document ? _document -> first() : nullptr;
-
-    qint32 number_offset = 0;
-    qreal block_top = 0;
-
-
-    while(it) {
-        if (number_offset == block_num) {
-            _top_block_offset = block_top;
-            _top_block_number = number_offset;
-            _top_block = it;
-
-            return;
-        }
-
-        block_top += 1;//_context -> __line_height;
-        ++number_offset;
-
-        it = it -> next();
-    }
-}
-
 
 void Editor::intialize() {
     setFocusPolicy(Qt::StrongFocus);
@@ -250,10 +140,7 @@ void Editor::intialize() {
 
     _context -> setScrolls(_hscroll, _vscroll);
     _context -> setSearcher(&searcher);
-    _context -> serCursors(&_cursors);
-
-
-    _cursors.append(Cursor(_document));
+    _context -> _cursors.append(Cursor(_document));
 
     _back_timer = new QTimer(this);
     connect(_back_timer, &QTimer::timeout, [=]() {
@@ -262,7 +149,7 @@ void Editor::intialize() {
     });
 }
 
-Editor::Editor(QWidget * parent) : QWidget(parent), _select_block(nullptr), _top_block(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), _vscroll(nullptr), _hscroll(nullptr), _back_timer(nullptr) {
+Editor::Editor(QWidget * parent) : QWidget(parent), _back_timer(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), _vscroll(nullptr), _hscroll(nullptr) {
     intialize();
     openDocument();
 }
@@ -287,6 +174,13 @@ void Editor::ensureVisibleBlock(IBlock * block, const qint64 & char_in_line) {
 
 QScrollBar * Editor::verticalScrollBar() { return _vscroll; }
 
+void Editor::setVerticalScrollFactor(uint factor) {
+    _context -> _vscroll_factor = factor;
+}
+void Editor::setHorizontalScrollFactor(uint factor) {
+    _context -> _hscroll_factor = factor;
+}
+
 void Editor::setLeftMargin(const qint32 & margin) { _context -> setLeftMargin(margin); }
 
 //void Editor::setColor(const QPalette::ColorRole & acr, const QColor & acolor) {
@@ -305,11 +199,11 @@ bool Editor::blockIsVisible(IBlock * block) {
 }
 
 void Editor::ensureVisible(IBlock * block) {
-    initTopBlock(block);
+    _context -> initTopBlock(_document, block);
 }
 
 void Editor::ensureVisible(const qint64 & block_num) {
-    initTopBlock(block_num);
+    _context -> initTopBlock(_document, block_num);
 }
 
 
@@ -320,13 +214,13 @@ void Editor::openDocument(Document * doc) {
 //    _context -> _screen_size = size();
 
     _document = doc;
-    _select_block = nullptr;
-    _top_block_offset = 0;
-    _top_block_number = 0;
+    _context -> _select_block = nullptr;
+    _context -> _top_block_offset = 0;
+    _context -> _top_block_number = 0;
     QPoint scroll_pos(0, 0);
 
     if (doc) {
-        _top_block = doc -> first();
+        _context -> _top_block = doc -> first();
         setLeftMargin(_context -> calcNumWidth(doc -> linesCount()) + 3);
 
         if (doc -> verticalScrollPos(false) > 0) {
@@ -335,7 +229,7 @@ void Editor::openDocument(Document * doc) {
 
         scroll_pos = doc -> editorScrollPos(this);
     } else {
-        _top_block = nullptr;
+        _context -> _top_block = nullptr;
         setLeftMargin(_context -> calcNumWidth(1) + 3);
     }
 
@@ -344,7 +238,7 @@ void Editor::openDocument(Document * doc) {
     _hscroll -> setValue(scroll_pos.x());
     _vscroll -> setValue(scroll_pos.y());
 
-    initTopBlock();
+    _context -> initTopBlock(_document);
 }
 
 void Editor::openDocument(File * file) {
@@ -375,8 +269,8 @@ void Editor::setTextCursorWidth(const qreal & new_width) {
     update();
 }
 
-void Editor::setTextCursor(const Cursor & cursor) { _cursors[0] = cursor; }
-Cursor & Editor::textCursor() { return _cursors[0]; }
+void Editor::setTextCursor(const Cursor & cursor) { _context -> _cursors[0] = cursor; }
+Cursor & Editor::textCursor() { return _context -> _cursors[0]; }
 Cursor Editor::textCursorForPos(const QPointF & pos) {
     QHash<IBlock *, LineAttrs>::Iterator it = _context -> _on_screen.begin();
     QHash<IBlock *, LineAttrs>::Iterator target = _context -> _on_screen.end();
@@ -602,8 +496,8 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_Right: {
             nonBlickCursor();
 
-            if (_cursors[0].toNextChar()) {               
-                Cursor::MoveFlag move_flag = _cursors[0].moveFlag();
+            if (_context -> _cursors[0].toNextChar()) {
+                Cursor::MoveFlag move_flag = _context -> _cursors[0].moveFlag();
 
                 if (move_flag & Cursor::mf_line_move) {
                     _context -> ensureVisibleCursorAfterMoveDown();
@@ -619,8 +513,8 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_Left: {
             nonBlickCursor();
 
-            if (_cursors[0].toPrevChar()) {
-                Cursor::MoveFlag move_flag = _cursors[0].moveFlag();
+            if (_context -> _cursors[0].toPrevChar()) {
+                Cursor::MoveFlag move_flag = _context -> _cursors[0].moveFlag();
 
                 if (move_flag & Cursor::mf_line_move) {
                     _context -> ensureVisibleCursorAfterMoveUp();
@@ -636,8 +530,8 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_Up: {
             nonBlickCursor();
 
-            if (_cursors[0].toPrevLine()) {
-                Cursor::MoveFlag move_flag = _cursors[0].moveFlag();
+            if (_context -> _cursors[0].toPrevLine()) {
+                Cursor::MoveFlag move_flag = _context -> _cursors[0].moveFlag();
 
                 _context -> ensureVisibleCursorAfterMoveUp();
 
@@ -652,8 +546,8 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_Down: {
             nonBlickCursor();
 
-            if (_cursors[0].toNextLine()) {
-                Cursor::MoveFlag move_flag = _cursors[0].moveFlag();
+            if (_context -> _cursors[0].toNextLine()) {
+                Cursor::MoveFlag move_flag = _context -> _cursors[0].moveFlag();
 
                 _context -> ensureVisibleCursorAfterMoveDown();
 
@@ -668,7 +562,7 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_Home: {
             nonBlickCursor();
 
-            _cursors[0].toLineStart();
+            _context -> _cursors[0].toLineStart();
             _context -> ensureVisibleCursorLineBegin();
 
             update();
@@ -677,7 +571,7 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_End: {
             nonBlickCursor();
 
-            _cursors[0].toLineEnd();
+            _context -> _cursors[0].toLineEnd();
             _context -> ensureVisibleCursorLineEnd();
 
             update();
@@ -873,7 +767,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
     QWidget::wheelEvent(e);
 
     if (e -> orientation() == Qt::Vertical) {
-        qint32 offset = -1/*_context -> __line_height*/ * vscroll_factor;
+        qint32 offset = -1/*_context -> __line_height*/ * _context -> _vscroll_factor;
 
         if (e -> delta() < 0) {
             offset = -offset;
@@ -881,7 +775,7 @@ void Editor::wheelEvent(QWheelEvent * e) {
 
         _vscroll -> setValue(_vscroll -> value() + qint32(offset));
     } else {
-        qint32 offset = -1/*_context -> __symbol_width*/ * hscroll_factor;
+        qint32 offset = -1/*_context -> __symbol_width*/ * _context -> _hscroll_factor;
 
         if (e -> delta() < 0) {
             offset = -offset;
@@ -898,7 +792,7 @@ void Editor::mousePressEvent(QMouseEvent * e) {
     Cursor c = textCursorForPos(e -> localPos());
 
     if (c.isValid()) {
-        _cursors[0] = c;
+        _context -> _cursors[0] = c;
 
         blickCursor();
         emit update();

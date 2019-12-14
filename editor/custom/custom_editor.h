@@ -26,27 +26,16 @@ namespace Custom {
     class Editor : public QWidget, public IEditor {
         Q_OBJECT
 
-        QList<Cursor> _cursors;
-
-        IBlock * _select_block;
-        IBlock * _top_block;
-
-        qreal _top_block_offset;
-        quint32 _top_block_number;
-
 //        CompleterInfo _completer_info;
         EditorSearcher searcher;
 
+        QTimer * _back_timer;
         Completer * _completer;
         Document * _document;
         DrawContext * _context;
 
         QScrollBar * _vscroll;
-        uint vscroll_factor;
         QScrollBar * _hscroll;
-        uint hscroll_factor;
-
-        QTimer * _back_timer;
 
         void blickCursor();
         void nonBlickCursor();
@@ -55,9 +44,6 @@ namespace Custom {
 
         void recalcScrolls();
         void ensureVisibleCurrentBlock(const qint64 & char_in_line = 0);
-        void initTopBlock(const bool & recalc = false);
-        void initTopBlock(IBlock * new_block);
-        void initTopBlock(const qint64 & block_num);
     public:
         void intialize();
 
@@ -82,12 +68,8 @@ namespace Custom {
 
         QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
 
-        void setVerticalScrollFactor(uint factor = 5) {
-            vscroll_factor = factor;
-        }
-        void setHorizontalScrollFactor(uint factor = 5) {
-            hscroll_factor = factor;
-        }
+        void setVerticalScrollFactor(uint factor = 5);
+        void setHorizontalScrollFactor(uint factor = 5);
         void setLeftMargin(const qint32 & margin = 0);
 
 //        void setColor(const QPalette::ColorRole & acr, const QColor & acolor);

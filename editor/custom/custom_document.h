@@ -36,6 +36,7 @@ namespace Custom {
         void addLine(const QByteArray/*QString*/ & line);
         quint64 linesCount() { return _lines_count; }
 
+        friend class DrawContext;
         friend class Editor;
     };
 }
