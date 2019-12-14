@@ -145,7 +145,11 @@ void Editor::intialize() {
     _back_timer = new QTimer(this);
     connect(_back_timer, &QTimer::timeout, [=]() {
         _context -> _show_cursors = !_context -> _show_cursors;
-        emit update();
+        QRectF r(_context -> _cursors[0].rect());
+
+        r.adjust(-_context -> __letter_with_pad_width, -1, _context -> __letter_with_pad_width, 2);
+
+        emit update(r.toRect());
     });
 }
 
@@ -562,8 +566,13 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_Home: {
             nonBlickCursor();
 
-            _context -> _cursors[0].toLineStart();
-            _context -> ensureVisibleCursorLineBegin();
+            if (e -> modifiers() == Qt::ControlModifier) {
+                _context -> _cursors[0].setBlock(_document -> first());
+                _context -> ensureVisibleCursorDocBegin();
+            } else {
+                _context -> _cursors[0].toLineStart();
+                _context -> ensureVisibleCursorLineBegin();
+            }
 
             update();
         break;}
@@ -571,8 +580,13 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_End: {
             nonBlickCursor();
 
-            _context -> _cursors[0].toLineEnd();
-            _context -> ensureVisibleCursorLineEnd();
+            if (e -> modifiers() == Qt::ControlModifier) {
+                _context -> _cursors[0].setBlock(_document -> last());
+                _context -> _vscroll -> setValue(_document -> linesCount());
+            } else {
+                _context -> _cursors[0].toLineEnd();
+                _context -> ensureVisibleCursorLineEnd();
+            }
 
             update();
         break;}

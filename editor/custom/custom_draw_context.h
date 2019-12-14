@@ -265,6 +265,10 @@ namespace Custom {
             }
         }
 
+        void ensureVisibleCursorDocBegin() {
+            _vscroll -> setValue(0);
+        }
+
         void ensureVisibleCursorLineBegin() {
             _hscroll -> setValue(0);
         }
@@ -292,6 +296,7 @@ namespace Custom {
             if (contentAreaRect().bottom() < _cursors[0].rect().bottom() + __line_height)
                 _vscroll -> setValue(_vscroll -> value() + 1);
         }
+
 
 
         const LineAttrs & blockLineAttrs(IBlock * block) {
