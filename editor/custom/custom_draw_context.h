@@ -65,6 +65,7 @@ namespace Custom {
 
         qreal _top_block_offset;
         quint32 _top_block_number;
+        quint32 _bottom_block_number;
 
         bool _show_cursors;
         bool _has_cursor_on_screen;
@@ -255,13 +256,13 @@ namespace Custom {
 
 
         void ensureVisibleCursor() {
-            qDebug() << "ensureVisibleCursor";
+            int block_num = _cursors[0].block() -> blockNumber() - 1;
 
-
-//            if (contentAreaRect().top() > _cursors -> operator[](0).rect().top() - __line_height)
-
-
-//            _vscroll -> setValue(_vscroll -> value() - 1);
+            if (block_num < _top_block_number) {
+                _vscroll -> setValue(block_num);
+            } else if (block_num > _bottom_block_number) {
+                _vscroll -> setValue(block_num - (_bottom_block_number - _top_block_number - 3));
+            }
         }
 
         void ensureVisibleCursorLineBegin() {
@@ -351,7 +352,7 @@ namespace Custom {
 
             IBlock * it = _top_block;
             int c = 0;
-            quint32 block_num = _top_block_number;
+            _bottom_block_number = _top_block_number;
 
             _painter -> setPen(_content_section_pal -> color(QPalette::Foreground));
             _painter -> fillRect(numbersAreaRect(), _line_num_section_pal -> background());
@@ -365,7 +366,7 @@ namespace Custom {
 
                 _painter -> setClipping(false);
                 _painter -> setPen(_line_num_section_pal -> color(QPalette::Foreground));
-                _painter -> drawText(1, qint32(_pos.y()), _left_margin, __line_height, Qt::AlignVCenter, QString::number(++block_num));
+                _painter -> drawText(1, qint32(_pos.y()), _left_margin, __line_height, Qt::AlignVCenter, QString::number(++_bottom_block_number));
                 _painter -> setClipping(true);
 
                 _painter -> restore();
@@ -405,6 +406,9 @@ namespace Custom {
             setLeftPadding(1);
             setLeftMargin();
             setRightMargin();
+
+            _top_block_number = 0;
+            _bottom_block_number = 0;
         }
 
         ~DrawContext() {

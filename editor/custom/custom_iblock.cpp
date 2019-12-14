@@ -29,5 +29,5 @@ int IBlock::blockNumber() {
         ++n;
     }
 
-    return n;
+    return n - 1;
 }
