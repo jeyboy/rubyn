@@ -517,6 +517,9 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
                         Cursor(_document, prev_block, prev_block -> text().length())
                     );
 
+                    _context -> ensureVisibleCursorLineEnd();
+                    _context -> ensureVisibleCursorAfterMoveUp();
+
                     prev_block -> appendText(curr_block -> text().toUtf8());
                     curr_block -> remove();
                 }
@@ -524,6 +527,7 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
                 cursor.block() -> removeText(cursor.posInBlock() - 1, 1);
 
                 cursor.toPrevChar();
+                _context -> ensureVisibleCursorAfterMoveLeft(5);
             }
 
             update();
@@ -688,7 +692,9 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
             );
 
             cursor.toNextChar();
-            update();
+            _context -> ensureVisibleCursorAfterMoveRight();
+
+            repaint();
         }
     }
 
