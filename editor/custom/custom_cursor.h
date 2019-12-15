@@ -52,6 +52,8 @@ namespace Custom {
         bool toPrevLine();
         bool toNextLine();
 
+        bool atLineEnd();
+
         MoveFlag moveFlag() { return _move_state; }
 
 //        void select();

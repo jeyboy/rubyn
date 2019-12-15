@@ -103,3 +103,7 @@ bool Cursor::toNextLine() {
 
     return true;
 }
+
+bool Cursor::atLineEnd() {
+    return _block -> text().length() == _pos_in_block;
+}

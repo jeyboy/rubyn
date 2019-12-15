@@ -524,10 +524,17 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
                     curr_block -> remove();
                 }
             } else {
+                bool at_line_end = cursor.atLineEnd();
+
                 cursor.block() -> removeText(cursor.posInBlock() - 1, 1);
 
                 cursor.toPrevChar();
-                _context -> ensureVisibleCursorAfterMoveLeft(5);
+
+                if (at_line_end) {
+                    _context -> ensureVisibleCursorLineEnd();
+                } else {
+                    _context -> ensureVisibleCursorAfterMoveLeft(5);
+                }
             }
 
             update();
