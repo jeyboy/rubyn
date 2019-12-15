@@ -33,7 +33,8 @@ namespace Custom {
 
         void clear();
 
-        void addLine(const QByteArray/*QString*/ & line);
+        void insertLine(IBlock * after, const QByteArray & line);
+        void appendLine(const QByteArray & line);
         quint64 linesCount() { return _lines_count; }
 
         friend class DrawContext;

@@ -529,6 +529,11 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
 
         case Qt::Key_Return: {
             nonBlickCursor();
+
+            _document -> insertLine(_context -> _cursors[0].block(), QByteArray());
+            _context -> _cursors[0].toNextLine();
+
+            update();
         break;}
 
         case Qt::Key_Tab: {

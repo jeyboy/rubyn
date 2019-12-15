@@ -16,7 +16,7 @@ void Document::openFile() {
     while(!source -> atEnd()) {
         if (_file -> source() -> getChar(&ch)) {
             if (ch == '\n') {
-                addLine(buff);
+                appendLine(buff);
                 buff.clear();
             }
             else buff.append(ch);
@@ -24,7 +24,7 @@ void Document::openFile() {
     }
 
     if (!buff.isEmpty()) {
-        addLine(buff);
+        appendLine(buff);
     }
 }
 
@@ -37,13 +37,13 @@ QPoint & Document::editorScrollPos(Editor * editor) {
 }
 
 Document::Document(File * file, QObject * parent) : QObject(parent), _root(nullptr), _last(nullptr), _inline_pos(0), _max_line_length(0), _lines_count(0), _file(file) {
-    _last = _root = new TextBlock(/*QString*/QByteArray(), nullptr);
+    _last = _root = new TextBlock(QByteArray(), nullptr);
 
     if (file) {
         openFile();
     }
 
-    addLine(/*QString*/QByteArray());
+    appendLine(QByteArray());
 }
 
 Document::~Document() {
@@ -73,12 +73,16 @@ void Document::clear() {
     _inline_pos = 0;
 }
 
-void Document::addLine(const QByteArray/*QString*/ & line) {
-    _last = new TextBlock(line, _last);
+void Document::insertLine(IBlock * after, const QByteArray & line) {
+    _last = new TextBlock(line, after);
     quint64 line_len = quint64(line.length());
 
     if (line_len > _max_line_length)
         _max_line_length = line_len;
 
     ++_lines_count;
+}
+
+void Document::appendLine(const QByteArray & line) {
+    insertLine(_last, line);
 }
