@@ -31,3 +31,7 @@ int IBlock::blockNumber() {
 
     return n - 1;
 }
+
+void IBlock::remove() {
+    delete this;
+}

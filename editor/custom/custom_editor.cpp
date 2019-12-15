@@ -487,10 +487,16 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
 
             Cursor & cursor = _context -> _cursors[0];
 
-            cursor.block() -> removeText(
-                cursor.posInBlock(),
-                1
-            );
+            if (cursor.block() -> text().length() == cursor.posInBlock()) {
+                IBlock * next_block = cursor.block() -> next();
+
+                if (next_block) {
+                    cursor.block() -> appendText(next_block -> text().toUtf8());
+                    next_block -> remove();
+                }
+            } else {
+                cursor.block() -> removeText(cursor.posInBlock(), 1);
+            }
 
             update();
         break;}
@@ -500,10 +506,7 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
 
             Cursor & cursor = _context -> _cursors[0];
 
-            cursor.block() -> removeText(
-                cursor.posInBlock() - 1,
-                1
-            );
+            cursor.block() -> removeText(cursor.posInBlock() - 1, 1);
 
             cursor.toPrevChar();
             update();

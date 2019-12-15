@@ -17,6 +17,7 @@ namespace Custom {
         QString text() { return _content; }
 
         void insertChar(const int & pos, const QChar & ch);
+        void appendText(const QByteArray & text);
         void insertText(const int & pos, const QByteArray & text);
         void removeText(const int & pos, const int & len);
 

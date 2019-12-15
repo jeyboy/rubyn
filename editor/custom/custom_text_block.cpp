@@ -19,6 +19,10 @@ void TextBlock::insertChar(const int & pos, const QChar & ch) {
     else _content.insert(pos, ch);
 }
 
+void TextBlock::appendText(const QByteArray & text) {
+    _content.append(text);
+}
+
 void TextBlock::insertText(const int & pos, const QByteArray & text) {
     if (pos > _content.length()) {
         _content += QString(pos - _content.length(), QChar(' '));

@@ -25,9 +25,12 @@ namespace Custom {
         IBlock * prev() { return _prev; }
         virtual QString text() = 0;
         virtual void insertChar(const int & pos, const QChar & ch) = 0;
+        virtual void appendText(const QByteArray & text) = 0;
         virtual void insertText(const int & pos, const QByteArray & text) = 0;
         virtual void removeText(const int & pos, const int & len) = 0;
         int blockNumber();
+
+        void remove();
 
         friend class Document;
     };
