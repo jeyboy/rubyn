@@ -161,9 +161,11 @@ Editor::Editor(QWidget * parent) : QWidget(parent), _back_timer(nullptr), _compl
 }
 
 Editor::~Editor() {
-    delete _document;
+    _back_timer -> stop();
 
     delete _context;
+
+    delete _document;
 }
 
 void Editor::ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line) {
