@@ -530,8 +530,19 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         case Qt::Key_Return: {
             nonBlickCursor();
 
-            _document -> insertLine(_context -> _cursors[0].block(), QByteArray());
-            _context -> _cursors[0].toNextLine();
+            Cursor & cursor = _context -> _cursors[0];
+            QString str = cursor.block() -> text();
+
+            if (str.length() == cursor.posInBlock()) {
+                _document -> insertLine(_context -> _cursors[0].block(), QByteArray());
+            } else {
+                QByteArray ar(str.mid(cursor.posInBlock()).toUtf8());
+                cursor.block() -> removeText(cursor.posInBlock(), str.length() - cursor.posInBlock());
+                _document -> insertLine(_context -> _cursors[0].block(), ar);
+            }
+
+            cursor.toNextLine();
+            cursor.toLineStart();
 
             update();
         break;}
