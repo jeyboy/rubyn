@@ -278,12 +278,12 @@ namespace Custom {
         }
 
         void ensureVisibleCursorAfterMoveRight(const int & step = 1) {
-            if (contentAreaRect().right() <= _cursors[0].rect().right() + (__letter_with_pad_width * step))
+            if (contentAreaRect().right() - _cursors[0].rect().width() <= _cursors[0].rect().right() + (__letter_with_pad_width * step))
                 _hscroll -> setValue(_hscroll -> value() + step);
         }
 
         void ensureVisibleCursorAfterMoveLeft(const int & step = 1) {
-            if (contentAreaRect().left() >= _cursors[0].rect().left() - (__letter_with_pad_width * step))
+            if (contentAreaRect().left() - _cursors[0].rect().width() >= _cursors[0].rect().left() - (__letter_with_pad_width * step))
                 _hscroll -> setValue(_hscroll -> value() - step);
         }
 
