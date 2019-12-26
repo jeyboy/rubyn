@@ -168,6 +168,19 @@ Editor::~Editor() {
     delete _document;
 }
 
+void Editor::hideBlock(IBlock * block) {
+    if (block && block -> isVisible()) {
+        block -> hide();
+        _vscroll -> setMaximum(_vscroll -> maximum() - 1);
+    }
+}
+void Editor::showBlock(IBlock * block) {
+    if (block && !block -> isVisible()) {
+        block -> show();
+        _vscroll -> setMaximum(_vscroll -> maximum() + 1);
+    }
+}
+
 void Editor::ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line) {
     ensureVisible(block_num);
 
@@ -482,11 +495,10 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         _context -> ensureVisibleCursor();
     }
 
+    nonBlickCursor();
 
     switch (curr_key) {
         case Qt::Key_Delete: {
-            nonBlickCursor();
-
             Cursor & cursor = _context -> _cursors[0];
 
             if (cursor.block() -> text().length() == cursor.posInBlock()) {
@@ -504,8 +516,6 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         break;}
 
         case Qt::Key_Backspace: {
-            nonBlickCursor();
-
             Cursor & cursor = _context -> _cursors[0];
 
             if (cursor.posInBlock() == 0) {
@@ -541,8 +551,6 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         break;}
 
         case Qt::Key_Return: {
-            nonBlickCursor();
-
             Cursor & cursor = _context -> _cursors[0];
             QString str = cursor.block() -> text();
 
@@ -561,16 +569,14 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         break;}
 
         case Qt::Key_Tab: {
-            nonBlickCursor();
+
         break;}
 
         case Qt::Key_Backtab: {
-            nonBlickCursor();
+
         break; }
 
         case Qt::Key_Right: {
-            nonBlickCursor();
-
             if (_context -> _cursors[0].toNextChar()) {
                 Cursor::MoveFlag move_flag = _context -> _cursors[0].moveFlag();
 
@@ -586,8 +592,6 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         break;}
 
         case Qt::Key_Left: {
-            nonBlickCursor();
-
             if (_context -> _cursors[0].toPrevChar()) {
                 Cursor::MoveFlag move_flag = _context -> _cursors[0].moveFlag();
 
@@ -603,8 +607,6 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         break;}
 
         case Qt::Key_Up: {
-            nonBlickCursor();
-
             if (_context -> _cursors[0].toPrevLine()) {
                 Cursor::MoveFlag move_flag = _context -> _cursors[0].moveFlag();
 
@@ -619,8 +621,6 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         break;}
 
         case Qt::Key_Down: {
-            nonBlickCursor();
-
             if (_context -> _cursors[0].toNextLine()) {
                 Cursor::MoveFlag move_flag = _context -> _cursors[0].moveFlag();
 
@@ -635,8 +635,6 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         break;}
 
         case Qt::Key_Home: {
-            nonBlickCursor();
-
             if (e -> modifiers() == Qt::ControlModifier) {
                 _context -> _cursors[0].setBlock(_document -> first());
                 _context -> ensureVisibleCursorDocBegin();
@@ -649,8 +647,6 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         break;}
 
         case Qt::Key_End: {
-            nonBlickCursor();
-
             if (e -> modifiers() == Qt::ControlModifier) {
                 _context -> _cursors[0].setBlock(_document -> last());
                 _context -> _vscroll -> setValue(_document -> linesCount());
@@ -693,15 +689,15 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
         default: {
             Cursor & cursor = _context -> _cursors[0];
 
-            cursor.block() -> insertChar(
+            cursor.block() -> insertText(
                 cursor.posInBlock(),
-                QChar(curr_key)
+                e -> text().toUtf8()
             );
 
             cursor.toNextChar();
             _context -> ensureVisibleCursorAfterMoveRight();
 
-            repaint();
+            update();
         }
     }
 
@@ -856,24 +852,25 @@ void Editor::keyPressEvent(QKeyEvent * e) {
 }
 
 void Editor::keyReleaseEvent(QKeyEvent * e) {
-    int curr_key = e -> key();
+//    int curr_key = e -> key();
 
-    switch (curr_key) {
-        case Qt::Key_Home:
-        case Qt::Key_End:
-        case Qt::Key_Delete:
-        case Qt::Key_Backspace:
-        case Qt::Key_Return:
-        case Qt::Key_Tab:
-        case Qt::Key_Backtab:
-        case Qt::Key_Right:
-        case Qt::Key_Left:
-        case Qt::Key_Up:
-        case Qt::Key_Down: {
-            blickCursor();
-        break;}
-    }
+//    switch (curr_key) {
+//        case Qt::Key_Home:
+//        case Qt::Key_End:
+//        case Qt::Key_Delete:
+//        case Qt::Key_Backspace:
+//        case Qt::Key_Return:
+//        case Qt::Key_Tab:
+//        case Qt::Key_Backtab:
+//        case Qt::Key_Right:
+//        case Qt::Key_Left:
+//        case Qt::Key_Up:
+//        case Qt::Key_Down: {
+//            blickCursor();
+//        break;}
+//    }
 
+    blickCursor();
     QWidget::keyReleaseEvent(e);
 }
 void Editor::wheelEvent(QWheelEvent * e) {

@@ -10,6 +10,7 @@ namespace Custom {
     class IBlock {
         IBlock * _prev;
         IBlock * _next;
+        bool _is_visible;
     public:
         enum BlockType {
             bt_none = 0,
@@ -21,12 +22,16 @@ namespace Custom {
         virtual BlockType blockType() { return bt_none; }
         virtual void draw(DrawContext * context) = 0;
 
+        bool isVisible() { return _is_visible; }
+        void hide() { _is_visible = false; }
+        void show() { _is_visible = true; }
+
         IBlock * next() { return _next; }
         IBlock * prev() { return _prev; }
         virtual QString text() = 0;
         virtual void insertChar(const int & pos, const QChar & ch) = 0;
-        virtual void appendText(const QByteArray & text) = 0;
-        virtual void insertText(const int & pos, const QByteArray & text) = 0;
+        virtual void appendText(const QString & text) = 0;
+        virtual void insertText(const int & pos, const QString & text) = 0;
         virtual void removeText(const int & pos, const int & len) = 0;
         int blockNumber();
 

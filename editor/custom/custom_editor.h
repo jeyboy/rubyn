@@ -63,6 +63,9 @@ namespace Custom {
 
         void clear() { openDocument(); }
 
+        void hideBlock(IBlock * block);
+        void showBlock(IBlock * block);
+
         void ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line = 0) Q_DECL_OVERRIDE;
         void ensureVisibleBlock(IBlock * block, const qint64 & char_in_line = 0);
 

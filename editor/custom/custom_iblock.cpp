@@ -2,7 +2,7 @@
 
 using namespace Custom;
 
-IBlock::IBlock(IBlock * prev_block) : _prev(prev_block), _next(nullptr) {
+IBlock::IBlock(IBlock * prev_block) : _prev(prev_block), _next(nullptr), _is_visible(true) {
     if (_prev) {
         if ((_next = _prev -> _next))
             _next -> _prev = this;

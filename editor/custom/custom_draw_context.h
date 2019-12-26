@@ -364,6 +364,9 @@ namespace Custom {
             _painter -> setClipRect(contentAreaRect());
 
             while(it) {
+                if (!it -> isVisible())
+                    continue;
+
                 it -> draw(this);
                 ++c;
 

@@ -35,7 +35,10 @@ namespace Custom {
         inline bool isValid() { return _doc && _block; }
 
         IBlock * block() { return _block; }
-        void setBlock(IBlock * new_block, const qint64 & pos_in_block = 0) { _block = new_block; _pos_in_block = pos_in_block; }
+        void setBlock(IBlock * new_block, const qint64 & pos_in_block = 0) {
+            _block = new_block;
+            _pos_in_block = pos_in_block;
+        }
 
         qint64 posInBlock() { return _pos_in_block; }
         QRectF rect() { return _rect; }

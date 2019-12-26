@@ -9,16 +9,16 @@ namespace Custom {
     class Editor;
 
     class TextBlock : public IBlock {
-//        QString _content;
-        QByteArray _content;
+        QString _content;
+//        QByteArray _content;
     public:
         TextBlock(const QByteArray/*QString*/ & txt, IBlock * prev_block = nullptr);
 //        virtual ~TextBlock() = default;
         QString text() { return _content; }
 
         void insertChar(const int & pos, const QChar & ch);
-        void appendText(const QByteArray & text);
-        void insertText(const int & pos, const QByteArray & text);
+        void appendText(const QString & text);
+        void insertText(const int & pos, const QString & text);
         void removeText(const int & pos, const int & len);
 
         BlockType blockType() { return bt_text; }
