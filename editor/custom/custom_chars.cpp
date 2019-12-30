@@ -67,31 +67,26 @@ const  QImage & Chars::glyph(const QChar & ch, const QFont & fnt, const CharVisu
         p.setRenderHint(QPainter::HighQualityAntialiasing, true);
 
         p.setFont(fnt);
+        p.setPen(Qt::black);
 
         if (visualize) {
             if (ch == ' ') {
-                p.setPen(Qt::black);
+//                p.translate(0, fmetric -> height() - fmetric -> descent());
+//        //        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),
+//        //                std::min(1.0, (glyph_size.height() - 1) / extent.y()));
+//                p.drawText(QPointF{}, {QChar(8594)});
 
-                p.translate(0, fmetric -> height() - fmetric -> descent());
-        //        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),
-        //                std::min(1.0, (glyph_size.height() - 1) / extent.y()));
-                p.drawText(QPointF{}, {QChar(8594)});
-
-//                p.setPen(Qt::transparent);
-//                p.setBrush(Qt::black);
-//                p.drawEllipse(glyph_size.width() / 2 - 1, glyph_size.height() / 2 - 1, 2, 2);
+                p.setPen(Qt::transparent);
+                p.setBrush(QBrush(QColor(0, 0, 0, 128)));
+                p.drawEllipse(glyph_size.width() / 2, glyph_size.height() / 2, 2, 2);
             } else {
-                p.setPen(Qt::black);
-
                 p.translate(0, fmetric -> height() - fmetric -> descent());
         //        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),
         //                std::min(1.0, (glyph_size.height() - 1) / extent.y()));
-                p.drawText(QPointF{}, {QChar(8594)});
+                p.drawText(QPointF{}, {ch});
             }
         }
         else {
-            p.setPen(Qt::black);
-
             p.translate(0, fmetric -> height() - fmetric -> descent());
     //        p.scale(std::min(1.0, (glyph_size.width() - 1) / extent.x()),
     //                std::min(1.0, (glyph_size.height() - 1) / extent.y()));
