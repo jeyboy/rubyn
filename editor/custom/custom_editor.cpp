@@ -115,6 +115,7 @@ void Editor::intialize() {
 
     setVerticalScrollFactor();
     setHorizontalScrollFactor();
+    setTabFactor();
 
     connect(_hscroll, &QScrollBar::valueChanged, [=]() {
         if (_document) {
@@ -203,6 +204,13 @@ void Editor::setHorizontalScrollFactor(uint factor) {
 }
 
 void Editor::setLeftMargin(const qint32 & margin) { _context -> setLeftMargin(margin); }
+
+int Editor::tabFactor() {
+    return _context -> _tab_factor;
+}
+void Editor::setTabFactor(const int & new_tab_factor) {
+    _context -> setTabFactor(new_tab_factor);
+}
 
 //void Editor::setColor(const QPalette::ColorRole & acr, const QColor & acolor) {
 //    QPalette pal(palette());
@@ -569,8 +577,19 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
             update();
         break;}
 
-        case Qt::Key_Tab: {
+        case Qt::Key_Tab: {       
+            Cursor & cursor = _context -> _cursors[0];
 
+            cursor.block() -> insertText(
+                cursor.posInBlock(),
+                QString(tabFactor(), QChar(32))
+            );
+
+            if (cursor.toOffset(tabFactor())) {
+                _context -> ensureVisibleCursorAfterMoveRight(tabFactor());
+
+                update();
+            }
         break;}
 
         case Qt::Key_Backtab: {
@@ -915,6 +934,10 @@ void Editor::mousePressEvent(QMouseEvent * e) {
 void Editor::mouseDoubleClickEvent(QMouseEvent * e) {
 
     QWidget::mouseDoubleClickEvent(e);
+}
+
+bool Editor::focusNextPrevChild(bool /*next*/) {
+    return false;
 }
 
 //void Editor::procCompleter(QTextCursor & tc, const bool & initiate_popup) {

@@ -10,6 +10,44 @@ Cursor::Cursor(Document * doc, IBlock * block, const qint64 & pos_in_block) : _d
 
 bool Cursor::isDrawn() { return _rect.left() != NO_INFO; }
 
+bool Cursor::toOffset(const int & offset) {
+    _move_state = mf_none;
+
+    if (offset == 0) {
+        return false;
+    }
+
+    int len = _block -> text().length();
+
+    if (offset > 0) {
+        if (_pos_in_block + offset > len) {
+            if (_pos_in_block != len) {
+                _pos_in_block = len;
+                _move_state = mf_pos_move;
+            } else {
+                return false;
+            }
+        } else {
+            _pos_in_block += offset;
+            _move_state = mf_pos_move;
+        }
+    } else {
+        if (_pos_in_block - offset < 0) {
+            if (_pos_in_block != 0) {
+                _pos_in_block = 0;
+                _move_state = mf_pos_move;
+            } else {
+                return false;
+            }
+        } else {
+            _pos_in_block -= offset;
+            _move_state = mf_pos_move;
+        }
+    }
+
+    return true;
+}
+
 bool Cursor::toPrevChar() {
     if (_pos_in_block == 0) {
         if (!_block -> prev()) {

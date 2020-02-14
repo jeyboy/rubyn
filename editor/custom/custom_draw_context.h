@@ -59,6 +59,7 @@ namespace Custom {
 
         uint _vscroll_factor;
         uint _hscroll_factor;
+        uint _tab_factor;
 
         IBlock * _select_block;
         IBlock * _top_block;
@@ -478,6 +479,10 @@ namespace Custom {
 
         void setRightMargin(const qint32 & margin = 0) {
             _right_margin = margin;
+        }
+
+        void setTabFactor(const qint32 & factor) {
+            _tab_factor = factor;
         }
 
         qreal contentWidth() {

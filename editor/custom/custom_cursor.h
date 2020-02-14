@@ -47,6 +47,8 @@ namespace Custom {
         }
         bool isDrawn();
 
+        bool toOffset(const int & offset);
+
         bool toPrevChar();
         bool toNextChar();
 

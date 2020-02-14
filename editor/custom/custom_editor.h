@@ -75,6 +75,9 @@ namespace Custom {
         void setHorizontalScrollFactor(uint factor = 5);
         void setLeftMargin(const qint32 & margin = 0);
 
+        int tabFactor();
+        void setTabFactor(const int & new_tab_factor = 5);
+
 //        void setColor(const QPalette::ColorRole & acr, const QColor & acolor);
 
         void setVisible(bool visible) Q_DECL_OVERRIDE;
@@ -99,13 +102,13 @@ namespace Custom {
         void keyReleaseEvent(QKeyEvent * e) Q_DECL_OVERRIDE;
         void wheelEvent(QWheelEvent * e) Q_DECL_OVERRIDE;
         void focusInEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
+//        void focusOutEvent(QFocusEvent * e) Q_DECL_OVERRIDE;
 
         void mousePressEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
         void mouseDoubleClickEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
 
 //        virtual void mouseReleaseEvent(QMouseEvent *event);
 //        virtual void mouseMoveEvent(QMouseEvent *event);
-//        virtual void focusOutEvent(QFocusEvent *event);
 //        virtual void enterEvent(QEvent *event);
 //        virtual void leaveEvent(QEvent *event);
 //        virtual void moveEvent(QMoveEvent *event);
@@ -122,6 +125,8 @@ namespace Custom {
 
 //        virtual void showEvent(QShowEvent *event);
 //        virtual void hideEvent(QHideEvent *event);
+
+        bool focusNextPrevChild(bool next) Q_DECL_OVERRIDE;
 
     signals:
         void lineChooseModalRequired();
