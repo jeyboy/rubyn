@@ -564,6 +564,7 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
 
             cursor.toNextLine();
             cursor.toLineStart();
+            _context -> ensureVisibleCursorLineBegin();
 
             update();
         break;}
