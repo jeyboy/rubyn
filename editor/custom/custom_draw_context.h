@@ -274,7 +274,7 @@ namespace Custom {
         }
 
         void ensureVisibleCursorLineEnd() {
-            _hscroll -> setValue(_cursors[0].block() -> text().length() - (__max_str_length - 7));
+           _hscroll -> setValue(_cursors[0].block() -> text().length() - (__max_str_length - 1));
         }
 
         void ensureVisibleCursorAfterMoveRight(const int & step = 1) {
@@ -457,7 +457,7 @@ namespace Custom {
 
             _screen_size = screen_size;
             __content_width = contentWidth();
-            __max_str_length = qCeil(_screen_size.width() / __letter_with_pad_width);
+            __max_str_length = qCeil((_screen_size.width() - _right_margin - _left_margin) / __letter_with_pad_width);
             __left_str_pad = pos.x() == 0 ? 0 : qAbs(qFloor(pos.x() / __letter_with_pad_width));
 
             _pos = pos + QPointF(leftContentBorder() + _left_padding + (__left_str_pad * __letter_with_pad_width), 0);
