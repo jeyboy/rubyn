@@ -161,8 +161,6 @@ Editor::Editor(QWidget * parent) : QWidget(parent), _back_timer(nullptr), _compl
     intialize();
 
     openDocument();
-
-    setMouseTracking(true);
 }
 
 Editor::~Editor() {
@@ -614,6 +612,10 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
                     _context -> ensureVisibleCursorAfterMoveRight();
                 }
 
+                if (_context -> _selection.isValid()) {
+                    _context -> _selection.clear();
+                }
+
                 update();
             }
         break;}
@@ -627,6 +629,10 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
                     _context -> ensureVisibleCursorLineEnd();
                 } else {
                     _context -> ensureVisibleCursorAfterMoveLeft();
+                }
+
+                if (_context -> _selection.isValid()) {
+                    _context -> _selection.clear();
                 }
 
                 update();
@@ -643,6 +649,10 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
                     _context -> ensureVisibleCursorLineEnd();
                 }
 
+                if (_context -> _selection.isValid()) {
+                    _context -> _selection.clear();
+                }
+
                 update();
             }
         break;}
@@ -655,6 +665,10 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
 
                 if (move_flag & Cursor::mf_pos_move) {
                     _context -> ensureVisibleCursorLineEnd();
+                }
+
+                if (_context -> _selection.isValid()) {
+                    _context -> _selection.clear();
                 }
 
                 update();
@@ -670,6 +684,10 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
                 _context -> ensureVisibleCursorLineBegin();
             }
 
+            if (_context -> _selection.isValid()) {
+                _context -> _selection.clear();
+            }
+
             update();
         break;}
 
@@ -682,10 +700,18 @@ void Editor::customKeyPressEvent(QKeyEvent * e) {
                 _context -> ensureVisibleCursorLineEnd();
             }
 
+            if (_context -> _selection.isValid()) {
+                _context -> _selection.clear();
+            }
+
             update();
         break;}
 
-        case Qt::Key_Escape: // ignore non printable keys
+        case Qt::Key_Escape: {
+            if (_context -> _selection.isValid()) {
+                _context -> _selection.clear();
+            }
+        }// ignore non printable keys
         case Qt::Key_CapsLock:
         case Qt::Key_NumLock:
         case Qt::Key_ScrollLock:
@@ -928,13 +954,17 @@ void Editor::focusInEvent(QFocusEvent * e) {
 void Editor::mousePressEvent(QMouseEvent * e) {
     Cursor c = textCursorForPos(e -> localPos());
 
+    // create selection with start point at vertical_scrol.pos + pos on screen
+
     if (c.isValid()) {
         _context -> _cursors[0] = c;
+        _context -> _selection.preinit(c.block(), c.posInBlock());
 
         blickCursor();
         emit update();
     }
 
+    setMouseTracking(true);
     QWidget::mousePressEvent(e);
 }
 
@@ -944,9 +974,17 @@ void Editor::mouseDoubleClickEvent(QMouseEvent * e) {
 }
 
 void Editor::mouseReleaseEvent(QMouseEvent * e) {
+    setMouseTracking(false);
     QWidget::mouseReleaseEvent(e);
 }
 void Editor::mouseMoveEvent(QMouseEvent * e) {
+    qDebug() << "mouseMoveEvent" << e -> buttons();
+
+
+
+//    _context -> ensureVisibleCursorAfterMoveUp();
+//    _context -> ensureVisibleCursorAfterMoveDown();
+
     QWidget::mouseMoveEvent(e);
 }
 

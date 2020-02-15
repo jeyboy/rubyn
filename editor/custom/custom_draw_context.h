@@ -16,6 +16,7 @@
 #include "custom_editor_searcher.h"
 #include "custom_cursor.h"
 #include "custom_document.h"
+#include "custom_selection.h"
 
 namespace Custom {
     struct LineAttrs {
@@ -53,6 +54,7 @@ namespace Custom {
 
         EditorSearcher * _searcher;
         QList<Cursor> _cursors;
+        Selection _selection;
 
         QScrollBar * _vscroll;
         QScrollBar * _hscroll;
@@ -255,6 +257,19 @@ namespace Custom {
             painter.restore();
         }
 
+        void drawSelectionOverlay(QPainter & painter, const QRectF & sel_rect) {
+            painter.save();
+            painter.setCompositionMode(QPainter::CompositionMode_Multiply);
+            painter.setRenderHint(QPainter::Antialiasing);
+
+            const QTextCharFormat & format = HighlightFormatFactory::obj().getFormatFor(hid_selection);
+
+            painter.setPen(format.foreground().color());
+            painter.setBrush(format.background().color());
+
+            painter.drawRect(sel_rect.adjusted(1, 1, -1, -1));
+            painter.restore();
+        }
 
 
         void ensureVisibleCursor() {
@@ -289,13 +304,13 @@ namespace Custom {
                 _hscroll -> setValue(_hscroll -> value() - step);
         }
 
-        void ensureVisibleCursorAfterMoveUp() {
-            if (contentAreaRect().top() > _cursors[0].rect().top() - __line_height)
+        void ensureVisibleCursorAfterMoveUp(const bool & prevent = false) {
+            if (contentAreaRect().top() > _cursors[0].rect().top() - __line_height - (prevent ? __line_height : 0))
                 _vscroll -> setValue(_vscroll -> value() - 1);
         }
 
-        void ensureVisibleCursorAfterMoveDown() {
-            if (contentAreaRect().bottom() < _cursors[0].rect().bottom() + __line_height)
+        void ensureVisibleCursorAfterMoveDown(const bool & prevent = false) {
+            if (contentAreaRect().bottom() < _cursors[0].rect().bottom() + __line_height + (prevent ? __line_height : 0))
                 _vscroll -> setValue(_vscroll -> value() + 1);
         }
 
@@ -340,6 +355,10 @@ namespace Custom {
                 int left_offset =
                     attrs.rect.left() - _cursor_width + (((*it).posInBlock() - _hscroll -> value()) * __letter_with_pad_width);
 
+                if (_selection.initStartRequires()) {
+                    _selection._start_screen_point = _hscroll -> value() + left_offset;
+                }
+
                 QRectF rect(left_offset, attrs.rect.top(), _cursor_width, __line_height);
                 (*it).drawInRect(rect);
 
@@ -348,6 +367,19 @@ namespace Custom {
             }
 
             curr_painter -> restore();
+        }
+
+        void drawSelection(QPainter * curr_painter) {
+            if (!_selection.isValid()) return;
+
+            const LineAttrs & attrs = _on_screen[_selection._start];
+
+//            int left_offset =
+//                attrs.rect.left() - _cursor_width + (((*it).posInBlock() - _hscroll -> value()) * __letter_with_pad_width);
+
+//            QRectF rect(left_offset, attrs.rect.top(), _cursor_width, __line_height);
+
+//            drawSelectionOverlay(QPainter & painter, const QRectF & sel_rect)
         }
 
         void draw(QPainter * curr_painter, const QSize & screen_size) {
@@ -407,6 +439,8 @@ namespace Custom {
                 it = it -> next();
             }
 
+            drawSelection(curr_painter);
+
             drawCursors(curr_painter);
 
             if (_is_adaptive_scroll) {
@@ -417,7 +451,8 @@ namespace Custom {
         }
 
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
-            : _searcher(nullptr), _select_block(nullptr), _top_block(nullptr), _show_cursors(false), _has_cursor_on_screen(false), _painter(painter), _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(2), _letter_spacing(letter_spacing), _left_margin(0)
+            : _searcher(nullptr), _select_block(nullptr), _top_block(nullptr), _show_cursors(false), _has_cursor_on_screen(false), _painter(painter),
+              _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(2), _letter_spacing(letter_spacing), _left_margin(0)
         {
             _visualization = CharVisualization(cv_show_space | cv_show_tab);
 
