@@ -70,6 +70,7 @@ namespace Custom {
 
         bool _show_cursors;
         bool _has_cursor_on_screen;
+        bool _is_adaptive_scroll;
 
         QPalette * _line_num_section_pal;
         QPalette * _content_section_pal;
@@ -355,6 +356,7 @@ namespace Custom {
 //            qDebug() << "-------------------------------";
 
             bool search_draw_requires = _searcher && _searcher -> isActive() && _searcher -> isOpened() && _searcher -> hasResults();
+            int max_length = 0;
 
             IBlock * it = _top_block;
             int c = 0;
@@ -370,6 +372,10 @@ namespace Custom {
 
                 it -> draw(this);
                 ++c;
+
+                if (_is_adaptive_scroll) {
+                    max_length = qMax(max_length, it -> contentLength());
+                }
 
                 _painter -> save();
 
@@ -402,6 +408,10 @@ namespace Custom {
             }
 
             drawCursors(curr_painter);
+
+            if (_is_adaptive_scroll) {
+                _hscroll -> setRange(0, max_length);
+            }
 
 //            qDebug() << c;
         }
@@ -483,6 +493,10 @@ namespace Custom {
 
         void setTabFactor(const qint32 & factor) {
             _tab_factor = factor;
+        }
+
+        void setAdaptiveHorizontalScroll(const bool & is_adaptive) {
+            _is_adaptive_scroll = is_adaptive;
         }
 
         qreal contentWidth() {

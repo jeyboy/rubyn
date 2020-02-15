@@ -28,11 +28,15 @@ namespace Custom {
 
         IBlock * next() { return _next; }
         IBlock * prev() { return _prev; }
+
         virtual QString text() = 0;
+        virtual int contentLength() { return text().length(); }
+
         virtual void insertChar(const int & pos, const QChar & ch) = 0;
         virtual void appendText(const QString & text) = 0;
         virtual void insertText(const int & pos, const QString & text) = 0;
         virtual void removeText(const int & pos, const int & len) = 0;
+
         int blockNumber();
 
         void remove();

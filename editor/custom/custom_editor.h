@@ -78,6 +78,9 @@ namespace Custom {
         int tabFactor();
         void setTabFactor(const int & new_tab_factor = 5);
 
+        bool adaptiveHorizontalScroll();
+        void setAdaptiveHorizontalScroll(const bool & is_adaptive);
+
 //        void setColor(const QPalette::ColorRole & acr, const QColor & acolor);
 
         void setVisible(bool visible) Q_DECL_OVERRIDE;

@@ -103,6 +103,7 @@ void Editor::intialize() {
 
     _context -> setPalettes(line_num_section_pal, content_section_pal);
 
+    setAdaptiveHorizontalScroll(true);
     setAutoFillBackground(true);
     setPalette(*content_section_pal);
     setLeftMargin(10);
@@ -205,11 +206,14 @@ void Editor::setHorizontalScrollFactor(uint factor) {
 
 void Editor::setLeftMargin(const qint32 & margin) { _context -> setLeftMargin(margin); }
 
-int Editor::tabFactor() {
-    return _context -> _tab_factor;
-}
+int Editor::tabFactor() { return _context -> _tab_factor; }
 void Editor::setTabFactor(const int & new_tab_factor) {
     _context -> setTabFactor(new_tab_factor);
+}
+
+bool Editor::adaptiveHorizontalScroll() { return _context -> _is_adaptive_scroll; }
+void Editor::setAdaptiveHorizontalScroll(const bool & is_adaptive) {
+    _context -> setAdaptiveHorizontalScroll(is_adaptive);
 }
 
 //void Editor::setColor(const QPalette::ColorRole & acr, const QColor & acolor) {
