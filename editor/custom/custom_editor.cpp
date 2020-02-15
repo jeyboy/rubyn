@@ -159,7 +159,10 @@ void Editor::intialize() {
 
 Editor::Editor(QWidget * parent) : QWidget(parent), _back_timer(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), _vscroll(nullptr), _hscroll(nullptr) {
     intialize();
+
     openDocument();
+
+    setMouseTracking(true);
 }
 
 Editor::~Editor() {
@@ -938,6 +941,17 @@ void Editor::mousePressEvent(QMouseEvent * e) {
 void Editor::mouseDoubleClickEvent(QMouseEvent * e) {
 
     QWidget::mouseDoubleClickEvent(e);
+}
+
+void Editor::mouseReleaseEvent(QMouseEvent * e) {
+    QWidget::mouseReleaseEvent(e);
+}
+void Editor::mouseMoveEvent(QMouseEvent * e) {
+    QWidget::mouseMoveEvent(e);
+}
+
+void Editor::contextMenuEvent(QContextMenuEvent * e) {
+    QWidget::contextMenuEvent(e);
 }
 
 bool Editor::focusNextPrevChild(bool /*next*/) {

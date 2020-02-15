@@ -61,6 +61,7 @@ namespace Custom {
         Cursor & textCursor();
         Cursor textCursorForPos(const QPointF & pos);
 
+
         void clear() { openDocument(); }
 
         void hideBlock(IBlock * block);
@@ -109,14 +110,17 @@ namespace Custom {
 
         void mousePressEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
         void mouseDoubleClickEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
+        void mouseReleaseEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
+        void mouseMoveEvent(QMouseEvent * e) Q_DECL_OVERRIDE;
 
-//        virtual void mouseReleaseEvent(QMouseEvent *event);
-//        virtual void mouseMoveEvent(QMouseEvent *event);
+        void contextMenuEvent(QContextMenuEvent * e) Q_DECL_OVERRIDE;
+
+
+
 //        virtual void enterEvent(QEvent *event);
 //        virtual void leaveEvent(QEvent *event);
 //        virtual void moveEvent(QMoveEvent *event);
 //        virtual void closeEvent(QCloseEvent *event);
-//        virtual void contextMenuEvent(QContextMenuEvent *event);
 
 //        virtual void tabletEvent(QTabletEvent *event);
 //        virtual void actionEvent(QActionEvent *event);
