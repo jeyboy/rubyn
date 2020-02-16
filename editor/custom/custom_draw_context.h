@@ -103,7 +103,7 @@ namespace Custom {
             return blockLineAttrs(block);
         }
 
-        qint64 mouseXToCharPos(const qreal & mouse_x) {
+        qint64 mouseXToCharPos(const qreal & mouse_x) {           
             qreal res = (mouse_x - contentAreaRect().left());
 
             if (res <= 0)
@@ -334,11 +334,11 @@ namespace Custom {
             _painter -> restore();
         }
 
-        void drawCursors(QImage * img = nullptr) {
+        void drawCursors() {
             _has_cursor_on_screen = false;
 
-//            if (!_show_cursors)
-//                return;
+            if (!_show_cursors)
+                return;
 
             _painter -> save();
 
@@ -350,28 +350,21 @@ namespace Custom {
                 if (!_on_screen.contains((*it).block()) || !(*it).block() -> isVisible())
                     continue;
 
-                if (_show_cursors) {
-                    if (img) {
-                        const LineAttrs & attrs = _on_screen[(*it).block()];
 
-                        int left_offset =
-                            attrs.rect.left() - _cursor_width + (((*it).posInBlock() - _hscroll -> value()) * __letter_with_pad_width);
+                const LineAttrs & attrs = _on_screen[(*it).block()];
 
-                        if (_selection.initStartRequires()) {
-                            _selection._start_screen_point = _hscroll -> value() + left_offset;
-                        } else {
-                            _selection._end_screen_point = _hscroll -> value() + left_offset;
-                        }
+                int left_offset =
+                    attrs.rect.left() - _cursor_width + (((*it).posInBlock() - _hscroll -> value()) * __letter_with_pad_width);
 
-                        QRect rect(left_offset, attrs.rect.top(), _cursor_width, __line_height);
-                        (*it).drawInRect(img, rect);
-                        _painter -> drawRect(rect);
-                    } else {
-                        _painter -> drawRect((*it).rect());
-                    }
+                if (_selection.initStartRequires()) {
+                    _selection._start_screen_point = _hscroll -> value() + left_offset;
                 } else {
-                    _painter -> drawImage((*it).rect().topLeft(), *(*it).backImage());
+                    _selection._end_screen_point = _hscroll -> value() + left_offset;
                 }
+
+                QRect rect(left_offset, attrs.rect.top(), _cursor_width, __line_height);
+                (*it).drawInRect(rect);
+                _painter -> drawRect(rect);
 
                 _has_cursor_on_screen = true;
             }
@@ -393,11 +386,7 @@ namespace Custom {
         }
 
         void draw(QPainter * curr_painter, const QSize & screen_size) {
-            QImage screen_image(screen_size, QImage::Format_ARGB32_Premultiplied);
-            QPainter image_painter(&screen_image);
-
-            prepare(&image_painter, screen_size);
-//            prepare(curr_painter, screen_size);
+            prepare(curr_painter, screen_size);
 
 //            qDebug() << "-------------------------------";
 
@@ -455,13 +444,11 @@ namespace Custom {
 
             drawSelection();
 
-            drawCursors(&screen_image);
+            drawCursors();
 
             if (_is_adaptive_scroll) {
                 _hscroll -> setRange(0, max_length);
             }
-
-            curr_painter -> drawImage(QPoint(0, 0), screen_image);
 
 //            qDebug() << c;
         }

@@ -52,6 +52,8 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 {
     ui -> setupUi(this);
 
+    QApplication::setKeyboardInputInterval(1);
+
     setAcceptDrops(true);
     setWindowTitle(tr("Bla bla blashka"));
 //    setCorner();

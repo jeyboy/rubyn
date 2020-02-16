@@ -6,15 +6,14 @@
 
 using namespace Custom;
 
-Cursor::Cursor(Document * doc, IBlock * block, const qint64 & pos_in_block) : _doc(doc), _block(block), _pos_in_block(pos_in_block), _img(nullptr),
+Cursor::Cursor(Document * doc, IBlock * block, const qint64 & pos_in_block) : _doc(doc), _block(block), _pos_in_block(pos_in_block),
     _rect(NO_INFO, NO_INFO, NO_INFO, NO_INFO), _move_state(mf_none)
 {
 
 }
 
-void Cursor::drawInRect(QImage * img, const QRect & rect) {
+void Cursor::drawInRect(const QRect & rect) {
     _rect = rect;
-    _img = new QImage(img -> copy(rect.adjusted(0, 0, 1, 1)));
 }
 
 bool Cursor::isDrawn() { return _rect.left() != NO_INFO; }

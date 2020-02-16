@@ -27,7 +27,6 @@ namespace Custom {
         qint64 _pos_in_block;
 //        qint64 _select_end_pos_in_block;
 
-        QImage * _img;
         QRect _rect;
         MoveFlag _move_state;
     public:       
@@ -43,8 +42,7 @@ namespace Custom {
 
         qint64 posInBlock() { return _pos_in_block; }
         QRect rect() { return _rect; }
-        void drawInRect(QImage * img, const QRect & rect);
-        inline QImage * backImage() { return _img; }
+        void drawInRect(const QRect & rect);
         bool isDrawn();
 
         bool toOffset(const int & offset);
