@@ -2,10 +2,19 @@
 
 #include "custom_document.h"
 
+#include <qimage.h>
+
 using namespace Custom;
 
-Cursor::Cursor(Document * doc, IBlock * block, const qint64 & pos_in_block) : _doc(doc), _block(block), _select_end_block(nullptr), _pos_in_block(pos_in_block), _select_end_pos_in_block(NO_INFO), _rect(NO_INFO, NO_INFO, NO_INFO, NO_INFO), _move_state(mf_none) {
+Cursor::Cursor(Document * doc, IBlock * block, const qint64 & pos_in_block) : _doc(doc), _block(block), _pos_in_block(pos_in_block), _img(nullptr),
+    _rect(NO_INFO, NO_INFO, NO_INFO, NO_INFO), _move_state(mf_none)
+{
 
+}
+
+void Cursor::drawInRect(QImage * img, const QRect & rect) {
+    _rect = rect;
+    _img = new QImage(img -> copy(rect.adjusted(0, 0, 1, 1)));
 }
 
 bool Cursor::isDrawn() { return _rect.left() != NO_INFO; }

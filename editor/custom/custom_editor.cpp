@@ -117,6 +117,7 @@ void Editor::intialize() {
     setVerticalScrollFactor();
     setHorizontalScrollFactor();
     setTabFactor();
+    setTextCursorWidth();
 
     connect(_hscroll, &QScrollBar::valueChanged, [=]() {
         if (_document) {
@@ -149,15 +150,18 @@ void Editor::intialize() {
     _back_timer = new QTimer(this);
     connect(_back_timer, &QTimer::timeout, [=]() {
         _context -> _show_cursors = !_context -> _show_cursors;
-        QRectF r(_context -> _cursors[0].rect());
+//        QRectF r(_context -> _cursors[0].rect());
 
-        r.adjust(-_context -> __letter_with_pad_width, -1, _context -> __letter_with_pad_width, 2);
+//        r.adjust(-_context -> __letter_with_pad_width, -1, _context -> __letter_with_pad_width, 2);
 
-        emit update(r.toRect());
+        emit update(_context -> _cursors[0].rect().adjusted(0, 0, 1, 1));
     });
 }
 
 Editor::Editor(QWidget * parent) : QWidget(parent), _back_timer(nullptr), _completer(nullptr), _document(nullptr), _context(nullptr), _vscroll(nullptr), _hscroll(nullptr) {
+//    setAttribute(Qt::WA_NoSystemBackground);
+//    setAttribute(Qt::WA_OpaquePaintEvent, true);
+
     intialize();
 
     openDocument();
@@ -491,7 +495,12 @@ void Editor::paintEvent(QPaintEvent * e) {
 //    }
 
     if (_document) {
-        drawDocument(painter);
+        if (e -> rect() == _context -> _cursors[0].rect().adjusted(0, 0, 1, 1)) {
+            _context -> _painter = &painter;
+            _context -> drawCursors();
+        } else {
+            drawDocument(painter);
+        }
     }
 }
 void Editor::resizeEvent(QResizeEvent * e) {

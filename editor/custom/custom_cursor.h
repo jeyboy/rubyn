@@ -21,13 +21,14 @@ namespace Custom {
     private:
         Document * _doc;
         IBlock * _block;
-        IBlock * _select_end_block;
+//        IBlock * _select_end_block;
 
 //        qint64 _move_pos_in_block;
         qint64 _pos_in_block;
-        qint64 _select_end_pos_in_block;
+//        qint64 _select_end_pos_in_block;
 
-        QRectF _rect;
+        QImage * _img;
+        QRect _rect;
         MoveFlag _move_state;
     public:       
         Cursor(Document * doc, IBlock * block = nullptr, const qint64 & pos_in_block = 0);
@@ -41,10 +42,9 @@ namespace Custom {
         }
 
         qint64 posInBlock() { return _pos_in_block; }
-        QRectF rect() { return _rect; }
-        void drawInRect(const QRectF & rect) {
-            _rect = rect;
-        }
+        QRect rect() { return _rect; }
+        void drawInRect(QImage * img, const QRect & rect);
+        inline QImage * backImage() { return _img; }
         bool isDrawn();
 
         bool toOffset(const int & offset);

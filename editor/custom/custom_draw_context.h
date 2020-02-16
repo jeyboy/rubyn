@@ -334,42 +334,52 @@ namespace Custom {
             _painter -> restore();
         }
 
-        void drawCursors(QPainter * curr_painter) {
+        void drawCursors(QImage * img = nullptr) {
             _has_cursor_on_screen = false;
 
-            if (!_show_cursors)
-                return;
+//            if (!_show_cursors)
+//                return;
 
-            curr_painter -> save();
+            _painter -> save();
 
-            curr_painter -> setPen(Qt::black);
-            curr_painter -> setBrush(Qt::black);
+            _painter -> setPen(Qt::black);
+            _painter -> setBrush(Qt::black);
             QList<Cursor>::Iterator it = _cursors.begin();
 
             for(; it != _cursors.end(); it++) {
-                if (!_on_screen.contains((*it).block()))
+                if (!_on_screen.contains((*it).block()) || !(*it).block() -> isVisible())
                     continue;
 
-                const LineAttrs & attrs = _on_screen[(*it).block()];
+                if (_show_cursors) {
+                    if (img) {
+                        const LineAttrs & attrs = _on_screen[(*it).block()];
 
-                int left_offset =
-                    attrs.rect.left() - _cursor_width + (((*it).posInBlock() - _hscroll -> value()) * __letter_with_pad_width);
+                        int left_offset =
+                            attrs.rect.left() - _cursor_width + (((*it).posInBlock() - _hscroll -> value()) * __letter_with_pad_width);
 
-                if (_selection.initStartRequires()) {
-                    _selection._start_screen_point = _hscroll -> value() + left_offset;
+                        if (_selection.initStartRequires()) {
+                            _selection._start_screen_point = _hscroll -> value() + left_offset;
+                        } else {
+                            _selection._end_screen_point = _hscroll -> value() + left_offset;
+                        }
+
+                        QRect rect(left_offset, attrs.rect.top(), _cursor_width, __line_height);
+                        (*it).drawInRect(img, rect);
+                        _painter -> drawRect(rect);
+                    } else {
+                        _painter -> drawRect((*it).rect());
+                    }
+                } else {
+                    _painter -> drawImage((*it).rect().topLeft(), *(*it).backImage());
                 }
 
-                QRectF rect(left_offset, attrs.rect.top(), _cursor_width, __line_height);
-                (*it).drawInRect(rect);
-
-                curr_painter -> drawRect(rect);
                 _has_cursor_on_screen = true;
             }
 
-            curr_painter -> restore();
+            _painter -> restore();
         }
 
-        void drawSelection(QPainter * curr_painter) {
+        void drawSelection() {
             if (!_selection.isValid()) return;
 
             const LineAttrs & attrs = _on_screen[_selection._start];
@@ -383,7 +393,11 @@ namespace Custom {
         }
 
         void draw(QPainter * curr_painter, const QSize & screen_size) {
-            prepare(curr_painter, screen_size);
+            QImage screen_image(screen_size, QImage::Format_ARGB32_Premultiplied);
+            QPainter image_painter(&screen_image);
+
+            prepare(&image_painter, screen_size);
+//            prepare(curr_painter, screen_size);
 
 //            qDebug() << "-------------------------------";
 
@@ -439,20 +453,22 @@ namespace Custom {
                 it = it -> next();
             }
 
-            drawSelection(curr_painter);
+            drawSelection();
 
-            drawCursors(curr_painter);
+            drawCursors(&screen_image);
 
             if (_is_adaptive_scroll) {
                 _hscroll -> setRange(0, max_length);
             }
+
+            curr_painter -> drawImage(QPoint(0, 0), screen_image);
 
 //            qDebug() << c;
         }
 
         DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
             : _searcher(nullptr), _select_block(nullptr), _top_block(nullptr), _show_cursors(false), _has_cursor_on_screen(false), _painter(painter),
-              _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(2), _letter_spacing(letter_spacing), _left_margin(0)
+              _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(1), _letter_spacing(letter_spacing), _left_margin(0)
         {
             _visualization = CharVisualization(cv_show_space | cv_show_tab);
 

@@ -55,7 +55,7 @@ namespace Custom {
 
         void setCompleter(Completer * new_completer);
 
-        void setTextCursorWidth(const qreal & new_width);
+        void setTextCursorWidth(const qreal & new_width = 1);
 
         void setTextCursor(const Cursor & cursor);
         Cursor & textCursor();
