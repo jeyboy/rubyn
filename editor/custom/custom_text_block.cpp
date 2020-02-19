@@ -48,7 +48,7 @@ void TextBlock::draw(DrawContext * context) {
     qint32 left_offset = context -> leftStrPad();
     qint32 str_len = context -> maxStrLength();
 
-    if (_content.length() > context -> maxStrLength()) {
+    if (_content.length() > str_len) {
         str = _content.mid(left_offset, str_len);
     } else {
         str = _content.mid(left_offset);

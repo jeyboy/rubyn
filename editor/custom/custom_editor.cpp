@@ -45,7 +45,7 @@ void Editor::drawDocument(QPainter & painter) {
 
 void Editor::recalcScrolls() {
     qint32 vmax = _document ? _context -> calcVScrollWidth(_document -> _lines_count) : -1;
-    qint32 hmax = _document ? _context -> calcHScrollWidth(_document -> _max_line_length) : -1;
+    qint32 hmax = _document ? _context -> calcHScrollWidth(width(), _document -> _max_line_length) : -1;
 
     //    vscroll -> setPageStep(_context -> __line_height);
     _vscroll -> setSingleStep(_context -> verticalSingleStep());
@@ -59,6 +59,8 @@ void Editor::recalcScrolls() {
         _vscroll -> setValue(0);
     }
 
+
+    qDebug() << "recalcScrolls" << hmax;
 
     _hscroll -> setVisible(hmax > 0);
     if (hmax > 0) {
@@ -103,7 +105,7 @@ void Editor::intialize() {
 
     _context -> setPalettes(line_num_section_pal, content_section_pal);
 
-    setAdaptiveHorizontalScroll(true);
+    setAdaptiveHorizontalScroll(false);
     setAutoFillBackground(true);
     setPalette(*content_section_pal);
     setLeftMargin(10);

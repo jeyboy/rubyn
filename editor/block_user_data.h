@@ -31,7 +31,7 @@ struct BlockUserData : public QTextBlockUserData {
 
     ParaCell * para_begin;
     ParaCell * para_end;
-    ParaCell * para_control;
+    ParaCell * para_control;  
 
     int level;
     bool can_have_debug_point;

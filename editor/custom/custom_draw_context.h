@@ -447,7 +447,7 @@ namespace Custom {
             drawCursors();
 
             if (_is_adaptive_scroll) {
-                _hscroll -> setRange(0, max_length);
+                _hscroll -> setRange(0, max_length - __max_str_length);
             }
 
 //            qDebug() << c;
@@ -592,10 +592,11 @@ namespace Custom {
             return calcStringWidth(QString::number(num));
         }
 
-        qint32 calcHScrollWidth(const quint64 & chars_amount) {
-//            return qint32(_left_margin + (chars_amount * __symbol_width) + (chars_amount * _letter_spacing)) - (_screen_size.width() - _left_margin);
-            return (qint32(_left_margin + (chars_amount * __symbol_width) + (chars_amount * _letter_spacing)) - (_screen_size.width() - _left_margin)) / __symbol_width;
+        qint32 calcHScrollWidth(const int & screen_width, const quint64 & chars_amount) {
+            __letter_with_pad_width = qCeil(__symbol_width + _letter_spacing);
+            int screen_chars_max = (screen_width - _right_margin - _left_margin) / __letter_with_pad_width;
 
+            return chars_amount - screen_chars_max + 2;
         }
 
         qint32 calcVScrollWidth(const quint64 & lines_count) {

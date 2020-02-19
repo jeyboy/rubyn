@@ -43,6 +43,8 @@
 #include <qlayout.h>
 
 /////////////// TEST
+#include <QRandomGenerator>
+
 #include "tools/html/html_page.h"
 #include "tools/data_preparer/rubydoc_preparer.h"
 #include "tools/data_preparer/rubydoc_parser.h"
@@ -108,6 +110,28 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 
     loadSettings();
+
+
+
+//    QFile f("F://rubyn test//large.txt");
+
+//    QString str = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+//    if (f.open(QFile::Text | QFile::WriteOnly)) {
+//        QRandomGenerator r;
+
+//        int y = 0;
+//        for(int i = 0; i < 52428800; i++, y++) {
+//            f.putChar(str[r.bounded(str.length())].toLatin1());
+//            if (y == 200) {
+//                f.putChar(char(10));
+//                y = 0;
+//            }
+//        }
+
+
+//        f.close();
+//    }
 
 
 

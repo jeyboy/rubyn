@@ -20,6 +20,7 @@ SOURCES += main.cpp\
     delegates/tree_view_item_delegate.cpp \
     editor/custom/custom_editor_searcher.cpp \
     editor/custom/custom_iblock.cpp \
+    editor/custom/custom_layout_text_block.cpp \
     editor/custom/custom_selection.cpp \
     editor/custom/custom_text_block.cpp \
     ide_window.cpp \
@@ -139,6 +140,7 @@ HEADERS  += ide_window.h \
     delegates/tree_view_item_delegate.h \
     editor/custom/custom_editor_searcher.h \
     editor/custom/custom_iblock.h \
+    editor/custom/custom_layout_text_block.h \
     editor/custom/custom_selection.h \
     editor/custom/custom_text_block.h \
     editor/custom/custom_visualization.h \
