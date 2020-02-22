@@ -37,6 +37,7 @@ namespace Custom {
         QScrollBar * _vscroll;
         QScrollBar * _hscroll;
 
+        void hideCursors();
         void blickCursor();
         void nonBlickCursor();
 

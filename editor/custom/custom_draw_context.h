@@ -294,9 +294,7 @@ namespace Custom {
             int diff = _hscroll -> maximum() - len;
             len -= qMin(__max_str_length, diff);
 
-            qDebug() << len << diff << __max_str_length;
-
-           _hscroll -> setValue(len + 2);
+           _hscroll -> setValue(len);
         }
 
         void ensureVisibleCursorAfterMoveRight(const int & step = 1) {
@@ -358,12 +356,7 @@ namespace Custom {
                 const LineAttrs & attrs = _on_screen[(*it).block()];
 
                 int left_offset = attrs.rect.left() - _cursor_width;
-
-                qDebug() << "XXX" << (*it).posInBlock() << _hscroll -> value() << ((*it).posInBlock() - _hscroll -> value()) << __max_str_length;
-
                 left_offset += ((*it).posInBlock() - _hscroll -> value()) * __letter_with_pad_width;
-
-
 
                 if (_selection.initStartRequires()) {
                     _selection._start_screen_point = _hscroll -> value() + left_offset;

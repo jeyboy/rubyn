@@ -18,6 +18,11 @@
 
 using namespace Custom;
 
+void Editor::hideCursors() {
+    _back_timer -> stop();
+    _context -> _show_cursors = false;
+}
+
 void Editor::blickCursor() {
     _back_timer -> stop();
     _context -> _show_cursors = true;
@@ -250,6 +255,7 @@ void Editor::ensureVisible(const qint64 & block_num) {
 void Editor::openDocument(Document * doc) {
     qDebug() << this << "setDocument";
 
+    hideCursors();
     _context -> setFont(font());
 //    _context -> _screen_size = size();
 
