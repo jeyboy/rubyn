@@ -81,12 +81,12 @@ namespace Custom {
         QSize _screen_size;
         QFont _font;
         QFontMetricsF * _fmetrics;
-        QPointF _pos;
+        QPoint _pos;
 
         CharVisualization _visualization;
 
         qreal _cursor_width;
-        qreal _letter_spacing;
+        qint32 _letter_spacing;
         qint32 _left_padding;
         qint32 _left_margin;
         qint32 _right_margin;
@@ -94,24 +94,22 @@ namespace Custom {
         qint32 __left_str_pad;
         qint32 __max_str_length;
         qint32 __line_height;
-        qreal __symbol_width;
-        qreal __content_width;
-        int __letter_with_pad_width;
+        qint32 __symbol_width;
+        qint32 __content_width;
+        qint8 __letter_with_pad_width;
 
 
         const LineAttrs & blockRect(IBlock * block) {
             return blockLineAttrs(block);
         }
 
-        qint64 mouseXToCharPos(const qreal & mouse_x) {           
+        qint64 mouseXToCharPos(const int & mouse_x) {
             qreal res = (mouse_x - contentAreaRect().left());
 
             if (res <= 0)
                 return 0;
 
-            qDebug() << "mouseXToCharPos" << (res / __letter_with_pad_width);
-
-            return qRound(res / __letter_with_pad_width) + _hscroll -> value();
+            return (res / __letter_with_pad_width) + _hscroll -> value();
         }
 
 //        qint64 mouseToBlockCharPos(IBlock * block, const qint64 & char_pos) {
@@ -291,7 +289,14 @@ namespace Custom {
         }
 
         void ensureVisibleCursorLineEnd() {
-           _hscroll -> setValue(_cursors[0].block() -> text().length() - (__max_str_length - 1));
+            int len = _cursors[0].block() -> contentLength();
+
+            int diff = _hscroll -> maximum() - len;
+            len -= qMin(__max_str_length, diff);
+
+            qDebug() << len << diff << __max_str_length;
+
+           _hscroll -> setValue(len + 2);
         }
 
         void ensureVisibleCursorAfterMoveRight(const int & step = 1) {
@@ -350,11 +355,15 @@ namespace Custom {
                 if (!_on_screen.contains((*it).block()) || !(*it).block() -> isVisible())
                     continue;
 
-
                 const LineAttrs & attrs = _on_screen[(*it).block()];
 
-                int left_offset =
-                    attrs.rect.left() - _cursor_width + (((*it).posInBlock() - _hscroll -> value()) * __letter_with_pad_width);
+                int left_offset = attrs.rect.left() - _cursor_width;
+
+                qDebug() << "XXX" << (*it).posInBlock() << _hscroll -> value() << ((*it).posInBlock() - _hscroll -> value()) << __max_str_length;
+
+                left_offset += ((*it).posInBlock() - _hscroll -> value()) * __letter_with_pad_width;
+
+
 
                 if (_selection.initStartRequires()) {
                     _selection._start_screen_point = _hscroll -> value() + left_offset;
@@ -453,7 +462,7 @@ namespace Custom {
 //            qDebug() << c;
         }
 
-        DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPointF & pos = QPointF(0, 0))
+        DrawContext(QPainter * painter, const QSize & screen_size, const QFont & font, const qreal & letter_spacing = .5, const QPoint & pos = QPoint(0, 0))
             : _searcher(nullptr), _select_block(nullptr), _top_block(nullptr), _show_cursors(false), _has_cursor_on_screen(false), _painter(painter),
               _screen_size(screen_size), _fmetrics(nullptr), _pos(pos), _cursor_width(1), _letter_spacing(letter_spacing), _left_margin(0)
         {
@@ -499,17 +508,17 @@ namespace Custom {
                 _painter -> setFont(_font);
             }
 
-            __letter_with_pad_width = qCeil(__symbol_width + _letter_spacing);
+            __letter_with_pad_width = __symbol_width + _letter_spacing;
 
             setRightMargin(_vscroll -> isVisible() ? _vscroll -> width() + 3 : 0);
-            QPointF pos = QPointF((-_hscroll -> value() * __letter_with_pad_width), 0);
+            QPoint pos = QPoint((-_hscroll -> value() * __letter_with_pad_width), 0);
 
             _screen_size = screen_size;
             __content_width = contentWidth();
-            __max_str_length = qCeil((_screen_size.width() - _right_margin - _left_margin) / __letter_with_pad_width);
+            __max_str_length = qCeil((_screen_size.width() - _right_margin - _left_margin) / double(__letter_with_pad_width));
             __left_str_pad = pos.x() == 0 ? 0 : qAbs(qFloor(pos.x() / __letter_with_pad_width));
 
-            _pos = pos + QPointF(leftContentBorder() + _left_padding + (__left_str_pad * __letter_with_pad_width), 0);
+            _pos = pos + QPoint(leftContentBorder() + _left_padding + (__left_str_pad * __letter_with_pad_width), 0);
         }
 
         bool screenCovered() {
@@ -537,18 +546,18 @@ namespace Custom {
             _is_adaptive_scroll = is_adaptive;
         }
 
-        qreal contentWidth() {
+        int contentWidth() {
             return _screen_size.width() - _left_padding - _left_margin - _right_margin - 2;
         }
 
         qint32 leftContentBorder() { return _left_padding + _left_margin + 2; }
 
-        QRectF numbersAreaRect() {
-            return QRectF(0, 0, _left_margin, _screen_size.height());
+        QRect numbersAreaRect() {
+            return QRect(0, 0, _left_margin, _screen_size.height());
         }
 
-        QRectF contentAreaRect() {
-            return QRectF(leftContentBorder(), 0, contentWidth(), _screen_size.height() - _hscroll -> height());
+        QRect contentAreaRect() {
+            return QRect(leftContentBorder(), 0, contentWidth(), _screen_size.height() - _hscroll -> height());
         }
 
         qint32 verticalSingleStep() {
@@ -556,7 +565,7 @@ namespace Custom {
         }
 
         qint32 horizontalSingleStep() {
-            return 1;//qCeil(__symbol_width);
+            return 1;//__symbol_width;
         }
 
         qint32 leftStrPad() {
@@ -579,7 +588,7 @@ namespace Custom {
             _fmetrics = new QFontMetricsF(_font);
 
             __line_height = qCeil(_fmetrics -> height()) + 2;
-            __symbol_width = _fmetrics -> averageCharWidth(); //(_fmetrics -> maxWidth() + _fmetrics -> width('!')) / 2;
+            __symbol_width = qCeil(_fmetrics -> averageCharWidth()); //(_fmetrics -> maxWidth() + _fmetrics -> width('!')) / 2;
         }
 
         qint32 calcStringWidth(const QString & str) {
@@ -593,10 +602,10 @@ namespace Custom {
         }
 
         qint32 calcHScrollWidth(const int & screen_width, const quint64 & chars_amount) {
-            __letter_with_pad_width = qCeil(__symbol_width + _letter_spacing);
+            __letter_with_pad_width = __symbol_width + _letter_spacing;
             int screen_chars_max = (screen_width - _right_margin - _left_margin) / __letter_with_pad_width;
 
-            return chars_amount - screen_chars_max + 2;
+            return chars_amount - screen_chars_max + 1;
         }
 
         qint32 calcVScrollWidth(const quint64 & lines_count) {

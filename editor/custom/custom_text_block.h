@@ -9,8 +9,8 @@ namespace Custom {
     class Editor;
 
     class TextBlock : public IBlock {
-//        QString _content;
-        QByteArray _content;
+        QString _content;
+//        QByteArray _content;
     public:
         TextBlock(const QByteArray/*QString*/ & txt, IBlock * prev_block = nullptr);
 //        virtual ~TextBlock() = default;

@@ -311,7 +311,7 @@ void Editor::setTextCursorWidth(const qreal & new_width) {
 
 void Editor::setTextCursor(const Cursor & cursor) { _context -> _cursors[0] = cursor; }
 Cursor & Editor::textCursor() { return _context -> _cursors[0]; }
-Cursor Editor::textCursorForPos(const QPointF & pos) {
+Cursor Editor::textCursorForPos(const QPoint & pos) {
     QHash<IBlock *, LineAttrs>::Iterator it = _context -> _on_screen.begin();
     QHash<IBlock *, LineAttrs>::Iterator target = _context -> _on_screen.end();
 
@@ -963,7 +963,7 @@ void Editor::focusInEvent(QFocusEvent * e) {
 }
 
 void Editor::mousePressEvent(QMouseEvent * e) {
-    Cursor c = textCursorForPos(e -> localPos());
+    Cursor c = textCursorForPos(e -> pos());
 
     // create selection with start point at vertical_scrol.pos + pos on screen
 

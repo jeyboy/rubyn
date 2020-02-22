@@ -59,7 +59,7 @@ namespace Custom {
 
         void setTextCursor(const Cursor & cursor);
         Cursor & textCursor();
-        Cursor textCursorForPos(const QPointF & pos);
+        Cursor textCursorForPos(const QPoint & pos);
 
 
         void clear() { openDocument(); }

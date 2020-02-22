@@ -3,14 +3,12 @@
 #include "custom_document.h"
 
 #include <qimage.h>
+#include <qdebug.h>
 
 using namespace Custom;
 
 Cursor::Cursor(Document * doc, IBlock * block, const qint64 & pos_in_block) : _doc(doc), _block(block), _pos_in_block(pos_in_block),
-    _rect(NO_INFO, NO_INFO, NO_INFO, NO_INFO), _move_state(mf_none)
-{
-
-}
+    _rect(NO_INFO, NO_INFO, NO_INFO, NO_INFO), _move_state(mf_none) { }
 
 void Cursor::drawInRect(const QRect & rect) {
     _rect = rect;
@@ -25,7 +23,7 @@ bool Cursor::toOffset(const int & offset) {
         return false;
     }
 
-    int len = _block -> text().length();
+    int len = _block -> contentLength();
 
     if (offset > 0) {
         if (_pos_in_block + offset > len) {
@@ -65,7 +63,7 @@ bool Cursor::toPrevChar() {
 
         _move_state = mf_line_move;
         _block = _block -> prev();
-        _pos_in_block = _block -> text().length();
+        _pos_in_block = _block -> contentLength();
     } else {
         _move_state = mf_pos_move;
         --_pos_in_block;
@@ -74,7 +72,7 @@ bool Cursor::toPrevChar() {
     return true;
 }
 bool Cursor::toNextChar() {
-    if (_pos_in_block == _block -> text().length()) {
+    if (_pos_in_block == _block -> contentLength()) {
         if (!_block -> next()) {
             _move_state = mf_none;
             return false;
@@ -103,7 +101,7 @@ bool Cursor::toLineStart() {
 }
 
 bool Cursor::toLineEnd() {
-    qint64 txt_len = block() -> text().length();
+    qint64 txt_len = block() -> contentLength();
 
     if (_pos_in_block == txt_len) {
         _move_state = mf_none;
@@ -123,7 +121,7 @@ bool Cursor::toPrevLine() {
 
     _move_state = mf_line_move;
     _block = _block -> prev();
-    int len = _block -> text().length();
+    int len = _block -> contentLength();
 
     if (_pos_in_block >= len) {
         _move_state = MoveFlag(_move_state | mf_pos_move);
@@ -140,7 +138,7 @@ bool Cursor::toNextLine() {
 
     _move_state = mf_line_move;
     _block = _block -> next();
-    int len = _block -> text().length();
+    int len = _block -> contentLength();
 
     if (_pos_in_block >= len) {
         _move_state = MoveFlag(_move_state | mf_pos_move);
@@ -151,5 +149,5 @@ bool Cursor::toNextLine() {
 }
 
 bool Cursor::atLineEnd() {
-    return _block -> text().length() == _pos_in_block;
+    return _block -> contentLength() == _pos_in_block;
 }
