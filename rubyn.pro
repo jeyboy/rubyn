@@ -155,6 +155,7 @@ HEADERS  += ide_window.h \
     lexer/html/html_predefined.h \
     lexer/html/html_state_lexems.h \
     lexer/ilexer_control.h \
+    lexer/ilexer_scope.h \
     lexer/js/js_grammar.h \
     lexer/js/js_lexer_control.h \
     lexer/js/js_lexer_frontend.h \
@@ -171,6 +172,7 @@ HEADERS  += ide_window.h \
     lexer/ruby/ruby_para_type.h \
     lexer/ruby/ruby_predefined.h \
     lexer/ruby/ruby_state_lexems.h \
+    lexer/scope_type.h \
     lexer/state_lexem.h \
     lexer/yaml/yaml_grammar.h \
     lexer/yaml/yaml_lexer_control.h \
@@ -178,6 +180,10 @@ HEADERS  += ide_window.h \
     lexer/yaml/yaml_predefined.h \
     lexer/yaml/yaml_state_lexems.h \
     misc/info_collector.h \
+    misc/msg_info.h \
+    misc/para_info.h \
+    misc/para_list.h \
+    misc/scope_list.h \
     styles/click_fix_style.h \
     controls/dock_widgets.h \
     editor/idocument.h \

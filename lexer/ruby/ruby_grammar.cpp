@@ -606,6 +606,17 @@ LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & handl
                 case lex_operator_equality: return lex_method_def_arg_assign;
                 case lex_comma: return lex_method_def_arg_splitter;
                 case lex_wrap_close: return lex_method_def_args_end;
+                case lex_operator_assigment: return lex_method_def_arg_assigment;
+                default: return lex_error;
+            }
+        }
+
+        case lex_method_def_arg_assigment: {
+            switch(input) {
+                case lex_wrap_open: return lex_method_def_arg_assigment_wrap;
+                case lex_open_curly_bracket: return lex_method_def_arg_assigment_curly;
+                case lex_open_square_bracket: return lex_method_def_arg_assigment_square;
+
                 default: return lex_error;
             }
         }

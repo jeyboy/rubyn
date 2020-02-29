@@ -5,7 +5,8 @@ int ILexer::lineState(BlockUserData * udata) {
 
     if (udata -> stack_token)
         lex = udata -> stack_token -> lexem;
-    else lex = udata -> token_end -> prev -> lexem;
+    else
+        lex = udata -> token_end -> prev -> lexem;
 
     return lex |
         ((udata -> level + 1) << state_level_bits_offset);

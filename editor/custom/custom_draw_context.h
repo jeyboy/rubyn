@@ -598,7 +598,7 @@ namespace Custom {
             __letter_with_pad_width = __symbol_width + _letter_spacing;
             int screen_chars_max = (screen_width - _right_margin - _left_margin) / __letter_with_pad_width;
 
-            return chars_amount - screen_chars_max + 1;
+            return (chars_amount - screen_chars_max) + 2;
         }
 
         qint32 calcVScrollWidth(const quint64 & lines_count) {

@@ -78,7 +78,7 @@ namespace Custom {
         void setLeftMargin(const qint32 & margin = 0);
 
         int tabFactor();
-        void setTabFactor(const int & new_tab_factor = 5);
+        void setTabFactor(const int & new_tab_factor = 2);
 
         bool adaptiveHorizontalScroll();
         void setAdaptiveHorizontalScroll(const bool & is_adaptive);

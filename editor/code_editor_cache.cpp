@@ -3,7 +3,7 @@
 #include "editor/block_user_data.h"
 #include "editor/text_document_layout.h"
 
-#include "highlighter/para_list.h"
+#include "misc/para_list.h"
 
 void CodeEditorCacheCell::setUserData(BlockUserData * udata) {
     user_data = udata;

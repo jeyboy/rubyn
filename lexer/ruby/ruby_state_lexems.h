@@ -152,6 +152,11 @@ namespace Ruby {
         lex_method_def_arg_assign_val,
         lex_method_def_arg_splitter,
         lex_method_def_args_end,
+        lex_method_def_arg_assigment, // =
+        lex_method_def_arg_assigment_wrap, // (
+        lex_method_def_arg_assigment_curly, // {
+        lex_method_def_arg_assigment_square, // [
+
 
         lex_method_def_vars_start,
         lex_method_def_var_attr, // const

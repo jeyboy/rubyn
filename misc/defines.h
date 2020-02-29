@@ -24,6 +24,12 @@
 
 #define DefaultParaLexems pt_max = 1 << 28, pt_close = 1 << 29, pt_foldable = 1 << 30, pt_max_end = pt_max | pt_close, pt_none = 0, pt_reserved = 128
 
+#define SCOPE_TYPE quint32
+
+#define DefaultScopeLexems sc_none = 0, sc_max = 1 << 30
+
+
+
 #define OVERLAY_POS_TYPE quint8
 
 #define UID_TYPE qint8
