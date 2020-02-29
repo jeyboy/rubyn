@@ -1779,7 +1779,7 @@ void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
         }
     }
 
-    udata -> syncLine(state.stack_token, state.token, state.para, state.control_para);
+    udata -> syncLine(state.stack_token, state.token, state.control_para, state.para);
 
     int prev_state = lighter -> userState();
     int new_state = rubyLineState(udata, prev_state, override_status);

@@ -2,13 +2,11 @@
 
 //#include <QtConcurrent/QtConcurrent>
 
-BlockUserData::BlockUserData(TokenList * tokens, ParaList * paras, TokenCell * token_prev, ParaCell * para_prev, const UserDataFlags & data_flags)
-    : flags(data_flags), token_control(nullptr), token_begin(nullptr), token_end(nullptr), para_begin(nullptr), para_end(nullptr), para_control(nullptr),
+BlockUserData::BlockUserData(const UserDataFlags & data_flags)
+    : flags(data_flags), token_begin(nullptr), token_end(nullptr), token_control(nullptr),
+      para_begin(nullptr), para_end(nullptr), para_control(nullptr),
       level(DEFAULT_LEVEL), can_have_debug_point(true), msgs(nullptr)
-{
-    tokens -> registerLine(token_begin, token_end, token_prev);
-    paras -> registerLine(para_begin, para_end, para_prev);
-}
+{}
 
 BlockUserData::~BlockUserData() {
     TokenList::removeLine(token_begin, token_end);
@@ -106,7 +104,7 @@ ParaCell * BlockUserData::lineControlPara() {
     return para_begin;
 }
 
-void BlockUserData::syncLine(TokenCell * control_sync_token, TokenCell * sync_token, ParaCell * sync_para, ParaCell * control_sync_para) {
+void BlockUserData::syncLine(TokenCell * control_sync_token, TokenCell * sync_token, ParaCell * control_sync_para, ParaCell * sync_para) {
     token_control = control_sync_token;
     para_control = control_sync_para;
 
