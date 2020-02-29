@@ -1,10 +1,10 @@
-#ifndef RUBY_PARA_TYPE_H
-#define RUBY_PARA_TYPE_H
+#ifndef RUBY_PARA_LEXEM_H
+#define RUBY_PARA_LEXEM_H
 
 #include "misc/defines.h"
 
 namespace Ruby {
-    enum ParaType : PARA_TYPE {
+    enum ParaLexem : PARA_TYPE {
         DefaultParaLexems,
 
 
@@ -125,4 +125,4 @@ namespace Ruby {
     };
 }
 
-#endif // RUBY_PARA_TYPE_H
+#endif // RUBY_PARA_LEXEM_H

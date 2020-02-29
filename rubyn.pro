@@ -169,7 +169,7 @@ HEADERS  += ide_window.h \
     lexer/ruby/ruby_lexer_control.h \
     lexer/ruby/ruby_lexer_frontend.h \
     lexer/ruby/ruby_lexer_regexp.h \
-    lexer/ruby/ruby_para_type.h \
+    lexer/ruby/ruby_para_lexem.h \
     lexer/ruby/ruby_predefined.h \
     lexer/ruby/ruby_state_lexems.h \
     lexer/scope_type.h \

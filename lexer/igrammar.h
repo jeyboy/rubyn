@@ -13,9 +13,9 @@ protected:
 
     virtual ~IGrammar();
 public:  
-    //    static inline bool hasPara(const QByteArray & poss_para) { return para_tokens.contains(poss_para); }
     inline const PARA_TYPE & paraType(const LEXEM_TYPE & poss_para) { return para_tokens[poss_para]; }
-//    inline PARA_TYPE oppositePara(const PARA_TYPE & para_type) { return para_opposition.value(para_type, pt_none); }
+    //    static inline bool hasPara(const QByteArray & poss_para) { return para_tokens.contains(poss_para); }
+    //    inline PARA_TYPE oppositePara(const PARA_TYPE & para_type) { return para_opposition.value(para_type, pt_none); }
 
     virtual LEXEM_TYPE translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input) {
         if (input == lex_none)

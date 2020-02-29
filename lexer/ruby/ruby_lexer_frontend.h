@@ -5,7 +5,7 @@
 #include "lexer/lexer_stack_flags.h"
 #include "ruby_lexer_control.h"
 #include "ruby_state_lexems.h"
-#include "ruby_para_type.h"
+#include "ruby_para_lexem.h"
 
 
 // Store context variable in control
