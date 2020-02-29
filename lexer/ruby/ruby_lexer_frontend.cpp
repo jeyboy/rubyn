@@ -1712,8 +1712,8 @@ void LexerFrontend::lexicate(LexerControl * state) {
 
 int LexerFrontend::rubyLineState(BlockUserData * udata, const int & prev_user_state, const bool & override_status) {
     //INFO: Hack for heredoc marks
-    if (override_status || udata -> stack_token) {
-        TokenCell * it = udata -> stack_token;
+    if (override_status || udata -> token_control) {
+        TokenCell * it = udata -> token_control;
 
 //        if (!it -> data)
 //            it = udata -> stack_token;
@@ -1761,7 +1761,7 @@ void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
     LexerControl state(
         &Ruby::Grammar::obj(),
         udata,
-        prev_udata && prev_udata -> stack_token ? prev_udata -> stack_token : udata -> token_begin,
+        prev_udata && prev_udata -> token_control ? prev_udata -> token_control : udata -> token_begin,
         lighter
     );
 

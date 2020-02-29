@@ -25,9 +25,9 @@ struct BlockUserData : public QTextBlockUserData {
 
     UserDataFlags flags;
 
-    TokenCell * stack_token;
     TokenCell * token_begin;
     TokenCell * token_end;
+    TokenCell * token_control;
 
     ParaCell * para_begin;
     ParaCell * para_end;
@@ -51,7 +51,7 @@ struct BlockUserData : public QTextBlockUserData {
     TokenCell * lineControlToken();
     ParaCell * lineControlPara();
 
-    void syncLine(TokenCell * stack_sync_token, TokenCell * sync_token, ParaCell * sync_para, ParaCell * control_sync_para);
+    void syncLine(TokenCell * control_sync_token, TokenCell * sync_token, ParaCell * sync_para, ParaCell * control_sync_para);
 
     inline DATA_FLAGS_TYPE foldingState() {
         DATA_FLAGS_TYPE res = flags & udf_folded;

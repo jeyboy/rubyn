@@ -3,8 +3,8 @@
 int ILexer::lineState(BlockUserData * udata) {
     LEXEM_TYPE lex = lex_none;
 
-    if (udata -> stack_token)
-        lex = udata -> stack_token -> lexem;
+    if (udata -> token_control)
+        lex = udata -> token_control -> lexem;
     else
         lex = udata -> token_end -> prev -> lexem;
 

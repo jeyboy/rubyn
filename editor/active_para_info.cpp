@@ -2,7 +2,7 @@
 
 #include <qdebug.h>
 
-#include "highlighter/para_list.h"
+#include "misc/para_list.h"
 
 void ActiveParaInfo::clear() {
     if (!isValid()) return;
