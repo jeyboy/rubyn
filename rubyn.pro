@@ -38,7 +38,6 @@ SOURCES += main.cpp\
     lexer/ruby/ruby_grammar.cpp \
     lexer/ruby/ruby_lexer_control.cpp \
     lexer/ruby/ruby_lexer_frontend.cpp \
-    lexer/ruby/ruby_lexer_regexp.cpp \
     lexer/ruby/ruby_predefined.cpp \
     lexer/yaml/yaml_lexer_frontend.cpp \
     lexer/yaml/yaml_predefined.cpp \
@@ -168,7 +167,6 @@ HEADERS  += ide_window.h \
     lexer/ruby/ruby_grammar.h \
     lexer/ruby/ruby_lexer_control.h \
     lexer/ruby/ruby_lexer_frontend.h \
-    lexer/ruby/ruby_lexer_regexp.h \
     lexer/ruby/ruby_para_lexem.h \
     lexer/ruby/ruby_predefined.h \
     lexer/ruby/ruby_state_lexems.h \
