@@ -1,5 +1,5 @@
-#ifndef RUBY_LEXER_FRONTEND_H
-#define RUBY_LEXER_FRONTEND_H
+#ifndef RUBY_LEXER_H
+#define RUBY_LEXER_H
 
 #include "lexer/ilexer.h"
 #include "lexer/lexer_stack_flags.h"
@@ -17,7 +17,7 @@
 namespace Ruby {
     struct LexerControl;
 
-    class LexerFrontend : public ILexer {
+    class Lexer : public ILexer {
         enum CharCodePart : quint8 {
             ccp_none = 0,
             ccp_symbol = 1,
@@ -58,8 +58,8 @@ namespace Ruby {
     protected:
         int rubyLineState(BlockUserData * udata, const int & prev_user_state, const bool & override_status);
     public:
-        LexerFrontend();
-        ~LexerFrontend();
+        Lexer();
+        ~Lexer();
 
         void handle(const QString & text, IHighlighter * lighter);
 
@@ -73,4 +73,4 @@ namespace Ruby {
     };
 }
 
-#endif // RUBY_LEXER_FRONTEND_H
+#endif // RUBY_LEXER_H

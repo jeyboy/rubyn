@@ -1,4 +1,4 @@
-#include "ruby_lexer_frontend.h"
+#include "ruby_lexer.h"
 
 #include "ruby_lexer_control.h"
 #include "ruby_grammar.h"
@@ -8,7 +8,7 @@
 
 using namespace Ruby;
 
-void LexerFrontend::highlightMarkupInComments(LexerControl * state) {
+void Lexer::highlightMarkupInComments(LexerControl * state) {
     state -> buffer -= state -> token -> length;
 
     while(true) {
@@ -44,7 +44,7 @@ void LexerFrontend::highlightMarkupInComments(LexerControl * state) {
     }
 }
 
-void LexerFrontend::registerVariable(LexerControl * state) {
+void Lexer::registerVariable(LexerControl * state) {
 //    if (!state -> scope -> hasVar(state -> cached)) {
 //        state -> scope -> addVar(
 //            state -> cached,
@@ -54,7 +54,7 @@ void LexerFrontend::registerVariable(LexerControl * state) {
 //    else state -> lex_word = state -> scope -> varType(state -> cached);
 }
 
-void LexerFrontend::registerMethod(LexerControl * state) {
+void Lexer::registerMethod(LexerControl * state) {
 //    if (!state -> scope -> hasVar(state -> cached)) {
 //        state -> scope -> addVar(
 //            state -> cached,
@@ -64,16 +64,16 @@ void LexerFrontend::registerMethod(LexerControl * state) {
 //    else state -> lex_word = state -> scope -> varType(state -> cached);
 }
 
-void LexerFrontend::registerClass(LexerControl * state) {
+void Lexer::registerClass(LexerControl * state) {
 
 }
 
-void LexerFrontend::registerModule(LexerControl * state) {
+void Lexer::registerModule(LexerControl * state) {
 
 }
 
 
-void LexerFrontend::identifyWordType(LexerControl * state) {
+void Lexer::identifyWordType(LexerControl * state) {
     switch(SCHAR0) {
         case ':': { state -> lex_word = lex_symbol; break;}
         case '$': { state -> lex_word = lex_var_global; break;}
@@ -100,7 +100,7 @@ void LexerFrontend::identifyWordType(LexerControl * state) {
     }
 }
 
-LEXEM_TYPE LexerFrontend::translateState(LexerControl * state, const LEXEM_TYPE & lex1, const LEXEM_TYPE & lex2) {
+LEXEM_TYPE Lexer::translateState(LexerControl * state, const LEXEM_TYPE & lex1, const LEXEM_TYPE & lex2) {
     LEXEM_TYPE new_state = state -> grammar -> translate(lex1, lex2);
 
     switch(new_state) {
@@ -144,7 +144,7 @@ LEXEM_TYPE LexerFrontend::translateState(LexerControl * state, const LEXEM_TYPE 
 }
 
 
-//bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem, const LEXEM_TYPE & predefined_delimiter, StackLexemFlag flags) {
+//bool Lexer::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem, const LEXEM_TYPE & predefined_delimiter, StackLexemFlag flags) {
 //    bool has_predefined = predefined_lexem != lex_none;
 
 //    state -> cachingPredicate();
@@ -252,7 +252,7 @@ LEXEM_TYPE LexerFrontend::translateState(LexerControl * state, const LEXEM_TYPE 
 //}
 
 
-bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem, const LEXEM_TYPE & predefined_delimiter, StackLexemFlag flags) {
+bool Lexer::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem, const LEXEM_TYPE & predefined_delimiter, StackLexemFlag flags) {
     bool has_predefined = predefined_lexem != lex_none;
     uint delimiter_flags = flags & slf_delimiter_related;
 
@@ -338,7 +338,7 @@ bool LexerFrontend::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_
 }
 
 
-bool LexerFrontend::parseContinious(LexerControl * state) {
+bool Lexer::parseContinious(LexerControl * state) {
     if (state -> stack_token) {
         switch(state -> stack_token -> lexem) {
             case lex_string_start: { return parseString(state); }
@@ -368,7 +368,7 @@ bool LexerFrontend::parseContinious(LexerControl * state) {
     return true;
 }
 
-bool LexerFrontend::parseNumber(LexerControl * state) {
+bool Lexer::parseNumber(LexerControl * state) {
     //    +3
     //    3.2e23
     //    -4.70e+9
@@ -531,7 +531,7 @@ bool LexerFrontend::parseNumber(LexerControl * state) {
     return cutWord(state, predef);
 }
 
-bool LexerFrontend::parseString(LexerControl * state) {
+bool Lexer::parseString(LexerControl * state) {
     StateLexem lex = lex_none;
     StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
@@ -561,7 +561,7 @@ bool LexerFrontend::parseString(LexerControl * state) {
     return cutWord(state, lex, del_lex, flags);
 }
 
-bool LexerFrontend::parseEString(LexerControl * state) {
+bool Lexer::parseEString(LexerControl * state) {
     StateLexem lex = lex_none;
     StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
@@ -600,7 +600,7 @@ bool LexerFrontend::parseEString(LexerControl * state) {
     return cutWord(state, lex, del_lex, flags);
 }
 
-bool LexerFrontend::parseCommand(LexerControl * state) {
+bool Lexer::parseCommand(LexerControl * state) {
     StateLexem lex = lex_none;
     StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
@@ -639,7 +639,7 @@ bool LexerFrontend::parseCommand(LexerControl * state) {
     return cutWord(state, lex, del_lex, flags);
 }
 
-bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
+bool Lexer::parsePercentagePresenation(LexerControl * state) {
     //# %i Non-interpolated Array of symbols, separated by whitespace
     //# %l Interpolated Array of symbols, separated by whitespace
     //# %q String
@@ -702,7 +702,7 @@ bool LexerFrontend::parsePercentagePresenation(LexerControl * state) {
     return cutWord(state, lex, del_lex, flags);
 }
 
-bool LexerFrontend::parseHeredocMarks(LexerControl * state, LEXEM_TYPE & lex) {
+bool Lexer::parseHeredocMarks(LexerControl * state, LEXEM_TYPE & lex) {
     const char * curr = state -> buffer + 2;
     bool is_intended = false;
 
@@ -760,7 +760,7 @@ bool LexerFrontend::parseHeredocMarks(LexerControl * state, LEXEM_TYPE & lex) {
     return res;
 }
 
-bool LexerFrontend::parseHeredoc(LexerControl * state) {
+bool Lexer::parseHeredoc(LexerControl * state) {
     if (!state -> stack_token || !state -> stack_token -> data) {
         state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack status for heredoc content"));
         return true; // false;
@@ -846,7 +846,7 @@ bool LexerFrontend::parseHeredoc(LexerControl * state) {
     return cutWord(state, lex, del_lex, flags);
 }
 
-bool LexerFrontend::parseRegexp(LexerControl * state) {
+bool Lexer::parseRegexp(LexerControl * state) {
     StateLexem lex = lex_none;
     StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
@@ -935,7 +935,7 @@ bool LexerFrontend::parseRegexp(LexerControl * state) {
     return status;
 }
 
-bool LexerFrontend::parseRegexpGroup(LexerControl * state) {
+bool Lexer::parseRegexpGroup(LexerControl * state) {
     bool has_error = false;
     bool parsed = false;
 
@@ -969,7 +969,7 @@ bool LexerFrontend::parseRegexpGroup(LexerControl * state) {
     return res;
 }
 
-bool LexerFrontend::parseComment(LexerControl * state) {
+bool Lexer::parseComment(LexerControl * state) {
     state -> next_offset = 0;
 
     if (state -> isBufferStart()) {
@@ -988,7 +988,7 @@ bool LexerFrontend::parseComment(LexerControl * state) {
     return false;
 }
 
-bool LexerFrontend::parseCharCode(LexerControl * state) {
+bool Lexer::parseCharCode(LexerControl * state) {
     bool has_error = false;
     bool parsed = false;
     state -> next_offset = 0;
@@ -1176,7 +1176,7 @@ bool LexerFrontend::parseCharCode(LexerControl * state) {
 }
 
 
-void LexerFrontend::lexicate(LexerControl * state) {
+void Lexer::lexicate(LexerControl * state) {
 //        a + b is interpreted as a.+(b)
 //        a + b is interpreted as a+b ( Here a is a local variable)
 //        a  +b is interpreted as a(+b) ( Here a is a method call)
@@ -1710,7 +1710,7 @@ void LexerFrontend::lexicate(LexerControl * state) {
 //        state -> validateHeredocState();
 }
 
-int LexerFrontend::rubyLineState(BlockUserData * udata, const int & prev_user_state, const bool & override_status) {
+int Lexer::rubyLineState(BlockUserData * udata, const int & prev_user_state, const bool & override_status) {
     //INFO: Hack for heredoc marks
     if (override_status || udata -> token_control) {
         TokenCell * it = udata -> token_control;
@@ -1747,11 +1747,11 @@ int LexerFrontend::rubyLineState(BlockUserData * udata, const int & prev_user_st
     return ILexer::lineState(udata);
 }
 
-LexerFrontend::LexerFrontend() {}
+Lexer::Lexer() {}
 
-LexerFrontend::~LexerFrontend() {}
+Lexer::~Lexer() {}
 
-void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
+void Lexer::handle(const QString & text, IHighlighter * lighter) {
     BlockUserData * prev_udata = lighter -> prevUserData();
     BlockUserData * udata = lighter -> userData();
 
@@ -1787,7 +1787,7 @@ void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
     lighter -> setUserState(new_state);
 }
 
-void LexerFrontend::paraOpositionStr(const PARA_TYPE & para, QString & res) {
+void Lexer::paraOpositionStr(const PARA_TYPE & para, QString & res) {
     switch(para) {
         case pt_curly_bracket:
         case pt_foldable_curly_bracket: { res = QLatin1Literal("}"); break;}
@@ -1842,7 +1842,7 @@ void LexerFrontend::paraOpositionStr(const PARA_TYPE & para, QString & res) {
 }
 
 
-bool LexerFrontend::isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end) {
+bool Lexer::isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end) {
     switch(lex) {
         case lex_inline_commentary_content:
         case lex_commentary_content:
@@ -1913,7 +1913,7 @@ bool LexerFrontend::isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at
     return true;
 }
 
-bool LexerFrontend::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & /*at_end*/) {
+bool Lexer::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & /*at_end*/) {
     switch(lex) {
         case lex_undefined: //INFO: compatibility for not lexable documents
 
@@ -1983,7 +1983,7 @@ bool LexerFrontend::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & 
     return false;
 }
 
-bool LexerFrontend::isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start) {
+bool Lexer::isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start) {
     switch(lex) {
         case lex_undefined: //INFO: compatibility for not lexable documents
 

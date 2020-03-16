@@ -36,8 +36,8 @@ SOURCES += main.cpp\
     lexer/js/js_predefined.cpp \
     lexer/lexer_context.cpp \
     lexer/ruby/ruby_grammar.cpp \
+    lexer/ruby/ruby_lexer.cpp \
     lexer/ruby/ruby_lexer_control.cpp \
-    lexer/ruby/ruby_lexer_frontend.cpp \
     lexer/ruby/ruby_predefined.cpp \
     lexer/yaml/yaml_lexer_frontend.cpp \
     lexer/yaml/yaml_predefined.cpp \
@@ -165,8 +165,8 @@ HEADERS  += ide_window.h \
     lexer/para_type.h \
     lexer/ruby/_ruby_flags.h \
     lexer/ruby/ruby_grammar.h \
+    lexer/ruby/ruby_lexer.h \
     lexer/ruby/ruby_lexer_control.h \
-    lexer/ruby/ruby_lexer_frontend.h \
     lexer/ruby/ruby_para_lexem.h \
     lexer/ruby/ruby_predefined.h \
     lexer/ruby/ruby_state_lexems.h \
