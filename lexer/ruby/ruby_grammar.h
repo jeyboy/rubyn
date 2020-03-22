@@ -25,7 +25,7 @@ namespace Ruby {
 
         LEXEM_TYPE stateForHeredoc(const LEXEM_TYPE & lex, const bool & content);
 
-        char percentagePresentationBlocker(const char & ch);
+        QChar percentagePresentationBlocker(const QChar & ch);
 
 //        bool isStackDroppable(const LEXEM_TYPE & lexem);
 

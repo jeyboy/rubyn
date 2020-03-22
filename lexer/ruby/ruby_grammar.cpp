@@ -2,7 +2,7 @@
 
 using namespace Ruby;
 
-Grammar::Grammar() : IGrammar() {
+Grammar::Grammar() {
     initParas();
 }
 
@@ -261,8 +261,8 @@ LEXEM_TYPE Grammar::stateForHeredoc(const LEXEM_TYPE & lex, const bool & content
     };
 }
 
-char Grammar::percentagePresentationBlocker(const char & ch) {
-    switch(ch) {
+QChar Grammar::percentagePresentationBlocker(const QChar & ch) {
+    switch(ch.toLatin1()) {
         case '(': return ')';
         case '[': return ']';
         case '{': return '}';

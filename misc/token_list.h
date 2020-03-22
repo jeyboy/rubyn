@@ -14,7 +14,7 @@ struct TokenCell {
     EDITOR_POS_TYPE start_pos;
     EDITOR_LEN_TYPE length;
 
-    QByteArray * data;
+    QString * data;
 
     TokenCell(const LEXEM_TYPE & lexem, const EDITOR_POS_TYPE & start_pos,
               const EDITOR_LEN_TYPE & length, TokenCell * prev_token = nullptr)

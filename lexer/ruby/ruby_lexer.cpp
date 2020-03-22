@@ -90,9 +90,11 @@ void Lexer::identifyWordType(LexerControl * state) {
                 bool is_const = true;
                 EDITOR_LEN_TYPE pos = 0;
 
-                const char * it = state -> cached;
+                QString::ConstIterator it = state -> cached.constBegin();
 
-                while(is_const && *++it && (++pos < state -> cached_length)) { is_const = is_const && isUpper(*it); }
+                for(; is_const && it != state -> cached.constEnd(); it++){
+                    is_const = is_const && it -> isUpper();
+                }
 
                 if (is_const)
                     state -> lex_word = lex_const;
@@ -659,7 +661,7 @@ bool Lexer::parsePercentagePresenation(LexerControl * state) {
         return true; // false;
     }
 
-    const char blocker = stack_state -> data -> operator[](0);
+    const QCharRef blocker = stack_state -> data -> operator[](0);
 
     LEXEM_TYPE stack_lexem = state -> stack_token -> lexem;
     LEXEM_TYPE lex = lex_none;
@@ -704,7 +706,7 @@ bool Lexer::parsePercentagePresenation(LexerControl * state) {
 }
 
 bool Lexer::parseHeredocMarks(LexerControl * state, LEXEM_TYPE & lex) {
-    const char * curr = state -> buffer + 2;
+    QString::ConstIterator curr = state -> buffer + 2;
     bool is_intended = false;
 
     if (*curr == '-' || *curr == '~') { // ~ added only in Ruby 2.3.0
@@ -712,7 +714,7 @@ bool Lexer::parseHeredocMarks(LexerControl * state, LEXEM_TYPE & lex) {
         is_intended = true;
     }
 
-    const char * control = curr;
+    QString::ConstIterator control = curr;
     bool is_simple = *curr == '\'';
     bool is_command = *curr == '`';
     bool is_quoted = is_simple || is_command || *curr == '"';
@@ -730,7 +732,7 @@ bool Lexer::parseHeredocMarks(LexerControl * state, LEXEM_TYPE & lex) {
         bool ended = false;
 
         while(!ended) {
-            switch(*++curr) {
+            switch((++curr) -> toLatin1()) {
                 case '\'':
                 case '"':
                 case '`': {
@@ -748,13 +750,13 @@ bool Lexer::parseHeredocMarks(LexerControl * state, LEXEM_TYPE & lex) {
     }
     else while(isWord(*(++curr)));
 
-    QByteArray doc_name(control, curr - control);
+    QString doc_name(control, curr - control);
     state -> buffer += (curr - state -> buffer) + (is_quoted ? 1 : 0);
     state -> next_offset = 0;
 
     bool res = cutWord(state, lex);
 
-    state -> registerHeredocMark(lex, new QByteArray(doc_name));
+    state -> registerHeredocMark(lex, new QString(doc_name));
     // decrease buffer on 1 symbol because after func we go to the iteration
     --state -> buffer;
 
@@ -771,7 +773,7 @@ bool Lexer::parseHeredoc(LexerControl * state) {
     LEXEM_TYPE del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 
-    QByteArray stop_token = *state -> stack_token -> data;
+    QString stop_token = *state -> stack_token -> data;
 
     if (state -> isBufferStart()) { // this branching required here?
         switch(state -> stack_token -> lexem) {
@@ -793,7 +795,7 @@ bool Lexer::parseHeredoc(LexerControl * state) {
                 if (*state -> buffer == stop_token[0]) {
                     int token_length = stop_token.length();
 
-                    if (QByteArray(state -> buffer, token_length) == stop_token && !isWord(*(state -> buffer + token_length))) {
+                    if (QString(state -> buffer, token_length) == stop_token && !isWord(*(state -> buffer + token_length))) {
                         state -> buffer += token_length;
                         state -> next_offset = 0;
                         lex = lex_heredoc_close_mark;
@@ -909,7 +911,7 @@ bool Lexer::parseRegexp(LexerControl * state) {
                 lex = lex_regexp_flags;
             break;}
             default: {
-                if (has_flags && isAlphaNum(ECHAR0)) {
+                if (has_flags && ECHAR0L.isLetterOrNumber()) {
                     has_wrong_flags = true;
                     state -> next_offset = 0;
                 }
@@ -1396,7 +1398,7 @@ void Lexer::lexicate(LexerControl * state) {
 
 
             case '!': {
-                if (isAlphaNum(ECHAR_1))
+                if (ECHAR_1L.isLetterOrNumber())
                     goto iterate;
 
                 if (ECHAR1 == '~' || ECHAR1 == '=')
@@ -1485,7 +1487,7 @@ void Lexer::lexicate(LexerControl * state) {
             case '-': {
                 if (ECHAR1 == '>' || ECHAR1 == '=')
                     ++state -> next_offset;
-                else if(isDigit(ECHAR1) && (state -> isBufferStart() || isBlank(ECHAR_1))) {
+                else if(ECHAR1L.isDigit() && (state -> isBufferStart() || isBlank(ECHAR_1))) {
                     goto parse_number;
                 }
 
@@ -1496,7 +1498,7 @@ void Lexer::lexicate(LexerControl * state) {
             case '+': {
                 if (ECHAR1 == '=')
                     ++state -> next_offset;
-                else if(isDigit(ECHAR1) && (state -> isBufferStart() || isBlank(ECHAR_1))) {
+                else if(ECHAR1L.isDigit() && (state -> isBufferStart() || isBlank(ECHAR_1))) {
                     goto parse_number;
                 }
 
@@ -1532,7 +1534,7 @@ void Lexer::lexicate(LexerControl * state) {
 
             case '%': {
                 StateLexem res = lex_none;
-                char braker = '\0';
+                QChar braker = '\0';
 
                 switch(ECHAR1) {
                     case '=': { ++state -> next_offset; break; }
@@ -1575,7 +1577,7 @@ void Lexer::lexicate(LexerControl * state) {
                         state -> stack_token -> data -> clear();
                         state -> stack_token -> data -> append(Grammar::obj().percentagePresentationBlocker(braker));
                     }
-                    else state -> stack_token -> data = new QByteArray(1, Grammar::obj().percentagePresentationBlocker(braker));
+                    else state -> stack_token -> data = new QString(1, Grammar::obj().percentagePresentationBlocker(braker));
 
                     if (!parsePercentagePresenation(state))
                         goto exit;
@@ -1595,7 +1597,7 @@ void Lexer::lexicate(LexerControl * state) {
                     LEXEM_TYPE lex = state -> lastNonBlankLexem();
                     bool next_is_blank = isBlank(ECHAR1);
 
-                    bool is_division = (lex != lex_none || (!state -> isBufferStart() && isAlphaNum(ECHAR_1))) &&
+                    bool is_division = (lex != lex_none || (!state -> isBufferStart() && ECHAR_1L.isLetterOrNumber())) &&
                         (next_is_blank || !(lex & lex_ruby_division_breaker));
 
                     if (is_division) {
@@ -1620,9 +1622,9 @@ void Lexer::lexicate(LexerControl * state) {
 
             case '$': {
                 bool has_match = false;
-                char next_char = ECHAR1;
+                const QChar & next_char = ECHAR1L;
 
-                switch(next_char) {
+                switch(next_char.toLatin1()) {
                     case '!':
                     case '@':
                     case '/':
@@ -1646,10 +1648,10 @@ void Lexer::lexicate(LexerControl * state) {
                     break; }
 
                     default: {
-                        const char & n1_char = ECHAR2;
+                        const QChar & n1_char = ECHAR2;
 
                         if (next_char == '-') {
-                            switch(n1_char) {
+                            switch(n1_char.toLatin1()) {
                                 case '0':
                                 case 'a':
                                 case 'd':
@@ -1667,11 +1669,11 @@ void Lexer::lexicate(LexerControl * state) {
                                 default:;
                             }
                         } else if (next_char == '_') {
-                            if (!isAlphaNum(n1_char)) {
+                            if (!n1_char.isLetterOrNumber()) {
                                 has_match = true;
                                 state -> next_offset += 2;
                             }
-                        } else if (isDigit(next_char)) { // $0-$99
+                        } else if (next_char.isDigit()) { // $0-$99
                             ++state -> buffer;
                             parseRegexpGroup(state);
                             goto iterate;
@@ -1759,7 +1761,6 @@ void Lexer::handle(const QString & text, IHighlighter * lighter) {
     lighter -> initCurrentBlockUserData(prev_udata, udata, text.length());
 
     LexerControl state(
-        &Ruby::Grammar::obj(),
         udata,
         prev_udata && prev_udata -> token_control ? prev_udata -> token_control : udata -> token_begin,
         lighter

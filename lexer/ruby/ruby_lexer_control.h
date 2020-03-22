@@ -9,17 +9,21 @@
 //#include "misc/stack.h"
 #include "lexer/lexer_stack_flags.h"
 //#include "scopes/scope.h"
-#include "lexer/igrammar.h"
+#include "ruby_grammar.h"
 #include "highlighter/ihighlighter.h"
 #include "highlighter/highlight_format_factory.h"
 
+#define ECHAR0L (*(state -> buffer))
 #define ECHAR0 (*(state -> buffer)).toLatin1()
+#define ECHAR1L (*(state -> buffer + 1))
 #define ECHAR1 (*(state -> buffer + 1)).toLatin1()
-#define ECHAR2 (*(state -> buffer + 2)).toLatin1()
+#define ECHAR2L (*(state -> buffer + 2))
+//#define ECHAR2 (*(state -> buffer + 2)).toLatin1()
 #define ECHAR3 (*(state -> buffer + 3)).toLatin1()
 #define ECHAR4 (*(state -> buffer + 4)).toLatin1()
 #define ECHAR5 (*(state -> buffer + 5)).toLatin1()
 #define ECHAR_1 (*(state -> buffer - 1)).toLatin1()
+#define ECHAR_1L (*(state -> buffer - 1))
 
 #define SCHAR0 (*(state -> prev)).toLatin1()
 #define SCHAR1 (*(state -> prev + 1)).toLatin1()
@@ -29,7 +33,7 @@ namespace Ruby {
     struct LexerControl {
         IHighlighter * lighter;
 
-        IGrammar * grammar;
+        Ruby::Grammar * grammar;
         //    Scope * scope;
 
         LEXEM_TYPE lex_prev_word;
@@ -64,8 +68,8 @@ namespace Ruby {
 
         BlockUserData *& user_data;
 
-        LexerControl(IGrammar * cgrammar, BlockUserData *& user_data, TokenCell * stack_token = nullptr, IHighlighter * lighter = nullptr) :
-            lighter(lighter), grammar(cgrammar),
+        LexerControl(BlockUserData *& user_data, TokenCell * stack_token = nullptr, IHighlighter * lighter = nullptr) :
+            lighter(lighter), grammar(&Ruby::Grammar::obj()),
             lex_prev_word(lex_none), lex_word(lex_none), lex_delimiter(lex_none), next_offset(1), heredoc_token(nullptr),
             stack_token(stack_token), token(user_data -> lineControlToken()), last_non_blank_token(nullptr),
             para(user_data -> lineControlPara()), control_para(nullptr), active_para(nullptr),
@@ -428,7 +432,7 @@ namespace Ruby {
         }
 
         void validateHeredocState();
-        void registerHeredocMark(const LEXEM_TYPE & lexem, QByteArray * name);
+        void registerHeredocMark(const LEXEM_TYPE & lexem, QString * name);
     };
 }
 

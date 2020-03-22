@@ -16,20 +16,27 @@ class ILexer {
 
     //unsigned int hCount{0}; for(const auto& c : str) if(c == '#') ++hCount;
 protected:
-    inline bool isBDigit(const char & c) { return c == '0' || c == '1'; }
-    inline bool isODigit(const char & c) { return c >= '0' && c <= '7'; }
-    inline bool isDigit(const char & c) { return c >= '0' && c <= '9'; }
-    inline bool isHDigit(const char & c) { return isDigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'); }
+    inline bool isWord(const QChar & c, const bool & with_digits = true) { return c == '_' || c.isLetter() || (with_digits && c.isDigit()); }
+    inline bool isBlank(const QChar & c) { return c == ' ' || c == '\t'; }
+    inline bool isBDigit(const QChar & c) { return c == '0' || c == '1'; }
+    inline bool isODigit(const QChar & c) { return c >= '0' && c <= '7'; }
+    inline bool isHDigit(const QChar & c) { return c.isDigit() || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'); }
 
-    inline bool isUpper(const char & c) { return c >= 'A' && c <= 'Z'; }
-    inline bool isLower(const char & c) { return c >= 'a' && c <= 'z'; }
-    inline bool isAlpha(const char & c) { return isLower(c) || isUpper(c); }
-    inline bool isAlphaNum(const char & c) { return isAlpha(c) || isDigit(c); }
 
-    inline bool isWord(const char & c, const bool & with_digits = true) { return c == '_' || isAlpha(c) || (with_digits && isDigit(c)); }
+//    inline bool isBDigit(const char & c) { return c == '0' || c == '1'; }
+//    inline bool isODigit(const char & c) { return c >= '0' && c <= '7'; }
+//    inline bool isDigit(const char & c) { return c >= '0' && c <= '9'; }
+//    inline bool isHDigit(const char & c) { return isDigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'); }
+
+//    inline bool isUpper(const char & c) { return c >= 'A' && c <= 'Z'; }
+//    inline bool isLower(const char & c) { return c >= 'a' && c <= 'z'; }
+//    inline bool isAlpha(const char & c) { return isLower(c) || isUpper(c); }
+//    inline bool isAlphaNum(const char & c) { return isAlpha(c) || isDigit(c); }
+
+//    inline bool isWord(const char & c, const bool & with_digits = true) { return c == '_' || isAlpha(c) || (with_digits && isDigit(c)); }
 
     //    bool ILexer::isCtrl(const char & c) { return c >= 0 && c < 0x20 || c == 0x7f; }
-    inline bool isBlank(const char & c) { return c == ' ' || c == '\t'; }
+
     //bool ILexer::isSpace(const char & c) { return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v'; }
         //template<typename ch_t> inline bool is_punct(ch_t c)   {   return c>='!' && c<='/' || c>=':' && c<='@' || c>='[' && c<='`' || c>='{' && c<='~';    }
         //template<typename ch_t> inline bool is_graph(ch_t c)   {   return c>='!' && c<='~';    }

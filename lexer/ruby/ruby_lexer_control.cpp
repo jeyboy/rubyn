@@ -23,7 +23,7 @@ void LexerControl::validateHeredocState() {
     }
 }
 
-void LexerControl::registerHeredocMark(const LEXEM_TYPE & lexem, QByteArray * name) {
+void LexerControl::registerHeredocMark(const LEXEM_TYPE & lexem, QString * name) {
     StateLexem doc_lex = lex_none;
 
     switch(lexem) {
