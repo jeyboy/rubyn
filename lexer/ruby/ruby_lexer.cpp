@@ -86,10 +86,11 @@ void Lexer::identifyWordType(LexerControl * state) {
         default: {
             if (ECHAR_1 == ':')
                 state -> lex_word = lex_symbol_key;
-            else if (isUpper(state -> cached[0])) {
-                const char * it = state -> cached;
+            else if (state -> cached[0].isUpper()) {
                 bool is_const = true;
                 EDITOR_LEN_TYPE pos = 0;
+
+                const char * it = state -> cached;
 
                 while(is_const && *++it && (++pos < state -> cached_length)) { is_const = is_const && isUpper(*it); }
 
@@ -1755,7 +1756,6 @@ void Lexer::handle(const QString & text, IHighlighter * lighter) {
     BlockUserData * prev_udata = lighter -> prevUserData();
     BlockUserData * udata = lighter -> userData();
 
-    QByteArray text_val = text.toUtf8();
     lighter -> initCurrentBlockUserData(prev_udata, udata, text.length());
 
     LexerControl state(
@@ -1766,12 +1766,11 @@ void Lexer::handle(const QString & text, IHighlighter * lighter) {
     );
 
 
-    const char * window = text_val.constData();
-    bool override_status = false;
-
-    state.setBuffer(window);
+    state.setBuffer(text);
 
     lexicate(&state);
+
+    bool override_status = false;
 
     if (udata -> para_control && (!state.control_para || (state.control_para -> para_type != udata -> para_control -> para_type))) {
         if (udata -> isFolded()) {

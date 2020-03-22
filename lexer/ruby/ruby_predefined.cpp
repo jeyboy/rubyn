@@ -233,7 +233,7 @@ Predefined::Predefined() {
 }
 
 
-bool Predefined::hasKey(const QByteArray & key) { return keys.contains(key); }
-LEXEM_TYPE Predefined::lexem(const QByteArray & key) {
+bool Predefined::hasKey(const QString & key) { return keys.contains(key); }
+LEXEM_TYPE Predefined::lexem(const QString & key) {
     return keys.value(key, lex_word);
 }

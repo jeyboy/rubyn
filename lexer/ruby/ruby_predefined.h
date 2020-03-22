@@ -12,13 +12,13 @@
 
 namespace Ruby {
     class Predefined : public Singleton<Predefined> {
-        QHash<QByteArray, LEXEM_TYPE> keys;
+        QHash<QString, LEXEM_TYPE> keys;
 
         Predefined();
         friend class Singleton<Predefined>;
     public:
-        bool hasKey(const QByteArray & key);
-        LEXEM_TYPE lexem(const QByteArray & key);
+        bool hasKey(const QString & key);
+        LEXEM_TYPE lexem(const QString & key);
     };
 }
 

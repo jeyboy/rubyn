@@ -13,17 +13,17 @@
 #include "highlighter/ihighlighter.h"
 #include "highlighter/highlight_format_factory.h"
 
-#define ECHAR0 *(state -> buffer)
-#define ECHAR1 *(state -> buffer + 1)
-#define ECHAR2 *(state -> buffer + 2)
-#define ECHAR3 *(state -> buffer + 3)
-#define ECHAR4 *(state -> buffer + 4)
-#define ECHAR5 *(state -> buffer + 5)
-#define ECHAR_1 *(state -> buffer - 1)
+#define ECHAR0 (*(state -> buffer)).toLatin1()
+#define ECHAR1 (*(state -> buffer + 1)).toLatin1()
+#define ECHAR2 (*(state -> buffer + 2)).toLatin1()
+#define ECHAR3 (*(state -> buffer + 3)).toLatin1()
+#define ECHAR4 (*(state -> buffer + 4)).toLatin1()
+#define ECHAR5 (*(state -> buffer + 5)).toLatin1()
+#define ECHAR_1 (*(state -> buffer - 1)).toLatin1()
 
-#define SCHAR0 *(state -> prev)
-#define SCHAR1 *(state -> prev + 1)
-#define SCHAR2 *(state -> prev + 2)
+#define SCHAR0 (*(state -> prev)).toLatin1()
+#define SCHAR1 (*(state -> prev + 1)).toLatin1()
+#define SCHAR2 (*(state -> prev + 2)).toLatin1()
 
 namespace Ruby {
     struct LexerControl {
@@ -31,8 +31,6 @@ namespace Ruby {
 
         IGrammar * grammar;
         //    Scope * scope;
-
-        QByteArray cached;
 
         LEXEM_TYPE lex_prev_word;
         LEXEM_TYPE lex_word;
@@ -57,9 +55,12 @@ namespace Ruby {
         EDITOR_POS_TYPE last_light_pos;
         EDITOR_LEN_TYPE last_light_len;
 
-        const char * start;
-        const char * buffer;
-        const char * prev;
+        QString::ConstIterator buffer;
+        QString::ConstIterator prev;
+        QString::ConstIterator start;
+        QString::ConstIterator end;
+
+        QString cached;
 
         BlockUserData *& user_data;
 
@@ -69,21 +70,24 @@ namespace Ruby {
             stack_token(stack_token), token(user_data -> lineControlToken()), last_non_blank_token(nullptr),
             para(user_data -> lineControlPara()), control_para(nullptr), active_para(nullptr),
             last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2),
-            last_light_len(0), start(nullptr), buffer(nullptr), prev(nullptr), user_data(user_data)
+            last_light_len(0), user_data(user_data)
         {}
 
         ~LexerControl() {}
 
-        inline void setBuffer(const char * buff) {
+        inline void setBuffer(const QString & buff) {
             cached.clear();
-            prev = start = buffer = buff;
+
+            start = prev = buffer = buff.constBegin();
+            end = buff.constEnd();
+
             cached_str_pos = cached_length = 0;
             next_offset = 1;
         }
-        inline void moveBufferToEnd() { buffer = start + strlen(start); }
+        inline void moveBufferToEnd() { buffer = end; }
         inline bool isBufferStart() { return buffer == start; }
-        inline bool isBufferEof() { return *buffer == 0; }
-        inline bool bufferIsEmpty() { return *start == '\0'; }
+        inline bool isBufferEof() { return buffer >= end; }
+        inline bool bufferIsEmpty() { return start == end; }
 
         inline void cachingPredicate() {
             cached_str_pos = bufferPos();
