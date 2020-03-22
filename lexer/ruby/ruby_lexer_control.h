@@ -139,68 +139,9 @@ namespace Ruby {
             return lex_none;
         }
 
-        inline void procStackable(const Ruby::StateLexem & lexem, const uint & flags) {
-            if (flags != slf_none) {
-                bool stackable = flags & slf_stackable;
-                bool unstackable = flags & slf_unstackable;
+        void procStackable(const Ruby::StateLexem & lexem, const uint & flags);
 
-                if (unstackable) {
-                    if (stack_token) {
-                        attachPara(grammar -> paraType(lexem), flags, true);
-
-                        if (!grammar -> stackDropable((Ruby::StateLexem &)stack_token -> lexem, lexem))
-                            cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
-                        else {
-    //                        lex_prev_word = stack_token -> stacked_state_lexem;
-
-    //                        if (lex_prev_word == lex_none)
-    //                            lex_prev_word = stack_token -> lexem;
-
-                            stack_token = stack_token -> stacked_prev;
-                        }
-                    } else {
-                        cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
-                    }
-                }
-
-                if (stackable) {
-                    if (!heredoc_token) {
-                        heredoc_token = token;
-                    }
-
-                    token -> stacked_prev = stack_token;
-                    stack_token = token;
-
-    //                stack_token -> stacked_state_lexem = lex_none; //stack_word ? lex_prev_word : lex_word;
-                    lex_prev_word = lex_none;
-
-                    attachPara(grammar -> paraType(lexem), flags, false);
-                }
-
-    //            lex_word = lex_none;
-    //            lex_delimiter = lex_none;
-            }
-        }
-
-        inline void attachToken(const Ruby::StateLexem & lexem, const uint & flags = slf_none) {
-            if (token -> next) {
-                token = token -> next;
-                token -> lexem = lexem;
-                token -> start_pos = cached_str_pos;
-                token -> length = cached_length;
-
-                if (token -> data) {
-                    delete token -> data;
-                    token -> data = nullptr;
-                }
-            }
-            else token = TokenList::insert(token, lexem, cached_str_pos, cached_length);
-
-            if (token -> lexem >= lex_none)
-                last_non_blank_token = token;
-
-            procStackable(lexem, flags);
-        }
+        void attachToken(const Ruby::StateLexem & lexem, const uint & flags = slf_none);
     //    inline void replaceToken(const StateLexem & lexem, const uint & flags = slf_none) {
     //        token -> lexem = lexem;
     //        token -> length += cached_length;
@@ -324,113 +265,12 @@ namespace Ruby {
     //        return false;
     //    }
 
-        inline ParaCell * paraParent(int & lines_between, ParaCell * para, const bool & foldable, const bool & only_blockators = false) {
-            ParaCell * it = para -> prev;
-            lines_between = 0;
+        ParaCell * paraParent(int & lines_between, ParaCell * para, const bool & foldable, const bool & only_blockators = false);
 
-            while(it) {
-                if (it -> pos == -1) {
-                    ++lines_between;
-                    it = it -> prev;
-
-                    if (it && it -> pos == -1)
-                        it = it -> prev;
-                } else {
-                    if (it -> is_opener && it -> is_foldable == foldable) {
-                        if (!only_blockators || (only_blockators && it -> is_blockator))
-                            return it;
-                    }
-
-                    if (!it -> is_opener && it -> closer) {
-                        it = it -> closer;
-                        // this broke foldable curly brackets
-    //                    lines_between += (it -> closer -> is_oneliner && it -> closer -> is_foldable ? 0 : 1);
-                    }
-
-                    it = it -> prev;
-                }
-            }
-
-            return nullptr;
-        }
-
-        inline void attachPara(const PARA_TYPE & ptype, const uint & flags, const bool & closable) {
-            if (!ptype) return;
-
-            bool replaceable = flags & slf_replace_word;
-
-            if (!replaceable || (replaceable && closable)) {
-                if (para -> next) {
-                    para = para -> next;
-
-                    if (!para -> is_opener)
-                        para -> closer = nullptr;
-
-                    para -> para_type = ptype;
-                    para -> pos = cached_str_pos;
-                    para -> length = quint8(cached_length); // 8 bits should be enough for any type of para
-
-                    para -> is_foldable = false;
-                    para -> is_oneliner = false;
-                }
-                else para = ParaList::insert(para, ptype, cached_str_pos, quint8(cached_length));
-
-                para -> is_blockator = !replaceable;
-            }
-
-            para -> is_opener = !closable;
-            para -> is_foldable = ptype & pt_foldable;
-
-            if (closable) {
-                int lines_between;
-                ParaCell * parent = paraParent(lines_between, para, para -> is_foldable, false);
-
-                if (parent) {
-                    if (para -> is_foldable) {
-                        if (!replaceable && parent -> is_blockator == false) {
-                            user_data -> level -= lines_between > 0 ? 2 : 1;
-
-                            parent -> is_oneliner = parent -> is_blockator ? lines_between == 1 : lines_between < 2;
-
-                            if (para -> is_foldable)
-                                parent = paraParent(lines_between, para, true, true);
-                        } else if (lines_between > 0 && parent -> is_blockator != replaceable) {
-                            parent -> is_oneliner = lines_between < 2;
-                            --user_data -> level;
-                        }
-                    }
-
-                    if (parent) {
-                        parent -> is_oneliner = parent -> is_oneliner || lines_between == 0;
-
-                        if (!replaceable) {
-                            if (parent -> closer && parent -> closer != para)
-                                parent -> closer -> closer = nullptr;
-
-                            parent -> closer = para;
-
-                            if (para -> closer && para -> closer != parent)
-                                para -> closer -> closer = nullptr;
-
-                            para -> closer = parent;
-                        }
-                    }
-                }
-                else para -> closer = nullptr;
-
-                if (parent && parent -> is_oneliner && para -> is_foldable) {
-                    control_para = prevFoldableInActiveParaLine(parent);
-                    return;
-                }
-            }
-
-            if (para -> is_foldable) {
-                control_para = para;
-            }
-        }
+        void attachPara(const Ruby::ParaLexem & ptype, const uint & flags, const bool & closable);
 
         void validateHeredocState();
-        void registerHeredocMark(const LEXEM_TYPE & lexem, QString * name);
+        void registerHeredocMark(const Ruby::StateLexem & lexem, QString * name);
     };
 }
 
