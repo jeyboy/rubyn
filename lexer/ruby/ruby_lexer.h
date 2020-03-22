@@ -37,9 +37,9 @@ namespace Ruby {
         void registerModule(LexerControl * state);
 
         void identifyWordType(LexerControl * state);
-        LEXEM_TYPE translateState(LexerControl * state, const LEXEM_TYPE & lex1, const LEXEM_TYPE & lex2);
-        bool cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem = lex_none,
-                     const LEXEM_TYPE & predefined_delimiter = lex_none, StackLexemFlag flags = slf_none);
+        Ruby::StateLexem translateState(LexerControl * state, const Ruby::StateLexem & lex1, const Ruby::StateLexem & lex2);
+        bool cutWord(LexerControl * state, const Ruby::StateLexem & predefined_lexem = lex_none,
+                     const Ruby::StateLexem & predefined_delimiter = lex_none, StackLexemFlag flags = slf_none);
 
         bool parseContinious(LexerControl * state);
         bool parseNumber(LexerControl * state);
@@ -47,7 +47,7 @@ namespace Ruby {
         bool parseEString(LexerControl * state);
         bool parseCommand(LexerControl * state);
         bool parsePercentagePresenation(LexerControl * state);
-        bool parseHeredocMarks(LexerControl * state, LEXEM_TYPE & lex);
+        bool parseHeredocMarks(LexerControl * state, Ruby::StateLexem & lex);
         bool parseHeredoc(LexerControl * state);
         bool parseRegexp(LexerControl * state);
         bool parseRegexpGroup(LexerControl * state);

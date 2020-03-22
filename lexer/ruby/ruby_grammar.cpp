@@ -62,7 +62,7 @@ void Grammar::initParas() {
     para_tokens[lex_commentary_end] = pt_close_foldable_comment;
 }
 
-void Grammar::initFlags(StackLexemFlag & flags, const LEXEM_TYPE & lex, const LEXEM_TYPE & last_non_blank_lex) {
+void Grammar::initFlags(StackLexemFlag & flags, const Ruby::StateLexem & lex, const Ruby::StateLexem & last_non_blank_lex) {
     switch(lex) {
         case lex_end:
         case lex_commentary_end:
@@ -146,7 +146,7 @@ void Grammar::initFlags(StackLexemFlag & flags, const LEXEM_TYPE & lex, const LE
     }
 }
 
-bool Grammar::stackDropable(const LEXEM_TYPE & state, const LEXEM_TYPE & input) {
+bool Grammar::stackDropable(const Ruby::StateLexem & state, const Ruby::StateLexem & input) {
     switch(state) {
         case lex_if:
             return input == lex_end || input == lex_elsif || input == lex_else || input == lex_then;
@@ -242,7 +242,7 @@ bool Grammar::stackDropable(const LEXEM_TYPE & state, const LEXEM_TYPE & input) 
 //    };
 //}
 
-LEXEM_TYPE Grammar::stateForHeredoc(const LEXEM_TYPE & lex, const bool & content) {
+Ruby::StateLexem Grammar::stateForHeredoc(const Ruby::StateLexem & lex, const bool & content) {
     switch(lex) {
         case lex_eheredoc_intended_start:
             return content ? lex_eheredoc_intended_content : lex_eheredoc_intended_end;
@@ -306,7 +306,7 @@ QChar Grammar::percentagePresentationBlocker(const QChar & ch) {
 //    }
 //}
 
-Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
+Identifier Grammar::toHighlightable(const Ruby::StateLexem & lexem) {
     switch(lexem) {
         case lex_method_def:
         case lex_class_def:
@@ -470,14 +470,14 @@ Identifier Grammar::toHighlightable(const LEXEM_TYPE & lexem) {
     }
 }
 
-LEXEM_TYPE Grammar::translate(const LEXEM_TYPE & state, const LEXEM_TYPE & handle) {
+Ruby::StateLexem Grammar::translate(const Ruby::StateLexem & state, const Ruby::StateLexem & handle) {
     if (state == lex_none)
         return handle;
 
     if (handle == lex_none)
         return state;
 
-    LEXEM_TYPE input = handle;
+    Ruby::StateLexem input = handle;
 
     if (handle == lex_blanks || handle == lex_tabs)
         input = lex_spacing;

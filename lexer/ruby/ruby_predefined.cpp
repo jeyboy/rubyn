@@ -234,6 +234,6 @@ Predefined::Predefined() {
 
 
 bool Predefined::hasKey(const QString & key) { return keys.contains(key); }
-LEXEM_TYPE Predefined::lexem(const QString & key) {
+Ruby::StateLexem Predefined::lexem(const QString & key) {
     return keys.value(key, lex_word);
 }

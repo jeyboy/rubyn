@@ -103,8 +103,8 @@ void Lexer::identifyWordType(LexerControl * state) {
     }
 }
 
-LEXEM_TYPE Lexer::translateState(LexerControl * state, const LEXEM_TYPE & lex1, const LEXEM_TYPE & lex2) {
-    LEXEM_TYPE new_state = state -> grammar -> translate(lex1, lex2);
+Ruby::StateLexem Lexer::translateState(LexerControl * state, const Ruby::StateLexem & lex1, const Ruby::StateLexem & lex2) {
+    Ruby::StateLexem new_state = state -> grammar -> translate(lex1, lex2);
 
     switch(new_state) {
         case lex_method_def_scoped_delimiter: {
@@ -147,7 +147,7 @@ LEXEM_TYPE Lexer::translateState(LexerControl * state, const LEXEM_TYPE & lex1, 
 }
 
 
-//bool Lexer::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem, const LEXEM_TYPE & predefined_delimiter, StackLexemFlag flags) {
+//bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_lexem, const Ruby::StateLexem & predefined_delimiter, StackLexemFlag flags) {
 //    bool has_predefined = predefined_lexem != lex_none;
 
 //    state -> cachingPredicate();
@@ -255,7 +255,7 @@ LEXEM_TYPE Lexer::translateState(LexerControl * state, const LEXEM_TYPE & lex1, 
 //}
 
 
-bool Lexer::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem, const LEXEM_TYPE & predefined_delimiter, StackLexemFlag flags) {
+bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_lexem, const Ruby::StateLexem & predefined_delimiter, StackLexemFlag flags) {
     bool has_predefined = predefined_lexem != lex_none;
     uint delimiter_flags = flags & slf_delimiter_related;
 
@@ -265,7 +265,7 @@ bool Lexer::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem, c
         if (has_predefined)
             state -> lex_word = predefined_lexem;
         else {
-            LEXEM_TYPE pot_lex = Predefined::obj().lexem(state -> cached);
+            Ruby::StateLexem pot_lex = Predefined::obj().lexem(state -> cached);
 
 //            switch(pot_lex) {
 //                case lex_yield: { break; } // yield can call through object: 'block.yield'
@@ -281,7 +281,7 @@ bool Lexer::cutWord(LexerControl * state, const LEXEM_TYPE & predefined_lexem, c
         }
 
         if (state -> cached_length) {
-            LEXEM_TYPE last_non_blank = state -> lastNonBlankLexem();
+            Ruby::StateLexem last_non_blank = state -> lastNonBlankLexem();
 
             if (state -> lex_word == lex_word) {
                 switch(last_non_blank) {
@@ -663,9 +663,9 @@ bool Lexer::parsePercentagePresenation(LexerControl * state) {
 
     const QCharRef blocker = stack_state -> data -> operator[](0);
 
-    LEXEM_TYPE stack_lexem = state -> stack_token -> lexem;
-    LEXEM_TYPE lex = lex_none;
-    LEXEM_TYPE del_lex = lex_none;
+    Ruby::StateLexem stack_lexem = (Ruby::StateLexem)state -> stack_token -> lexem;
+    Ruby::StateLexem lex = lex_none;
+    Ruby::StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 
     bool is_interable = stack_lexem != lex_percent_presentation_start;
@@ -705,7 +705,7 @@ bool Lexer::parsePercentagePresenation(LexerControl * state) {
     return cutWord(state, lex, del_lex, flags);
 }
 
-bool Lexer::parseHeredocMarks(LexerControl * state, LEXEM_TYPE & lex) {
+bool Lexer::parseHeredocMarks(LexerControl * state, Ruby::StateLexem & lex) {
     QString::ConstIterator curr = state -> buffer + 2;
     bool is_intended = false;
 
@@ -769,8 +769,8 @@ bool Lexer::parseHeredoc(LexerControl * state) {
         return true; // false;
     }
 
-    LEXEM_TYPE lex = lex_none;
-    LEXEM_TYPE del_lex = lex_none;
+    Ruby::StateLexem lex = lex_none;
+    Ruby::StateLexem del_lex = lex_none;
     StackLexemFlag flags = slf_none;
 
     QString stop_token = *state -> stack_token -> data;
@@ -823,7 +823,7 @@ bool Lexer::parseHeredoc(LexerControl * state) {
                         case '#': {
                             if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                                 ++state -> next_offset;
-                                lex = Grammar::obj().stateForHeredoc(state -> stack_token -> lexem, true);
+                                lex = Grammar::obj().stateForHeredoc((Ruby::StateLexem)state -> stack_token -> lexem, true);
                                 del_lex = lex_heredoc_interception;
                                 flags = slf_stack_delimiter;
                             }
@@ -831,7 +831,7 @@ bool Lexer::parseHeredoc(LexerControl * state) {
 
                         case 0: {
                             state -> next_offset = 0;
-                            lex = Grammar::obj().stateForHeredoc(state -> stack_token -> lexem, true);
+                            lex = Grammar::obj().stateForHeredoc((Ruby::StateLexem)state -> stack_token -> lexem, true);
                             del_lex = lex_none;
                         break;}
                     }
@@ -1410,7 +1410,7 @@ void Lexer::lexicate(LexerControl * state) {
 
             case '?': {
                 uint len = state -> strLength();
-                LEXEM_TYPE lex = lex_ternary_main_start;
+                Ruby::StateLexem lex = lex_ternary_main_start;
 
                 if (len == 0) {
                     LEXEM_TYPE sublex = state -> lastNonBlankLexem();
@@ -1434,7 +1434,7 @@ void Lexer::lexicate(LexerControl * state) {
 
 
             case '<': {
-                LEXEM_TYPE lex = lex_none;
+                Ruby::StateLexem lex = lex_none;
 
                 if (ECHAR1 == '<') {
                     ++state -> next_offset;

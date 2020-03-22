@@ -2,14 +2,12 @@
 #define RUBY_LEXER_CONTROL_H
 
 //#include "misc/stack.h"
-#include "ruby_state_lexems.h"
-#include "lexer/ilexer_control.h"
-//#include "scopes/scope.h"
-
-//#include "misc/stack.h"
 #include "lexer/lexer_stack_flags.h"
 //#include "scopes/scope.h"
 #include "ruby_grammar.h"
+#include "ruby_state_lexems.h"
+#include "lexer/ilexer_control.h"
+
 #include "highlighter/ihighlighter.h"
 #include "highlighter/highlight_format_factory.h"
 
@@ -36,9 +34,9 @@ namespace Ruby {
         Ruby::Grammar * grammar;
         //    Scope * scope;
 
-        LEXEM_TYPE lex_prev_word;
-        LEXEM_TYPE lex_word;
-        LEXEM_TYPE lex_delimiter;
+        Ruby::StateLexem lex_prev_word;
+        Ruby::StateLexem lex_word;
+        Ruby::StateLexem lex_delimiter;
 
         quint8 next_offset;
 
@@ -123,17 +121,17 @@ namespace Ruby {
         inline EDITOR_POS_TYPE bufferPos() { return prev - start; }
         inline EDITOR_LEN_TYPE strLength() { return static_cast<EDITOR_LEN_TYPE>(buffer - prev); }
 
-        inline LEXEM_TYPE & sublastToken() { return token -> prev -> lexem; }
-        inline LEXEM_TYPE & lastToken() { return token -> lexem; }
-        inline LEXEM_TYPE lastNonBlankLexem() {
+        inline Ruby::StateLexem & sublastToken() { return (Ruby::StateLexem &)(token -> prev -> lexem); }
+        inline Ruby::StateLexem & lastToken() { return (Ruby::StateLexem &)(token -> lexem); }
+        inline Ruby::StateLexem lastNonBlankLexem() {
             if (last_non_blank_token)
-                return last_non_blank_token -> lexem;
+                return Ruby::StateLexem(last_non_blank_token -> lexem);
 
             TokenCell * it = token;
 
             while(it) {
                 if (it -> lexem >= lex_none)
-                    return (last_non_blank_token = it) -> lexem;
+                    return Ruby::StateLexem((last_non_blank_token = it) -> lexem);
 
                 it = it -> prev;
             }
@@ -141,7 +139,7 @@ namespace Ruby {
             return lex_none;
         }
 
-        inline void procStackable(const LEXEM_TYPE & lexem, const uint & flags) {
+        inline void procStackable(const Ruby::StateLexem & lexem, const uint & flags) {
             if (flags != slf_none) {
                 bool stackable = flags & slf_stackable;
                 bool unstackable = flags & slf_unstackable;
@@ -150,7 +148,7 @@ namespace Ruby {
                     if (stack_token) {
                         attachPara(grammar -> paraType(lexem), flags, true);
 
-                        if (!grammar -> stackDropable(stack_token -> lexem, lexem))
+                        if (!grammar -> stackDropable((Ruby::StateLexem &)stack_token -> lexem, lexem))
                             cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
                         else {
     //                        lex_prev_word = stack_token -> stacked_state_lexem;
@@ -184,7 +182,7 @@ namespace Ruby {
             }
         }
 
-        inline void attachToken(const LEXEM_TYPE & lexem, const uint & flags = slf_none) {
+        inline void attachToken(const Ruby::StateLexem & lexem, const uint & flags = slf_none) {
             if (token -> next) {
                 token = token -> next;
                 token -> lexem = lexem;
@@ -256,14 +254,14 @@ namespace Ruby {
                 HighlightFormatFactory::obj().getFormatFor(uid)
             );
         }
-        inline void light(const LEXEM_TYPE & lexem) {
+        inline void light(const Ruby::StateLexem & lexem) {
             light(grammar -> toHighlightable(lexem));
         }
-        inline void cacheAndLightWithMessage(const LEXEM_TYPE & lexem, const QByteArray & msg) {
+        inline void cacheAndLightWithMessage(const Ruby::StateLexem & lexem, const QByteArray & msg) {
             cachingPredicate();
             lightWithMessage(lexem, msg);
         }
-        inline void lightWithMessage(const LEXEM_TYPE & lexem, const QByteArray & msg) {
+        inline void lightWithMessage(const Ruby::StateLexem & lexem, const QByteArray & msg) {
             light(lexem);
 
             if (lexem == lex_error) {
