@@ -1402,6 +1402,11 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     QPainter painter(viewport());
 
+    if (para_info.update_requires) {
+        para_info.update_requires = false;
+        cursorMoved();
+    }
+
     painter.save();
 
     customPaintEvent(painter, e);
@@ -1409,62 +1414,6 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
     painter.restore();
 
     drawCharsLimiter(painter);
-
-/////////// HIGHLIGHT BLOCKS ////////////////
-
-//    if (!d->m_highlightBlocksInfo.isEmpty()) {
-//        const QColor baseColor = palette().base().color();
-
-//        // extra pass for the block highlight
-
-//        const int margin = 5;
-//        QTextBlock blockFP = block;
-//        QPointF offsetFP = offset;
-//        while (blockFP.isValid()) {
-//            QRectF r = blockBoundingRect(blockFP).translated(offsetFP);
-
-//            int n = blockFP.blockNumber();
-//            int depth = 0;
-//            foreach (int i, d->m_highlightBlocksInfo.open)
-//                if (n >= i)
-//                    ++depth;
-//            foreach (int i, d->m_highlightBlocksInfo.close)
-//                if (n > i)
-//                    --depth;
-
-//            int count = d->m_highlightBlocksInfo.count();
-//            if (count) {
-//                for (int i = 0; i <= depth; ++i) {
-//                    const QColor &blendedColor = calcBlendColor(baseColor, i, count);
-//                    int vi = i > 0 ? d->m_highlightBlocksInfo.visualIndent.at(i-1) : 0;
-//                    QRectF oneRect = r;
-//                    oneRect.setWidth(qMax(viewport()->width(), documentWidth));
-//                    oneRect.adjust(vi, 0, 0, 0);
-//                    if (oneRect.left() >= oneRect.right())
-//                        continue;
-//                    if (lineX > 0 && oneRect.left() < lineX && oneRect.right() > lineX) {
-//                        QRectF otherRect = r;
-//                        otherRect.setLeft(lineX + 1);
-//                        otherRect.setRight(oneRect.right());
-//                        oneRect.setRight(lineX - 1);
-//                        painter.fillRect(otherRect, blendedColor);
-//                    }
-//                    painter.fillRect(oneRect, blendedColor);
-//                }
-//            }
-//            offsetFP.ry() += r.height();
-
-//            if (offsetFP.y() > viewportRect.height() + margin)
-//                break;
-
-//            blockFP = blockFP.next();
-//            if (!blockFP.isVisible()) {
-//                // invisible blocks do have zero line count
-//                blockFP = doc->findBlockByLineNumber(blockFP.firstLineNumber());
-//            }
-//        }
-//    }
-//////////////////////////////////////////////////////////////////
 
     drawFoldingOverlays(painter, e -> rect());
 
@@ -1529,7 +1478,7 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
 
     switch (curr_key) {
         case Qt::Key_Delete: {
-            para_info.clear();
+            para_info.update_requires = true;
             QPlainTextEdit::keyPressEvent(e);
         break;}
 
@@ -1624,11 +1573,11 @@ void CodeEditor::keyPressEvent(QKeyEvent * e) {
 }
 
 void CodeEditor::keyReleaseEvent(QKeyEvent * e) {
-    int curr_key = e -> key();
+//    int curr_key = e -> key();
 
-    switch (curr_key) {
-        case Qt::Key_Delete: { cursorMoved(); break;}
-    }
+//    switch (curr_key) {
+//        case Qt::Key_Delete: { cursorMoved(); break;}
+//    }
 
     QPlainTextEdit::keyReleaseEvent(e);
 }
@@ -1944,7 +1893,6 @@ void CodeEditor::searchInitiated(const QRegularExpression & pattern, const bool 
     }
     viewport() -> update();
 }
-
 void CodeEditor::searchNextResult(QString * replace) {
     qDebug() << "CodeEditor::searchNextResult" << replace;
 
@@ -2195,8 +2143,8 @@ void CodeEditor::cursorMoved() {
         else
             hideOverlay(OverlayInfo::ol_bottom);
 
-        viewport() -> update(); // update editor marks
-        update(); // update folding scope on extra area
+//        viewport() -> update(); // update editor marks
+//        update(); // update folding scope on extra area
     }
     else if (para_info.isValid()) {
         para_info.clear();
@@ -2204,8 +2152,8 @@ void CodeEditor::cursorMoved() {
         if (display_cacher -> isShowOverlay())
             hideOverlays();
 
-        viewport() -> update(); // update editor marks
-        update(); // update folding scope on extra area
+//        viewport() -> update(); // update editor marks
+//        update(); // update folding scope on extra area
     }
 }
 

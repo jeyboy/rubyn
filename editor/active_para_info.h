@@ -28,8 +28,9 @@ struct ActiveParaInfo {
     EDITOR_POS_TYPE level;
 
     QList<JPos> middles;
+    bool update_requires;
 
-    ActiveParaInfo() { clear(); }
+    ActiveParaInfo() : update_requires(false) { clear(); }
 
     inline bool isValid() { return start_block_num != NO_INFO; }
 
