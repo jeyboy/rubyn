@@ -1845,7 +1845,7 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
                             para = para -> next; // ignore default token for start of line
                         } else {
                             if (!para -> closer) {
-                                if (para -> is_oneliner || info.level + 1 == TextDocumentLayout::getBlockLevel(blk))
+                                if (/*para -> is_oneliner || */info.level + 1 == TextDocumentLayout::getBlockLevel(blk))
                                     info.addMiddle(end_pos, para -> pos, para -> length);
                             }
                         }
@@ -1863,7 +1863,7 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
                             para = para -> prev; // ignore default token for end of line
                         } else {
                             if (!para -> closer) {
-                                if (para -> is_oneliner || info.level + 1 == TextDocumentLayout::getBlockLevel(blk))
+                                if (/*para -> is_oneliner || */info.level + 1 == TextDocumentLayout::getBlockLevel(blk))
                                     info.addMiddle(start_pos, para -> pos, para -> length);
                             }
                         }

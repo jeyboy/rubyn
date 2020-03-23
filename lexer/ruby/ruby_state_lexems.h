@@ -16,7 +16,6 @@
 namespace Ruby {
     enum StateLexem : LEXEM_TYPE {
 
-
         lex_ruby_division_breaker = 1 << 9, // 512
         lex_ruby_ternary_braker = 1 << 10, // 1024
 //        1 << 11// 2048
