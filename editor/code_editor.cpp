@@ -1094,6 +1094,11 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
 
 void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
+    if (para_info.update_requires) {
+        para_info.update_requires = false;
+        cursorMoved();
+    }
+
     QRect view_rect = viewport() -> rect();
     QRect er = e -> rect();
     QHash<int, bool> folding_scopes;
@@ -1401,11 +1406,6 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 //    Logger::obj().startMark();
 
     QPainter painter(viewport());
-
-    if (para_info.update_requires) {
-        para_info.update_requires = false;
-        cursorMoved();
-    }
 
     painter.save();
 

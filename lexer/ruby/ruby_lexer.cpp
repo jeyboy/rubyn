@@ -1487,7 +1487,13 @@ void Lexer::lexicate(LexerControl * state) {
             case '-': {
                 if (ECHAR1 == '>' || ECHAR1 == '=')
                     ++state -> next_offset;
-                else if(ECHAR1L.isDigit() && (state -> isBufferStart() || isBlank(ECHAR_1))) {
+                else if(
+                    (
+                        ECHAR1L.isDigit() && (state -> isBufferStart() || isBlank(ECHAR_1))
+                    ) || (
+                        ECHAR1 == '.' && ECHAR2L.isDigit()
+                    )
+                ) {
                     goto parse_number;
                 }
 
@@ -1498,7 +1504,13 @@ void Lexer::lexicate(LexerControl * state) {
             case '+': {
                 if (ECHAR1 == '=')
                     ++state -> next_offset;
-                else if(ECHAR1L.isDigit() && (state -> isBufferStart() || isBlank(ECHAR_1))) {
+                else if(
+                    (
+                        ECHAR1L.isDigit() && (state -> isBufferStart() || isBlank(ECHAR_1))
+                    ) || (
+                        ECHAR1 == '.' && ECHAR2L.isDigit()
+                    )
+                ) {
                     goto parse_number;
                 }
 
