@@ -2144,7 +2144,7 @@ void CodeEditor::cursorMoved() {
             hideOverlay(OverlayInfo::ol_bottom);
 
 //        viewport() -> update(); // update editor marks
-//        update(); // update folding scope on extra area
+        update(); // update folding scope on extra area
     }
     else if (para_info.isValid()) {
         para_info.clear();
@@ -2153,7 +2153,7 @@ void CodeEditor::cursorMoved() {
             hideOverlays();
 
 //        viewport() -> update(); // update editor marks
-//        update(); // update folding scope on extra area
+        update(); // update folding scope on extra area
     }
 }
 

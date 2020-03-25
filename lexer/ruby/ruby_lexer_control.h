@@ -11,21 +11,17 @@
 #include "highlighter/ihighlighter.h"
 #include "highlighter/highlight_format_factory.h"
 
-#define ECHAR0L (*(state -> buffer))
-#define ECHAR0 (*(state -> buffer)).toLatin1()
-#define ECHAR1L (*(state -> buffer + 1))
-#define ECHAR1 (*(state -> buffer + 1)).toLatin1()
-#define ECHAR2L (*(state -> buffer + 2))
-//#define ECHAR2 (*(state -> buffer + 2)).toLatin1()
-#define ECHAR3 (*(state -> buffer + 3)).toLatin1()
-#define ECHAR4 (*(state -> buffer + 4)).toLatin1()
-#define ECHAR5 (*(state -> buffer + 5)).toLatin1()
-#define ECHAR_1 (*(state -> buffer - 1)).toLatin1()
-#define ECHAR_1L (*(state -> buffer - 1))
+#define ECHAR0 (*(state -> buffer))
+#define ECHAR1 (*(state -> buffer + 1))
+#define ECHAR2 (*(state -> buffer + 2))
+#define ECHAR3 (*(state -> buffer + 3))
+#define ECHAR4 (*(state -> buffer + 4))
+#define ECHAR5 (*(state -> buffer + 5))
+#define ECHAR_1 (*(state -> buffer - 1))
 
-#define SCHAR0 (*(state -> prev)).toLatin1()
-#define SCHAR1 (*(state -> prev + 1)).toLatin1()
-#define SCHAR2 (*(state -> prev + 2)).toLatin1()
+#define SCHAR0 (*(state -> prev))
+#define SCHAR1 (*(state -> prev + 1))
+#define SCHAR2 (*(state -> prev + 2))
 
 namespace Ruby {
     struct LexerControl {
@@ -86,7 +82,13 @@ namespace Ruby {
             cached_str_pos = cached_length = 0;
             next_offset = 1;
         }
-        inline void moveBufferToEnd() { buffer = end; }
+        inline bool moveBufferToEnd() {
+            if (buffer != end) {
+                buffer = end;
+                return true;
+            }
+            else return false;
+        }
         inline bool isBufferStart() { return buffer == start; }
         inline bool isBufferEof() { return buffer >= end; }
         inline bool bufferIsEmpty() { return start == end; }
@@ -118,6 +120,7 @@ namespace Ruby {
         }
 
         inline EDITOR_POS_TYPE scratchPos() { return buffer - start; }
+        inline EDITOR_POS_TYPE scratchLength() { return end - buffer; }
         inline EDITOR_POS_TYPE bufferPos() { return prev - start; }
         inline EDITOR_LEN_TYPE strLength() { return static_cast<EDITOR_LEN_TYPE>(buffer - prev); }
 
