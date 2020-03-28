@@ -184,6 +184,9 @@ Predefined::Predefined() {
     keys.insert(QByteArrayLiteral("$>"), lex_method); // Synonym for $defout.
     keys.insert(QByteArrayLiteral("$0"), lex_method); // The name of the current Ruby program being executed.
 
+
+    keys.insert(QByteArrayLiteral("$="), lex_method); // Case-insensitivity flag
+    keys.insert(QByteArrayLiteral("$*"), lex_method); // An array containing the command-line arguments passed to the program.
     keys.insert(QByteArrayLiteral("$$"), lex_method); // The process pid of the current Ruby program being executed.
     keys.insert(QByteArrayLiteral("$?"), lex_method); // The exit status of the last process terminated.
     keys.insert(QByteArrayLiteral("$:"), lex_method); // Synonym for $LOAD_PATH.

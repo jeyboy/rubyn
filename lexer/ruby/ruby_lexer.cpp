@@ -1625,6 +1625,8 @@ void Lexer::lexicate(LexerControl * state) {
 
                 switch(next_char.toLatin1()) {
                     case '!':
+                    case '=':
+                    case '*':
                     case '@':
                     case '/':
                     case '\\':

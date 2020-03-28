@@ -115,6 +115,8 @@ namespace Ruby {
 
         pt_close_struct = (pt_reserved + 28) | pt_close | pt_foldable,
 
+
+        //TODO: not implemented yet
         pt_comment = (pt_reserved + 29),
         pt_close_comment = pt_comment | pt_close,
         pt_foldable_comment = pt_comment | pt_foldable,

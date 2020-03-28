@@ -13,6 +13,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     controls/line_dialog.cpp \
+    controls/project_search_dialog.cpp \
     editor/custom/custom_chars.cpp \
     editor/custom/custom_cursor.cpp \
     editor/custom/custom_document.cpp \
@@ -131,6 +132,7 @@ SOURCES += main.cpp\
 
 HEADERS  += ide_window.h \
     controls/line_dialog.h \
+    controls/project_search_dialog.h \
     editor/custom/custom_chars.h \
     editor/custom/custom_cursor.h \
     editor/custom/custom_document.h \

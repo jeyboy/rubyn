@@ -249,10 +249,10 @@ void ProjectTree::keyPressEvent(QKeyEvent * e) {
             }
 
             if (e -> modifiers() == (Qt::ControlModifier | Qt::ShiftModifier) && key_code == Qt::Key_F) {
-                //TODO: need to start search in files
+
 //                emit searchRequired(QLatin1Literal());
-//                e -> accept();
-//                return;
+                e -> accept();
+                return;
             }
         }
     }
