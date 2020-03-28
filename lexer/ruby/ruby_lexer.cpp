@@ -1640,6 +1640,7 @@ void Lexer::lexicate(LexerControl * state) {
                     case '?':
                     case ':':
                     case '~':
+                    case '_':
                     case '&':
                     case '`':
                     case '\'':
