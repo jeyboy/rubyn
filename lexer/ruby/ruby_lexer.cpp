@@ -1640,7 +1640,6 @@ void Lexer::lexicate(LexerControl * state) {
                     case '?':
                     case ':':
                     case '~':
-                    case '_':
                     case '&':
                     case '`':
                     case '\'':
@@ -1671,13 +1670,15 @@ void Lexer::lexicate(LexerControl * state) {
                                 default:;
                             }
                         } else if (next_char == '_') {
-                            if (!n1_char.isLetterOrNumber()) {
+                            if (!n1_char.isLetterOrNumber() || n1_char == ' ') {
                                 has_match = true;
                                 state -> next_offset += 2;
                             }
                         } else if (next_char.isDigit()) { // $0-$99
                             ++state -> buffer;
                             parseRegexpGroup(state);
+                            goto iterate;
+                        } else if (next_char.isLetter()) {
                             goto iterate;
                         }
                     }
