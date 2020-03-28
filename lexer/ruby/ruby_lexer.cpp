@@ -1670,9 +1670,9 @@ void Lexer::lexicate(LexerControl * state) {
                                 default:;
                             }
                         } else if (next_char == '_') {
-                            if (!n1_char.isLetterOrNumber() || n1_char == ' ') {
+                            if (!n1_char.isLetterOrNumber()) {
                                 has_match = true;
-                                state -> next_offset += 2;
+                                ++state -> next_offset;
                             }
                         } else if (next_char.isDigit()) { // $0-$99
                             ++state -> buffer;
