@@ -24,6 +24,7 @@ class Dumper;
 class RunConfiguration;
 class DebugPanel;
 class BreakpointsPanel;
+class ProjectSearchPanel;
 class ConsoleWidget;
 
 
@@ -43,6 +44,7 @@ class IDEWindow : public QMainWindow {
 
     DebugPanel * debug_panel;
     BreakpointsPanel * breakpoints_panel;
+    ProjectSearchPanel * project_search_panel;
 
     RunConfiguration * run_config;
 

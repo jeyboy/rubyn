@@ -22,10 +22,11 @@
 #include "controls/color_button.h"
 #include "controls/debug_panel.h"
 #include "controls/breakpoints_panel.h"
+#include "controls/project_search_panel.h"
 #include "controls/dock_widget_search_connector.h"
 #include "controls/console_widget.h"
 
-#include "editor/custom/custom_chars.h"
+//#include "editor/custom/custom_chars.h"
 
 #include "debugging/debug.h"
 #include "debugging/debug_stub_interface.h"
@@ -791,6 +792,27 @@ void IDEWindow::setupToolWindows() {
     debug_widget -> setBehaviour(DockWidget::dwf_movable);
 
     DockWidgets::obj().insert(breakpoints_widget, debug_widget);
+
+
+
+    project_search_panel = new ProjectSearchPanel(this);
+
+//    connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, debug_panel, &DebugPanel::activate);
+//    connect(&BreakpointsController::obj(), &BreakpointsController::deactivate, debug_panel, &DebugPanel::deactivate);
+
+
+    DockWidget * project_search_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Search"),
+            project_search_panel,
+            Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
+        );
+
+    project_search_widget -> setBehaviour(DockWidget::dwf_movable);
+
+    DockWidgets::obj().insert(debug_widget, project_search_widget);
+
+
 
 
 

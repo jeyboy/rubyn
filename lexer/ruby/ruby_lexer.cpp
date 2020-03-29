@@ -1669,16 +1669,16 @@ void Lexer::lexicate(LexerControl * state) {
 
                                 default:;
                             }
-                        } else if (next_char == '_') {
+                        /*} else if (next_char == '_') {
                             if (!n1_char.isLetterOrNumber()) {
                                 has_match = true;
                                 ++state -> next_offset;
-                            }
+                            }*/
                         } else if (next_char.isDigit()) { // $0-$99
                             ++state -> buffer;
                             parseRegexpGroup(state);
                             goto iterate;
-                        } else if (next_char.isLetter()) {
+                        } else if (next_char.isLetter() || next_char == '_') {
                             goto iterate;
                         }
                     }
