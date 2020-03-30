@@ -810,7 +810,7 @@ void IDEWindow::setupToolWindows() {
 
     project_search_widget -> setBehaviour(DockWidget::dwf_movable);
 
-    DockWidgets::obj().insert(debug_widget, project_search_widget);
+    DockWidgets::obj().append(project_search_widget);
 
 
 

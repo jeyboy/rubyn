@@ -4,10 +4,13 @@
 #include "misc/defines.h"
 
 #include <qwidget.h>
+#include <qregularexpression.h>
 //#include <qhash.h>
 
 class QTreeWidget;
 class QLineEdit;
+class QCheckBox;
+class QToolBar;
 
 //class QListWidget;
 //class QListWidgetItem;
@@ -20,8 +23,16 @@ class ProjectSearchPanel : public QWidget {
     QLineEdit * predicate;
     QLineEdit * target_paths;
 
-    void process();
+    QCheckBox * flag_case_sensitive;
+    QCheckBox * flag_whole_word_only;
+    QCheckBox * flag_reg_exp;
+    QCheckBox * flag_unicode;
+
+    QRegularExpression buildRegex(const QString & pattern);
     void prepareResultsWidget();
+    void prepareOptionsWidget();
+
+    QRegularExpression regex;
 public:
     ProjectSearchPanel(QWidget * parent = nullptr);
 
@@ -30,6 +41,9 @@ signals:
 
 public slots:
     void initiateSearch(const QString & pathes, const QString & search_predicate);
+
+protected slots:
+    void process();
 };
 
 #endif // PROJECT_SEARCH_PANEL_H

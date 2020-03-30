@@ -6,17 +6,58 @@
 #include <qheaderview.h>
 //#include <qscrollbar.h>
 
+#include <qmenu.h>
+#include <qwidgetaction.h>
+#include <qcheckbox.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qtoolbar.h>
-//#include <qtoolbutton.h>
+#include <qtoolbutton.h>
 //#include <qshortcut.h>
 
 #include "styles/click_fix_style.h"
 
 void ProjectSearchPanel::process() {
 
+}
+
+QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
+//    if (pattern.isEmpty()) {
+//        emit clearRequires();
+//        return QRegularExpression();
+//    }
+
+    QString val = pattern;
+    bool is_multiline = false;
+
+    QRegularExpression::PatternOptions options = QRegularExpression::DotMatchesEverythingOption;
+
+    if (!flag_case_sensitive -> isChecked())
+        options |= QRegularExpression::CaseInsensitiveOption;
+
+    if (flag_unicode -> isChecked())
+        options |= QRegularExpression::UseUnicodePropertiesOption;
+
+    val = val.replace(QRegularExpression(QLatin1Literal("\r|\n")), QLatin1Literal("|"));
+
+    is_multiline = val != pattern;
+
+    if (!flag_reg_exp -> isChecked() && !is_multiline)
+        val = QRegularExpression::escape(val);
+
+    if (flag_whole_word_only -> isChecked())
+        val = QLatin1Literal("\\b") % val % QLatin1Literal("\\b");
+
+    QRegularExpression res(val, options);
+    res.optimize();
+
+//    if (res.isValid())
+//        predicateIsCorrect();
+//    else
+//        predicateHasError(res.errorString());
+
+    return res;
 }
 
 void ProjectSearchPanel::prepareResultsWidget() {
@@ -33,7 +74,6 @@ void ProjectSearchPanel::prepareResultsWidget() {
 //    f.setLetterSpacing(QFont::AbsoluteSpacing, 0.6);
     setFont(f);
 
-    //TODO: need to set double font size
     search_results -> setIconSize(QSize(22, 22));
 
     search_results -> setStyle(new ClickFixStyle());
@@ -55,6 +95,71 @@ void ProjectSearchPanel::prepareResultsWidget() {
 //    setItemDelegate(item_delegate);
 }
 
+void ProjectSearchPanel::prepareOptionsWidget() {
+    QMenu * menu = new QMenu(predicate);
+    QWidgetAction * options_btn = new QWidgetAction(predicate);
+    QToolButton * btn = new QToolButton(predicate);
+
+    btn -> setIcon(QPixmap(":/search_btn").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    btn -> setMenu(menu);
+    btn -> setPopupMode(QToolButton::InstantPopup);
+    btn -> setCursor(QCursor(Qt::PointingHandCursor));
+    options_btn -> setDefaultWidget(btn);
+
+    predicate -> addAction(options_btn, QLineEdit::LeadingPosition);
+
+    flag_case_sensitive = new QCheckBox(QLatin1Literal("Match Case"), menu);
+    QWidgetAction * flag_case_sensitive_action = new QWidgetAction(menu);
+    flag_case_sensitive_action -> setDefaultWidget(flag_case_sensitive);
+    menu -> addAction(flag_case_sensitive_action);
+    connect(flag_case_sensitive, &QCheckBox::clicked, [=](bool) {
+        regex = buildRegex(predicate -> text());
+
+        if (regex.isValid()) {
+            process();
+        }
+    });
+
+    flag_whole_word_only = new QCheckBox(QLatin1Literal("Words"), menu);
+    QWidgetAction * flag_whole_word_only_action = new QWidgetAction(menu);
+    flag_whole_word_only_action -> setDefaultWidget(flag_whole_word_only);
+    menu -> addAction(flag_whole_word_only_action);
+    connect(flag_whole_word_only, &QCheckBox::clicked, [=](bool) {
+        regex = buildRegex(predicate -> text());
+
+        if (regex.isValid()) {
+            process();
+        }
+    });
+
+    flag_reg_exp = new QCheckBox(QLatin1Literal("Regex"), menu);
+    QWidgetAction * flag_reg_exp_action = new QWidgetAction(menu);
+    flag_reg_exp_action -> setDefaultWidget(flag_reg_exp);
+    menu -> addAction(flag_reg_exp_action);
+    connect(flag_reg_exp, &QCheckBox::clicked, [=](bool) {
+        regex = buildRegex(predicate -> text());
+
+        if (regex.isValid()) {
+            process();
+        }
+    });
+
+    flag_unicode = new QCheckBox(QLatin1Literal("Unicode"), menu);
+    QWidgetAction * flag_unicode_action = new QWidgetAction(menu);
+    flag_unicode_action -> setDefaultWidget(flag_unicode);
+    menu -> addAction(flag_unicode_action);
+    connect(flag_unicode, &QCheckBox::clicked, [=](bool) {
+        regex = buildRegex(predicate -> text());
+
+        if (regex.isValid()) {
+            process();
+        }
+    });
+}
+
+
+
+
 ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), search_results(nullptr), predicate(nullptr), target_paths(nullptr) {
     QVBoxLayout * l = new QVBoxLayout(this);
     l -> setContentsMargins(0, 0, 0, 0);
@@ -65,8 +170,15 @@ ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), sear
     control_panel -> setIconSize(QSize(18, 18));
 
     predicate = new QLineEdit(this);
-    control_panel -> addWidget(new QLabel("Search:", control_panel));
     control_panel -> addWidget(predicate);
+    prepareOptionsWidget();
+
+    QToolButton * search_btn = new QToolButton(control_panel);
+    search_btn -> setText("Search");
+    control_panel -> addWidget(search_btn);
+
+    connect(search_btn, &QToolButton::pressed, this, &ProjectSearchPanel::process);
+
 
     target_paths = new QLineEdit(this);
     control_panel -> addWidget(new QLabel(" in ", control_panel));
