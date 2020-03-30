@@ -3,6 +3,7 @@
 #include <qdatetime.h>
 #include <qstringbuilder.h>
 #include <qregularexpression.h>
+#include <qfileinfo.h>
 
 #include "lexer/lexer_context.h"
 #include "editor/document_types/documents_types.h"
@@ -62,6 +63,12 @@ const QFile::OpenMode File::openMode() {
         omode = QFile::Text | QFile::ReadOnly;
 
     return omode;
+}
+
+bool File::isFolder(const QString & url) {
+    QFileInfo f(url);
+
+    return f.isDir();
 }
 
 bool File::identifyType(const QString & name, LexerContext *& _context, const uint & level) {

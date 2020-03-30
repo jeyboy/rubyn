@@ -161,6 +161,12 @@ QTreeWidgetItem * ProjectTree::findByPath(const QString & path) {
     return nullptr;
 }
 
+bool ProjectTree::isFolder(QTreeWidgetItem * item) {
+    QVariant item_data = item -> data(0, Qt::UserRole);
+
+    return !item_data.isNull();
+}
+
 bool ProjectTree::search(const QRegularExpression & regexp, QTreeWidgetItem * item, int & res) {
     bool empty = regexp.pattern().isEmpty();
     bool has_item = false;

@@ -2,6 +2,10 @@
 
 //#include "project/file.h"
 
+#include "project_tree.h"
+#include "project/projects.h"
+#include "project/ifolder.h"
+
 #include <qtreewidget.h>
 #include <qheaderview.h>
 //#include <qscrollbar.h>
@@ -19,7 +23,27 @@
 #include "styles/click_fix_style.h"
 
 void ProjectSearchPanel::process() {
+    QStringList paths = target_paths -> text().split(LSTR(";"));
 
+    if (paths.isEmpty()) {
+        paths << LSTR("*");
+    }
+
+    QStringList::Iterator it = paths.begin();
+
+    for(; it != paths.end(); it++) {
+        if (project_tree) {
+            QTreeWidgetItem * tree_item = project_tree -> findByPath(*it);
+
+            if (tree_item) {
+
+            } else {
+//                Projects::identificate(const QString & name, void * folder, File *& file)
+            }
+        } else {
+            // TODO: implement me
+        }
+    }
 }
 
 QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
@@ -160,7 +184,7 @@ void ProjectSearchPanel::prepareOptionsWidget() {
 
 
 
-ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), search_results(nullptr), predicate(nullptr), target_paths(nullptr) {
+ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), search_results(nullptr), predicate(nullptr), target_paths(nullptr), project_tree(nullptr) {
     QVBoxLayout * l = new QVBoxLayout(this);
     l -> setContentsMargins(0, 0, 0, 0);
     l -> setSpacing(0);
@@ -223,6 +247,9 @@ ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), sear
     l -> addWidget(search_results, 1);
 }
 
+void ProjectSearchPanel::setProjectTree(ProjectTree * target_tree) {
+    project_tree = target_tree;
+}
 
 //void BreakpointsPanel::activateBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num) {
 //    if (active_breakpoint) {

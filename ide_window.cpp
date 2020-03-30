@@ -417,9 +417,7 @@ void IDEWindow::openResource(TabsBlock * target_editor, const QUrl & url) {
     if (url.isLocalFile()) {
         setActiveEditor(target_editor);
 
-        QFileInfo f(url.toLocalFile());
-
-        if (f.isDir()) {
+        if (File::isFolder(url)) {
 //            openFolder(url);
             Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Unsupported resource: DIR: '") % url.toString() % '\'');
         } else {
@@ -796,6 +794,7 @@ void IDEWindow::setupToolWindows() {
 
 
     project_search_panel = new ProjectSearchPanel(this);
+    project_search_panel -> setProjectTree(tree);
 
 //    connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, debug_panel, &DebugPanel::activate);
 //    connect(&BreakpointsController::obj(), &BreakpointsController::deactivate, debug_panel, &DebugPanel::deactivate);

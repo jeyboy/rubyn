@@ -31,6 +31,8 @@ public:
     void selectItem(const QString & path, const bool & ensure_visible = true);
 
     QTreeWidgetItem * findByPath(const QString & path);
+
+    static bool isFolder(QTreeWidgetItem * item);
 protected:
     bool search(const QRegularExpression & regexp, QTreeWidgetItem * item, int & res);
     void clearSearch(QTreeWidgetItem * item);

@@ -49,6 +49,8 @@ protected:
     friend class Custom::Document;
 public:
     static QString default_uid;
+    static bool isFolder(const QUrl & url) { return isFolder(url.toLocalFile()); }
+    static bool isFolder(const QString & url);
 
     enum FileOps {
         fo_none = 0,

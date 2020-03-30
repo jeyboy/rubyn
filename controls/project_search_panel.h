@@ -11,6 +11,7 @@ class QTreeWidget;
 class QLineEdit;
 class QCheckBox;
 class QToolBar;
+class ProjectTree;
 
 //class QListWidget;
 //class QListWidgetItem;
@@ -22,6 +23,7 @@ class ProjectSearchPanel : public QWidget {
     QTreeWidget * search_results;
     QLineEdit * predicate;
     QLineEdit * target_paths;
+    ProjectTree * project_tree;
 
     QCheckBox * flag_case_sensitive;
     QCheckBox * flag_whole_word_only;
@@ -35,6 +37,7 @@ class ProjectSearchPanel : public QWidget {
     QRegularExpression regex;
 public:
     ProjectSearchPanel(QWidget * parent = nullptr);
+    void setProjectTree(ProjectTree * target_tree);
 
 signals:
     void resultClicked(const QString & path, const EDITOR_POS_TYPE & line_num, const EDITOR_POS_TYPE & pos_in_line);
