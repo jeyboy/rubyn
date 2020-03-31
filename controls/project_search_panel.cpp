@@ -1,7 +1,8 @@
 #include "project_search_panel.h"
 
-//#include "project/file.h"
+#include "controls/logger.h"
 
+#include "project/file.h"
 #include "project_tree.h"
 #include "project/projects.h"
 #include "project/ifolder.h"
@@ -22,28 +23,8 @@
 
 #include "styles/click_fix_style.h"
 
-void ProjectSearchPanel::process() {
-    QStringList paths = target_paths -> text().split(LSTR(";"));
+void ProjectSearchPanel::searchInFile(File * file) {
 
-    if (paths.isEmpty()) {
-        paths << LSTR("*");
-    }
-
-    QStringList::Iterator it = paths.begin();
-
-    for(; it != paths.end(); it++) {
-        if (project_tree) {
-            QTreeWidgetItem * tree_item = project_tree -> findByPath(*it);
-
-            if (tree_item) {
-
-            } else {
-//                Projects::identificate(const QString & name, void * folder, File *& file)
-            }
-        } else {
-            // TODO: implement me
-        }
-    }
 }
 
 QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
@@ -354,4 +335,33 @@ void ProjectSearchPanel::initiateSearch(const QString & pathes, const QString & 
     target_paths -> setText(pathes);
 
     process();
+}
+
+void ProjectSearchPanel::process() {
+    QStringList paths = target_paths -> text().split(LSTR(";"));
+
+    if (paths.isEmpty()) {
+        paths << LSTR("*");
+    }
+
+    QStringList::Iterator it = paths.begin();
+
+    for(; it != paths.end(); it++) {
+        if (project_tree) {
+            QTreeWidgetItem * tree_item = project_tree -> findByPath(*it);
+
+            if (tree_item) {
+                if (ProjectTree::isFolder(tree_item)) {
+
+                } else {
+
+                }
+            } else {
+                Logger::obj().info("ProjectSearchPanel", "Search in non project files do not support yet");
+//                Projects::identificate(const QString & name, void * folder, File *& file)
+            }
+        } else {
+            // TODO: implement me
+        }
+    }
 }

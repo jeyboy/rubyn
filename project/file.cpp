@@ -164,8 +164,13 @@ const QString & File::firstStr() {
     return first_non_null_str;
 }
 
-bool File::open() {
+bool File::openRaw() {
     if (!openDevice())
+        return false;
+}
+
+bool File::open() {
+    if (!openRaw())
         return false;
 
     if (!_context -> hasType()) {

@@ -12,6 +12,7 @@ class QLineEdit;
 class QCheckBox;
 class QToolBar;
 class ProjectTree;
+class File;
 
 //class QListWidget;
 //class QListWidgetItem;
@@ -30,6 +31,7 @@ class ProjectSearchPanel : public QWidget {
     QCheckBox * flag_reg_exp;
     QCheckBox * flag_unicode;
 
+    void searchInFile(File * file);
     QRegularExpression buildRegex(const QString & pattern);
     void prepareResultsWidget();
     void prepareOptionsWidget();

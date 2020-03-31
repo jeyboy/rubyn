@@ -59,6 +59,7 @@ public:
 
     bool identifyTypeByShebang(const QString & str);
 
+    bool openRaw();
     bool open();
     void close();
     inline bool save() { return _doc && _doc -> save(); }
