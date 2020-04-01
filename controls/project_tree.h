@@ -33,6 +33,7 @@ public:
     QTreeWidgetItem * findByPath(const QString & path);
 
     static bool isFolder(QTreeWidgetItem * item);
+    static bool getFileData(QTreeWidgetItem * item, QString & name, void *& folder);
 protected:
     bool search(const QRegularExpression & regexp, QTreeWidgetItem * item, int & res);
     void clearSearch(QTreeWidgetItem * item);

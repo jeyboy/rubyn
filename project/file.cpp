@@ -165,8 +165,7 @@ const QString & File::firstStr() {
 }
 
 bool File::openRaw() {
-    if (!openDevice())
-        return false;
+    return openDevice();
 }
 
 bool File::open() {

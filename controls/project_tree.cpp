@@ -167,6 +167,21 @@ bool ProjectTree::isFolder(QTreeWidgetItem * item) {
     return !item_data.isNull();
 }
 
+bool ProjectTree::getFileData(QTreeWidgetItem * item, QString & name, void *& folder) {
+    QVariant item_data = item -> data(0, Qt::UserRole);
+
+    if (item_data.isNull()) {
+        QTreeWidgetItem * parent = item -> parent();
+        QVariant parent_data = parent -> data(0, Qt::UserRole);
+
+        name = item -> data(0, Qt::DisplayRole).toString();
+        folder = parent_data.value<void *>();
+        return true;
+    } else {
+        return false;
+    }
+}
+
 bool ProjectTree::search(const QRegularExpression & regexp, QTreeWidgetItem * item, int & res) {
     bool empty = regexp.pattern().isEmpty();
     bool has_item = false;
@@ -288,19 +303,28 @@ void ProjectTree::fileIconChanged(const QString & path, const QIcon & ico) {
 }
 
 void ProjectTree::itemDoubleClicked(QTreeWidgetItem * item, int /*column*/) {
-    QVariant item_data = item -> data(0, Qt::UserRole);
+    void * folder;
+    QString name;
 
-    if (item_data.isNull()) {
-        QTreeWidgetItem * parent = item -> parent();
-        QVariant parent_data = parent -> data(0, Qt::UserRole);
-
-        QString name = item -> data(0, Qt::DisplayRole).toString();
-        void * folder = parent_data.value<void *>();
-
+    if (ProjectTree::getFileData(item, name, folder)) {
         emit fileActivated(name, folder);
     } else {
         // edit folder name
     }
+
+//    QVariant item_data = item -> data(0, Qt::UserRole);
+
+//    if (item_data.isNull()) {
+//        QTreeWidgetItem * parent = item -> parent();
+//        QVariant parent_data = parent -> data(0, Qt::UserRole);
+
+//        QString name = item -> data(0, Qt::DisplayRole).toString();
+//        void * folder = parent_data.value<void *>();
+
+//        emit fileActivated(name, folder);
+//    } else {
+//        // edit folder name
+//    }
 }
 
 bool ProjectTree::search(const QRegularExpression & regexp) {

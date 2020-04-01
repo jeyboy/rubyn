@@ -1,5 +1,6 @@
 #include "project_search_panel.h"
 
+#include "tools/file_search.h"
 #include "controls/logger.h"
 
 #include "project/file.h"
@@ -24,7 +25,7 @@
 #include "styles/click_fix_style.h"
 
 void ProjectSearchPanel::searchInFile(File * file) {
-
+    FileSearch * file_search = FileSearch::asyncSearchInFile(regex, file, this);
 }
 
 QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
@@ -354,11 +355,12 @@ void ProjectSearchPanel::process() {
                 if (ProjectTree::isFolder(tree_item)) {
 
                 } else {
-
+//                    File * file;
+//                    Projects::identificate(tree_item -> , void * folder, file);
+//                    searchInFile();
                 }
             } else {
                 Logger::obj().info("ProjectSearchPanel", "Search in non project files do not support yet");
-//                Projects::identificate(const QString & name, void * folder, File *& file)
             }
         } else {
             // TODO: implement me

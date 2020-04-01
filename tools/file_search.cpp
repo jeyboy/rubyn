@@ -6,7 +6,7 @@
 #include "project/file.h"
 #include "controls/logger.h"
 
-FileSearch * asyncSearchInFile(const QRegularExpression & regex, File * file, QObject * parent) {
+FileSearch * FileSearch::asyncSearchInFile(const QRegularExpression & regex, File * file, QObject * parent) {
     QThread * thread = new QThread();
     FileSearch * search = new FileSearch(regex, file, parent);
 
@@ -38,21 +38,23 @@ void FileSearch::initiate() {
         QString buffer;
         buffer.reserve(buffer_length);
 
+        QString target;
+        target.reserve(buffer_length * 2);
+
         while(in.readLineInto(&buffer, buffer_length)) {
-            QRegularExpressionMatchIterator i = regex.globalMatch(prev_buffer % buffer);
+            target.setRawData(prev_buffer.data(), prev_buffer.length());
+            target.append(buffer);
+
+            QRegularExpressionMatchIterator i = regex.globalMatch(target);
 
             while (i.hasNext()) {
                 QRegularExpressionMatch match = i.next();
-
-
-
-                emit finded(_file -> path(), offset + match.capturedStart(), match.capturedLength(), const QString & result, const EDITOR_POS_TYPE & result_pos);
+                emit finded(_file -> path(), offset + match.capturedStart(), match.capturedLength(), target, match.capturedStart());
             }
 
             offset += buffer.length();
             prev_buffer.setRawData(buffer.data(), buffer.length());
         }
-
 
         _file -> close();
     } else {
