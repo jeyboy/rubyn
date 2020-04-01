@@ -355,9 +355,19 @@ void ProjectSearchPanel::process() {
                 if (ProjectTree::isFolder(tree_item)) {
 
                 } else {
-//                    File * file;
-//                    Projects::identificate(tree_item -> , void * folder, file);
-//                    searchInFile();
+                    File * file;
+                    void * folder;
+                    QString name;
+
+                    if (ProjectTree::getFileData(tree_item, name, folder)) {
+                        if (Projects::identificate(name, folder, file)) {
+                            searchInFile(file);
+                        } else {
+                            Logger::obj().info("ProjectSearchPanel", "Cant identificate: " + *it);
+                        }
+                    } else {
+                        Logger::obj().info("ProjectSearchPanel", "Cant find the data: " + *it);
+                    }
                 }
             } else {
                 Logger::obj().info("ProjectSearchPanel", "Search in non project files do not support yet");
@@ -366,4 +376,8 @@ void ProjectSearchPanel::process() {
             // TODO: implement me
         }
     }
+}
+
+void ProjectSearchPanel::addResult(const QString & path, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length, const QString & result, const EDITOR_POS_TYPE & result_pos) {
+    qDebug() << "addResult" << result.mid(result_pos);
 }

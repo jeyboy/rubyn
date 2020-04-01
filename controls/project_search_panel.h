@@ -49,6 +49,7 @@ public slots:
 
 protected slots:
     void process();
+    void addResult(const QString & path, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length, const QString & result, const EDITOR_POS_TYPE & result_pos);
 };
 
 #endif // PROJECT_SEARCH_PANEL_H
