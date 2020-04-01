@@ -26,6 +26,9 @@
 
 void ProjectSearchPanel::searchInFile(File * file) {
     FileSearch * file_search = FileSearch::asyncSearchInFile(regex, file, this);
+    Logger::obj().info("ProjectSearchPanel", "Search in " % file -> path());
+
+    connect(file_search, &FileSearch::finded, this, &ProjectSearchPanel::addResult);
 }
 
 QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
@@ -164,8 +167,6 @@ void ProjectSearchPanel::prepareOptionsWidget() {
 }
 
 
-
-
 ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), search_results(nullptr), predicate(nullptr), target_paths(nullptr), project_tree(nullptr) {
     QVBoxLayout * l = new QVBoxLayout(this);
     l -> setContentsMargins(0, 0, 0, 0);
@@ -176,6 +177,7 @@ ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), sear
     control_panel -> setIconSize(QSize(18, 18));
 
     predicate = new QLineEdit(this);
+    connect(predicate, &QLineEdit::returnPressed, this, &ProjectSearchPanel::process);
     control_panel -> addWidget(predicate);
     prepareOptionsWidget();
 
@@ -338,8 +340,33 @@ void ProjectSearchPanel::initiateSearch(const QString & pathes, const QString & 
     process();
 }
 
+void ProjectSearchPanel::processItem(QTreeWidgetItem * item, const QString & path) {
+    if (ProjectTree::isFolder(item)) {
+        int items_count = item -> childCount();
+
+        for(int i = 0; i < items_count; i++) {
+            QTreeWidgetItem * child = item -> child(i);
+            processItem(child, path % '/' % ProjectTree::name(child));
+        }
+    } else {
+        File * file;
+        void * folder;
+        QString name;
+
+        if (ProjectTree::getFileData(item, name, folder)) {
+            if (Projects::identificate(name, folder, file)) {
+                searchInFile(file);
+            } else {
+                Logger::obj().info("ProjectSearchPanel", "Cant identificate: " + path);
+            }
+        } else {
+            Logger::obj().info("ProjectSearchPanel", "Cant find the data: " + path);
+        }
+    }
+}
+
 void ProjectSearchPanel::process() {
-    QStringList paths = target_paths -> text().split(LSTR(";"));
+    QStringList paths = target_paths -> text().trimmed().split(LSTR(";"));
 
     if (paths.isEmpty()) {
         paths << LSTR("*");
@@ -352,28 +379,13 @@ void ProjectSearchPanel::process() {
             QTreeWidgetItem * tree_item = project_tree -> findByPath(*it);
 
             if (tree_item) {
-                if (ProjectTree::isFolder(tree_item)) {
-
-                } else {
-                    File * file;
-                    void * folder;
-                    QString name;
-
-                    if (ProjectTree::getFileData(tree_item, name, folder)) {
-                        if (Projects::identificate(name, folder, file)) {
-                            searchInFile(file);
-                        } else {
-                            Logger::obj().info("ProjectSearchPanel", "Cant identificate: " + *it);
-                        }
-                    } else {
-                        Logger::obj().info("ProjectSearchPanel", "Cant find the data: " + *it);
-                    }
-                }
+                processItem(tree_item, *it);
             } else {
                 Logger::obj().info("ProjectSearchPanel", "Search in non project files do not support yet");
             }
         } else {
             // TODO: implement me
+            Logger::obj().info("ProjectSearchPanel", "No project tree set");
         }
     }
 }

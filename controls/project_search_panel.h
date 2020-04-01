@@ -13,6 +13,7 @@ class QCheckBox;
 class QToolBar;
 class ProjectTree;
 class File;
+class QTreeWidgetItem;
 
 //class QListWidget;
 //class QListWidgetItem;
@@ -48,6 +49,7 @@ public slots:
     void initiateSearch(const QString & pathes, const QString & search_predicate);
 
 protected slots:
+    void processItem(QTreeWidgetItem * item, const QString & path = QString());
     void process();
     void addResult(const QString & path, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length, const QString & result, const EDITOR_POS_TYPE & result_pos);
 };

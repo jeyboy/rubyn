@@ -32,6 +32,7 @@ public:
 
     QTreeWidgetItem * findByPath(const QString & path);
 
+    inline static QString name(QTreeWidgetItem * item) { return item -> data(0, Qt::DisplayRole).toString(); }
     static bool isFolder(QTreeWidgetItem * item);
     static bool getFileData(QTreeWidgetItem * item, QString & name, void *& folder);
 protected:

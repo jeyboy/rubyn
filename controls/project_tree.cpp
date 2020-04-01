@@ -124,6 +124,10 @@ void ProjectTree::selectItem(const QString & path, const bool & ensure_visible) 
 }
 
 QTreeWidgetItem * ProjectTree::findByPath(const QString & path) {
+    if (path == LSTR("*")) {
+        return invisibleRootItem();
+    }
+
     int items_count = topLevelItemCount();
 
     for(int i = 0; i < items_count; i++) {
