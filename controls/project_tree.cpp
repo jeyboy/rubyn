@@ -8,6 +8,7 @@
 
 #include "project/projects.h"
 #include "project/file.h"
+#include "project/ifolder.h"
 #include "tools/json/json.h"
 #include "tools/json/json_obj.h"
 #include "delegates/project_tree_item_delegate.h"
@@ -203,11 +204,32 @@ bool ProjectTree::getFile(QTreeWidgetItem * item, File *& file) {
 }
 
 bool ProjectTree::getPath(QTreeWidgetItem * item, QString & path) {
-    File * file;
+    if (isFolder(item)) {
+        QVariant item_path = item -> data(0, TREE_PATH_UID);
 
-    if (getFile(item, file)) {
-        path = file -> path();
-        return true;
+        if (item_path.isValid()) {
+            path = item_path.toString();
+            return true;
+        } else {
+            QVariant item_data = item -> data(0, TREE_FOLDER_UID);
+
+            if (!item_data.isNull()) {
+                void * folder = item_data.value<void *>();
+                IFolder * _folder = reinterpret_cast<IFolder *>(folder);
+
+                if (_folder != nullptr) {
+                    path = _folder -> fullPath();
+                    return true;
+                }
+            }
+        }
+    } else {
+        File * file;
+
+        if (getFile(item, file)) {
+            path = file -> path();
+            return true;
+        }
     }
 
     return false;
@@ -346,10 +368,12 @@ void ProjectTree::itemDoubleClicked(QTreeWidgetItem * item, int /*column*/) {
     void * folder;
     QString name;
 
-    if (ProjectTree::getFileData(item, name, folder)) {
-        emit fileActivated(name, folder);
-    } else {
+    if (isFolder(item)) {
         // edit folder name
+    } else {
+        if (ProjectTree::getFileData(item, name, folder)) {
+            emit fileActivated(name, folder);
+        }
     }
 }
 

@@ -796,11 +796,6 @@ void IDEWindow::setupToolWindows() {
     project_search_panel = new ProjectSearchPanel(this);
     project_search_panel -> setProjectTree(tree);
 
-
-//    connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, debug_panel, &DebugPanel::activate);
-//    connect(&BreakpointsController::obj(), &BreakpointsController::deactivate, debug_panel, &DebugPanel::deactivate);
-
-
     DockWidget * project_search_widget =
         DockWidgets::obj().createWidget(
             QLatin1Literal("Search"),
@@ -809,6 +804,12 @@ void IDEWindow::setupToolWindows() {
         );
 
     project_search_widget -> setBehaviour(DockWidget::dwf_movable);
+
+    connect(tree, &ProjectTree::pathSearchRequired, [=](const QString & paths) {
+        qDebug() << "!!!" << paths;
+        project_search_panel -> setPaths(paths);
+        project_search_widget -> raise();
+    });
 
     DockWidgets::obj().append(project_search_widget);
 
