@@ -12,6 +12,7 @@
 
 // http://doc.qt.io/qt-5/qtwidgets-widgets-tooltips-example.html
 
+class File;
 class JsonObj;
 class ProjectTreeItemDelegate;
 
@@ -36,6 +37,7 @@ public:
     inline static QString name(QTreeWidgetItem * item) { return item -> data(0, Qt::DisplayRole).toString(); }
     static bool isFolder(QTreeWidgetItem * item);
     static bool getFileData(QTreeWidgetItem * item, QString & name, void *& folder);
+    static bool getFile(QTreeWidgetItem * item, File *& file);
     static bool getPath(QTreeWidgetItem * item, QString & path);
 protected:
     bool search(const QRegularExpression & regexp, QTreeWidgetItem * item, int & res);

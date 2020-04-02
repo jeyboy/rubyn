@@ -7,6 +7,7 @@
 #include <qscrollbar.h>
 
 #include "project/projects.h"
+#include "project/file.h"
 #include "tools/json/json.h"
 #include "tools/json/json_obj.h"
 #include "delegates/project_tree_item_delegate.h"
@@ -188,13 +189,24 @@ bool ProjectTree::getFileData(QTreeWidgetItem * item, QString & name, void *& fo
     }
 }
 
-bool ProjectTree::getPath(QTreeWidgetItem * item, QString & path) {
+bool ProjectTree::getFile(QTreeWidgetItem * item, File *& file) {
     void * folder;
     QString name;
 
     if (getFileData(item, name, folder)) {
+        if (Projects::identificate(name, folder, file)) {
+            return true;
+        }
+    }
 
+    return false;
+}
 
+bool ProjectTree::getPath(QTreeWidgetItem * item, QString & path) {
+    File * file;
+
+    if (getFile(item, file)) {
+        path = file -> path();
         return true;
     }
 
@@ -339,20 +351,6 @@ void ProjectTree::itemDoubleClicked(QTreeWidgetItem * item, int /*column*/) {
     } else {
         // edit folder name
     }
-
-//    QVariant item_data = item -> data(0, TREE_FOLDER_UID);
-
-//    if (item_data.isNull()) {
-//        QTreeWidgetItem * parent = item -> parent();
-//        QVariant parent_data = parent -> data(0, TREE_FOLDER_UID);
-
-//        QString name = item -> data(0, Qt::DisplayRole).toString();
-//        void * folder = parent_data.value<void *>();
-
-//        emit fileActivated(name, folder);
-//    } else {
-//        // edit folder name
-//    }
 }
 
 bool ProjectTree::search(const QRegularExpression & regexp) {
