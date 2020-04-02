@@ -25,12 +25,9 @@
 #include "styles/click_fix_style.h"
 
 void ProjectSearchPanel::searchInFile(File * file) {
-//    FileSearch * file_search = FileSearch::asyncSearchInFile(regex, file);
-//    Logger::obj().info("ProjectSearchPanel", "Search in " % file -> path());
-
     FileSearch * file_search = new FileSearch(regex, file);
     connect(file_search, &FileSearch::finded, this, &ProjectSearchPanel::addResult);
-    file_search -> initiate();
+    file_search -> initiateAsync();
 }
 
 QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {

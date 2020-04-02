@@ -6,19 +6,6 @@
 #include "project/file.h"
 #include "controls/logger.h"
 
-FileSearch * FileSearch::asyncSearchInFile(const QRegularExpression & regex, File * file) {
-    QThread * thread = new QThread();
-    FileSearch * search = new FileSearch(regex, file);
-
-    thread -> start();
-
-    search -> moveToThread(thread);
-
-    search -> initiate();
-
-    return search;
-}
-
 FileSearch::FileSearch(const QRegularExpression & regex, File * file, QObject * parent) : QObject(parent), _file(file), regex(regex) {
 
 }
@@ -66,4 +53,14 @@ void FileSearch::initiate() {
     } else {
         Logger::obj().error("FileSearch", "Can't read the file '" + _file -> path() + "'");
     }
+}
+
+void FileSearch::initiateAsync() {
+    QThread * thread = new QThread();
+
+    thread -> start();
+
+    moveToThread(thread);
+
+    initiate();
 }

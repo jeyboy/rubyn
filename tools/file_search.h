@@ -15,11 +15,10 @@ class FileSearch : public QObject {
     File * _file;
     QRegularExpression regex;
 public:
-    static FileSearch * asyncSearchInFile(const QRegularExpression & regex, File * file);
-
     FileSearch(const QRegularExpression & regex, File * file, QObject * parent = nullptr);
 
     void initiate();
+    void initiateAsync();
 
 signals:
     void finded(const QString & path, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length, const QString & result, const EDITOR_POS_TYPE & result_pos);
