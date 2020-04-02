@@ -6,6 +6,7 @@
 #include <qhash.h>
 
 #include "code_formats.h"
+#include "misc/defines.h"
 
 class File;
 class IFolder;

@@ -5,6 +5,17 @@
 #include <qobject.h>
 #include <qstringbuilder.h>
 
+#define TREE_FOLDER_UID Qt::UserRole
+#define TREE_LEVEL_UID Qt::UserRole + 1
+#define TREE_PATH_UID Qt::UserRole + 2
+#define TREE_SEARCH_MATCH_POS_UID Qt::UserRole + 10
+#define TREE_SEARCH_MATCH_LEN_UID Qt::UserRole + 11
+#define TREE_EXPAND_STATE_UID Qt::UserRole + 12
+#define TREE_COLOR_UID Qt::UserRole + 20
+#define TREE_HAS_ERROR_UID Qt::UserRole + 21
+
+
+
 #define LEXEM_MEAN_TYPE quint16
 #define LEXEM_TYPE int
 

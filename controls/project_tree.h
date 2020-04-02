@@ -2,7 +2,8 @@
 #define PROJECT_TREE_H
 
 #include <qtreewidget.h>
-#include <qdebug.h>
+
+#include "misc/defines.h"
 
 // TODO: improve tooltips
 
@@ -35,6 +36,7 @@ public:
     inline static QString name(QTreeWidgetItem * item) { return item -> data(0, Qt::DisplayRole).toString(); }
     static bool isFolder(QTreeWidgetItem * item);
     static bool getFileData(QTreeWidgetItem * item, QString & name, void *& folder);
+    static bool getPath(QTreeWidgetItem * item, QString & path);
 protected:
     bool search(const QRegularExpression & regexp, QTreeWidgetItem * item, int & res);
     void clearSearch(QTreeWidgetItem * item);
@@ -44,6 +46,7 @@ signals:
     void searchRequired(const QString &);
     void searchResultsCount(const int &);
     void closeSearch();
+    void pathSearchRequired(const QString &);
     void consoleRequired(const QString & path);
     void closeProjectRequired(const QString & path);
 

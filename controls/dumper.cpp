@@ -43,7 +43,7 @@ void Dumper::saveTree(IDEWindow * w, JsonObj & json) {
     for(int i = 0; i < limit; i++) {
         QTreeWidgetItem * top = w -> tree -> topLevelItem(i);
 
-        QVariant data = top -> data(0, Qt::UserRole);
+        QVariant data = top -> data(0, TREE_FOLDER_UID);
 
         if (data.isNull()) {
             Logger::error(QLatin1Literal("Dumper"), QLatin1Literal("Cant save project: ") % top -> text(0));

@@ -796,6 +796,7 @@ void IDEWindow::setupToolWindows() {
     project_search_panel = new ProjectSearchPanel(this);
     project_search_panel -> setProjectTree(tree);
 
+
 //    connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, debug_panel, &DebugPanel::activate);
 //    connect(&BreakpointsController::obj(), &BreakpointsController::deactivate, debug_panel, &DebugPanel::deactivate);
 

@@ -46,6 +46,7 @@ signals:
     void resultClicked(const QString & path, const EDITOR_POS_TYPE & line_num, const EDITOR_POS_TYPE & pos_in_line);
 
 public slots:
+    void setPaths(const QString & pathes);
     void initiateSearch(const QString & pathes, const QString & search_predicate);
 
 protected slots:

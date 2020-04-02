@@ -6,9 +6,9 @@
 #include "project/file.h"
 #include "controls/logger.h"
 
-FileSearch * FileSearch::asyncSearchInFile(const QRegularExpression & regex, File * file, QObject * parent) {
+FileSearch * FileSearch::asyncSearchInFile(const QRegularExpression & regex, File * file) {
     QThread * thread = new QThread();
-    FileSearch * search = new FileSearch(regex, file, parent);
+    FileSearch * search = new FileSearch(regex, file);
 
     thread -> start();
 
@@ -25,6 +25,7 @@ FileSearch::FileSearch(const QRegularExpression & regex, File * file, QObject * 
 
 void FileSearch::initiate() {
     if (_file -> openRaw()) {
+        qDebug() << "Search in " << _file -> path();
         QIODevice * source = _file -> source();
         QTextStream in(source);
 
@@ -55,6 +56,8 @@ void FileSearch::initiate() {
             offset += buffer.length();
             prev_buffer.setRawData(buffer.data(), buffer.length());
         }
+
+        qDebug() << "End search in " << _file -> path();
 
         _file -> close();
     } else {

@@ -15,7 +15,7 @@ class FileSearch : public QObject {
     File * _file;
     QRegularExpression regex;
 public:
-    static FileSearch * asyncSearchInFile(const QRegularExpression & regex, File * file, QObject * parent);
+    static FileSearch * asyncSearchInFile(const QRegularExpression & regex, File * file);
 
     FileSearch(const QRegularExpression & regex, File * file, QObject * parent = nullptr);
 

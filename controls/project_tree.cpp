@@ -48,6 +48,8 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
 
     item_delegate = new ProjectTreeItemDelegate();
     setItemDelegate(item_delegate);
+
+    invisibleRootItem() -> setData(0, TREE_FOLDER_UID, QVariant(0));
 }
 
 ProjectTree::~ProjectTree() {
@@ -133,7 +135,7 @@ QTreeWidgetItem * ProjectTree::findByPath(const QString & path) {
     for(int i = 0; i < items_count; i++) {
         QTreeWidgetItem * item = topLevelItem(i);
 
-        QString project_path = item -> data(0, Qt::UserRole + 2).toString();
+        QString project_path = item -> data(0, TREE_PATH_UID).toString();
 
         if (path.startsWith(project_path, Qt::CaseInsensitive)) {
             QString inner_path = path.mid(project_path.length());
@@ -166,17 +168,17 @@ QTreeWidgetItem * ProjectTree::findByPath(const QString & path) {
 }
 
 bool ProjectTree::isFolder(QTreeWidgetItem * item) {
-    QVariant item_data = item -> data(0, Qt::UserRole);
+    QVariant item_data = item -> data(0, TREE_FOLDER_UID);
 
     return !item_data.isNull();
 }
 
 bool ProjectTree::getFileData(QTreeWidgetItem * item, QString & name, void *& folder) {
-    QVariant item_data = item -> data(0, Qt::UserRole);
+    QVariant item_data = item -> data(0, TREE_FOLDER_UID);
 
     if (item_data.isNull()) {
         QTreeWidgetItem * parent = item -> parent();
-        QVariant parent_data = parent -> data(0, Qt::UserRole);
+        QVariant parent_data = parent -> data(0, TREE_FOLDER_UID);
 
         name = item -> data(0, Qt::DisplayRole).toString();
         folder = parent_data.value<void *>();
@@ -184,6 +186,19 @@ bool ProjectTree::getFileData(QTreeWidgetItem * item, QString & name, void *& fo
     } else {
         return false;
     }
+}
+
+bool ProjectTree::getPath(QTreeWidgetItem * item, QString & path) {
+    void * folder;
+    QString name;
+
+    if (getFileData(item, name, folder)) {
+
+
+        return true;
+    }
+
+    return false;
 }
 
 bool ProjectTree::search(const QRegularExpression & regexp, QTreeWidgetItem * item, int & res) {
@@ -195,12 +210,12 @@ bool ProjectTree::search(const QRegularExpression & regexp, QTreeWidgetItem * it
         QTreeWidgetItem * child = item -> child(i);
         bool valid = false;
 
-        child -> setData(0, Qt::UserRole + 10, property_dropper);
-        child -> setData(0, Qt::UserRole + 11, property_dropper);
+        child -> setData(0, TREE_SEARCH_MATCH_POS_UID, property_dropper);
+        child -> setData(0, TREE_SEARCH_MATCH_LEN_UID, property_dropper);
 
         if (child -> childCount() > 0) {
-            if (child -> data(0, Qt::UserRole + 12).isNull())
-                child -> setData(0, Qt::UserRole + 12, child -> isExpanded());
+            if (child -> data(0, TREE_EXPAND_STATE_UID).isNull())
+                child -> setData(0, TREE_EXPAND_STATE_UID, child -> isExpanded());
 
             valid = search(regexp, child, res);
 
@@ -216,8 +231,8 @@ bool ProjectTree::search(const QRegularExpression & regexp, QTreeWidgetItem * it
             if (match.hasMatch()) {
                 ++res;
                 valid = true;
-                child -> setData(0, Qt::UserRole + 10, match.capturedStart());
-                child -> setData(0, Qt::UserRole + 11, match.capturedLength());
+                child -> setData(0, TREE_SEARCH_MATCH_POS_UID, match.capturedStart());
+                child -> setData(0, TREE_SEARCH_MATCH_LEN_UID, match.capturedLength());
             }
         }
 
@@ -234,17 +249,17 @@ void ProjectTree::clearSearch(QTreeWidgetItem * item) {
     for(int i = 0; i < items_count; i++) {
         QTreeWidgetItem * child = item -> child(i);
 
-//        child -> setData(0, Qt::UserRole + 10, QVariant(QVariant::Invalid));
+//        child -> setData(0, TREE_SEARCH_MATCH_POS_UID, QVariant(QVariant::Invalid));
 
         if (child -> childCount() > 0)
             clearSearch(child);
 
         child -> setHidden(false);
 
-        QVariant expand_val = child -> data(0, Qt::UserRole + 12);
+        QVariant expand_val = child -> data(0, TREE_EXPAND_STATE_UID);
         if (!expand_val.isNull()) {
             child -> setExpanded(expand_val.toBool());
-            child -> setData(0, Qt::UserRole + 12, property_dropper);
+            child -> setData(0, TREE_EXPAND_STATE_UID, property_dropper);
         }
     }
 }
@@ -274,8 +289,17 @@ void ProjectTree::keyPressEvent(QKeyEvent * e) {
             }
 
             if (e -> modifiers() == (Qt::ControlModifier | Qt::ShiftModifier) && key_code == Qt::Key_F) {
+                QList<QTreeWidgetItem *> items = selectedItems();
+                QStringList paths;
+                QString path;
 
-//                emit searchRequired(QLatin1Literal());
+                for(QList<QTreeWidgetItem *>::ConstIterator it = items.constBegin(); it != items.constEnd(); it++) {
+                    if (getPath(*it, path)) {
+                        paths << path;
+                    }
+                }
+
+                emit pathSearchRequired(paths.join(';'));
                 e -> accept();
                 return;
             }
@@ -316,11 +340,11 @@ void ProjectTree::itemDoubleClicked(QTreeWidgetItem * item, int /*column*/) {
         // edit folder name
     }
 
-//    QVariant item_data = item -> data(0, Qt::UserRole);
+//    QVariant item_data = item -> data(0, TREE_FOLDER_UID);
 
 //    if (item_data.isNull()) {
 //        QTreeWidgetItem * parent = item -> parent();
-//        QVariant parent_data = parent -> data(0, Qt::UserRole);
+//        QVariant parent_data = parent -> data(0, TREE_FOLDER_UID);
 
 //        QString name = item -> data(0, Qt::DisplayRole).toString();
 //        void * folder = parent_data.value<void *>();
@@ -376,7 +400,7 @@ void ProjectTree::showContextMenu(const QPoint & point) {
     menu.addSeparator();
 
     if (curr_item) {
-        QVariant path = curr_item -> data(0, Qt::UserRole + 2);
+        QVariant path = curr_item -> data(0, TREE_PATH_UID);
 
         if (path.isValid()) {
             QAction * close_action = new QAction(QIcon(QLatin1Literal(":/tools/console")), "Close", this);
@@ -390,7 +414,7 @@ void ProjectTree::showContextMenu(const QPoint & point) {
     if (curr_item && !curr_item -> parent()) {
         QAction * console_action = new QAction(QIcon(QLatin1Literal(":/tools/console")), "Open sys console", this);
         connect(console_action, &QAction::triggered, [=]() {
-            QString project_path = currentItem() -> data(0, Qt::UserRole + 2).toString();
+            QString project_path = currentItem() -> data(0, TREE_PATH_UID).toString();
             emit consoleRequired(project_path);
         });
         menu.addAction(console_action);

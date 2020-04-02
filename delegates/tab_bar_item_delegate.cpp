@@ -4,7 +4,8 @@
 #include <qapplication.h>
 #include <qevent.h>
 #include <qpushbutton.h>
-#include <qdebug.h>
+
+#include "misc/defines.h"
 
 //TODO: fill all except icon zone - icon should output in white circle
 
@@ -64,7 +65,7 @@ void TabBarItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & 
 
     painter -> drawLine(option.rect.topRight(), option.rect.bottomRight());
 
-    QVariant has_error_subline = index.data(Qt::UserRole + 21);
+    QVariant has_error_subline = index.data(TREE_HAS_ERROR_UID);
     if (has_error_subline.isValid() && has_error_subline.toBool()) {
         painter -> save();
         int sx = option.rect.left() + option.decorationSize.width() + 10;

@@ -4,13 +4,15 @@
 #include <qmath.h>
 //#include <qapplication.h>
 
+#include "misc/defines.h"
+
 ProjectTreeItemDelegate::ProjectTreeItemDelegate(QObject * parent) : BaseItemDelegate(parent), ignore_back_fill(false) {
     wave = generateWavyPixmap(2, QPen(Qt::red, 2));
 }
 
 void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const {
     if (!ignore_back_fill) {
-        QVariant brush_var = index.data(Qt::UserRole + 20);
+        QVariant brush_var = index.data(TREE_COLOR_UID);
 
         if (brush_var.isValid()) {
             QBrush brush = qvariant_cast<QBrush>(brush_var);
@@ -22,10 +24,10 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
     QStyledItemDelegate::paint(painter, option, index);
 
     if (option.widget -> property("in_search").toBool()) {
-        QVariant substr_start = index.data(Qt::UserRole + 10);
+        QVariant substr_start = index.data(TREE_SEARCH_MATCH_POS_UID);
 
         if (substr_start.isValid()) {
-            QVariant substr_len = index.data(Qt::UserRole + 11);
+            QVariant substr_len = index.data(TREE_SEARCH_MATCH_LEN_UID);
             //    QRect r = QApplication::style() -> subElementRect(QStyle::SE_ItemViewItemDecoration, &option);
 
             QString item_text = index.data(Qt::DisplayRole).toString();
@@ -71,7 +73,7 @@ void ProjectTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewIt
         painter -> restore();
     }
 
-    QVariant has_error_subline = index.data(Qt::UserRole + 21);
+    QVariant has_error_subline = index.data(TREE_HAS_ERROR_UID);
     if (has_error_subline.isValid() && has_error_subline.toBool()) {
         int sx = option.rect.left() + option.decorationSize.width() + 10;
         int wy = 5;

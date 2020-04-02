@@ -25,7 +25,7 @@
 #include "styles/click_fix_style.h"
 
 void ProjectSearchPanel::searchInFile(File * file) {
-    FileSearch * file_search = FileSearch::asyncSearchInFile(regex, file, this);
+    FileSearch * file_search = FileSearch::asyncSearchInFile(regex, file);
     Logger::obj().info("ProjectSearchPanel", "Search in " % file -> path());
 
     connect(file_search, &FileSearch::finded, this, &ProjectSearchPanel::addResult);
@@ -333,6 +333,10 @@ void ProjectSearchPanel::setProjectTree(ProjectTree * target_tree) {
 //    activateBreakpoint(path, line_num);
 //}
 
+void ProjectSearchPanel::setPaths(const QString & pathes) {
+    target_paths -> setText(pathes);
+}
+
 void ProjectSearchPanel::initiateSearch(const QString & pathes, const QString & search_predicate) {
     predicate -> setText(search_predicate);
     target_paths -> setText(pathes);
@@ -366,11 +370,12 @@ void ProjectSearchPanel::processItem(QTreeWidgetItem * item, const QString & pat
 }
 
 void ProjectSearchPanel::process() {
-    QStringList paths = target_paths -> text().trimmed().split(LSTR(";"));
-
-    if (paths.isEmpty()) {
-        paths << LSTR("*");
+    QString paths_value = target_paths -> text().trimmed();
+    if (paths_value.isEmpty()) {
+        paths_value.append('*');
     }
+
+    QStringList paths = paths_value.split(LSTR(";"));
 
     QStringList::Iterator it = paths.begin();
 

@@ -39,7 +39,7 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path, QC
         item -> setToolTip(0, name);
 
         if (color) {
-            item -> setData(0, Qt::UserRole + 20, *color);
+            item -> setData(0, TREE_COLOR_UID, *color);
         }
     }
 }
@@ -50,9 +50,9 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
     FormatType ico_type = icoType(obj_name);
 
     QTreeWidgetItem * view_item = new QTreeWidgetItem(QStringList() << obj_name);
-    view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
-    view_item -> setData(0, Qt::UserRole + 1, 0);
-    view_item -> setData(0, Qt::UserRole + 2, path);
+    view_item -> setData(0, TREE_FOLDER_UID, QVariant::fromValue<void *>(this));
+    view_item -> setData(0, TREE_LEVEL_UID, 0);
+    view_item -> setData(0, TREE_PATH_UID, path);
     view_item -> setIcon(0, Projects::obj().getIco(ico_type));
     view_item -> setToolTip(0, obj_name);
 
@@ -64,10 +64,10 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
     }
 
     if (color) {
-        view_item -> setData(0, Qt::UserRole + 20, *color);
+        view_item -> setData(0, TREE_COLOR_UID, *color);
     }
 
-//        (Folder *)view_item -> data(0, Qt::UserRole).value<void *>() -> name();
+//        (Folder *)view_item -> data(0, TREE_FOLDER_UID).value<void *>() -> name();
 
     proc(view_item, path, color, 0);
 
@@ -82,8 +82,8 @@ RecursiveFolder::RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent
     FormatType ico_type = icoType(folder_name, level);
 
     QTreeWidgetItem * curr_view_item = new QTreeWidgetItem(view_parent, QStringList() << folder_name);
-    curr_view_item -> setData(0, Qt::UserRole, QVariant::fromValue<void *>(this));
-    curr_view_item -> setData(0, Qt::UserRole + 1, level);
+    curr_view_item -> setData(0, TREE_FOLDER_UID, QVariant::fromValue<void *>(this));
+    curr_view_item -> setData(0, TREE_LEVEL_UID, level);
     curr_view_item -> setIcon(0, Projects::obj().getIco(ico_type));
     curr_view_item -> setToolTip(0, folder_name);
 
@@ -95,7 +95,7 @@ RecursiveFolder::RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent
     }
 
     if (color) {
-        curr_view_item -> setData(0, Qt::UserRole + 20, *color);
+        curr_view_item -> setData(0, TREE_COLOR_UID, *color);
     }
 
     proc(curr_view_item, fullPath(), color, level);
