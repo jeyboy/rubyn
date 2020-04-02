@@ -37,18 +37,21 @@ void FileSearch::initiate() {
         prev_buffer.reserve(buffer_length);
 
         QString buffer;
-        buffer.reserve(buffer_length);
+//        buffer.reserve(buffer_length);
 
         QString target;
         target.reserve(buffer_length * 2);
 
-        while(in.readLineInto(&buffer, buffer_length)) {
+
+        while(!in.atEnd()/*in.readLineInto(&buffer, buffer_length)*/) {
+            buffer = in.read(buffer_length);
+
             target.setRawData(prev_buffer.data(), prev_buffer.length());
             target.append(buffer);
 
             QRegularExpressionMatchIterator i = regex.globalMatch(target);
 
-            while (i.hasNext()) {
+            while(i.hasNext()) {
                 QRegularExpressionMatch match = i.next();
                 emit finded(_file -> path(), offset + match.capturedStart(), match.capturedLength(), target, match.capturedStart());
             }

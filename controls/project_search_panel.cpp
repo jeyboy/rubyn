@@ -25,10 +25,12 @@
 #include "styles/click_fix_style.h"
 
 void ProjectSearchPanel::searchInFile(File * file) {
-    FileSearch * file_search = FileSearch::asyncSearchInFile(regex, file);
-    Logger::obj().info("ProjectSearchPanel", "Search in " % file -> path());
+//    FileSearch * file_search = FileSearch::asyncSearchInFile(regex, file);
+//    Logger::obj().info("ProjectSearchPanel", "Search in " % file -> path());
 
+    FileSearch * file_search = new FileSearch(regex, file);
     connect(file_search, &FileSearch::finded, this, &ProjectSearchPanel::addResult);
+    file_search -> initiate();
 }
 
 QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
@@ -124,9 +126,9 @@ void ProjectSearchPanel::prepareOptionsWidget() {
     connect(flag_case_sensitive, &QCheckBox::clicked, [=](bool) {
         regex = buildRegex(predicate -> text());
 
-        if (regex.isValid()) {
-            process();
-        }
+//        if (regex.isValid()) {
+//            process();
+//        }
     });
 
     flag_whole_word_only = new QCheckBox(QLatin1Literal("Words"), menu);
@@ -136,9 +138,9 @@ void ProjectSearchPanel::prepareOptionsWidget() {
     connect(flag_whole_word_only, &QCheckBox::clicked, [=](bool) {
         regex = buildRegex(predicate -> text());
 
-        if (regex.isValid()) {
-            process();
-        }
+//        if (regex.isValid()) {
+//            process();
+//        }
     });
 
     flag_reg_exp = new QCheckBox(QLatin1Literal("Regex"), menu);
@@ -148,9 +150,9 @@ void ProjectSearchPanel::prepareOptionsWidget() {
     connect(flag_reg_exp, &QCheckBox::clicked, [=](bool) {
         regex = buildRegex(predicate -> text());
 
-        if (regex.isValid()) {
-            process();
-        }
+//        if (regex.isValid()) {
+//            process();
+//        }
     });
 
     flag_unicode = new QCheckBox(QLatin1Literal("Unicode"), menu);
@@ -160,9 +162,9 @@ void ProjectSearchPanel::prepareOptionsWidget() {
     connect(flag_unicode, &QCheckBox::clicked, [=](bool) {
         regex = buildRegex(predicate -> text());
 
-        if (regex.isValid()) {
-            process();
-        }
+//        if (regex.isValid()) {
+//            process();
+//        }
     });
 }
 
@@ -370,6 +372,13 @@ void ProjectSearchPanel::processItem(QTreeWidgetItem * item, const QString & pat
 }
 
 void ProjectSearchPanel::process() {
+    regex = buildRegex(predicate -> text());
+
+    if (!regex.isValid()) {
+        Logger::obj().error("ProjectSearchPanel", "Search pattern is not valid");
+        return;
+    }
+
     QString paths_value = target_paths -> text().trimmed();
     if (paths_value.isEmpty()) {
         paths_value.append('*');
