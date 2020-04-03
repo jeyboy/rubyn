@@ -1,6 +1,7 @@
 #include "project_search_panel.h"
 
 #include "styles/click_fix_style.h"
+#include "delegates/project_search_item_delegate.h"
 
 #include "tools/dir_search.h"
 #include "tools/file_search_result.h"
@@ -61,13 +62,13 @@ QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
 }
 
 void ProjectSearchPanel::prepareResultsWidget() {
-    search_results -> setHeaderHidden(true);
+//    search_results -> setHeaderHidden(true);
     search_results -> setAutoScroll(false);
 //    search_results -> setContextMenuPolicy(Qt::CustomContextMenu);
 
     search_results -> setColumnCount(2);
     search_results -> header() -> setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    search_results -> header() -> setStretchLastSection(false);
+    search_results -> header() -> setStretchLastSection(true);
 
     QFont f(font());
     f.setPointSize(11);
@@ -91,8 +92,8 @@ void ProjectSearchPanel::prepareResultsWidget() {
     search_results -> setEditTriggers(QAbstractItemView::NoEditTriggers);
 //    setExpandsOnDoubleClick(false);
 
-//    item_delegate = new ProjectTreeItemDelegate();
-//    setItemDelegate(item_delegate);
+    item_delegate = new ProjectSearchItemDelegate(search_results);
+    search_results -> setItemDelegate(item_delegate);
 }
 
 void ProjectSearchPanel::prepareOptionsWidget() {
@@ -255,19 +256,36 @@ void ProjectSearchPanel::process() {
         paths_value.append('*');
     }
 
-    qDeleteAll(search_items);
+//    qDeleteAll(search_items);
     dir_search -> search(regex, paths_value, project_tree);
 }
 
 void ProjectSearchPanel::addResult(FileSearchResult * result) {
-//    QTreeWidgetItem * view_item = new QTreeWidgetItem(QStringList() << obj_name);
-//    view_item -> setData(0, TREE_FOLDER_UID, QVariant::fromValue<void *>(this));
-//    view_item -> setData(0, TREE_LEVEL_UID, 0);
-//    view_item -> setData(0, TREE_PATH_UID, path);
-//    view_item -> setIcon(0, Projects::obj().getIco(ico_type));
-//    view_item -> setToolTip(0, obj_name);
+//    qDebug() << "addResult" << result -> result.mid(result -> result_pos);
 
-//    search_results -> addTopLevelItem(item);
+    int preview_length = 20;
+    int start_pos = result -> result_pos - preview_length;
+    int match_pos;
 
-    qDebug() << "addResult" << result -> result.mid(result -> result_pos);
+    if (start_pos < 0) {
+        match_pos = preview_length + start_pos;
+        start_pos = 0;
+    } else {
+        match_pos = preview_length;
+    }
+
+    QString txt = result -> result.mid(start_pos, result -> match_length + preview_length);
+
+    QTreeWidgetItem * itm = new QTreeWidgetItem(QStringList() << result -> path << txt);
+    itm -> setData(0, PROJECT_SEARCH_MATCH_POS_UID, match_pos);
+    itm -> setData(0, PROJECT_SEARCH_MATCH_LEN_UID, result -> match_length);
+    itm -> setData(0, PROJECT_SEARCH_PATH_UID, result -> path);
+
+    //PROJECT_SEARCH_PATH_LINE_UID
+    //PROJECT_SEARCH_PATH_POS_IN_LINE_UID
+
+    //    itm -> setIcon(0, Projects::obj().getIco(ico_type));
+    //    itm -> setToolTip(0, obj_name);
+
+    search_results -> addTopLevelItem(itm);
 }

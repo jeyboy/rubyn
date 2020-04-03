@@ -8,6 +8,7 @@
 #include <qregularexpression.h>
 //#include <qhash.h>
 
+class ProjectSearchItemDelegate;
 class QTreeWidget;
 class QLineEdit;
 class QCheckBox;
@@ -25,12 +26,14 @@ class FileSearchResult;
 class ProjectSearchPanel : public QWidget {
     Q_OBJECT
 
+    ProjectSearchItemDelegate * item_delegate;
+
     QTreeWidget * search_results;
     QLineEdit * predicate;
     QLineEdit * target_paths;
     ProjectTree * project_tree;
     DirSearch * dir_search;
-    QHash<QString, QTreeWidgetItem *> search_items;
+//    QHash<QString, QTreeWidgetItem *> search_items;
 
     QCheckBox * flag_case_sensitive;
     QCheckBox * flag_whole_word_only;

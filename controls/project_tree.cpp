@@ -48,7 +48,7 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     setEditTriggers(QAbstractItemView::NoEditTriggers);
 //    setExpandsOnDoubleClick(false);
 
-    item_delegate = new ProjectTreeItemDelegate();
+    item_delegate = new ProjectTreeItemDelegate(this);
     setItemDelegate(item_delegate);
 
     invisibleRootItem() -> setData(0, TREE_FOLDER_UID, QVariant(0));

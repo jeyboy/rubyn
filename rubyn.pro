@@ -15,6 +15,7 @@ SOURCES += main.cpp\
     controls/line_dialog.cpp \
     controls/project_search_dialog.cpp \
     controls/project_search_panel.cpp \
+    delegates/project_search_item_delegate.cpp \
     editor/custom/custom_chars.cpp \
     editor/custom/custom_cursor.cpp \
     editor/custom/custom_document.cpp \
@@ -137,6 +138,7 @@ HEADERS  += ide_window.h \
     controls/line_dialog.h \
     controls/project_search_dialog.h \
     controls/project_search_panel.h \
+    delegates/project_search_item_delegate.h \
     editor/custom/custom_chars.h \
     editor/custom/custom_cursor.h \
     editor/custom/custom_document.h \

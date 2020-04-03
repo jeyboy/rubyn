@@ -14,6 +14,12 @@
 #define TREE_COLOR_UID Qt::UserRole + 20
 #define TREE_HAS_ERROR_UID Qt::UserRole + 21
 
+#define PROJECT_SEARCH_MATCH_POS_UID Qt::UserRole
+#define PROJECT_SEARCH_MATCH_LEN_UID Qt::UserRole + 1
+#define PROJECT_SEARCH_PATH_UID Qt::UserRole + 2
+#define PROJECT_SEARCH_PATH_LINE_UID Qt::UserRole + 3
+#define PROJECT_SEARCH_PATH_POS_IN_LINE_UID Qt::UserRole + 4
+
 
 
 #define LEXEM_MEAN_TYPE quint16
