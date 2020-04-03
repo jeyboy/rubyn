@@ -63,6 +63,7 @@ SOURCES += main.cpp\
     controls/completer.cpp \
     misc/variant_convertor.cpp \
     misc/country.cpp \
+    tools/dir_search.cpp \
     tools/file_search.cpp \
     tools/web_manager/web_connection.cpp \
     tools/web_manager/web_cookies.cpp \
@@ -230,6 +231,7 @@ HEADERS  += ide_window.h \
     misc/variant_convertor.h \
     misc/variant_ptr.h \
     misc/country.h \
+    tools/dir_search.h \
     tools/file_search.h \
     tools/html/html_decoding.h \
     tools/html/html_global.h \

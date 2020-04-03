@@ -14,6 +14,7 @@ class QToolBar;
 class ProjectTree;
 class File;
 class QTreeWidgetItem;
+class DirSearch;
 
 //class QListWidget;
 //class QListWidgetItem;
@@ -26,13 +27,13 @@ class ProjectSearchPanel : public QWidget {
     QLineEdit * predicate;
     QLineEdit * target_paths;
     ProjectTree * project_tree;
+    DirSearch * dir_search;
 
     QCheckBox * flag_case_sensitive;
     QCheckBox * flag_whole_word_only;
     QCheckBox * flag_reg_exp;
     QCheckBox * flag_unicode;
 
-    void searchInFile(File * file);
     QRegularExpression buildRegex(const QString & pattern);
     void prepareResultsWidget();
     void prepareOptionsWidget();
@@ -50,7 +51,6 @@ public slots:
     void initiateSearch(const QString & pathes, const QString & search_predicate);
 
 protected slots:
-    void processItem(QTreeWidgetItem * item, const QString & path = QString());
     void process();
     void addResult(const QString & path, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length, const QString & result, const EDITOR_POS_TYPE & result_pos);
 };

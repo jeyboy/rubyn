@@ -1,12 +1,10 @@
 #include "project_search_panel.h"
 
-#include "tools/file_search.h"
+#include "tools/dir_search.h"
+
 #include "controls/logger.h"
 
-#include "project/file.h"
 #include "project_tree.h"
-#include "project/projects.h"
-#include "project/ifolder.h"
 
 #include <qtreewidget.h>
 #include <qheaderview.h>
@@ -23,12 +21,6 @@
 //#include <qshortcut.h>
 
 #include "styles/click_fix_style.h"
-
-void ProjectSearchPanel::searchInFile(File * file) {
-    FileSearch * file_search = new FileSearch(regex, file);
-    connect(file_search, &FileSearch::finded, this, &ProjectSearchPanel::addResult);
-    file_search -> initiateAsync();
-}
 
 QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
 //    if (pattern.isEmpty()) {
@@ -166,7 +158,7 @@ void ProjectSearchPanel::prepareOptionsWidget() {
 }
 
 
-ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), search_results(nullptr), predicate(nullptr), target_paths(nullptr), project_tree(nullptr) {
+ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), search_results(nullptr), predicate(nullptr), target_paths(nullptr), project_tree(nullptr), dir_search(nullptr) {
     QVBoxLayout * l = new QVBoxLayout(this);
     l -> setContentsMargins(0, 0, 0, 0);
     l -> setSpacing(0);
@@ -228,109 +220,14 @@ ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), sear
 
     l -> addWidget(control_panel, 0);
     l -> addWidget(search_results, 1);
+
+    dir_search = new DirSearch(this);
+    connect(dir_search, &DirSearch::finded, this, &ProjectSearchPanel::addResult);
 }
 
 void ProjectSearchPanel::setProjectTree(ProjectTree * target_tree) {
     project_tree = target_tree;
 }
-
-//void BreakpointsPanel::activateBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num) {
-//    if (active_breakpoint) {
-//        active_breakpoint -> setData(Qt::BackgroundRole, QVariant());
-////        active_breakpoint -> setData(Qt::ForegroundRole, QVariant());
-//    }
-
-//    if (!records.contains(path))
-//        return;
-
-//    active_breakpoint = records[path][line_num];
-//    active_breakpoint -> setData(Qt::BackgroundRole, QColor(0, 212, 212));
-////    active_breakpoint -> setData(Qt::ForegroundRole, QColor(255, 255, 255));
-//}
-
-//void BreakpointsPanel::addBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num) {
-////    emit breakpointAdded(path, line_num);
-
-//    QListWidgetItem * itm = new QListWidgetItem(QIcon(QLatin1Literal(":/breakpoint")), buildName(path, line_num));
-//    itm -> setData(Qt::UserRole + 1, path);
-//    itm -> setData(Qt::UserRole + 2, line_num);
-
-//    if (!records.contains(path))
-//        records.insert(path, QHash<EDITOR_POS_TYPE, QListWidgetItem * >());
-
-//    records[path].insert(line_num, itm);
-
-//    breakpoints -> addItem(itm);
-//}
-//void BreakpointsPanel::moveBreakpoint(const QString & path, const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & new_line_num) {
-//    if (!records.contains(path))
-//        return;
-
-//    QHash<EDITOR_POS_TYPE, QListWidgetItem * > & lines = records[path];
-
-//    QList<EDITOR_POS_TYPE> nums = lines.keys();
-
-//    EDITOR_POS_TYPE diff = new_line_num - old_line_num;
-
-//    for(QList<EDITOR_POS_TYPE>::Iterator it = nums.begin(); it != nums.end(); it++) {
-//        if (*it > old_line_num) {
-//            EDITOR_POS_TYPE new_pos = *it + diff;
-
-//            QListWidgetItem * itm = lines.take(*it);
-//            itm -> setText(buildName(path, new_pos));
-//            itm -> setData(Qt::UserRole + 2, new_pos);
-//            lines[new_pos] = itm;
-//        }
-//    }
-//}
-//void BreakpointsPanel::removeBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num) {
-//    if (!records.contains(path))
-//        return;
-
-//    if (line_num == NO_INFO) {
-//        if (active_breakpoint) {
-//            QString active_path = active_breakpoint -> data(Qt::UserRole + 1).toString();
-
-//            if (path == active_path)
-//                active_breakpoint = nullptr;
-//        }
-
-//        qDeleteAll(records.take(path));
-//    }
-
-//    QHash<EDITOR_POS_TYPE, QListWidgetItem * > & lines = records[path];
-
-//    if (!lines.contains(line_num))
-//        return;
-
-//    QListWidgetItem * item = lines.take(line_num);
-
-//    if (item == active_breakpoint)
-//        active_breakpoint = nullptr;
-
-//    delete item;
-//    emit breakpointRemoved(path, line_num);
-//}
-
-//void BreakpointsPanel::deleteBreakpointItem() {
-//    qDebug() << "deleteBreakpointItem";
-
-//    QListWidgetItem * item = breakpoints -> currentItem();
-
-//    QString path = item -> data(Qt::UserRole + 1).toString();
-//    EDITOR_POS_TYPE line_num = item -> data(Qt::UserRole + 2).toInt();
-
-//    removeBreakpoint(path, line_num);
-//}
-
-//void BreakpointsPanel::breakpointDoubleClicked(QListWidgetItem * item) {
-//    qDebug() << "breakpointDoubleClicked";
-
-//    QString path = item -> data(Qt::UserRole + 1).toString();
-//    EDITOR_POS_TYPE line_num = item -> data(Qt::UserRole + 2).toInt();
-
-//    activateBreakpoint(path, line_num);
-//}
 
 void ProjectSearchPanel::setPaths(const QString & pathes) {
     target_paths -> setText(pathes);
@@ -343,32 +240,9 @@ void ProjectSearchPanel::initiateSearch(const QString & pathes, const QString & 
     process();
 }
 
-void ProjectSearchPanel::processItem(QTreeWidgetItem * item, const QString & path) {
-    if (ProjectTree::isFolder(item)) {
-        int items_count = item -> childCount();
+void ProjectSearchPanel::process() {  
+    search_results -> clear();
 
-        for(int i = 0; i < items_count; i++) {
-            QTreeWidgetItem * child = item -> child(i);
-            processItem(child, path % '/' % ProjectTree::name(child));
-        }
-    } else {
-        File * file;
-        void * folder;
-        QString name;
-
-        if (ProjectTree::getFileData(item, name, folder)) {
-            if (Projects::identificate(name, folder, file)) {
-                searchInFile(file);
-            } else {
-                Logger::obj().info("ProjectSearchPanel", "Cant identificate: " + path);
-            }
-        } else {
-            Logger::obj().info("ProjectSearchPanel", "Cant find the data: " + path);
-        }
-    }
-}
-
-void ProjectSearchPanel::process() {
     regex = buildRegex(predicate -> text());
 
     if (!regex.isValid()) {
@@ -381,26 +255,18 @@ void ProjectSearchPanel::process() {
         paths_value.append('*');
     }
 
-    QStringList paths = paths_value.split(LSTR(";"));
-
-    QStringList::Iterator it = paths.begin();
-
-    for(; it != paths.end(); it++) {
-        if (project_tree) {
-            QTreeWidgetItem * tree_item = project_tree -> findByPath(*it);
-
-            if (tree_item) {
-                processItem(tree_item, *it);
-            } else {
-                Logger::obj().info("ProjectSearchPanel", "Search in non project files do not support yet");
-            }
-        } else {
-            // TODO: implement me
-            Logger::obj().info("ProjectSearchPanel", "No project tree set");
-        }
-    }
+    dir_search -> search(regex, paths_value, project_tree);
 }
 
 void ProjectSearchPanel::addResult(const QString & path, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length, const QString & result, const EDITOR_POS_TYPE & result_pos) {
+//    QTreeWidgetItem * view_item = new QTreeWidgetItem(QStringList() << obj_name);
+//    view_item -> setData(0, TREE_FOLDER_UID, QVariant::fromValue<void *>(this));
+//    view_item -> setData(0, TREE_LEVEL_UID, 0);
+//    view_item -> setData(0, TREE_PATH_UID, path);
+//    view_item -> setIcon(0, Projects::obj().getIco(ico_type));
+//    view_item -> setToolTip(0, obj_name);
+
+//    search_results -> addTopLevelItem(item);
+
     qDebug() << "addResult" << result.mid(result_pos);
 }
