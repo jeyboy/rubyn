@@ -9,13 +9,12 @@
 class ProjectTree;
 class File;
 class QTreeWidgetItem;
+class FileSearchResult;
 
 
 //ImageProcessor* worker = new ImageProcessor();
 //connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
 //QtConcurrent::run(worker, &ImageProcessor::process);
-
-
 
 class DirSearch : public QObject {
     Q_OBJECT
@@ -29,7 +28,7 @@ public:
 
     void search(const QRegularExpression & pattern, const QString & paths_value, ProjectTree * tree = nullptr);
 signals:
-    void finded(const QString & path, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length, const QString & result, const EDITOR_POS_TYPE & result_pos);
+    void finded(FileSearchResult *);
 };
 
 #endif // DIRSEARCH_H

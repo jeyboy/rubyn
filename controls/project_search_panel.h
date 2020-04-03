@@ -3,6 +3,7 @@
 
 #include "misc/defines.h"
 
+#include <qhash.h>
 #include <qwidget.h>
 #include <qregularexpression.h>
 //#include <qhash.h>
@@ -15,6 +16,7 @@ class ProjectTree;
 class File;
 class QTreeWidgetItem;
 class DirSearch;
+class FileSearchResult;
 
 //class QListWidget;
 //class QListWidgetItem;
@@ -28,6 +30,7 @@ class ProjectSearchPanel : public QWidget {
     QLineEdit * target_paths;
     ProjectTree * project_tree;
     DirSearch * dir_search;
+    QHash<QString, QTreeWidgetItem *> search_items;
 
     QCheckBox * flag_case_sensitive;
     QCheckBox * flag_whole_word_only;
@@ -52,7 +55,7 @@ public slots:
 
 protected slots:
     void process();
-    void addResult(const QString & path, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length, const QString & result, const EDITOR_POS_TYPE & result_pos);
+    void addResult(FileSearchResult * result);
 };
 
 #endif // PROJECT_SEARCH_PANEL_H

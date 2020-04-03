@@ -1,9 +1,11 @@
 #include "project_search_panel.h"
 
+#include "styles/click_fix_style.h"
+
 #include "tools/dir_search.h"
+#include "tools/file_search_result.h"
 
 #include "controls/logger.h"
-
 #include "project_tree.h"
 
 #include <qtreewidget.h>
@@ -19,8 +21,6 @@
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
 //#include <qshortcut.h>
-
-#include "styles/click_fix_style.h"
 
 QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
 //    if (pattern.isEmpty()) {
@@ -255,10 +255,11 @@ void ProjectSearchPanel::process() {
         paths_value.append('*');
     }
 
+    qDeleteAll(search_items);
     dir_search -> search(regex, paths_value, project_tree);
 }
 
-void ProjectSearchPanel::addResult(const QString & path, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length, const QString & result, const EDITOR_POS_TYPE & result_pos) {
+void ProjectSearchPanel::addResult(FileSearchResult * result) {
 //    QTreeWidgetItem * view_item = new QTreeWidgetItem(QStringList() << obj_name);
 //    view_item -> setData(0, TREE_FOLDER_UID, QVariant::fromValue<void *>(this));
 //    view_item -> setData(0, TREE_LEVEL_UID, 0);
@@ -268,5 +269,5 @@ void ProjectSearchPanel::addResult(const QString & path, const EDITOR_POS_TYPE &
 
 //    search_results -> addTopLevelItem(item);
 
-    qDebug() << "addResult" << result.mid(result_pos);
+    qDebug() << "addResult" << result -> result.mid(result -> result_pos);
 }

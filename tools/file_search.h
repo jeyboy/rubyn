@@ -8,6 +8,7 @@
 #include <qregularexpression.h>
 
 class File;
+class FileSearchResult;
 
 class FileSearch : public QObject {
     Q_OBJECT
@@ -21,7 +22,7 @@ public:
     void initiateAsync();
 
 signals:
-    void finded(const QString & path, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length, const QString & result, const EDITOR_POS_TYPE & result_pos);
+    void finded(FileSearchResult *);
 };
 
 #endif // FILESEARCH_H

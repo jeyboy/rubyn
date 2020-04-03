@@ -8,12 +8,11 @@
 #include "project/ifolder.h"
 
 #include "tools/file_search.h"
+#include "tools/file_search_result.h"
 
 void DirSearch::searchInFile(File * file) {
     FileSearch * file_search = new FileSearch(regex, file);
-    connect(file_search, &FileSearch::finded, [=](const QString & path, const EDITOR_POS_TYPE & pos, const EDITOR_LEN_TYPE & length, const QString & result, const EDITOR_POS_TYPE & result_pos) {
-        emit finded(path, pos, length, result, result_pos);
-    });
+    connect(file_search, &FileSearch::finded, [=](FileSearchResult * result) { emit finded(result); });
     file_search -> initiateAsync();
 }
 

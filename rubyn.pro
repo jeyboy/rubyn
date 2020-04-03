@@ -233,6 +233,7 @@ HEADERS  += ide_window.h \
     misc/country.h \
     tools/dir_search.h \
     tools/file_search.h \
+    tools/file_search_result.h \
     tools/html/html_decoding.h \
     tools/html/html_global.h \
     tools/html/html_keys.h \

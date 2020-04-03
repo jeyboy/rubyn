@@ -1,10 +1,8 @@
 #include "file_search.h"
 
-#include <qstringbuilder.h>
-#include <qdebug.h>
-
 #include "project/file.h"
 #include "controls/logger.h"
+#include "tools/file_search_result.h"
 
 FileSearch::FileSearch(const QRegularExpression & regex, File * file, QObject * parent) : QObject(parent), _file(file), regex(regex) {
 
@@ -16,7 +14,7 @@ void FileSearch::initiate() {
         QIODevice * source = _file -> source();
         QTextStream in(source);
 
-        qint64 offset = 0;
+        EDITOR_POS_TYPE offset = 0;
         int min_buffer_legnth = regex.pattern().length() + 1000;
         int buffer_length = qMax(min_buffer_legnth, 10000);
 
@@ -40,7 +38,15 @@ void FileSearch::initiate() {
 
             while(i.hasNext()) {
                 QRegularExpressionMatch match = i.next();
-                emit finded(_file -> path(), offset + match.capturedStart(), match.capturedLength(), target, match.capturedStart());
+                emit finded(
+                    new FileSearchResult {
+                        _file -> path(),
+                        offset + match.capturedStart(),
+                        (EDITOR_LEN_TYPE)match.capturedLength(),
+                        target,
+                        match.capturedStart()
+                    }
+                );
             }
 
             offset += buffer.length();
