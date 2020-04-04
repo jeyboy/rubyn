@@ -85,7 +85,7 @@ QScrollBar * TreeEditor::verticalScrollBar() { return QTreeView::verticalScrollB
 QScrollBar * TreeEditor::horizontalScrollBar() { return QTreeView::horizontalScrollBar(); }
 
 void TreeEditor::ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line) {
-
+    //TODO: implement me
 }
 
 void TreeEditor::focusInEvent(QFocusEvent * e) {

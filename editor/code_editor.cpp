@@ -105,8 +105,9 @@ void CodeEditor::openDocument(File * file) {
         disconnect(wrapper, &TextDocument::rowRedrawRequired, this, &CodeEditor::redrawRow);
 
         if (display_cacher -> size() > 0) {
-            QScrollBar * vscroll = verticalScrollBar();
-            wrapper -> setVerticalScrollPos(vscroll -> value());
+            wrapper -> setHorizontalScrollPos(horizontalScrollBar() -> value());
+            wrapper -> setVerticalScrollPos(verticalScrollBar() -> value());
+
             if (display_cacher -> isShowOverlay())
                 hideOverlays();
         }
