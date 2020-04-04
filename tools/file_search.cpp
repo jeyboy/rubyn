@@ -8,7 +8,7 @@ FileSearch::FileSearch(const QRegularExpression & regex, File * file, QObject * 
 
 }
 
-void FileSearch::initiate() {
+void FileSearch::run() {
     if (_file -> openRaw()) {
         QIODevice * source = _file -> source();
         QTextStream in(source);
@@ -103,12 +103,12 @@ void FileSearch::initiate() {
     }
 }
 
-void FileSearch::initiateAsync() {
+void FileSearch::runAsync() {
     QThread * thread = new QThread();
 
     thread -> start();
 
     moveToThread(thread);
 
-    initiate();
+    run();
 }

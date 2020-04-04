@@ -6,11 +6,12 @@
 #include <qobject.h>
 #include <qthread.h>
 #include <qregularexpression.h>
+#include <qrunnable.h>
 
 class File;
 class FileSearchResult;
 
-class FileSearch : public QObject {
+class FileSearch : public QObject, public QRunnable {
     Q_OBJECT
 
     File * _file;
@@ -21,8 +22,8 @@ public:
 
     void setPreviewWindow(const int & new_preview_val) { preview_window = new_preview_val; }
 
-    void initiate();
-    void initiateAsync();
+    void run() override;
+    void runAsync();
 
 signals:
     void finded(FileSearchResult *);

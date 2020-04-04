@@ -131,6 +131,10 @@ public:
     inline bool isBinary() const { return _context -> _main_format & ft_binary; }
     inline bool isTree() const { return _context -> _main_format & ft_tree; }
 
+    inline bool isSearchable() {
+        return isText() || isCustomText() || isTree();
+    }
+
     TextDocument * asText();
     Custom::Document * asCustomText();
     ImageDocument * asImage();

@@ -10,10 +10,13 @@
 #include "tools/file_search.h"
 #include "tools/file_search_result.h"
 
+#include <qthreadpool.h>
+
 void DirSearch::searchInFile(File * file) {
     FileSearch * file_search = new FileSearch(regex, file);
     connect(file_search, &FileSearch::finded, [=](FileSearchResult * result) { emit finded(result); });
-    file_search -> initiateAsync();
+    QThreadPool::globalInstance() -> start(file_search);
+//    file_search -> runAsync();
 }
 
 void DirSearch::processItem(QTreeWidgetItem * item, const QString & path) {
@@ -31,7 +34,9 @@ void DirSearch::processItem(QTreeWidgetItem * item, const QString & path) {
 
         if (ProjectTree::getFileData(item, name, folder)) {
             if (Projects::identificate(name, folder, file)) {
-                searchInFile(file);
+                if (file -> isSearchable()) {
+                    searchInFile(file);
+                }
             } else {
                 Logger::obj().info("ProjectSearchPanel", "Cant identificate: " + path);
             }
