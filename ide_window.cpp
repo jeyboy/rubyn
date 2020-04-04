@@ -251,7 +251,7 @@ void IDEWindow::splitterMoved(int /*pos*/, int index) {
     }
 }
 
-void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool & in_new, const bool & vertical, const int & scroll_pos_y) {
+void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool & in_new, const bool & vertical, const QPoint & scroll_pos) {
     File * _file = nullptr;
 
     if (!Projects::identificate(name, folder, _file)) {
@@ -302,10 +302,9 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
 
     IDocument * doc = _file -> document();
 
-    qDebug() << _file -> path() << doc << scroll_pos_y;
-
     if (doc) {
-        doc -> setVerticalScrollPos(scroll_pos_y);
+        doc -> setHorizontalScrollPos(scroll_pos.x());
+        doc -> setVerticalScrollPos(scroll_pos.y());
     }
 
 //    if (_file -> isText()) {
@@ -807,8 +806,8 @@ void IDEWindow::setupToolWindows() {
 
     connect(tree, &ProjectTree::pathSearchRequired, [=](const QString & paths) {
         qDebug() << "!!!" << paths;
-        project_search_panel -> setPaths(paths);
         project_search_widget -> raise();
+        project_search_panel -> activate(paths);
     });
 
     DockWidgets::obj().append(project_search_widget);

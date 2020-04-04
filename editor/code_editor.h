@@ -305,6 +305,7 @@ public:
 
     void setVisible(bool visible) Q_DECL_OVERRIDE;
     QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
+    QScrollBar * horizontalScrollBar() Q_DECL_OVERRIDE;
 
 //    inline const QFont & font() const { return QPlainTextEdit::font(); }
     void setFont(const QFont & font);

@@ -139,8 +139,9 @@ public:
 
     bool dumpState(QVariant & data);
     bool restoreState(QVariant & data);
-    int verticalScrollState(const bool & drop = false);
-    bool setVerticalScrollState(const int & pos);
+
+    QPoint scrollState(const bool & drop = false);
+    bool setScrollState(const QPoint & coords);
 };
 
 #endif // FILE_H

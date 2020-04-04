@@ -3,6 +3,7 @@
 
 #include "project/code_formats.h"
 
+#include <qpoint.h>
 #include <qvariant.h>
 
 #define READ_LIMIT 512000LL // ~512 kb
@@ -13,14 +14,15 @@ class IDocument {
     bool _fully_readed;
 protected:
     ILexer * _lexer;
-    int scroll_pos_y;
+
+    QPoint scroll_pos;
 
     static QLatin1String tab_space;
     static QHash<QChar, bool> word_boundary;
 
     inline void setFullyReaded(const bool & readed) { _fully_readed = readed; }
 public:
-    inline IDocument() : _fully_readed(false), _lexer(nullptr), scroll_pos_y(0) {}
+    inline IDocument() : _fully_readed(false), _lexer(nullptr), scroll_pos(0, 0) {}
     virtual ~IDocument();
 
     inline bool isFullyReaded() const { return _fully_readed; }
@@ -32,11 +34,15 @@ public:
 
     virtual bool registerStateChangedCallback(QObject * /*target*/, const char * /*slot*/) { return false; }
 
-    inline void setVerticalScrollPos(const int & pos) { scroll_pos_y = pos; }
-    inline int verticalScrollPos(const bool & drop = true) {
-        int res = scroll_pos_y;
+    inline bool scrollPredefined() { return scroll_pos.rx() > 0 || scroll_pos.ry() > 0; }
+
+    inline void setHorizontalScrollPos(const int & pos) { scroll_pos.rx() = pos; }
+    inline void setVerticalScrollPos(const int & pos) { scroll_pos.ry() = pos; }
+
+    inline QPoint scrollPos(const bool & drop = true) {
+        QPoint res = scroll_pos;
         if (drop)
-            scroll_pos_y = 0;
+            scroll_pos = QPoint(0, 0);
         return res;
     }
 };

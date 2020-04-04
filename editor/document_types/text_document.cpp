@@ -32,7 +32,6 @@ void TextDocument::openFile() {
         QTextCursor cursor(this);
         QByteArray buff;
 
-
         while(!source -> atEnd()) {
             ++len;
 

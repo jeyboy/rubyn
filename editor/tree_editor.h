@@ -19,6 +19,7 @@ public:
     void setVisible(bool visible) Q_DECL_OVERRIDE;
 
     QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
+    QScrollBar * horizontalScrollBar() Q_DECL_OVERRIDE;
 
     void ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line = 0) Q_DECL_OVERRIDE;
 

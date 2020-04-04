@@ -310,19 +310,22 @@ bool File::restoreState(QVariant & data) {
     return false;
 }
 
-int File::verticalScrollState(const bool & drop) {
+QPoint File::scrollState(const bool & drop) {
     //TODO: implement restore on IDocument level
     if (isText()) {
-        return asText() -> verticalScrollPos(drop);
+        return asText() -> scrollPos(drop);
     }
 
-    return 0;
+    return QPoint(0, 0);
 }
 
-bool File::setVerticalScrollState(const int & pos) {
+bool File::setScrollState(const QPoint & coords) {
     //TODO: implement restore on IDocument level
     if (isText()) {
-        asText() -> setVerticalScrollPos(pos);
+        TextDocument * doc = asText();
+
+        doc -> setHorizontalScrollPos(coords.x());
+        doc -> setVerticalScrollPos(coords.y());
         //TODO: need additional update for current doc
         return true;
     }

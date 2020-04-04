@@ -208,6 +208,7 @@ void Editor::ensureVisibleBlock(IBlock * block, const qint64 & char_in_line) {
 }
 
 QScrollBar * Editor::verticalScrollBar() { return _vscroll; }
+QScrollBar * Editor::horizontalScrollBar() { return _hscroll; }
 
 void Editor::setVerticalScrollFactor(uint factor) {
     _context -> _vscroll_factor = factor;
@@ -269,8 +270,11 @@ void Editor::openDocument(Document * doc) {
         _context -> _top_block = doc -> first();
         setLeftMargin(_context -> calcNumWidth(doc -> linesCount()) + 3);
 
-        if (doc -> verticalScrollPos(false) > 0) {
-            doc -> editorScrollPos(this).ry() = doc -> verticalScrollPos(true);
+        if (doc -> scrollPredefined()) {
+            QPoint coords = doc -> scrollPos();
+
+            doc -> editorScrollPos(this).ry() = coords.ry();
+            doc -> editorScrollPos(this).rx() = coords.rx();
         }
 
         scroll_pos = doc -> editorScrollPos(this);

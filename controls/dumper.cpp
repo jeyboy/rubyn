@@ -91,7 +91,10 @@ void Dumper::saveTab(IDEWindow * w, TabsBlock * editor, QJsonObject & widget_obj
             if (editor -> tabDumpState(j, state))
                 tab_data.insert(QLatin1Literal("state"), QJsonValue::fromVariant(state));
 
-            tab_data.insert(QLatin1Literal("scroll_y"), editor -> tabVerticalScrollPos(j));
+            QPoint scroll_data = editor -> tabScrollPos(j);
+
+            tab_data.insert(QLatin1Literal("scroll_x"), scroll_data.x());
+            tab_data.insert(QLatin1Literal("scroll_y"), scroll_data.y());
 
             tabs_arr.append(tab_data);
         }
@@ -104,10 +107,10 @@ void Dumper::saveTab(IDEWindow * w, TabsBlock * editor, QJsonObject & widget_obj
 
     widget_obj.insert(QLatin1Literal("tabs"), tabs_arr);
 
-    int vscroll_val = editor -> currentTabVerticalScrollPos();
+    QPoint scroll_val = editor -> currentTabScrollPos();
 
-    if (vscroll_val != 0)
-        widget_obj.insert(QLatin1Literal("scroll_y"), vscroll_val);
+    widget_obj.insert(QLatin1Literal("scroll_x"), scroll_val.x());
+    widget_obj.insert(QLatin1Literal("scroll_y"), scroll_val.y());
 
     if (w -> active_editor == editor)
         widget_obj.insert(QLatin1Literal("is_active"), true);
@@ -162,7 +165,8 @@ void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, Ta
 
         if (child_obj.string(QLatin1Literal("type")) == QLatin1Literal("e")) {           
             QString curr_path = child_obj.string(QLatin1Literal("current"));
-            int scroll_y = child_obj.integer(QLatin1Literal("scroll_y"));
+
+            QPoint scroll_data(child_obj.integer(QLatin1Literal("scroll_x")), child_obj.integer(QLatin1Literal("scroll_y")));
 
             JsonArr items = child_obj.arr(QLatin1Literal("tabs"));
             int index = 0, counter = 0;
@@ -177,14 +181,16 @@ void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, Ta
 
                 QString path = obj.value(QLatin1Literal("path")).toString();
                 QVariant state = obj.value(QLatin1Literal("state")).toVariant();
-                int tab_scroll_y = obj.value(QLatin1Literal("scroll_y")).toInt();
+
+
+                QPoint tab_scroll_data(obj.value(QLatin1Literal("scroll_x")).toInt(), obj.value(QLatin1Literal("scroll_y")).toInt());
 
                 if (path == curr_path) {
                     index = counter;
-                    tab_scroll_y = scroll_y;
+                    tab_scroll_data = scroll_data;
                 }
 
-                w -> fileOpenRequired(path, nullptr, false, true, tab_scroll_y);
+                w -> fileOpenRequired(path, nullptr, false, true, tab_scroll_data);
                 w -> active_editor -> tabRestoreState(counter, state);
             }
 

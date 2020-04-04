@@ -43,7 +43,8 @@ public:
     bool openFile(File * file);
     const QString & documentUid();
 
-    int verticalScrollBar();
+    int verticalScrollBarPos();
+    int horizontalScrollBarPos();
 signals:
   void cursorPosChanged(const QString &);
   void inFocus();

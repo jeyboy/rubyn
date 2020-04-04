@@ -62,7 +62,7 @@ QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
 }
 
 void ProjectSearchPanel::prepareResultsWidget() {
-//    search_results -> setHeaderHidden(true);
+    search_results -> setHeaderHidden(true);
     search_results -> setAutoScroll(false);
 //    search_results -> setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -230,7 +230,8 @@ void ProjectSearchPanel::setProjectTree(ProjectTree * target_tree) {
     project_tree = target_tree;
 }
 
-void ProjectSearchPanel::setPaths(const QString & pathes) {
+void ProjectSearchPanel::activate(const QString & pathes) {
+    predicate -> setFocus();
     target_paths -> setText(pathes);
 }
 
@@ -263,21 +264,8 @@ void ProjectSearchPanel::process() {
 void ProjectSearchPanel::addResult(FileSearchResult * result) {
 //    qDebug() << "addResult" << result -> result.mid(result -> result_pos);
 
-    int preview_length = 20;
-    int start_pos = result -> result_pos - preview_length;
-    int match_pos;
-
-    if (start_pos < 0) {
-        match_pos = preview_length + start_pos;
-        start_pos = 0;
-    } else {
-        match_pos = preview_length;
-    }
-
-    QString txt = result -> result.mid(start_pos, result -> match_length + preview_length);
-
-    QTreeWidgetItem * itm = new QTreeWidgetItem(QStringList() << result -> path << txt);
-    itm -> setData(0, PROJECT_SEARCH_MATCH_POS_UID, match_pos);
+    QTreeWidgetItem * itm = new QTreeWidgetItem(QStringList() << result -> result);
+    itm -> setData(0, PROJECT_SEARCH_MATCH_POS_UID, result -> match_pos);
     itm -> setData(0, PROJECT_SEARCH_MATCH_LEN_UID, result -> match_length);
     itm -> setData(0, PROJECT_SEARCH_PATH_UID, result -> path);
 

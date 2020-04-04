@@ -72,6 +72,7 @@ namespace Custom {
         void ensureVisibleBlock(IBlock * block, const qint64 & char_in_line = 0);
 
         QScrollBar * verticalScrollBar() Q_DECL_OVERRIDE;
+        QScrollBar * horizontalScrollBar() Q_DECL_OVERRIDE;
 
         void setVerticalScrollFactor(uint factor = 5);
         void setHorizontalScrollFactor(uint factor = 5);

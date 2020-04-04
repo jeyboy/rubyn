@@ -86,7 +86,7 @@ protected slots:
     void setupConsole(ConsoleWidget * console, const QString & header = QLatin1Literal("Sys Console"));
     void setupConsole(const QString & path, const QString & header = QLatin1Literal("Sys Console"));
     void splitterMoved(int pos, int index);
-    void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false, const bool & vertical = true, const int & scroll_pos_y = 0);
+    void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false, const bool & vertical = true, const QPoint & scroll_pos = QPoint(0, 0));
     void newEditorRequired(File * file, const bool & vertical);
     void setActiveEditor(TabsBlock *);
     void editorIsEmpty(TabsBlock *);

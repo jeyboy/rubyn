@@ -125,7 +125,7 @@ void CodeEditor::openDocument(File * file) {
 
         setLineWrapMode(wrapper -> force_word_wrap ? WidgetWidth : NoWrap);
 
-        change_scroll_pos_required = wrapper -> verticalScrollPos(false) > 0;
+        change_scroll_pos_required = wrapper -> scrollPredefined();
 
 //        wrapper -> setUseDesignMetrics(true);
 
@@ -172,6 +172,8 @@ const QString & CodeEditor::documentUid() {
 void CodeEditor::setVisible(bool visible) { QPlainTextEdit::setVisible(visible); }
 
 QScrollBar * CodeEditor::verticalScrollBar() { return QPlainTextEdit::verticalScrollBar(); }
+
+QScrollBar * CodeEditor::horizontalScrollBar() { return QPlainTextEdit::horizontalScrollBar(); }
 
 void CodeEditor::setFont(const QFont & font) {
     QPlainTextEdit::setFont(font);
@@ -1346,8 +1348,10 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
     display_cacher -> bottom_block_number = cache_cell -> block_number;
 
     if (change_scroll_pos_required) {
-         verticalScrollBar() -> setValue(wrapper -> verticalScrollPos(false));
-         change_scroll_pos_required = false;
+        QPoint data = wrapper -> scrollPos();
+        horizontalScrollBar() -> setValue(data.x());
+        verticalScrollBar() -> setValue(data.y());
+        change_scroll_pos_required = false;
     }
 }
 

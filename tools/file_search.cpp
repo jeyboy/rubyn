@@ -10,7 +10,6 @@ FileSearch::FileSearch(const QRegularExpression & regex, File * file, QObject * 
 
 void FileSearch::initiate() {
     if (_file -> openRaw()) {
-        qDebug() << "Search in " << _file -> path();
         QIODevice * source = _file -> source();
         QTextStream in(source);
 
@@ -22,7 +21,7 @@ void FileSearch::initiate() {
         prev_buffer.reserve(buffer_length);
 
         QString buffer;
-//        buffer.reserve(buffer_length);
+        buffer.reserve(buffer_length);
 
         QString target;
         target.reserve(buffer_length * 2);
@@ -52,8 +51,6 @@ void FileSearch::initiate() {
             offset += buffer.length();
             prev_buffer.setRawData(buffer.data(), buffer.length());
         }
-
-        qDebug() << "End search in " << _file -> path();
 
         _file -> close();
     } else {

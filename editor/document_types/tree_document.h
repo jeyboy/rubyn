@@ -106,16 +106,6 @@ public:
 ////    inline void setRevision(const int & new_revision) { _revision = new_revision; }
 ////    inline int revision() { return _revision; }
 
-    inline void setVerticalScrollPos(const int & pos) { scroll_pos_y = pos; }
-    inline int verticalScrollPos(const bool & drop = true) {
-        int res = scroll_pos_y;
-        if (drop)
-            scroll_pos_y = 0;
-        return res;
-    }
-
-
-
     QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) Q_DECL_OVERRIDE;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const Q_DECL_OVERRIDE;

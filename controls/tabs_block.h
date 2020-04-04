@@ -52,9 +52,9 @@ public:
     bool tabDumpState(const int & index, QVariant & data);
     bool tabRestoreState(const int & index, QVariant & data);
 
-    int currentTabVerticalScrollPos();
-    int tabVerticalScrollPos(const int & index);
-    void setTabVerticalScrollPos(const int & index, const int & pos);
+    QPoint currentTabScrollPos();
+    QPoint tabScrollPos(const int & index);
+    void setTabScrollPos(const int & index, const QPoint & pos);
 
 //    inline UniversalEditor * editor() { return _editor; }
 

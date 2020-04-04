@@ -184,20 +184,20 @@ bool TabsBlock::tabRestoreState(const int & index, QVariant & data) {
     return file ? file -> restoreState(data) : false;
 }
 
-int TabsBlock::currentTabVerticalScrollPos() { return tabVerticalScrollPos(_bar -> currentRow()); }
-int TabsBlock::tabVerticalScrollPos(const int & index) {
+QPoint TabsBlock::currentTabScrollPos() { return tabScrollPos(_bar -> currentRow()); }
+QPoint TabsBlock::tabScrollPos(const int & index) {
     if (_bar -> currentRow() == index) {
-        return _editor -> verticalScrollBar();
+        return QPoint(_editor -> horizontalScrollBarPos(), _editor -> verticalScrollBarPos());
     }
 
     File * file = _bar -> tabFile(index);
-    return file ? file -> verticalScrollState(false) : 0;
+    return file ? file -> scrollState(false) : QPoint(0, 0);
 }
-void TabsBlock::setTabVerticalScrollPos(const int & index, const int & pos) {    
+void TabsBlock::setTabScrollPos(const int & index, const QPoint & pos) {
     File * file = _bar -> tabFile(index);
 
     if (file)
-        file -> setVerticalScrollState(pos);
+        file -> setScrollState(pos);
 }
 
 void TabsBlock::buildFilesList() {

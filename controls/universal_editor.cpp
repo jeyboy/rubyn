@@ -255,8 +255,13 @@ const QString & UniversalEditor::documentUid() {
     return _file ? _file -> uid() : File::default_uid;
 }
 
-int UniversalEditor::verticalScrollBar() {
+int UniversalEditor::verticalScrollBarPos() {
     QScrollBar * scroll = _active_editor -> verticalScrollBar();
+    return scroll ? scroll -> value() : 0;
+}
+
+int UniversalEditor::horizontalScrollBarPos() {
+    QScrollBar * scroll = _active_editor -> horizontalScrollBar();
     return scroll ? scroll -> value() : 0;
 }
 

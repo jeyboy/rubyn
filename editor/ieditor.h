@@ -12,6 +12,7 @@ public:
     virtual ~IEditor();
 
     virtual QScrollBar * verticalScrollBar() = 0;
+    virtual QScrollBar * horizontalScrollBar() = 0;
 
     virtual void setVisible(bool visible) = 0;
 

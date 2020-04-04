@@ -82,6 +82,7 @@ void TreeEditor::openDocument(File * file) {
 void TreeEditor::setVisible(bool visible) { QTreeView::setVisible(visible); }
 
 QScrollBar * TreeEditor::verticalScrollBar() { return QTreeView::verticalScrollBar(); }
+QScrollBar * TreeEditor::horizontalScrollBar() { return QTreeView::horizontalScrollBar(); }
 
 void TreeEditor::ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line) {
 
