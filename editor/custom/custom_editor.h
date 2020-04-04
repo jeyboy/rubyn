@@ -86,6 +86,9 @@ namespace Custom {
 
 //        void setColor(const QPalette::ColorRole & acr, const QColor & acolor);
 
+        int charsLimiterLineAt();
+        void setCharsLimiterLineAt(const int & char_pos);
+
         void setVisible(bool visible) Q_DECL_OVERRIDE;
         bool blockIsVisible(IBlock * block);
 

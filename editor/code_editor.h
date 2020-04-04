@@ -240,6 +240,7 @@ class CodeEditor : public QPlainTextEdit, public IEditor {
     EDITOR_POS_TYPE tooplip_block_pos;
 
     bool change_scroll_pos_required;
+    bool move_to_char_required;
     bool can_show_folding_popup;
     bool folding_click;
     int folding_y;
@@ -313,6 +314,7 @@ public:
     inline uint charsLimiterLineAt() { return chars_limit_line; }
     void setCharsLimiterLineAt(const uint & char_pos);
 
+    void ensureVisibleBlock(const QTextBlock & block, const qint64 & char_in_line = 0);
     void ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line = 0) Q_DECL_OVERRIDE;
 
     inline bool showFoldingScopeLines() { return show_folding_scope_lines; }

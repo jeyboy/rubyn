@@ -125,6 +125,7 @@ void Editor::intialize() {
     setHorizontalScrollFactor();
     setTabFactor();
     setTextCursorWidth();
+    setCharsLimiterLineAt(80);
 
     connect(_hscroll, &QScrollBar::valueChanged, [=]() {
         if (_document) {
@@ -235,6 +236,11 @@ void Editor::setAdaptiveHorizontalScroll(const bool & is_adaptive) {
 //    setAutoFillBackground(true);
 //    setPalette(pal);
 //}
+
+int Editor::charsLimiterLineAt() { return _context -> _chars_limit_line; }
+void Editor::setCharsLimiterLineAt(const int & char_pos) {
+    _context -> setCharLimitedLine(char_pos);
+}
 
 void Editor::setVisible(bool visible) {
     QWidget::setVisible(visible);

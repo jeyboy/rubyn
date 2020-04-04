@@ -62,6 +62,7 @@ namespace Custom {
         uint _vscroll_factor;
         uint _hscroll_factor;
         uint _tab_factor;
+        int _chars_limit_line;
 
         IBlock * _select_block;
         IBlock * _top_block;
@@ -448,6 +449,12 @@ namespace Custom {
 
             drawCursors();
 
+            // TODO: implement me
+//            if (_chars_limit_line != NO_INFO) {
+//                _painter -> setPen(Qt::red);
+//                _painter -> drawLine();
+//            }
+
             if (_is_adaptive_scroll) {
                 _hscroll -> setRange(0, max_length - __max_str_length);
             }
@@ -520,6 +527,10 @@ namespace Custom {
 
         void setLeftPadding(const qint32 & padding = 0) {
             _left_padding = padding + qCeil(_cursor_width);
+        }
+
+        void setCharLimitedLine(const int & chars_limit_line) {
+            _chars_limit_line = chars_limit_line;
         }
 
         void setLeftMargin(const qint32 & margin = 0) {

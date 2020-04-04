@@ -303,8 +303,12 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
     IDocument * doc = _file -> document();
 
     if (doc) {
-        doc -> setHorizontalScrollPos(scroll_pos.x());
-        doc -> setVerticalScrollPos(scroll_pos.y());
+         if (scroll_pos.y() != NO_INFO) {
+            doc -> setHorizontalScrollPos(scroll_pos.x());
+            doc -> setVerticalScrollPos(scroll_pos.y());
+         } else {
+             doc -> setMoveToCharPos(scroll_pos.x());
+         }
     }
 
 //    if (_file -> isText()) {

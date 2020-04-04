@@ -127,6 +127,7 @@ void CodeEditor::openDocument(File * file) {
         setLineWrapMode(wrapper -> force_word_wrap ? WidgetWidth : NoWrap);
 
         change_scroll_pos_required = wrapper -> scrollPredefined();
+        move_to_char_required = wrapper -> moveToChar();
 
 //        wrapper -> setUseDesignMetrics(true);
 
@@ -195,15 +196,19 @@ void CodeEditor::setCharsLimiterLineAt(const uint & char_pos) {
     update();
 }
 
-void CodeEditor::ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line) {
-    QTextBlock block = wrapper -> findBlockByNumber(block_num);
-
+void CodeEditor::ensureVisibleBlock(const QTextBlock & block, const qint64 & char_in_line) {
     if (block.isValid() && block.isVisible()) {
         QTextCursor c = textCursor();
         c.setPosition(block.position() + char_in_line);
         setTextCursor(c);
         ensureCursorVisible();
     }
+}
+
+void CodeEditor::ensureVisibleBlock(const qint64 & block_num, const qint64 & char_in_line) {
+    QTextBlock block = wrapper -> findBlockByNumber(block_num);
+
+    ensureVisibleBlock(block, char_in_line);
 }
 
 ///////////////////////// PROTECTED ///////////////////////
@@ -1353,6 +1358,18 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
         horizontalScrollBar() -> setValue(data.x());
         verticalScrollBar() -> setValue(data.y());
         change_scroll_pos_required = false;
+    }
+
+    if (move_to_char_required) {
+        int move_pos = wrapper -> moveToCharPos();
+        QTextBlock blk = document() -> findBlock(move_pos);
+
+        if (blk.isValid()) {
+            int in_line_pos = move_pos - blk.position();
+            ensureVisibleBlock(blk, in_line_pos);
+        }
+
+        move_to_char_required = false;
     }
 }
 
