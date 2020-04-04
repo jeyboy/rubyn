@@ -62,10 +62,11 @@ QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
 }
 
 void ProjectSearchPanel::prepareResultsWidget() {
-    search_results -> setHeaderHidden(true);
+//    search_results -> setHeaderHidden(true);
     search_results -> setAutoScroll(false);
 //    search_results -> setContextMenuPolicy(Qt::CustomContextMenu);
 
+    search_results -> setHeaderLabels(QStringList() << "Path" << "Match");
     search_results -> setColumnCount(2);
     search_results -> header() -> setSectionResizeMode(0, QHeaderView::ResizeToContents);
     search_results -> header() -> setStretchLastSection(true);
@@ -262,15 +263,11 @@ void ProjectSearchPanel::process() {
 }
 
 void ProjectSearchPanel::addResult(FileSearchResult * result) {
-//    qDebug() << "addResult" << result -> result.mid(result -> result_pos);
-
-    QTreeWidgetItem * itm = new QTreeWidgetItem(QStringList() << result -> result);
-    itm -> setData(0, PROJECT_SEARCH_MATCH_POS_UID, result -> match_pos);
-    itm -> setData(0, PROJECT_SEARCH_MATCH_LEN_UID, result -> match_length);
+    QTreeWidgetItem * itm = new QTreeWidgetItem(QStringList() << result -> path << result -> result);
+    itm -> setData(1, PROJECT_SEARCH_MATCH_POS_UID, result -> result_pos);
+    itm -> setData(1, PROJECT_SEARCH_MATCH_LEN_UID, result -> match_length);
+    itm -> setData(0, PROJECT_SEARCH_PATH_POS_UID, result -> match_pos);
     itm -> setData(0, PROJECT_SEARCH_PATH_UID, result -> path);
-
-    //PROJECT_SEARCH_PATH_LINE_UID
-    //PROJECT_SEARCH_PATH_POS_IN_LINE_UID
 
     //    itm -> setIcon(0, Projects::obj().getIco(ico_type));
     //    itm -> setToolTip(0, obj_name);

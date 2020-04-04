@@ -11,15 +11,15 @@ ProjectSearchItemDelegate::ProjectSearchItemDelegate(QObject * parent) : BaseIte
 }
 
 void ProjectSearchItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const {
-    if (!ignore_back_fill) {
-        QVariant brush_var = index.data(TREE_COLOR_UID);
+//    if (!ignore_back_fill) {
+//        QVariant brush_var = index.data(TREE_COLOR_UID);
 
-        if (brush_var.isValid()) {
-            QBrush brush = qvariant_cast<QBrush>(brush_var);
-            //TODO: wrong width if has horizontal scroll
-            painter -> fillRect(option.rect.adjusted(-option.rect.left(), 0, option.widget -> width() - option.rect.width(), 0), brush);
-        }
-    }
+//        if (brush_var.isValid()) {
+//            QBrush brush = qvariant_cast<QBrush>(brush_var);
+//            //TODO: wrong width if has horizontal scroll
+//            painter -> fillRect(option.rect.adjusted(-option.rect.left(), 0, option.widget -> width() - option.rect.width(), 0), brush);
+//        }
+//    }
 
     QStyledItemDelegate::paint(painter, option, index);
 
@@ -41,7 +41,7 @@ void ProjectSearchItemDelegate::paint(QPainter * painter, const QStyleOptionView
             int text_height = option.fontMetrics.height();
             int voffset = qMax((option.rect.height() - text_height) / 2, 0);
 
-            qreal xoffset = option.rect.left() + highlight_offset + 10 + option.decorationSize.width() - .5;
+            qreal xoffset = option.rect.left() + highlight_offset + 6/* + option.decorationSize.width()*/ - .5;
             xoffset = qMin(option.rect.right() - 16.0, xoffset);
 
             QRectF r = QRectF(

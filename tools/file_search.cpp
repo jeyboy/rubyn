@@ -4,7 +4,7 @@
 #include "controls/logger.h"
 #include "tools/file_search_result.h"
 
-FileSearch::FileSearch(const QRegularExpression & regex, File * file, QObject * parent) : QObject(parent), _file(file), regex(regex) {
+FileSearch::FileSearch(const QRegularExpression & regex, File * file, QObject * parent) : QObject(parent), _file(file), regex(regex), preview_window(0) {
 
 }
 
@@ -27,7 +27,8 @@ void FileSearch::initiate() {
         target.reserve(buffer_length * 2);
 
 
-        while(!in.atEnd()/*in.readLineInto(&buffer, buffer_length)*/) {
+        while(!in.atEnd()) {
+            /*in.readLineInto(&buffer, buffer_length)*/
             buffer = in.read(buffer_length);
 
             target.setRawData(prev_buffer.data(), prev_buffer.length());
@@ -37,13 +38,57 @@ void FileSearch::initiate() {
 
             while(i.hasNext()) {
                 QRegularExpressionMatch match = i.next();
+
+                QString preview;
+                int preview_pos = 0;
+                QString::ConstIterator it_begin = target.constBegin();
+                QString::ConstIterator it = it_begin + match.capturedStart();
+
+                if (preview_window > 0) {
+                    if (preview_window > match.capturedStart()) {
+                        preview_pos = match.capturedStart();
+                    } else {
+                        preview_pos = preview_window;
+                    }
+
+                    it -= preview_pos;
+                    preview.append(it, preview_pos + preview_window + match.capturedLength());
+                } else {
+                    while(it != it_begin) {
+                        if (*it == '\n') {
+                            ++it;
+                            --preview_pos;
+                            break;
+                        }
+
+                        ++preview_pos;
+                        --it;
+                    }
+
+                    int length = match.capturedLength();
+
+                    QString::ConstIterator tail_it = it_begin + match.capturedStart() + length;
+
+                    while(tail_it != target.constEnd()) {
+                        if (*tail_it == '\n') {
+//                            --length;
+                            break;
+                        }
+
+                        ++length;
+                        ++tail_it;
+                    }
+
+                    preview.append(it, preview_pos + length);
+                }
+
                 emit finded(
                     new FileSearchResult {
                         _file -> path(),
                         offset + match.capturedStart(),
                         (EDITOR_LEN_TYPE)match.capturedLength(),
-                        target,
-                        match.capturedStart()
+                        preview,
+                        preview_pos
                     }
                 );
             }

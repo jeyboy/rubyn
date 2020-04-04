@@ -15,8 +15,11 @@ class FileSearch : public QObject {
 
     File * _file;
     QRegularExpression regex;
+    int preview_window;
 public:
     FileSearch(const QRegularExpression & regex, File * file, QObject * parent = nullptr);
+
+    void setPreviewWindow(const int & new_preview_val) { preview_window = new_preview_val; }
 
     void initiate();
     void initiateAsync();

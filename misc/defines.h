@@ -17,8 +17,7 @@
 #define PROJECT_SEARCH_MATCH_POS_UID Qt::UserRole
 #define PROJECT_SEARCH_MATCH_LEN_UID Qt::UserRole + 1
 #define PROJECT_SEARCH_PATH_UID Qt::UserRole + 2
-#define PROJECT_SEARCH_PATH_LINE_UID Qt::UserRole + 3
-#define PROJECT_SEARCH_PATH_POS_IN_LINE_UID Qt::UserRole + 4
+#define PROJECT_SEARCH_PATH_POS_UID Qt::UserRole + 3
 
 
 
