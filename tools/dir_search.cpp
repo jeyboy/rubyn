@@ -11,6 +11,7 @@
 #include "tools/file_search_result.h"
 
 #include <qthreadpool.h>
+#include <QtConcurrent/QtConcurrent>
 
 void DirSearch::searchInFile(File * file) {
     ++files_in_proc;
@@ -21,6 +22,8 @@ void DirSearch::searchInFile(File * file) {
         if (--files_in_proc == 0 && !in_proc) {
             emit searchFinished();
         }
+
+        file_search -> deleteLater();
     });
 
     QThreadPool::globalInstance() -> start(file_search);
@@ -54,20 +57,8 @@ void DirSearch::processItem(QTreeWidgetItem * item, const QString & path) {
     }
 }
 
-DirSearch::DirSearch(QObject *parent) : QObject(parent) {
 
-}
-
-
-//ImageProcessor* worker = new ImageProcessor();
-//connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
-//QtConcurrent::run(worker, &ImageProcessor::process);
-// TODO: make async
-void DirSearch::search(const QRegularExpression & pattern, const QString & paths_value, ProjectTree * tree) {
-    files_in_proc = 0;
-    in_proc = true;
-
-    regex = pattern;
+void DirSearch::process(const QString & paths_value, ProjectTree * tree) {
     QStringList paths = paths_value.split(LSTR(";"));
 
     QStringList::Iterator it = paths.begin();
@@ -92,4 +83,23 @@ void DirSearch::search(const QRegularExpression & pattern, const QString & paths
     if (--files_in_proc == 0) {
         emit searchFinished();
     }
+}
+
+
+
+DirSearch::DirSearch(QObject *parent) : QObject(parent) {
+
+}
+
+
+//ImageProcessor* worker = new ImageProcessor();
+//connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
+//QtConcurrent::run(worker, &ImageProcessor::process);
+// TODO: make async
+void DirSearch::search(const QRegularExpression & pattern, const QString & paths_value, ProjectTree * tree) {
+    files_in_proc = 0;
+    in_proc = true;
+    regex = pattern;
+
+    QtConcurrent::run(this, &DirSearch::process, paths_value, tree);
 }
