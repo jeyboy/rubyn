@@ -56,7 +56,7 @@ public:
     void setProjectTree(ProjectTree * target_tree);
 
 signals:
-    void resultClicked(const QString & path, const EDITOR_POS_TYPE & line_num, const EDITOR_POS_TYPE & pos_in_line);
+    void resultClicked(const QString & path, const EDITOR_POS_TYPE & pos);
 
 public slots:
     void activate(const QString & pathes);

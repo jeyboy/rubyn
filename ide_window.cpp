@@ -814,6 +814,10 @@ void IDEWindow::setupToolWindows() {
         project_search_panel -> activate(paths);
     });
 
+    connect(project_search_panel, &ProjectSearchPanel::resultClicked, [=](const QString & path, const EDITOR_POS_TYPE & pos) {
+        fileOpenRequired(path, nullptr, false, true, QPoint(pos, NO_INFO));
+    });
+
     DockWidgets::obj().append(project_search_widget);
 
 

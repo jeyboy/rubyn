@@ -283,6 +283,10 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
         if (state -> cached_length) {
             Ruby::StateLexem last_non_blank = state -> lastNonBlankLexem();
 
+            if (last_non_blank == lex_dot/* && Predefined::obj().hasKey(state -> cached)*/) {
+                state -> lex_word = lex_word;
+            }
+
             if (state -> lex_word == lex_word) {
                 switch(last_non_blank) {
 //                    case lex_class_def: {

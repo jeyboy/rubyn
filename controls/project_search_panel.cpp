@@ -112,6 +112,18 @@ void ProjectSearchPanel::prepareResultsWidget() {
 
     item_delegate = new ProjectSearchItemDelegate(search_results);
     search_results -> setItemDelegate(item_delegate);
+
+
+//    void itemClicked(QTreeWidgetItem *item, int column);
+//    void itemDoubleClicked(QTreeWidgetItem *item, int column);
+//    void itemActivated(QTreeWidgetItem *item, int column);
+
+    connect(search_results, &QTreeWidget::itemActivated, [=](QTreeWidgetItem * item, int /*column*/) {
+        emit resultClicked(
+            item -> data(0, PROJECT_SEARCH_PATH_UID).toString(),
+            item -> data(0, PROJECT_SEARCH_PATH_POS_UID).toUInt()
+        );
+    });
 }
 
 void ProjectSearchPanel::prepareOptionsWidget() {
