@@ -98,8 +98,10 @@ void FileSearch::run() {
             }
 
             offset += buffer.length();
-//            prev_buffer.setRawData(buffer.data() + from, buffer.length() - from);
-            prev_buffer.setRawData(buffer.data(), buffer.length());
+
+            prev_buffer.clear();
+            prev_buffer.append(buffer.data() + from, buffer.length() - from);
+//            prev_buffer.setRawData(buffer.data(), buffer.length());
         }
 
         _file -> close();

@@ -23,6 +23,7 @@ public:
     void setPreviewWindow(const int & new_preview_val) { preview_window = new_preview_val; }
 
     void run() override;
+//    bool autoDelete() const { return true; }
     void runAsync();
 
 signals:

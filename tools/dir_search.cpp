@@ -17,13 +17,13 @@ void DirSearch::searchInFile(File * file) {
     ++files_in_proc;
 
     FileSearch * file_search = new FileSearch(regex, file);
+    file_search -> setAutoDelete(true);
+
     connect(file_search, &FileSearch::finded, [=](FileSearchResult * result) { emit finded(result); });
     connect(file_search, &FileSearch::finished, [=](const QString & /*path*/, const bool & /*status*/) {
         if (--files_in_proc == 0 && !in_proc) {
             emit searchFinished();
         }
-
-        file_search -> deleteLater();
     });
 
     QThreadPool::globalInstance() -> start(file_search);
