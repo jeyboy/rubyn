@@ -26,6 +26,7 @@ void FileSearch::run() {
         QString target;
         target.reserve(buffer_length * 2);
 
+        qDebug() << "Start search in " << _file -> path();
 
         while(!in.atEnd()) {
             /*in.readLineInto(&buffer, buffer_length)*/
@@ -35,6 +36,7 @@ void FileSearch::run() {
             target.append(buffer);
 
             QRegularExpressionMatchIterator i = regex.globalMatch(target);
+            int from = 0;
 
             while(i.hasNext()) {
                 QRegularExpressionMatch match = i.next();
@@ -91,15 +93,21 @@ void FileSearch::run() {
                         preview_pos
                     }
                 );
+
+                from = match.capturedStart() + match.capturedLength();
             }
 
             offset += buffer.length();
+//            prev_buffer.setRawData(buffer.data() + from, buffer.length() - from);
             prev_buffer.setRawData(buffer.data(), buffer.length());
         }
 
         _file -> close();
+        qDebug() << "End search in " << _file -> path();
+        emit finished(_file -> path(), true);
     } else {
         Logger::obj().error("FileSearch", "Can't read the file '" + _file -> path() + "'");
+        emit finished(_file -> path(), false);
     }
 }
 

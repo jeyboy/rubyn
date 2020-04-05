@@ -6,7 +6,6 @@
 #include <qhash.h>
 #include <qwidget.h>
 #include <qregularexpression.h>
-//#include <qhash.h>
 
 class ProjectSearchItemDelegate;
 class QTreeWidget;
@@ -26,19 +25,26 @@ class FileSearchResult;
 class ProjectSearchPanel : public QWidget {
     Q_OBJECT
 
+    int items_found;
+    QHash<QString, QTreeWidgetItem *> search_roots;
+
     ProjectSearchItemDelegate * item_delegate;
+
+    QTreeWidgetItem * pattern_itm;
+    QTreeWidgetItem * results_itm;
 
     QTreeWidget * search_results;
     QLineEdit * predicate;
     QLineEdit * target_paths;
     ProjectTree * project_tree;
     DirSearch * dir_search;
-//    QHash<QString, QTreeWidgetItem *> search_items;
 
     QCheckBox * flag_case_sensitive;
     QCheckBox * flag_whole_word_only;
     QCheckBox * flag_reg_exp;
     QCheckBox * flag_unicode;
+
+    QTreeWidgetItem * pathToTreeLevel(const QString & path, QString & name);
 
     QRegularExpression buildRegex(const QString & pattern);
     void prepareResultsWidget();
@@ -59,6 +65,7 @@ public slots:
 protected slots:
     void process();
     void addResult(FileSearchResult * result);
+    void searchFinished();
 };
 
 #endif // PROJECT_SEARCH_PANEL_H

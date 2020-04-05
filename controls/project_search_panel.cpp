@@ -21,7 +21,24 @@
 #include <qlayout.h>
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
+#include <qfileinfo.h>
 //#include <qshortcut.h>
+
+QTreeWidgetItem * ProjectSearchPanel::pathToTreeLevel(const QString & path, QString & name) {
+    //    QDir::separator()
+    QFileInfo info(path);
+    QString target_path = info.path();
+
+    name = info.fileName();
+
+    if (!search_roots.contains(target_path)) {
+        QTreeWidgetItem * pitm = new QTreeWidgetItem(QStringList() << target_path);
+        search_roots[target_path] = pitm;
+        results_itm -> addChild(pitm);
+    }
+
+    return search_roots[target_path];
+}
 
 QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
 //    if (pattern.isEmpty()) {
@@ -160,7 +177,7 @@ void ProjectSearchPanel::prepareOptionsWidget() {
 }
 
 
-ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), search_results(nullptr), predicate(nullptr), target_paths(nullptr), project_tree(nullptr), dir_search(nullptr) {
+ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), pattern_itm(nullptr), results_itm(nullptr), search_results(nullptr), predicate(nullptr), target_paths(nullptr), project_tree(nullptr), dir_search(nullptr) {
     QVBoxLayout * l = new QVBoxLayout(this);
     l -> setContentsMargins(0, 0, 0, 0);
     l -> setSpacing(0);
@@ -225,6 +242,7 @@ ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), sear
 
     dir_search = new DirSearch(this);
     connect(dir_search, &DirSearch::finded, this, &ProjectSearchPanel::addResult);
+    connect(dir_search, &DirSearch::searchFinished, this, &ProjectSearchPanel::searchFinished);
 }
 
 void ProjectSearchPanel::setProjectTree(ProjectTree * target_tree) {
@@ -258,12 +276,39 @@ void ProjectSearchPanel::process() {
         paths_value.append('*');
     }
 
-//    qDeleteAll(search_items);
+    search_results -> clear();
+
+    pattern_itm = new QTreeWidgetItem(QStringList() << "Search '" % predicate -> text() % "'" << "No Resuls");
+    results_itm = new QTreeWidgetItem(QStringList() << "Found Occurrences:");
+
+    search_results -> addTopLevelItem(pattern_itm);
+    search_results -> addTopLevelItem(results_itm);
+
+
+    results_itm -> setExpanded(true);
+    search_roots.clear();
+    items_found = 0;
     dir_search -> search(regex, paths_value, project_tree);
 }
 
 void ProjectSearchPanel::addResult(FileSearchResult * result) {
-    QTreeWidgetItem * itm = new QTreeWidgetItem(QStringList() << result -> path << result -> result);
+    QString name;
+
+    if (!search_roots.contains(result -> path)) {
+        QTreeWidgetItem * parent_itm = pathToTreeLevel(result -> path, name);
+        QTreeWidgetItem * itm = new QTreeWidgetItem(QStringList() << name << "0");
+        itm -> setData(0, PROJECT_SEARCH_COUNT_UID, 0);
+
+        parent_itm -> addChild(itm);
+        search_roots[result -> path] = itm;
+    }
+
+    QTreeWidgetItem * pitm = search_roots[result -> path];
+    int amount = pitm -> data(0, PROJECT_SEARCH_COUNT_UID).toInt() + 1;
+    pitm -> setData(0, PROJECT_SEARCH_COUNT_UID, amount);
+    pitm -> setText(1, QString::number(amount));
+
+    QTreeWidgetItem * itm = new QTreeWidgetItem(QStringList() << QString() << result -> result);
     itm -> setData(1, PROJECT_SEARCH_MATCH_POS_UID, result -> result_pos);
     itm -> setData(1, PROJECT_SEARCH_MATCH_LEN_UID, result -> match_length);
     itm -> setData(0, PROJECT_SEARCH_PATH_POS_UID, result -> match_pos);
@@ -272,5 +317,11 @@ void ProjectSearchPanel::addResult(FileSearchResult * result) {
     //    itm -> setIcon(0, Projects::obj().getIco(ico_type));
     //    itm -> setToolTip(0, obj_name);
 
-    search_results -> addTopLevelItem(itm);
+    pattern_itm -> setText(1, QString::number(++items_found));
+
+    pitm -> addChild(itm);
+}
+
+void ProjectSearchPanel::searchFinished() {
+    search_roots.clear();
 }

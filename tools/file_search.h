@@ -27,6 +27,7 @@ public:
 
 signals:
     void finded(FileSearchResult *);
+    void finished(const QString & path, const bool & status);
 };
 
 #endif // FILESEARCH_H
