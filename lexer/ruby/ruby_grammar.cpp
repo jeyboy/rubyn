@@ -65,8 +65,9 @@ void Grammar::initParas() {
 void Grammar::initFlags(StackLexemFlag & flags, const Ruby::StateLexem & lex, const Ruby::StateLexem & last_non_blank_lex) {
     switch(lex) {
         case lex_end:
-        case lex_commentary_end:
-            { flags = slf_unstack_word; break;}
+        case lex_commentary_end: {
+            flags = slf_unstack_word;
+        break;}
 
         case lex_if:
         case lex_unless: {
@@ -122,13 +123,23 @@ void Grammar::initFlags(StackLexemFlag & flags, const Ruby::StateLexem & lex, co
             }
         break;}
 
+        case lex_until:
+        case lex_while: {
+            switch(last_non_blank_lex) {
+                case lex_none: {
+                    flags = slf_stack_word;
+                break;}
+
+                default: ;
+            }
+        break;}
+
+
         case lex_do:
         case lex_begin:
         case lex_method_def:
         case lex_case:
-        case lex_until:
         case lex_for:
-        case lex_while:
         case lex_module_def:
         case lex_class_def:
         case lex_commentary_start:
