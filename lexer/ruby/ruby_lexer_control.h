@@ -174,8 +174,10 @@ namespace Ruby {
             if (uid == hid_none)
                 return;
 
+            //// REMOVE ME
             if (uid == hid_error)
                 return;
+            ////
 
             bool has_predicate = cached_length > 0;
 

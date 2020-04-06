@@ -313,7 +313,21 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
 
         state -> attachToken(state -> lex_word, flags & slf_word_related);
 
-        state -> lex_word = translateState(state, state -> lex_prev_word, state -> lex_word);
+
+
+
+        ////
+//        state -> lex_word = translateState(state, state -> lex_prev_word, state -> lex_word);
+        //// REMOVE ME
+        Ruby::StateLexem new_lex_word = translateState(state, state -> lex_prev_word, state -> lex_word);
+
+        if (new_lex_word != lex_error) {
+            state -> lex_word = new_lex_word;
+        }
+        ////////////
+
+
+
 
         if (state -> cached_length) {
             Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
@@ -334,7 +348,22 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
 
         state -> attachToken(state -> lex_delimiter, delimiter_flags);
 
-        state -> lex_word = translateState(state, state -> lex_word, state -> lex_delimiter);
+
+
+        //////
+//        state -> lex_word = translateState(state, state -> lex_word, state -> lex_delimiter);
+        //// REMOVE ME
+        Ruby::StateLexem new_lex_word2 = translateState(state, state -> lex_word, state -> lex_delimiter);
+
+        if (new_lex_word2 != lex_error) {
+            state -> lex_word = new_lex_word2;
+        } else {
+            state -> lex_word = state -> lex_delimiter;
+        }
+        ////////////
+
+
+
 
         state -> light(state -> grammar -> toHighlightable(state -> lex_word));
     }
