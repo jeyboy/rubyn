@@ -231,6 +231,9 @@ bool Grammar::stackDropable(const Ruby::StateLexem & state, const Ruby::StateLex
         case lex_commentary_start:
             return input == lex_commentary_end;
 
+        case lex_then:
+            return input == lex_end || input == lex_elsif || input == lex_else;
+
         default: return false;
     }
 }
