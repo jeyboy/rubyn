@@ -1832,6 +1832,7 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
                 } else {
                     info.setOpener(stoper -> pos, stoper -> length);
                     info.setCloser(para -> pos, para -> length);
+                    int curr_level = info.level - 1;
 
                     while(para && para != stoper) {
                         if (para -> para_type == pt_none) {
@@ -1839,11 +1840,16 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
                             blk = blk.previous();
                             para = para -> prev; // ignore default token for end of line
                         } else {
-                            if (!para -> closer) {
-                                int curr_para_level = TextDocumentLayout::getBlockLevel(blk);
-
-                                if (/*para -> is_oneliner || */info.level + 1 == curr_para_level)
+                            if (para -> is_opener) {
+                                if (info.level == curr_level) {
                                     info.addMiddle(start_pos, para -> pos, para -> length);
+                                }
+
+                                if (para -> closer) {
+                                    --curr_level;
+                                }
+                            } else {
+                                ++curr_level;
                             }
                         }
 
