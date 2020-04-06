@@ -332,6 +332,8 @@ void ProjectSearchPanel::addResult(FileSearchResult * result) {
     pattern_itm -> setText(1, QString::number(++items_found));
 
     pitm -> addChild(itm);
+
+    delete result;
 }
 
 void ProjectSearchPanel::searchFinished() {

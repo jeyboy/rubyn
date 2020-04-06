@@ -26,8 +26,6 @@ void FileSearch::run() {
         QString target;
         target.reserve(buffer_length * 2);
 
-        qDebug() << "Start search in " << _file -> path();
-
         while(!in.atEnd()) {
             /*in.readLineInto(&buffer, buffer_length)*/
             buffer = in.read(buffer_length);
@@ -105,7 +103,7 @@ void FileSearch::run() {
         }
 
         _file -> close();
-        qDebug() << "End search in " << _file -> path();
+
         emit finished(_file -> path(), true);
     } else {
         Logger::obj().error("FileSearch", "Can't read the file '" + _file -> path() + "'");
@@ -113,12 +111,12 @@ void FileSearch::run() {
     }
 }
 
-void FileSearch::runAsync() {
-    QThread * thread = new QThread();
+//void FileSearch::runAsync() {
+//    QThread * thread = new QThread();
 
-    thread -> start();
+//    thread -> start();
 
-    moveToThread(thread);
+//    moveToThread(thread);
 
-    run();
-}
+//    run();
+//}

@@ -24,7 +24,7 @@ public:
 
     void run() override;
 //    bool autoDelete() const { return true; }
-    void runAsync();
+//    void runAsync();
 
 signals:
     void finded(FileSearchResult *);
