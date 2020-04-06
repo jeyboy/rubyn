@@ -1808,6 +1808,7 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
                 if (para -> is_opener) {
                     info.setOpener(para -> pos, para -> length);
                     info.setCloser(stoper -> pos, stoper -> length);
+                    int curr_level = info.level - 1;
 
                     while(para && para != stoper) {
                         if (para -> para_type == pt_max) {
@@ -1815,9 +1816,14 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
                             blk = blk.next();
                             para = para -> next; // ignore default token for start of line
                         } else {
-                            if (!para -> closer) {
-                                if (/*para -> is_oneliner || */info.level + 1 == TextDocumentLayout::getBlockLevel(blk))
+                            if (para -> is_opener) {
+                                if (para -> closer) {
+                                    curr_level++;
+                                } else if (info.level == curr_level) {
                                     info.addMiddle(end_pos, para -> pos, para -> length);
+                                }
+                            } else {
+                                --curr_level;
                             }
                         }
 
@@ -1834,7 +1840,9 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
                             para = para -> prev; // ignore default token for end of line
                         } else {
                             if (!para -> closer) {
-                                if (/*para -> is_oneliner || */info.level + 1 == TextDocumentLayout::getBlockLevel(blk))
+                                int curr_para_level = TextDocumentLayout::getBlockLevel(blk);
+
+                                if (/*para -> is_oneliner || */info.level + 1 == curr_para_level)
                                     info.addMiddle(start_pos, para -> pos, para -> length);
                             }
                         }
