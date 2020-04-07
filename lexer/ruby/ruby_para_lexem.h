@@ -84,7 +84,7 @@ namespace Ruby {
         pt_open_begin_block = (pt_reserved + 14) | pt_foldable,
         pt_open_method = (pt_reserved + 15) | pt_foldable,
         pt_open_if = (pt_reserved + 16) | pt_foldable,
-        pt_open_then = (pt_reserved + 17), // | pt_foldable,
+        pt_open_then = (pt_reserved + 17),
         pt_open_elsif = (pt_reserved + 18) | pt_foldable,
         pt_open_else = (pt_reserved + 19) | pt_foldable,
         pt_open_unless = (pt_reserved + 20) | pt_foldable,
@@ -93,8 +93,9 @@ namespace Ruby {
         pt_open_while = (pt_reserved + 23) | pt_foldable,
         pt_open_until = (pt_reserved + 24) | pt_foldable,
         pt_open_for = (pt_reserved + 25) | pt_foldable,
-        pt_rescue = (pt_reserved + 26) | pt_foldable,
-        pt_ensure = (pt_reserved + 27) | pt_foldable,
+        pt_open_for_in = (pt_reserved + 26),
+        pt_rescue = (pt_reserved + 27) | pt_foldable,
+        pt_ensure = (pt_reserved + 28) | pt_foldable,
 
         pt_close_begin_block = pt_open_begin_block | pt_close,
         pt_close_method = pt_open_method | pt_close,
@@ -114,16 +115,16 @@ namespace Ruby {
     //        pt_open_if | pt_open_else | pt_open_elsif | pt_open_unless | pt_open_case |
     //        pt_open_when | pt_open_while | pt_open_until | pt_open_for | pt_rescue | pt_ensure,
 
-        pt_close_struct = (pt_reserved + 28) | pt_close | pt_foldable,
+        pt_close_struct = (pt_reserved + 29) | pt_close | pt_foldable,
 
 
         //TODO: not implemented yet
-        pt_comment = (pt_reserved + 29),
+        pt_comment = (pt_reserved + 30),
         pt_close_comment = pt_comment | pt_close,
         pt_foldable_comment = pt_comment | pt_foldable,
         pt_close_foldable_comment = pt_comment | pt_close| pt_foldable,
 
-        pt_ternary = (pt_reserved + 30),
+        pt_ternary = (pt_reserved + 31),
         pt_close_ternary = pt_ternary | pt_close,
     };
 }

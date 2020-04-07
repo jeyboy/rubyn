@@ -39,6 +39,10 @@ void Grammar::initParas() {
 
     para_tokens[lex_if] = pt_open_if;
     para_tokens[lex_then] = pt_open_then;
+
+    para_tokens[lex_for_in] = pt_open_for_in;
+    para_tokens[lex_in] = pt_open_for_in;
+
     para_tokens[lex_elsif] = pt_open_elsif;
     para_tokens[lex_else] = pt_open_else;
     para_tokens[lex_unless] = pt_open_unless;
@@ -131,6 +135,15 @@ void Grammar::initFlags(StackLexemFlag & flags, const Ruby::StateLexem & lex, co
                 break;}
 
                 default: ;
+            }
+        break;}
+
+        case lex_in:
+        case lex_for_in: {
+            switch(last_non_blank_lex) {
+                case lex_none: { break;}
+
+                default: flags = slf_stack_word;
             }
         break;}
 
