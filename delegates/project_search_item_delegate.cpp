@@ -38,8 +38,9 @@ void ProjectSearchItemDelegate::paint(QPainter * painter, const QStyleOptionView
             painter -> setCompositionMode(QPainter::CompositionMode_Multiply);
             painter -> setRenderHint(QPainter::Antialiasing);
 
-            painter -> setPen(QColor(0, 0, 0, 8));
-            painter -> setBrush(QColor(128, 128, 128, 12));
+//            painter -> setPen(Qt::black/*QColor(128, 128, 128, 128)*/);
+            painter -> setPen(Qt::NoPen);
+            painter -> setBrush(QColor(32, 32, 32, 12));
 
             painter -> drawRoundedRect(opt.rect.adjusted(reverse_offset, 1, -1, -1), 3, 3);
             painter -> restore();

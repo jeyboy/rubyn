@@ -1029,6 +1029,22 @@ Ruby::StateLexem Grammar::translate(const Ruby::StateLexem & state, const Ruby::
         }
 
 
+        case lex_heredoc_mark:
+        case lex_heredoc_intended_mark:
+        case lex_eheredoc_mark:
+        case lex_eheredoc_intended_mark:
+        case lex_cheredoc_mark:
+        case lex_cheredoc_intended_mark:
+        case lex_string_end:
+        case lex_estring_end:
+        case lex_command_end:
+        case lex_percent_presentation_end:
+        case lex_epercent_presentation_end: {
+            switch(input) {
+                case lex_spacing: return lex_spacing;
+                default: return lex_error;
+            }
+        }
 
 
         case lex_word: {
