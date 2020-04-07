@@ -35,6 +35,7 @@ QTreeWidgetItem * ProjectSearchPanel::pathToTreeLevel(const QString & path, QStr
         QTreeWidgetItem * pitm = new QTreeWidgetItem(QStringList() << target_path);
         search_roots[target_path] = pitm;
         results_itm -> addChild(pitm);
+        pitm -> setExpanded(true);
     }
 
     return search_roots[target_path];
@@ -85,6 +86,7 @@ void ProjectSearchPanel::prepareResultsWidget() {
 
     search_results -> setHeaderLabels(QStringList() << "Path" << "Match");
     search_results -> setColumnCount(2);
+    search_results -> header() -> setSectionResizeMode(0, QHeaderView::Interactive);
     search_results -> header() -> setSectionResizeMode(0, QHeaderView::ResizeToContents);
     search_results -> header() -> setStretchLastSection(true);
 
@@ -210,7 +212,7 @@ ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), patt
     connect(search_btn, &QToolButton::pressed, this, &ProjectSearchPanel::process);
 
 
-    target_paths = new QLineEdit(this);
+    target_paths = new QLineEdit("*", this);
     control_panel -> addWidget(new QLabel(" in ", control_panel));
     control_panel -> addWidget(target_paths);
 
@@ -293,9 +295,9 @@ void ProjectSearchPanel::process() {
     pattern_itm = new QTreeWidgetItem(QStringList() << "Search '" % predicate -> text() % "'" << "No Resuls");
     results_itm = new QTreeWidgetItem(QStringList() << "Found Occurrences:");
 
+    search_results -> header() -> setSectionResizeMode(0, QHeaderView::ResizeToContents);
     search_results -> addTopLevelItem(pattern_itm);
     search_results -> addTopLevelItem(results_itm);
-
 
     results_itm -> setExpanded(true);
     search_roots.clear();
@@ -313,6 +315,7 @@ void ProjectSearchPanel::addResult(FileSearchResult * result) {
 
         parent_itm -> addChild(itm);
         search_roots[result -> path] = itm;
+        itm -> setExpanded(true);
     }
 
     QTreeWidgetItem * pitm = search_roots[result -> path];
@@ -338,4 +341,5 @@ void ProjectSearchPanel::addResult(FileSearchResult * result) {
 
 void ProjectSearchPanel::searchFinished() {
     search_roots.clear();
+    search_results -> header() -> setSectionResizeMode(0, QHeaderView::Interactive);
 }

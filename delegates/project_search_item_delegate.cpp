@@ -29,6 +29,20 @@ void ProjectSearchItemDelegate::paint(QPainter * painter, const QStyleOptionView
         QVariant substr_start = index.data(PROJECT_SEARCH_MATCH_POS_UID);
 
         if (substr_start.isValid()) {
+
+            //////////////
+            painter -> save();
+            painter -> setCompositionMode(QPainter::CompositionMode_Multiply);
+            painter -> setRenderHint(QPainter::Antialiasing);
+
+            painter -> setPen(QColor(0, 0, 0, 8));
+            painter -> setBrush(QColor(64, 64, 64, 12));
+
+            painter -> drawRoundedRect(option.rect.adjusted(1, 1, -1, -1), 3, 3);
+            painter -> restore();
+            //////////////
+
+
             QVariant substr_len = index.data(PROJECT_SEARCH_MATCH_LEN_UID);
             //    QRect r = QApplication::style() -> subElementRect(QStyle::SE_ItemViewItemDecoration, &option);
 
