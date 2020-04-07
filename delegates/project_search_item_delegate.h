@@ -14,7 +14,7 @@ public:
     inline void toggleFill() { ignore_back_fill = !ignore_back_fill; }
 protected:
     void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
-//    QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 };
 
 #endif // PROJECT_SEARCH_ITEM_DELEGATE_H

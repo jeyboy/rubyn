@@ -87,7 +87,6 @@ void ProjectSearchPanel::prepareResultsWidget() {
     search_results -> setHeaderLabels(QStringList() << "Path" << "Match");
     search_results -> setColumnCount(2);
     search_results -> header() -> setSectionResizeMode(0, QHeaderView::Interactive);
-    search_results -> header() -> setSectionResizeMode(0, QHeaderView::ResizeToContents);
     search_results -> header() -> setStretchLastSection(true);
 
     QFont f(font());
@@ -334,6 +333,7 @@ void ProjectSearchPanel::addResult(FileSearchResult * result) {
 
     pattern_itm -> setText(1, QString::number(++items_found));
 
+//    search_results -> setFirstItemColumnSpanned(itm, true);
     pitm -> addChild(itm);
 
     delete result;

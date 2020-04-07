@@ -21,46 +21,49 @@ void ProjectSearchItemDelegate::paint(QPainter * painter, const QStyleOptionView
 //        }
 //    }
 
-    QStyledItemDelegate::paint(painter, option, index);
+    QStyleOptionViewItem opt = option;
+    opt.rect.adjust(0, 0, 0, -4);
+
+    QStyledItemDelegate::paint(painter, opt, index);
 
     int column_index = index.column();
 
     if (column_index == 1) {
+        int reverse_offset = -(option.widget -> rect().width() - 25/* - 100*/ - opt.rect.width());
         QVariant substr_start = index.data(PROJECT_SEARCH_MATCH_POS_UID);
 
         if (substr_start.isValid()) {
-
             //////////////
             painter -> save();
             painter -> setCompositionMode(QPainter::CompositionMode_Multiply);
             painter -> setRenderHint(QPainter::Antialiasing);
 
             painter -> setPen(QColor(0, 0, 0, 8));
-            painter -> setBrush(QColor(64, 64, 64, 24));
+            painter -> setBrush(QColor(128, 128, 128, 12));
 
-            painter -> drawRoundedRect(option.rect.adjusted(1, 1, -1, -1), 3, 3);
+            painter -> drawRoundedRect(opt.rect.adjusted(reverse_offset, 1, -1, -1), 3, 3);
             painter -> restore();
             //////////////
 
 
             QVariant substr_len = index.data(PROJECT_SEARCH_MATCH_LEN_UID);
-            //    QRect r = QApplication::style() -> subElementRect(QStyle::SE_ItemViewItemDecoration, &option);
+            //    QRect r = QApplication::style() -> subElementRect(QStyle::SE_ItemViewItemDecoration, &opt);
 
             QString item_text = index.data(Qt::DisplayRole).toString();
             int start_pos = substr_start.toInt();
 
-            int highlight_offset = option.fontMetrics.boundingRect(item_text.mid(0, start_pos)).width();
-            int highlight_width = option.fontMetrics.boundingRect(item_text.mid(start_pos, substr_len.toInt())).width();
+            int highlight_offset = opt.fontMetrics.boundingRect(item_text.mid(0, start_pos)).width();
+            int highlight_width = opt.fontMetrics.boundingRect(item_text.mid(start_pos, substr_len.toInt())).width();
 
-            int text_height = option.fontMetrics.height();
-            int voffset = qMax((option.rect.height() - text_height) / 2, 0);
+            int text_height = opt.fontMetrics.height();
+            int voffset = qMax((opt.rect.height() - text_height) / 2, 0);
 
-            qreal xoffset = option.rect.left() + highlight_offset + 6/* + option.decorationSize.width()*/ - .5;
-            xoffset = qMin(option.rect.right() - 16.0, xoffset);
+            qreal xoffset = opt.rect.left() + highlight_offset + 6/* + opt.decorationSize.width()*/ - .5;
+            xoffset = qMin(opt.rect.right() - 16.0, xoffset);
 
             QRectF r = QRectF(
                 xoffset,
-                option.rect.top() + voffset,
+                opt.rect.top() + voffset,
                 highlight_width,
                 text_height
             );
@@ -77,27 +80,33 @@ void ProjectSearchItemDelegate::paint(QPainter * painter, const QStyleOptionView
         }
     }
 
-    if (option.state & QStyle::State_Selected) {
-        painter -> save();
-        painter -> setCompositionMode(QPainter::CompositionMode_Multiply);
-        painter -> setRenderHint(QPainter::Antialiasing);
+//    if (opt.state & QStyle::State_Selected) {
+//        painter -> save();
+//        painter -> setCompositionMode(QPainter::CompositionMode_Multiply);
+//        painter -> setRenderHint(QPainter::Antialiasing);
 
-        painter -> setPen(QColor(0, 0, 0, 128));
-        painter -> setBrush(QColor(0, 0, 255, 8));
+//        painter -> setPen(QColor(0, 0, 0, 128));
+//        painter -> setBrush(QColor(0, 0, 255, 8));
 
-        painter -> drawRoundedRect(option.rect.adjusted(1, 1, -1, -1), 3, 3);
-        painter -> restore();
-    }
+//        painter -> drawRoundedRect(opt.rect.adjusted(1, 1, -1, -1), 3, 3);
+//        painter -> restore();
+//    }
 
 //    QVariant has_error_subline = index.data(TREE_HAS_ERROR_UID);
 //    if (has_error_subline.isValid() && has_error_subline.toBool()) {
-//        int sx = option.rect.left() + option.decorationSize.width() + 10;
+//        int sx = opt.rect.left() + opt.decorationSize.width() + 10;
 //        int wy = 5;
-//        int sy = option.rect.bottom() - wy;
-//        int wx = option.rect.right() - sx;
+//        int sy = opt.rect.bottom() - wy;
+//        int wx = opt.rect.right() - sx;
 
 //        painter -> setBrushOrigin(sx, sy);
 //        painter -> setClipRect(sx, sy, wx, wave.height());
 //        painter -> fillRect(sx, sy, wx, wy, wave);
 //    }
+}
+
+QSize ProjectSearchItemDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const {
+   QSize sz = BaseItemDelegate::sizeHint(option, index);
+   sz.setHeight(sz.height() + 8);
+   return sz;
 }
