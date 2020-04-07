@@ -65,9 +65,19 @@ void FileSearch::run() {
                         --it;
                     }
 
+                    while(preview_pos > 0) {
+                        if (*it < 33) {
+                            ++it;
+                            --preview_pos;
+                        } else {
+                            break;
+                        }
+                    }
+
+
                     int length = 0;
 
-                    QString::ConstIterator tail_it = it_begin + match.capturedStart() + length;
+                    QString::ConstIterator tail_it = it_begin + match.capturedStart() + match.capturedLength();
 
                     while(tail_it != target.constEnd()) {
                         if (*tail_it == '\n' || length >= 80) {
@@ -78,15 +88,26 @@ void FileSearch::run() {
                         ++tail_it;
                     }
 
+                    while(length > 0) {
+                        if (*tail_it < 33) {
+                            --tail_it;
+                            --preview_pos;
+                        } else {
+                            break;
+                        }
+                    }
+
                     preview.append(it, preview_pos + match.capturedLength() + length);
                 }
+
+
 
                 emit finded(
                     new FileSearchResult {
                         _file -> path(),
                         offset + match.capturedStart(),
                         (EDITOR_LEN_TYPE)match.capturedLength(),
-                        preview.trimmed(),
+                        preview,
                         preview_pos
                     }
                 );

@@ -36,7 +36,7 @@ void ProjectSearchItemDelegate::paint(QPainter * painter, const QStyleOptionView
             painter -> setRenderHint(QPainter::Antialiasing);
 
             painter -> setPen(QColor(0, 0, 0, 8));
-            painter -> setBrush(QColor(64, 64, 64, 12));
+            painter -> setBrush(QColor(64, 64, 64, 24));
 
             painter -> drawRoundedRect(option.rect.adjusted(1, 1, -1, -1), 3, 3);
             painter -> restore();
