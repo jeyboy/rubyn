@@ -25,6 +25,14 @@ void Grammar::initParas() {
     para_tokens[lex_wrap_close] = pt_close_round_bracket;
 
 
+    para_tokens[lex_heredoc_mark] = pt_heredoc;
+    para_tokens[lex_heredoc_intended_mark] = pt_heredoc;
+    para_tokens[lex_eheredoc_mark] = pt_heredoc;
+    para_tokens[lex_eheredoc_intended_mark] = pt_heredoc;
+    para_tokens[lex_cheredoc_mark] = pt_heredoc;
+    para_tokens[lex_cheredoc_intended_mark] = pt_heredoc;
+
+
     para_tokens[lex_percent_presentation_start] = pt_representation;
     para_tokens[lex_percent_presentation_end] = pt_close_representation;
     para_tokens[lex_epercent_presentation_start] = pt_representation;

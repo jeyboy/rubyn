@@ -126,6 +126,9 @@ namespace Ruby {
 
         pt_ternary = (pt_reserved + 31),
         pt_close_ternary = pt_ternary | pt_close,
+
+        pt_heredoc = (pt_reserved + 32),
+        pt_close_heredoc = pt_heredoc | pt_close,
     };
 }
 
