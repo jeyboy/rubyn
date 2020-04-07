@@ -76,6 +76,7 @@ void Grammar::initParas() {
 
 void Grammar::initFlags(StackLexemFlag & flags, const Ruby::StateLexem & lex, const Ruby::StateLexem & last_non_blank_lex) {
     switch(lex) {
+//        case lex_heredoc_close_mark:
         case lex_end:
         case lex_commentary_end: {
             flags = slf_unstack_word;
@@ -173,6 +174,15 @@ void Grammar::initFlags(StackLexemFlag & flags, const Ruby::StateLexem & lex, co
         case lex_block_ensure:
         case lex_then:
             { flags = slf_replace_word; break;}
+
+
+//        case lex_heredoc_mark:
+//        case lex_heredoc_intended_mark:
+//        case lex_eheredoc_mark:
+//        case lex_eheredoc_intended_mark:
+//        case lex_cheredoc_mark:
+//        case lex_cheredoc_intended_mark:
+//            { flags = slf_stack_word; break;}
 
         default:;
     }

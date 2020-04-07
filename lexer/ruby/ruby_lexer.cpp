@@ -88,7 +88,6 @@ void Lexer::identifyWordType(LexerControl * state) {
                 state -> lex_word = lex_symbol_key;
             else if (state -> cached[0].isUpper()) {
                 bool is_const = true;
-                EDITOR_LEN_TYPE pos = 0;
 
                 QString::ConstIterator it = state -> cached.constBegin();
 
