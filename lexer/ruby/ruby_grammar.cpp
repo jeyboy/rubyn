@@ -25,12 +25,13 @@ void Grammar::initParas() {
     para_tokens[lex_wrap_close] = pt_close_round_bracket;
 
 
-    para_tokens[lex_heredoc_mark] = pt_heredoc;
-    para_tokens[lex_heredoc_intended_mark] = pt_heredoc;
-    para_tokens[lex_eheredoc_mark] = pt_heredoc;
-    para_tokens[lex_eheredoc_intended_mark] = pt_heredoc;
-    para_tokens[lex_cheredoc_mark] = pt_heredoc;
-    para_tokens[lex_cheredoc_intended_mark] = pt_heredoc;
+    para_tokens[lex_heredoc_start] = pt_heredoc;
+    para_tokens[lex_heredoc_intended_start] = pt_heredoc;
+    para_tokens[lex_eheredoc_start] = pt_heredoc;
+    para_tokens[lex_eheredoc_intended_start] = pt_heredoc;
+    para_tokens[lex_cheredoc_start] = pt_heredoc;
+    para_tokens[lex_cheredoc_intended_start] = pt_heredoc;
+    para_tokens[lex_heredoc_close_mark] = pt_close_heredoc;
 
 
     para_tokens[lex_percent_presentation_start] = pt_representation;
@@ -76,7 +77,7 @@ void Grammar::initParas() {
 
 void Grammar::initFlags(StackLexemFlag & flags, const Ruby::StateLexem & lex, const Ruby::StateLexem & last_non_blank_lex) {
     switch(lex) {
-//        case lex_heredoc_close_mark:
+        case lex_heredoc_close_mark:
         case lex_end:
         case lex_commentary_end: {
             flags = slf_unstack_word;
@@ -176,12 +177,12 @@ void Grammar::initFlags(StackLexemFlag & flags, const Ruby::StateLexem & lex, co
             { flags = slf_replace_word; break;}
 
 
-//        case lex_heredoc_mark:
-//        case lex_heredoc_intended_mark:
-//        case lex_eheredoc_mark:
-//        case lex_eheredoc_intended_mark:
-//        case lex_cheredoc_mark:
-//        case lex_cheredoc_intended_mark:
+//        case lex_heredoc_start:
+//        case lex_heredoc_intended_start:
+//        case lex_eheredoc_start:
+//        case lex_eheredoc_intended_start:
+//        case lex_cheredoc_start:
+//        case lex_cheredoc_intended_start:
 //            { flags = slf_stack_word; break;}
 
         default:;

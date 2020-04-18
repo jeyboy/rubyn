@@ -50,6 +50,8 @@ void LexerControl::registerHeredocMark(const Ruby::StateLexem & lexem, QString *
             heredoc_token -> stacked_prev = new_heredoc;
             heredoc_token = new_heredoc;
         }
+
+        attachPara(grammar -> paraType(doc_lex), slf_stack_word, false);
     } else {
         int i = 0;
     }
