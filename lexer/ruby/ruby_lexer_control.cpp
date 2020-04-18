@@ -51,7 +51,16 @@ void LexerControl::registerHeredocMark(const Ruby::StateLexem & lexem, QString *
             heredoc_token = new_heredoc;
         }
 
-        attachPara(grammar -> paraType(doc_lex), slf_stack_word, false);
+        if (!heredoc_para) {
+            para = heredoc_para = ParaList::insert(para, grammar -> paraType(doc_lex), cached_str_pos, quint8(cached_length));
+        } else {
+            heredoc_para =
+                ParaList::insert(heredoc_para -> prev, grammar -> paraType(doc_lex), cached_str_pos, quint8(cached_length));
+
+            int i = 0;
+        }
+
+//        attachPara(grammar -> paraType(doc_lex), slf_stack_word, false);
     } else {
         int i = 0;
     }
