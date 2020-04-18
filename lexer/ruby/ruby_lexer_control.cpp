@@ -51,16 +51,17 @@ void LexerControl::registerHeredocMark(const Ruby::StateLexem & lexem, QString *
             heredoc_token = new_heredoc;
         }
 
+//        if (!heredoc_token) {
+//            stack_token = heredoc_token = TokenList::insert(user_data -> token_begin, doc_lex, -1, 0);
+//        } else {
+//            heredoc_token = TokenList::insert(heredoc_token -> stacked_prev, doc_lex, -1, 0);
+//        }
+
         if (!heredoc_para) {
             para = heredoc_para = ParaList::insert(para, grammar -> paraType(doc_lex), cached_str_pos, quint8(cached_length));
         } else {
-            heredoc_para =
-                ParaList::insert(heredoc_para -> prev, grammar -> paraType(doc_lex), cached_str_pos, quint8(cached_length));
-
-            int i = 0;
+            heredoc_para = ParaList::insert(heredoc_para -> prev, grammar -> paraType(doc_lex), cached_str_pos, quint8(cached_length));
         }
-
-//        attachPara(grammar -> paraType(doc_lex), slf_stack_word, false);
     } else {
         int i = 0;
     }
@@ -91,9 +92,9 @@ void LexerControl::procStackable(const Ruby::StateLexem & lexem, const uint & fl
         }
 
         if (stackable) {
-            if (!heredoc_token) {
-                heredoc_token = token;
-            }
+//            if (!heredoc_token) {
+//                heredoc_token = token;
+//            }
 
             token -> stacked_prev = stack_token;
             stack_token = token;
