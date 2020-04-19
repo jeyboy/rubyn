@@ -53,7 +53,8 @@ public:
     enum LogLevel : int {
         log_info = 0,
         log_error = 1,
-        log_success = 2,
+        log_warn = 2,
+        log_success = 3,
         log_url
     };
 
@@ -63,6 +64,7 @@ public:
 
     static void info(const QString & initiator, const QString & value = QString());
     static void error(const QString & initiator, const QString & value = QString());
+    static void warn(const QString & initiator, const QString & value = QString());
     static void success(const QString & initiator, const QString & value = QString());
 
 

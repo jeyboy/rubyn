@@ -33,6 +33,12 @@ void Logger::error(const QString & initiator, const QString & value) {
     else
         obj().write(initiator, value, log_error);
 }
+void Logger::warn(const QString & initiator, const QString & value) {
+    if (value.isEmpty())
+        obj().write(initiator, log_warn);
+    else
+        obj().write(initiator, value, log_warn);
+}
 void Logger::success(const QString & initiator, const QString & value) {
     if (value.isEmpty())
         obj().write(initiator, log_success);
@@ -187,6 +193,7 @@ void Logger::toEditor(const QString & initiator, const QString & value, const in
 QLatin1String Logger::textColor(const int & level) {
     switch(level) {
         case log_error: return QLatin1Literal("red");
+        case log_warn: return QLatin1Literal("yellow");
         case log_info: return QLatin1Literal("blue");
         case log_success: return QLatin1Literal("green");
 
@@ -196,6 +203,7 @@ QLatin1String Logger::textColor(const int & level) {
 QLatin1String Logger::backColor(const int & level) {
     switch(level) {
         case log_error: return QLatin1Literal("rgba(255, 0, 0, .1)");
+        case log_warn: return QLatin1Literal("rgba(255, 165, 0, .2)");
         case log_info: return QLatin1Literal("rgba(0, 0, 255, .1)");
         case log_success: return QLatin1Literal("rgba(0, 255, 0, .1)");
 

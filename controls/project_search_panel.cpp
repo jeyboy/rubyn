@@ -277,6 +277,11 @@ void ProjectSearchPanel::initiateSearch(const QString & pathes, const QString & 
 void ProjectSearchPanel::process() {  
     search_results -> clear();
 
+    if (predicate -> text().trimmed().isEmpty()) {
+        Logger::obj().warn("ProjectSearchPanel", "Search pattern is not valid");
+        return;
+    }
+
     regex = buildRegex(predicate -> text());
 
     if (!regex.isValid()) {
