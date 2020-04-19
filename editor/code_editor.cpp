@@ -336,16 +336,14 @@ void CodeEditor::extraAreaPaintBlock(QPainter & painter, CodeEditorCacheCell * c
                     if (folded) {
                         if (folding_click) {
                             folding_click = false;
-                        }
-                        else if (can_show_folding_popup)
+                        } else if (can_show_folding_popup) {
                             showFoldingContentPopup(document() -> findBlockByNumber(cache -> block_number));
+                        }
                     }
                     else {
                         active_folding.level = user_data -> level;
                         active_folding.start_block_num = cache -> block_number;
                         active_folding.end_block_num = NO_INFO - (user_data -> para_control ? user_data -> para_control -> is_blockator ? 0 : 1 : 1);
-                        // костыль
-//                        active_folding.end_block_num = NO_INFO - (user_data -> para_control -> is_blockator ? 0 : 1);
                         initiated = true;
                     }
                 }
@@ -936,45 +934,52 @@ void CodeEditor::procSelectionIndent(const bool & right) {
 
 void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
     QPoint pos = event -> pos();
-    int prev_folding_y = folding_y;
-
-    bool invalidation_required = false;
 
     bool in_breakpoint_zone = pos.rx() >= breakpoint_offset_x && pos.rx() <= breakpoint_offset_x + breakpoint_width;
     bool in_number_zone = !in_breakpoint_zone && pos.rx() >= line_number_offset_x && pos.rx() <= line_number_offset_x + line_number_width;
     bool in_folding_zone = !in_number_zone && (pos.rx() >= folding_offset_x && pos.rx() <= folding_offset_x + folding_width);
 
+    bool invalidation_required = false;
+
     if (!in_folding_zone) {
-        active_folding.clear();
+        invalidation_required = folding_y != NO_FOLDING;
+        curr_folding_limits.ry() = NO_FOLDING;
         folding_y = NO_FOLDING;
     }
-    else folding_y = pos.ry();
+    else {
+        invalidation_required = folding_y == NO_FOLDING;
+        folding_y = pos.ry();
+    }
 
     switch(event -> type()) {
         case QEvent::MouseMove: {
-            invalidation_required =
-                    //TODO: possible refactor required?
-                (folding_y == NO_FOLDING || (folding_y >= 0 && folding_y <= display_cacher -> fill_bottom)) && // cancel invalidation if blocks do not fully cover screen height and mouse pointer below the last block
-                    (
-                        (
-                            in_folding_zone && (folding_y <= curr_folding_limits.rx() || folding_y >= curr_folding_limits.ry())
-                        )
-                        ||
-                        (
-                            (folding_y != NO_FOLDING) == (prev_folding_y == NO_FOLDING)
-                        )
-                    );
+            invalidation_required |= in_folding_zone && (folding_y <= curr_folding_limits.rx() || folding_y >= curr_folding_limits.ry());
+
+//            invalidation_required |=
+//                (folding_y >= NO_FOLDING && folding_y <= display_cacher -> fill_bottom);
+
+//                    //TODO: possible refactor required?
+//                (folding_y == NO_FOLDING || (folding_y >= 0 && folding_y <= display_cacher -> fill_bottom)) && // cancel invalidation if blocks do not fully cover screen height and mouse pointer below the last block
+//                    (
+//                        (
+//                            in_folding_zone && (folding_y <= curr_folding_limits.rx() || folding_y >= curr_folding_limits.ry())
+//                        )
+//                        ||
+//                        (
+//                            (folding_y != NO_FOLDING) == (prev_folding_y == NO_FOLDING)
+//                        )
+//                    );
 
             if (invalidation_required) {
                 hideOverlay(OverlayInfo::ol_hover);
 
+                active_folding.clear();
                 can_show_folding_popup = true;
 
                 if (folding_click)
                     folding_click = false;
 
                 curr_folding_limits.ry() = NO_FOLDING;
-                active_folding.clear();
             }
         break;}
 
@@ -1061,7 +1066,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
 void CodeEditor::extraAreaLeaveEvent(QEvent *) {
     // fake missing mouse move event from Qt
-    QMouseEvent me(QEvent::MouseMove, QPoint(-1, -1), Qt::NoButton, nullptr, nullptr);
+    QMouseEvent me(QEvent::MouseMove, QPoint(-99, -99), Qt::NoButton, nullptr, nullptr);
     extraAreaMouseEvent(&me);
 }
 
@@ -1605,6 +1610,19 @@ void CodeEditor::keyReleaseEvent(QKeyEvent * e) {
 }
 
 void CodeEditor::wheelEvent(QWheelEvent * e) {
+    if (curr_folding_limits.ry() != NO_FOLDING) {
+        hideOverlay(OverlayInfo::ol_hover);
+
+        active_folding.clear();
+        can_show_folding_popup = true;
+
+        if (folding_click)
+            folding_click = false;
+
+        curr_folding_limits.ry() = NO_FOLDING;
+    }
+
+
     if (display_cacher -> isShowOverlay())
         hideOverlays();
 

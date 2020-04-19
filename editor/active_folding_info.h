@@ -10,7 +10,7 @@ struct ActiveFoldingInfo {
 
     ActiveFoldingInfo() { clear(); }
 
-    inline bool isValid() { return level != NO_INFO; }
+    inline bool isValid() { return start_block_num != NO_INFO; }
 
     void clear() {
         if (!isValid()) return;

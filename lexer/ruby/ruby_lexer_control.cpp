@@ -51,12 +51,6 @@ void LexerControl::registerHeredocMark(const Ruby::StateLexem & lexem, QString *
             heredoc_token = new_heredoc;
         }
 
-//        if (!heredoc_token) {
-//            stack_token = heredoc_token = TokenList::insert(user_data -> token_begin, doc_lex, -1, 0);
-//        } else {
-//            heredoc_token = TokenList::insert(heredoc_token -> stacked_prev, doc_lex, -1, 0);
-//        }
-
         if (!heredoc_para) {
             para = heredoc_para = ParaList::insert(para, grammar -> paraType(doc_lex), cached_str_pos, quint8(cached_length));
         } else {
@@ -139,8 +133,8 @@ ParaCell * LexerControl::paraParent(int & lines_between, ParaCell * para, const 
             ++lines_between;
             it = it -> prev;
 
-            if (it && it -> pos == -1)
-                it = it -> prev;
+//            if (it && it -> pos == -1)
+//                it = it -> prev;
         } else {
             if (it -> is_opener && it -> is_foldable == foldable) {
                 if (!only_blockators || (only_blockators && it -> is_blockator))
