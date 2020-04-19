@@ -7,32 +7,6 @@ namespace Ruby {
     enum ParaLexem : PARA_TYPE {
         DefaultParaLexems,
 
-
-
-//        lex_scope_pre_code = 1, // BEGIN
-//        lex_scope_post_code, // END
-//        lex_scope_after_code, // __END__
-//        lex_scope_method_arg_def, // def n(...)
-//        lex_scope_method_var_def, // def n ...
-//        lex_scope_method_body, // def n(); ... end
-//        lex_scope_lambda_def, // -> () {...}
-//        lex_scope_local_block_vars, // .each {|...| }
-//        lex_scope_local_block_body, // .each {|a| ... }
-//        lex_scope_class_body, // class N { ... }
-//        lex_scope_module_body, // class N { ... }
-//        lex_scope_array_body, // [ ... ]
-//        lex_scope_hash_body, // { ... }
-//        lex_scope_string, // "asdad...asdasda"
-//        lex_scope_heredoc, // <<`EOC`; ... EOC
-//        lex_scope_regexp, // /\w#{...}/
-//        lex_scope_percent_string, // %r(/home/#{...})
-//        lex_scope_round_brackets, // (...)
-//        lex_scope_begin_block, // begin; ... end
-//        lex_scope_do_block_vars, // .each do |...| end
-//        lex_scope_do_block_body, // .each do |a| ... end
-
-
-
         // {}
         pt_curly_bracket = (pt_reserved + 1),
         pt_close_curly_bracket = pt_curly_bracket | pt_close,
@@ -118,17 +92,41 @@ namespace Ruby {
         pt_close_struct = (pt_reserved + 29) | pt_close | pt_foldable,
 
 
+        pt_ternary = (pt_reserved + 30),
+        pt_close_ternary = pt_ternary | pt_close,
+
+        pt_heredoc = (pt_reserved + 31),
+        pt_close_heredoc = pt_heredoc | pt_close,
+
         //TODO: not implemented yet
-        pt_comment = (pt_reserved + 30),
+        pt_comment = (pt_reserved + 32),
         pt_close_comment = pt_comment | pt_close,
         pt_foldable_comment = pt_comment | pt_foldable,
         pt_close_foldable_comment = pt_comment | pt_close| pt_foldable,
 
-        pt_ternary = (pt_reserved + 31),
-        pt_close_ternary = pt_ternary | pt_close,
 
-        pt_heredoc = (pt_reserved + 32),
-        pt_close_heredoc = pt_heredoc | pt_close,
+        //        lex_scope_pre_code = 1, // BEGIN
+        //        lex_scope_post_code, // END
+        //        lex_scope_after_code, // __END__
+        //        lex_scope_method_arg_def, // def n(...)
+        //        lex_scope_method_var_def, // def n ...
+        //        lex_scope_method_body, // def n(); ... end
+        //        lex_scope_lambda_def, // -> () {...}
+        //        lex_scope_local_block_vars, // .each {|...| }
+        //        lex_scope_local_block_body, // .each {|a| ... }
+        //        lex_scope_class_body, // class N { ... }
+        //        lex_scope_module_body, // class N { ... }
+        //        lex_scope_array_body, // [ ... ]
+        //        lex_scope_hash_body, // { ... }
+        //        lex_scope_string, // "asdad...asdasda"
+        //        lex_scope_heredoc, // <<`EOC`; ... EOC
+        //        lex_scope_regexp, // /\w#{...}/
+        //        lex_scope_percent_string, // %r(/home/#{...})
+        //        lex_scope_round_brackets, // (...)
+        //        lex_scope_begin_block, // begin; ... end
+        //        lex_scope_do_block_vars, // .each do |...| end
+        //        lex_scope_do_block_body, // .each do |a| ... end
+        ///////////
     };
 }
 

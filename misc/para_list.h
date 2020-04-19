@@ -10,6 +10,7 @@ struct ParaCell {
     ParaCell * closer;
 
     PARA_TYPE para_type;
+    PARA_TYPE potential_closer_para_type;
     EDITOR_POS_TYPE pos;
     quint8 length;
 
@@ -19,7 +20,7 @@ struct ParaCell {
     bool is_oneliner;
 
     ParaCell(const PARA_TYPE & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0, ParaCell * prev_token = nullptr)
-        : prev(prev_token), next(nullptr), closer(nullptr), para_type(para), pos(start_pos), length(length),
+        : prev(prev_token), next(nullptr), closer(nullptr), para_type(para), potential_closer_para_type(pt_reserved), pos(start_pos), length(length),
           is_blockator(true), is_opener(true), is_foldable(false), is_oneliner(false)
     {
         if (prev) {
@@ -39,6 +40,10 @@ struct ParaCell {
 
         if (closer) // remove link with chained elem
             closer -> closer = nullptr;
+    }
+
+    inline bool canBeClosedBy(const PARA_TYPE & closer_para) {
+        return potential_closer_para_type == pt_reserved || potential_closer_para_type == closer_para;
     }
 
     ParaCell * prevInLine() {
