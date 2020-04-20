@@ -62,6 +62,17 @@ QString Archive::buildAvailableFormatsCmd() {
     #endif
 }
 
+QString Archive::buildCompressCmd(const QString & path, const QString & result_path) {
+    #ifdef Q_OS_WIN
+        return FilesProcManager::obj().toolPath(LStr("7za.exe")) %
+            LStr(" a \"") % path % LStr("\" -y\"") % result_path % LStr("\"");
+    #else
+
+    #endif
+}
+
+//7z a archive2.zip .\subdir\*
+
 QString Archive::buildDecompressCmd(const QString & path, const QString & result_path) {
     #ifdef Q_OS_WIN
     //        http://rus-linux.net/MyLDP/consol/7z-command-switches.html

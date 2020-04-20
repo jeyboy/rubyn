@@ -48,7 +48,6 @@
 
 #include "tools/html/html_page.h"
 #include "tools/data_preparer/rubydoc_preparer.h"
-#include "tools/data_preparer/rubydoc_parser.h"
 
 IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(nullptr), widgets_list(nullptr),
     tree(nullptr), color_picker(nullptr), ui_dumper(new Dumper()), debug_panel(nullptr), breakpoints_panel(nullptr), run_config(nullptr), pos_status(nullptr)

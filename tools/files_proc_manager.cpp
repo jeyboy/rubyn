@@ -21,11 +21,12 @@ FilesProcManager::FilesProcManager() : cleaner_proc_delay(1800000) { // 1/2 hr
 
 QString FilesProcManager::generateRandomName() {
     return QString("temp_") +
-            QString::number(QDateTime::currentMSecsSinceEpoch());
+        QString::number(QDateTime::currentMSecsSinceEpoch());
 }
 
 QString FilesProcManager::tempPath(const QString & path) { return Dir::concatPaths(temp_path, path); }
 QString FilesProcManager::toolPath(const QString & tool_name) { return Dir::concatPaths(tools_path, tool_name); }
+QString FilesProcManager::dataPath(const QString & path) { return Dir::concatPaths(data_path, path); }
 
 QString FilesProcManager::appPath(const QString & name) {
     return Dir::appPath(name);
@@ -49,7 +50,7 @@ void FilesProcManager::cleanerProc() {
     while(files_it.hasNext()) {
         QString path = files_it.next();
 
-        if (!_proc_files.contains(path)) {
+        if (!_proc_files.contains(path) || _proc_files[path] != ps_proc) {
             QDir dir(path);
 
             if (dir.exists())

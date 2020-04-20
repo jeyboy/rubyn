@@ -10,6 +10,8 @@
 #include "tools/archive.h"
 #include "controls/logger.h"
 
+#include "rubydoc_parser.h"
+
 #include <qregularexpression.h>
 
 QString VersionUrls::core_type(QLatin1Literal("core"));
@@ -149,14 +151,23 @@ void RubyDocPreparer::syncList() {
     DocsList res;
 
     if (RubyDocPreparer().takeListOfAvailableDocs(res)) {
-        //    RubydocParser parser;
+        RubydocParser parser;
 
-        ////    parser.parse(QLatin1Literal("F://rubyn test//111"));
+        for(DocsList::Iterator it = res.begin(); it != res.end(); it++) {
+            VersionUrls urls = it.value();
 
-        //    parser.parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_core"));
-        //    parser.parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_stdlib"));
+            downloadRubyPack(urls);
 
-        //    parser.saveParsedDatum(QLatin1Literal("F://rubyn test//ruby_2_5_1_parsed"));
+            FilesProcManager::obj().registerFileProc(urls.local_core_path);
+            parser.parse(urls.local_core_path);
+            FilesProcManager::obj().unregisterFileProc(urls.local_core_path);
+
+            FilesProcManager::obj().registerFileProc(urls.local_stdlib_path);
+            parser.parse(urls.local_stdlib_path);
+            FilesProcManager::obj().unregisterFileProc(urls.local_stdlib_path);
+
+            parser.saveParsedDatum(FilesProcManager::dataPath());
+        }
     }
 }
 

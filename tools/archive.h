@@ -19,6 +19,7 @@ protected:
     static QByteArray errToString(const QProcess::ProcessError & error);
 
     QString buildAvailableFormatsCmd();
+    QString buildCompressCmd(const QString & path, const QString & result_path);
     QString buildDecompressCmd(const QString & path, const QString & result_path);
     bool runCmd(const QString & cmd, QString & output);
     QRegularExpression supportedUncompressFormats();

@@ -31,6 +31,7 @@ public:
     static QString tempPath(const QString & path);
     static QString toolPath(const QString & tool_name);
     static const QString & dataPath() { return data_path; }
+    static QString dataPath(const QString & path);
     static QString appPath(const QString & name = QString());
     static bool saveToFile(const QString & path, QByteArray & content);
 
@@ -44,7 +45,7 @@ public:
 public slots:
     void clearTemps();
 private:
-    QHash<QUrl, bool> _proc_files;
+    QHash<QUrl, ProcState> _proc_files;
 
     friend class Singleton<FilesProcManager>;
 };
