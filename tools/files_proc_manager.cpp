@@ -31,6 +31,18 @@ QString FilesProcManager::appPath(const QString & name) {
     return Dir::appPath(name);
 }
 
+bool FilesProcManager::saveToFile(const QString & path, QByteArray & content) {
+    QFile f(path);
+
+    if (f.open(QFile::WriteOnly)) {
+        int res = f.write(content);
+        f.close();
+        return res != -1;
+    }
+
+    return false;
+}
+
 void FilesProcManager::cleanerProc() {
     QDirIterator files_it(temp_path, QDir::Files | QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot);
 

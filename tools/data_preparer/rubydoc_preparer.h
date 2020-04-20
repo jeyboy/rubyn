@@ -20,7 +20,13 @@ struct VersionUrls {
     QString core_url;
     QString stdlib_url;
 
-    bool isValid() { return !core_url.isEmpty() && !stdlib_url.isEmpty(); }
+    QString local_core_path;
+    QString local_stdlib_path;
+
+    inline bool isValid() { return !core_url.isEmpty() && !stdlib_url.isEmpty(); }
+
+    inline QString coreName() const { return core_type.split('/').last(); }
+    inline QString stdlibName() const { return stdlib_type.split('/').last(); }
 };
 
 typedef QHash<QString, VersionUrls> DocsList;
@@ -33,7 +39,7 @@ class RubyDocPreparer : public IRubyStubsPreparer {
 
     void unpackRubyPack(const QByteArray & buf);
 
-    void downloadRubyPacks(const VersionUrls & urls);
+    void downloadRubyPack(VersionUrls & urls);
     bool findNearestVersion(const QString & target_version, const DocsList & available_versions, QString & nearest_res);
     quint64 uVersion(const QString & version);
 public:
@@ -44,6 +50,9 @@ public:
     bool takeListOfAvailableDocs(DocsList & list);
 
     void prepare(const QString & version);
+
+public slots:
+    void syncList();
 
 protected slots:
     void responseReady(Web::Response *);

@@ -112,6 +112,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
     loadSettings();
 
+    RubyDocPreparer().syncList();
 
 
 //    QFile f("F://rubyn test//large.txt");
@@ -151,9 +152,6 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 
     // TESTS // REMOVE LATER
-
-//    DocsList res;
-//    RubyDocPreparer().takeListOfAvailableDocs(res);
 
 //    VersionUrls urls;
 
