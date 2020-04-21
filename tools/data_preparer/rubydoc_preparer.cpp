@@ -229,10 +229,14 @@ bool RubyDocPreparer::prepareVersionPack(const QString & version, VersionUrls & 
 
     /////////////////////// PACK //////////////////////////
 
-    return ar.compress(
+    bool compress_res = ar.compress(
         FilesProcManager::concatPath(parsed_data_path, "*"),
         FilesProcManager::dataPath(rubyPackName(version))
     );
+
+    Dir::removePath(parsed_data_path);
+
+    return compress_res;
 }
 
 bool RubyDocPreparer::hasPackForVersion(const QString & target_version) {
