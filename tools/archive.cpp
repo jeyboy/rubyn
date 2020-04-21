@@ -9,6 +9,8 @@
 #include <qfile.h>
 #include <qdiriterator.h>
 
+//https://sevenzip.osdn.jp/chm/cmdline/switches/type.htm
+
 QString Archive::store_ext = QLatin1Literal("pup");
 QRegularExpression Archive::supported_formats_reg_exp;
 QHash<QString, bool> Archive::all_formats = {
@@ -65,13 +67,11 @@ QString Archive::buildAvailableFormatsCmd() {
 QString Archive::buildCompressCmd(const QString & path, const QString & result_path) {
     #ifdef Q_OS_WIN
         return FilesProcManager::obj().toolPath(LStr("7za.exe")) %
-            LStr(" a \"") % path % LStr("\" -y\"") % result_path % LStr("\"");
+            LStr(" a \"") % result_path % LStr("\" \"") % path % LStr("\"");
     #else
 
     #endif
 }
-
-//7z a archive2.zip .\subdir\*
 
 QString Archive::buildDecompressCmd(const QString & path, const QString & result_path) {
     #ifdef Q_OS_WIN
@@ -182,6 +182,14 @@ bool Archive::runCmd(const QString & cmd, QString & output) {
     output = QString(proc -> readAllStandardOutput());
 
     return proc -> exitStatus() == QProcess::NormalExit;
+}
+
+bool Archive::compress(const QString & path, const QString & result_path) {
+    Logger::info(LStr("Archive"), LStr("Start pack: ") % path);
+
+    QString output;
+
+    return runCmd(buildCompressCmd(path, result_path), output);
 }
 
 bool Archive::decompress(const QString & path, QString & result_path) {

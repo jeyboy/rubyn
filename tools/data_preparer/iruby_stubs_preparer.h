@@ -11,7 +11,7 @@
 class IRubyStubsPreparer : public QObject {
     Q_OBJECT
 public:
-    virtual void prepare(const QString & version) = 0;
+    virtual bool prepare(const QString & version) = 0;
 
 signals:
     void done(const bool & status);

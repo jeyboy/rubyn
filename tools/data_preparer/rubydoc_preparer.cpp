@@ -10,6 +10,8 @@
 #include "tools/archive.h"
 #include "controls/logger.h"
 
+#include "misc/dir.h"
+
 #include "rubydoc_parser.h"
 
 #include <qregularexpression.h>
@@ -88,100 +90,191 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
     return !list.isEmpty();
 }
 
-void RubyDocPreparer::prepare(const QString & version) {
-    QByteArray buf;
+bool RubyDocPreparer::prepare(const QString & version) {
+    if (Dir::hasEntry(FilesProcManager::dataPath(), rubyPackName(version, false)))
+        return true;
 
-    if (Archive::load(rubyPackName(version), buf)) {
-        unpackRubyPack(buf);
-        return;
-    }
+    Archive ar;
 
-    if (Archive::load(versionsDataName(), buf)) {
-        Json versions = Json::fromJsonStr(buf);
+    QString output_path = FilesProcManager::dataPath(rubyPackName(version, false));
 
-        JsonObj ver_obj = versions.obj();
+    return ar.decompress(
+        FilesProcManager::dataPath(rubyPackName(version)),
+        output_path
+    );
 
-        if (ver_obj.contains(version)) {
-            VersionUrls urls;
 
-            urls.core_url = ver_obj.string(VersionUrls::core_type);
-            urls.stdlib_url = ver_obj.string(VersionUrls::stdlib_type);
 
-            if (urls.isValid())
-                downloadRubyPack(urls);
-            else
-                Logger::error(
-                    QLatin1Literal("RubyDocPreparer"),
-                    QLatin1Literal("Corrupted links data for ruby version: ") % version
-                );
-        }
-    }
+//    QByteArray buf;
 
-    DocsList list;
+//    if (Archive::load(rubyPackName(version), buf)) {
+//        unpackRubyPack(buf);
+//        return;
+//    }
 
-    if (takeListOfAvailableDocs(list)) {
-        if (list.contains(version)) {
-            downloadRubyPack(list[version]);
-        } else {
-            Logger::error(
-                QLatin1Literal("RubyDocPreparer"),
-                QLatin1Literal("Can find data for ruby version: ") % version
-            );
+//    if (Archive::load(versionsDataName(), buf)) {
+//        Json versions = Json::fromJsonStr(buf);
 
-            QString nearest_version;
+//        JsonObj ver_obj = versions.obj();
 
-            if (findNearestVersion(version, list, nearest_version)) {
-                Logger::info(
-                    QLatin1Literal("RubyDocPreparer"),
-                    QLatin1Literal("Finded nearest version: ") % nearest_version
-                );
+//        if (ver_obj.contains(version)) {
+//            VersionUrls urls;
 
-                prepare(nearest_version);
-            } else {
-                Logger::error(
-                    QLatin1Literal("RubyDocPreparer"),
-                    QLatin1Literal("Cant find acceptable version for: ") % version
-                );
-            }
-        }
-    }
+//            urls.core_url = ver_obj.string(VersionUrls::core_type);
+//            urls.stdlib_url = ver_obj.string(VersionUrls::stdlib_type);
+
+//            if (urls.isValid())
+//                downloadRubyPack(urls);
+//            else
+//                Logger::error(
+//                    QLatin1Literal("RubyDocPreparer"),
+//                    QLatin1Literal("Corrupted links data for ruby version: ") % version
+//                );
+//        } else {
+
+//        }
+//    }
+
+//    DocsList list;
+
+//    if (takeListOfAvailableDocs(list)) {
+//        if (list.contains(version)) {
+//            downloadRubyPack(list[version]);
+//        } else {
+//            Logger::error(
+//                QLatin1Literal("RubyDocPreparer"),
+//                QLatin1Literal("Can find data for ruby version: ") % version
+//            );
+
+//            QString nearest_version;
+
+//            if (findNearestVersion(version, list, nearest_version)) {
+//                Logger::info(
+//                    QLatin1Literal("RubyDocPreparer"),
+//                    QLatin1Literal("Finded nearest version: ") % nearest_version
+//                );
+
+//                prepare(nearest_version);
+//            } else {
+//                Logger::error(
+//                    QLatin1Literal("RubyDocPreparer"),
+//                    QLatin1Literal("Cant find acceptable version for: ") % version
+//                );
+//            }
+//        }
+//    }
 }
 
 void RubyDocPreparer::syncList() {
     DocsList res;
 
     if (RubyDocPreparer().takeListOfAvailableDocs(res)) {
-        RubydocParser parser;
-
         for(DocsList::Iterator it = res.begin(); it != res.end(); it++) {
             VersionUrls urls = it.value();
 
-            downloadRubyPack(urls);
-
-            FilesProcManager::obj().registerFileProc(urls.local_core_path);
-            parser.parse(urls.local_core_path);
-            FilesProcManager::obj().unregisterFileProc(urls.local_core_path);
-
-            FilesProcManager::obj().registerFileProc(urls.local_stdlib_path);
-            parser.parse(urls.local_stdlib_path);
-            FilesProcManager::obj().unregisterFileProc(urls.local_stdlib_path);
-
-            parser.saveParsedDatum(FilesProcManager::dataPath());
+            prepareVersionPack(it.key(), urls);
         }
     }
 }
 
-bool RubyDocPreparer::findNearestVersion(const QString & target_version, const DocsList & available_versions, QString & nearest_res) {
+bool RubyDocPreparer::prepareVersionPack(const QString & version, VersionUrls & urls) {
+    if (hasPackForVersion(version))
+        return true;
+
+    RubydocParser parser;
+    Archive ar;
+
+    /////////////////////// DOWNLOAD //////////////////////////
+    Web::Manager * manager = Web::Manager::prepare();
+
+    {
+        Web::RequestParams * params = new Web::RequestParams(QUrl(urls.core_url));
+        QByteArray core_data = manager -> sendGet(params) -> toBytes();
+        delete params;
+
+        urls.local_core_path = FilesProcManager::tempPath(urls.coreName());
+        FilesProcManager::saveToFile(urls.local_core_path, core_data);
+    }
+
+
+    {
+        Web::RequestParams * params = new Web::RequestParams(QUrl(urls.stdlib_url));
+        QByteArray lib_data = manager -> sendGet(params) -> toBytes();
+        delete params;
+
+        urls.local_stdlib_path = FilesProcManager::tempPath(urls.stdlibName());
+        FilesProcManager::saveToFile(urls.local_stdlib_path, lib_data);
+    }
+
+    /////////////////////// UNZIP //////////////////////////
+
+    QString result_path;
+    ar.decompress(urls.local_core_path, result_path);
+    Dir::removePath(urls.local_core_path);
+
+    QString result_path2;
+    ar.decompress(urls.local_stdlib_path, result_path2);
+    Dir::removePath(urls.local_stdlib_path);
+
+    /////////////////////// PARSE //////////////////////////
+
+    parser.parse(result_path);
+    parser.parse(result_path2);
+
+    QString parsed_data_path = FilesProcManager::dataPath(rubyPackName(version, false));
+    parser.saveParsedDatum(parsed_data_path);
+
+    Dir::removePath(result_path);
+    Dir::removePath(result_path2);
+
+    /////////////////////// PACK //////////////////////////
+
+    return ar.compress(
+        FilesProcManager::concatPath(parsed_data_path, "*"),
+        FilesProcManager::dataPath(rubyPackName(version))
+    );
+}
+
+bool RubyDocPreparer::hasPackForVersion(const QString & target_version) {
+    return Dir::hasEntry(FilesProcManager::dataPath(), rubyPackName(target_version));
+}
+
+bool RubyDocPreparer::findNearestVersion(const QString & target_version, QString & nearest_res) {
     quint64 target_uversion = uVersion(target_version);
 
     quint64 nearest_uversion = 0;
+    QByteArray buf;
 
-    for(DocsList::ConstIterator it = available_versions.cbegin(); it != available_versions.cend(); it++) {
-        quint64 uversion = uVersion(it.key());
+    if (Archive::load(versionsDataName(), buf)) {
+        Json versions = Json::fromJsonStr(buf);
 
-        if (uversion > nearest_uversion && uversion <= target_uversion) {
-            nearest_uversion = uversion;
-            nearest_res = it.key();
+        JsonObj ver_obj = versions.obj();
+
+        if (ver_obj.contains(target_version)) {
+            nearest_res = target_version;
+
+            return true;
+//            VersionUrls urls;
+
+//            urls.core_url = ver_obj.string(VersionUrls::core_type);
+//            urls.stdlib_url = ver_obj.string(VersionUrls::stdlib_type);
+
+//            if (urls.isValid())
+//                downloadRubyPack(urls);
+//            else
+//                Logger::error(
+//                    QLatin1Literal("RubyDocPreparer"),
+//                    QLatin1Literal("Corrupted links data for ruby version: ") % version
+//                );
+        } else {
+            for(JsonObj::ConstIterator it = ver_obj.constBegin(); it != ver_obj.constEnd(); it++) {
+                quint64 uversion = uVersion(it.key());
+
+                if (uversion > nearest_uversion && uversion <= target_uversion) {
+                    nearest_uversion = uversion;
+                    nearest_res = it.key();
+                }
+            }
         }
     }
 
@@ -200,43 +293,6 @@ quint64 RubyDocPreparer::uVersion(const QString & version) {
     return res.toULongLong();
 }
 
-void RubyDocPreparer::parseRubyPack(const VersionUrls & urls) {
-    Archive ar;
+//void RubyDocPreparer::responseReady(Web::Response * response) {
 
-    QString result_path;
-    ar.decompress(urls.core_url, result_path);
-
-    QString result_path2;
-    ar.decompress(urls.stdlib_url, result_path2);
-
-
-}
-
-void RubyDocPreparer::downloadRubyPack(VersionUrls & urls) {
-    Web::Manager * manager = Web::Manager::prepare();
-
-    {
-        Web::RequestParams * params = new Web::RequestParams(QUrl(urls.core_url));
-        QByteArray core_data = manager -> sendGet(params) -> toBytes();
-        delete params;
-
-        urls.local_core_path = FilesProcManager::tempPath(urls.coreName());
-        FilesProcManager::saveToFile(urls.local_core_path, core_data);
-    }
-
-
-    Web::RequestParams * params = new Web::RequestParams(QUrl(urls.stdlib_url));
-    QByteArray lib_data = manager -> sendGet(params) -> toBytes();
-    delete params;
-
-    urls.local_stdlib_path = FilesProcManager::tempPath(urls.stdlibName());
-    FilesProcManager::saveToFile(urls.local_stdlib_path, lib_data);
-}
-
-void RubyDocPreparer::unpackRubyPack(const QByteArray & buf) {
-
-}
-
-void RubyDocPreparer::responseReady(Web::Response * response) {
-
-}
+//}

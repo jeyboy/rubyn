@@ -28,6 +28,10 @@ QString FilesProcManager::tempPath(const QString & path) { return Dir::concatPat
 QString FilesProcManager::toolPath(const QString & tool_name) { return Dir::concatPaths(tools_path, tool_name); }
 QString FilesProcManager::dataPath(const QString & path) { return Dir::concatPaths(data_path, path); }
 
+QString FilesProcManager::concatPath(const QString & path, const QString & add) {
+    return Dir::concatPaths(path, add);
+}
+
 QString FilesProcManager::appPath(const QString & name) {
     return Dir::appPath(name);
 }

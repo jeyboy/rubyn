@@ -25,8 +25,8 @@ struct VersionUrls {
 
     inline bool isValid() { return !core_url.isEmpty() && !stdlib_url.isEmpty(); }
 
-    inline QString coreName() const { return core_type.split('/').last(); }
-    inline QString stdlibName() const { return stdlib_type.split('/').last(); }
+    inline QString coreName() const { return core_url.split('/').last(); }
+    inline QString stdlibName() const { return stdlib_url.split('/').last(); }
 };
 
 typedef QHash<QString, VersionUrls> DocsList;
@@ -34,28 +34,34 @@ typedef QHash<QString, VersionUrls> DocsList;
 class RubyDocPreparer : public IRubyStubsPreparer {
     Q_OBJECT
 
+    inline QString packType() { return QLatin1Literal("gzip"); }
     inline QString versionsDataName() { return QLatin1Literal("versions"); }
-    inline QString rubyPackName(const QString & version) { return QLatin1Literal("ruby_stubs_") % version; }
+    inline QString rubyPackName(const QString & version, const bool & with_type = true) {
+        QString res = QLatin1Literal("ruby_") % version;
 
-    void unpackRubyPack(const QByteArray & buf);
+        if (with_type) {
+            res = res % '.' % packType();
+        }
 
-    void downloadRubyPack(VersionUrls & urls);
-    bool findNearestVersion(const QString & target_version, const DocsList & available_versions, QString & nearest_res);
+        return res;
+    }
+
+    bool hasPackForVersion(const QString & target_version);
+    bool findNearestVersion(const QString & target_version, QString & nearest_res);
+
     quint64 uVersion(const QString & version);
 public:
     RubyDocPreparer();
 
-    void parseRubyPack(const VersionUrls & urls);
-
     bool takeListOfAvailableDocs(DocsList & list);
-
-    void prepare(const QString & version);
+    bool prepare(const QString & version) override;
 
 public slots:
     void syncList();
+    bool prepareVersionPack(const QString & version, VersionUrls & urls);
 
 protected slots:
-    void responseReady(Web::Response *);
+//    void responseReady(Web::Response *);
 };
 
 #endif // RUBYDOC_PREPARER_H

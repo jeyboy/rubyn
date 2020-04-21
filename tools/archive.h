@@ -37,6 +37,7 @@ public:
         ot_data = 1
     };
 
+    bool compress(const QString & path, const QString & result_path);
     bool decompress(const QString & path, QString & result_path);
 
     static bool load(const QString & name, QByteArray & buf);

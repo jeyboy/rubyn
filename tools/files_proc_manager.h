@@ -32,6 +32,7 @@ public:
     static QString toolPath(const QString & tool_name);
     static const QString & dataPath() { return data_path; }
     static QString dataPath(const QString & path);
+    static QString concatPath(const QString & path, const QString & add);
     static QString appPath(const QString & name = QString());
     static bool saveToFile(const QString & path, QByteArray & content);
 

@@ -2,6 +2,7 @@
 
 #include <qapplication.h>
 #include <qdir.h>
+//#include <qfile.h>
 
 bool Dir::hasEntry(const QString & path, const QString & name, const bool & is_folder) {
     if (is_folder) {
@@ -22,6 +23,17 @@ bool Dir::createPath(const QString & path, const QString & name) {
     QDir dir(path);
 
     return dir.mkpath(name);
+}
+
+bool Dir::removePath(const QString & path) {
+    QFileInfo f(path);
+
+    if (f.isFile()) {
+        return QFile::remove(path);
+    }
+
+    QDir dir(path);
+    return dir.removeRecursively();
 }
 
 QString Dir::appPath(const QString & name, const bool & invalidate) {
