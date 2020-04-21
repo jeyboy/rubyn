@@ -648,10 +648,18 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
 
                 QByteArrayList namespace_name_parts = sname.split(':');
 
-                if (QChar(namespace_name_parts.last()[0]).isLower()) {
-                    parseFile(path % '/' % path_add, file_path, out, level, true);
-                } else {
-                    parseFile(path % '/' % path_add, file_path, out.namespaces[sname], level + 1);
+                QString next_path = path;
+
+                if (!path_add.isEmpty()) {
+                    next_path = next_path % '/' % path_add;
+                }
+
+                if (name != file_path) {
+                    if (QChar(namespace_name_parts.last()[0]).isLower()) {
+                        parseFile(next_path, file_path, out, level, true);
+                    } else {
+                        parseFile(next_path, file_path, out.namespaces[sname], level + 1);
+                    }
                 }
             }
         }

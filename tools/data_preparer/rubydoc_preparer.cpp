@@ -52,8 +52,6 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
                 QString version(match.capturedRef(1).mid(1).toString());
                 version.replace('_', '.');
 
-                qDebug() << version;
-
                 if (!list.contains(version)) {
                     cache_obj.insert(version, QJsonObject());
                     list.insert(version, VersionUrls());
@@ -178,8 +176,12 @@ void RubyDocPreparer::syncList() {
 }
 
 bool RubyDocPreparer::prepareVersionPack(const QString & version, VersionUrls & urls) {
-    if (hasPackForVersion(version))
+    qDebug() << "!!!!!!!!!!!prepareVersionPack" << version;
+
+    if (hasPackForVersion(version)) {
+        qDebug() << "!!!!!!!!!!! hasPackForVersion" << version;
         return true;
+    }
 
     RubydocParser parser;
     Archive ar;

@@ -146,7 +146,7 @@ QUrlQuery Response::toQuery(const bool & destroy) {
 
 QByteArray Response::toBytes(const bool & destroy) {
     QByteArray ar = readAll();
-    printHeaders();
+//    printHeaders();
     if (destroy) deleteLater();
     return ar;
 }
