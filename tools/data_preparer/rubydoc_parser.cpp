@@ -920,13 +920,20 @@ bool RubydocParser::saveParsedDatum(const QString & outpath) {
     if (!Dir::createPath(outpath))
         return false;
 
+    QString outfile_path;
+
     for(QHash<QString, DataObj>::Iterator obj = parsed_objs.begin(); obj != parsed_objs.end(); obj++) {
         {
+            int amount = 0;
             QString filename = obj.key();
             Info::camelcaseToUnderscore(filename);
-            filename = outpath % '/' % filename % QLatin1Literal(".rb");
+            outfile_path = outpath % '/' % filename % QLatin1Literal(".rb");
 
-            QFile outfile(filename);
+            while(QFile::exists(outfile_path)) {
+                outfile_path = outpath % '/' % filename % QString::number(++amount) % QLatin1Literal(".rb");
+            }
+
+            QFile outfile(outfile_path);
 
             if (outfile.open(QFile::WriteOnly | QFile::Text)) {
                 QTextStream out(&outfile);

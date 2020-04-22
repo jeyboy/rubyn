@@ -26,12 +26,8 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
 
     QByteArray host("https://ruby-doc.org/");
 
-//    Web::RequestParams * params = new Web::RequestParams(
-//        QUrl(host % QLatin1Literal("downloads/"))
-//    );
-
     Web::RequestParams * params = new Web::RequestParams(
-        QUrl::fromLocalFile("F://rubyn test//Ruby-Doc.org  Documenting the Ruby Language.htm")
+        QUrl(host % QLatin1Literal("downloads/"))
     );
 
     Html::Page html = manager -> sendGet(params) -> toHtml();
@@ -51,6 +47,10 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
             if (match.hasMatch()) {
                 QString version(match.capturedRef(1).mid(1).toString());
                 version.replace('_', '.');
+
+                if (version.splitRef('.').length() < 3) {
+                    version = version % ".0";
+                }
 
                 if (!list.contains(version)) {
                     cache_obj.insert(version, QJsonObject());

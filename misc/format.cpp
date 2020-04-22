@@ -94,8 +94,6 @@ QString Info::paddedNumber(quint64 time) {
 }
 
 QString & Info::camelcaseToUnderscore(QString & str) {
-    int prev = 0;
-
     int limit = str.length();
 
     for(int pos = 0; pos < limit; pos++) {
