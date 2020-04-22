@@ -378,6 +378,38 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
 }
 
 bool Lexer::parseMethodName(LexerControl * state) {
+    // define_method(:'$% ^&') { 0 }
+
+    // def `()
+    // def !()
+    // def ^()
+    // def |()
+    // def &()
+    // def +()
+    // def -()
+    // def +@()
+    // def -@()
+    // def *()
+    // def **()
+    // def /()
+    // def %()
+    // def <<()
+    // def >>()
+    // def <()
+    // def <=()
+    // def >()
+    // def =>()
+    // def <=>()
+    // def ==()
+    // def ===()
+    // def !=()
+    // def =~()
+    // def !~()
+    // def []()
+
+    //    Method names in Ruby may contain upper-case and lower-case letters, numbers, underscores _ and the punctation signs !, ?, =.
+    //    A method name can't begin with a number, and the characters !, ? and = can only appear at the end.
+
     while(true) {
         switch(ECHAR0.toLatin1()) {
             case '(': {
