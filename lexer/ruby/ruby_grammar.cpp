@@ -13,7 +13,7 @@ void Grammar::initParas() {
 
     para_tokens[lex_open_curly_bracket] = pt_foldable_curly_bracket;
     para_tokens[lex_close_curly_bracket] = pt_close_foldable_curly_bracket;
-    para_closers[pt_ternary] = pt_close_foldable_curly_bracket;
+    para_closers[pt_foldable_curly_bracket] = pt_close_foldable_curly_bracket;
 
     para_tokens[lex_interpolation] = pt_interpolation;
     para_tokens[lex_command_interception] = pt_interpolation;

@@ -255,6 +255,7 @@ Ruby::StateLexem Lexer::translateState(LexerControl * state, const Ruby::StateLe
 
 
 bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_lexem, const Ruby::StateLexem & predefined_delimiter, StackLexemFlag flags) {
+    bool is_method_def = false;
     bool has_predefined = predefined_lexem != lex_none;
     uint delimiter_flags = flags & slf_delimiter_related;
 
@@ -325,7 +326,7 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
         }
         ////////////
 
-
+        is_method_def = state -> lex_word == lex_method_def;
 
 
         if (state -> cached_length) {
@@ -369,9 +370,33 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
 
     state -> dropCached();
 
+    if (is_method_def) {
+        return parseMethodName(state);
+    }
+
     return true;
 }
 
+bool Lexer::parseMethodName(LexerControl * state) {
+    while(true) {
+        switch(ECHAR0.toLatin1()) {
+            case '(': {
+                return cutWord(state, lex_none, lex_none, slf_stack_delimiter);
+            }
+
+            case ' ': {
+                return cutWord(state);
+            break;}
+
+            case 0: {
+                state -> next_offset = 0;
+                return cutWord(state);
+            break;}
+        }
+
+        ++state -> buffer;
+    }
+}
 
 bool Lexer::parseContinious(LexerControl * state) {
     if (state -> stack_token) {
