@@ -14,6 +14,7 @@ public:
     static bool removePath(const QString & path);
     static QString appPath(const QString & name = QString(), const bool & invalidate = false);
     static QString concatPaths(const QString & path, const QString & name);
+    static bool showInGraphicalShell(const QString & path_in);
 };
 
 #endif // DIR_H

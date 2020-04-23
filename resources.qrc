@@ -128,5 +128,6 @@
         <file alias="close">icons/close.png</file>
         <file alias="close_all">icons/close_all.png</file>
         <file alias="close_other">icons/close_other.png</file>
+        <file alias="open_explorer">icons/open_explorer.png</file>
     </qresource>
 </RCC>

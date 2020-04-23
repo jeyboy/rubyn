@@ -6,6 +6,7 @@
 #include <qheaderview.h>
 #include <qscrollbar.h>
 
+#include "misc/dir.h"
 #include "project/projects.h"
 #include "project/file.h"
 #include "project/ifolder.h"
@@ -464,6 +465,15 @@ void ProjectTree::showContextMenu(const QPoint & point) {
     }
 
     menu.addSeparator();
+
+    QAction * action4 = new QAction(QIcon(QLatin1Literal(":/menu/open_explorer")), "Open in explorer", &menu);
+    connect(action4, &QAction::triggered, [=]() {
+        QString path;
+        getPath(currentItem(), path);
+
+        Dir::showInGraphicalShell(path);
+    });
+    menu.addAction(action4);
 
     menu.exec(mapToGlobal(point));
 }
