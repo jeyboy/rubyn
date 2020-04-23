@@ -11,6 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = rubyn
 TEMPLATE = app
 
+QMAKE_LFLAGS += -Wl,--large-address-aware
+
 SOURCES += main.cpp\
     controls/line_dialog.cpp \
     controls/project_search_dialog.cpp \

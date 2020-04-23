@@ -7,35 +7,40 @@
 
 using namespace Custom;
 
-TextBlock::TextBlock(const QByteArray/*QString*/ & txt, IBlock * prev_block) : IBlock(prev_block), _content(txt) {
-    _content.squeeze();
+TextBlock::TextBlock(const QByteArray/*QString*/ & txt, IBlock * prev_block) : IBlock(prev_block), _content(nullptr) {
+    _content = new QString(txt);
+    _content -> squeeze();
+}
+
+TextBlock::~TextBlock() {
+    delete _content;
 }
 
 void TextBlock::insertChar(const int & pos, const QChar & ch) {
-    if (pos > _content.length()) {
-        _content += QString(pos - _content.length(), QChar(' '));
-        _content.append(ch);
+    if (pos > _content -> length()) {
+        _content -> operator+=(QString(pos - _content -> length(), QChar(' ')));
+        _content -> append(ch);
     }
-    else _content.insert(pos, ch);
+    else _content -> insert(pos, ch);
 }
 
 void TextBlock::appendText(const QString & text) {
-    _content.append(text);
+    _content -> append(text);
 }
 
 void TextBlock::insertText(const int & pos, const QString & text) {
-    if (pos > _content.length()) {
-        _content += QString(pos - _content.length(), QChar(' '));
-        _content.append(text);
+    if (pos > _content -> length()) {
+        _content -> operator+=(QString(pos - _content -> length(), QChar(' ')));
+        _content -> append(text);
     }
-    else _content.insert(pos, text);
+    else _content -> insert(pos, text);
 }
 
 void TextBlock::removeText(const int & pos, const int & len) {
-    if (pos >= _content.length())
+    if (pos >= _content -> length())
         return;
 
-    _content.remove(pos, len);
+    _content -> remove(pos, len);
 }
 
 void TextBlock::draw(DrawContext * context) {
@@ -48,10 +53,10 @@ void TextBlock::draw(DrawContext * context) {
     qint32 left_offset = context -> leftStrPad();
     qint32 str_len = context -> maxStrLength();
 
-    if (_content.length() > str_len) {
-        str = _content.mid(left_offset, str_len);
+    if (_content -> length() > str_len) {
+        str = _content -> mid(left_offset, str_len);
     } else {
-        str = _content.mid(left_offset);
+        str = _content -> mid(left_offset);
     }
 
     context -> _on_screen.insert(
