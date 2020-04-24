@@ -262,9 +262,9 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
     state -> cachingPredicate();
 
     if (state -> cached_length || has_predefined) {
-        if (has_predefined)
+        if (has_predefined) {
             state -> lex_word = predefined_lexem;
-        else {
+        } else {
             Ruby::StateLexem pot_lex = Predefined::obj().lexem(state -> cached);
 
 //            switch(pot_lex) {
