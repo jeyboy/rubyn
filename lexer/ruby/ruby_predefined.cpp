@@ -117,6 +117,9 @@ Predefined::Predefined() {
     keys.insert(QByteArrayLiteral("%="), lex_operator_modulus_assigment);
     keys.insert(QByteArrayLiteral("**="), lex_operator_exponentiation_assigment);
 
+    keys.insert(QByteArrayLiteral("=~"), lex_operator_req_match);
+    keys.insert(QByteArrayLiteral("!~"), lex_operator_req_not_match);
+
     keys.insert(QByteArrayLiteral("="), lex_operator_assigment);
     keys.insert(QByteArrayLiteral("=="), lex_operator_comparison);
     keys.insert(QByteArrayLiteral("!="), lex_operator_not_equal);

@@ -146,10 +146,9 @@ ParaCell * LexerControl::paraParent(int & lines_between, ParaCell * para, const 
                 }
             }
 
-            if (!it -> is_opener && it -> closer) {
+            // heredoc can placed anywhere
+            if (!it -> is_opener && it -> closer && (para -> para_type == it -> para_type/* || para -> para_type != pt_close_heredoc*/)) {
                 it = it -> closer;
-                // this broke foldable curly brackets
-//                    lines_between += (it -> closer -> is_oneliner && it -> closer -> is_foldable ? 0 : 1);
             }
 
             it = it -> prev;

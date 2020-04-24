@@ -93,7 +93,10 @@ namespace Ruby {
         lex_operator_or_assigment               = (lex_reserved + 64) | lex_ruby_ternary_braker, // ||=
         lex_operator_not                        = (lex_reserved + 65) | lex_ruby_ternary_braker, // !
 
-        lex_operator_safe_navigation = (lex_reserved + 66), // &. // ruby 2.3+
+        lex_operator_req_match                  = (lex_reserved + 66) | lex_ruby_ternary_braker, // =~
+        lex_operator_req_not_match              = (lex_reserved + 67) | lex_ruby_ternary_braker, // !~
+
+        lex_operator_safe_navigation = (lex_reserved + 68), // &. // ruby 2.3+
 
         lex_loop,
         lex_yield,
