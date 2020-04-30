@@ -18,6 +18,7 @@
 #define ECHAR4 (*(state -> buffer + 4))
 #define ECHAR5 (*(state -> buffer + 5))
 #define ECHAR_1 (*(state -> buffer - 1))
+#define ECHAR_2 (*(state -> buffer - 2))
 
 #define SCHAR0 (*(state -> prev))
 #define SCHAR1 (*(state -> prev + 1))

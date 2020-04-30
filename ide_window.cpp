@@ -114,6 +114,50 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
     loadSettings();
 
+
+
+//    QFile f("C://Users/JB/Desktop/udp 1.log");
+//    QFile fu("C://Users/JB/Desktop/res.log");
+
+//    if (f.open(QFile::Text | QFile::ReadOnly)) {
+//        if (fu.open(QFile::Text | QFile::WriteOnly)) {
+//            QTextStream fout(&fu);
+
+//            QTextStream in(&f);
+
+//            fout << "  def messages" << '\n';
+//            fout << "    [" << '\n';
+
+//            while(!in.atEnd()) {
+//                QString str = in.readLine();
+
+//                if (str.indexOf("Message:") != -1) {
+//                    in.readLine();
+//                    QString msg_type = in.readLine();
+//                    msg_type = msg_type.mid(msg_type.indexOf(";49m") + 4);
+
+////                    if (!msg_type.startsWith("timestamp") && ! msg_type.startsWith("imu_measurements")) {
+//                    if (msg_type.startsWith("uncompressed_ecg_measurements") || msg_type.startsWith("compressed_ecg_measurements")) {
+//                        int start_index = str.indexOf('"');
+
+//                        fout << "      " << str.mid(start_index, str.lastIndexOf('"') - start_index + 1) << ',' << '\n';
+//                    }
+//                }
+//            }
+
+//            fout << "    ]" << '\n';
+//            fout << "  end" << '\n';
+//        }
+
+//        fu.flush();
+//        fu.close();
+//        f.close();
+//    }
+
+
+
+
+
 //    RubyDocPreparer().syncList();
 
 

@@ -74,7 +74,7 @@ void TextDocument::openFile() {
         setPlainText(ar);
     }
 
-    force_word_wrap = _file -> firstStr().length() > 10000 || content_length > pack_limit;
+    force_word_wrap = true; //_file -> firstStr().length() > 10000 || content_length > pack_limit;
 }
 
 bool TextDocument::identificateLexer() {

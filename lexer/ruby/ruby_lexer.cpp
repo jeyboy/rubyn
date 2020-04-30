@@ -630,7 +630,7 @@ bool Lexer::parseString(LexerControl * state) {
     while(true) {
         switch(ECHAR0.toLatin1()) {
             case '\'': {
-                if (ECHAR_1 != '\\') {
+                if (ECHAR_1 != '\\' || (ECHAR_1 == '\\' && ECHAR_2 == '\\')) {
                     lex = lex_string_content;
                     del_lex = lex_string_end;
                     flags = slf_unstack_delimiter;
@@ -669,7 +669,7 @@ bool Lexer::parseEString(LexerControl * state) {
             break; }
 
             case '"': {
-                if (ECHAR_1 != '\\') {
+                if (ECHAR_1 != '\\' || (ECHAR_1 == '\\' && ECHAR_2 == '\\')) {
                     lex = lex_estring_content;
                     del_lex = lex_estring_end;
                     flags = slf_unstack_delimiter;
