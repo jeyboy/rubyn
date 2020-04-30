@@ -818,6 +818,8 @@ QRectF CodeEditor::textRect(QRectF & block_rect, const QTextLine & line, const E
     qreal x_offset = -horizontalScrollBar() -> value();
     block_rect.setLeft(line.cursorToX(pos) + x_offset - 1);
     block_rect.setRight(line.cursorToX(pos + length) + x_offset + 2);
+    block_rect.setTop(block_rect.top() + line.y());
+    block_rect.setHeight(line.height());
 
     return block_rect;
 }
