@@ -326,7 +326,7 @@ void HighlightFormatFactory::registerStringBorderFormat() {
 void HighlightFormatFactory::registerStringSpecFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
-    format.setBackground(QColor::fromRgb(0, 145, 0, 20));
+    format.setBackground(QColor::fromRgb(0, 145, 0, 32));
     format.setForeground(QColor::fromRgb(255, 127, 80, 192));
     _formats.insert(hid_string_spec, format);
 }
@@ -334,7 +334,7 @@ void HighlightFormatFactory::registerStringSpecFormat() {
 void HighlightFormatFactory::registerStringCodeFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
-    format.setBackground(QColor::fromRgb(0, 145, 0, 20));
+    format.setBackground(QColor::fromRgb(0, 145, 0, 32));
     format.setForeground(QColor::fromRgb(65, 105, 225, 192));
     _formats.insert(hid_string_code, format);
 }
@@ -342,7 +342,7 @@ void HighlightFormatFactory::registerStringCodeFormat() {
 void HighlightFormatFactory::registerStringFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
-    format.setBackground(QColor::fromRgb(0, 145, 0, 20));
+    format.setBackground(QColor::fromRgb(0, 145, 0, 32));
     format.setForeground(Qt::black);
     _formats.insert(hid_string, format);
 }

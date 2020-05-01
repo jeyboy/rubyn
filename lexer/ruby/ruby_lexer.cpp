@@ -699,15 +699,6 @@ bool Lexer::parseEString(LexerControl * state) {
 
     while(true) {
         switch(ECHAR0.toLatin1()) {
-            case '\\': {
-                if (!state -> strIsEmpty()) {
-                    state -> next_offset = 0;
-                    cutWord(state, lex_estring_content);
-                }
-
-                parseStringPart(state);
-            break;}
-
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                     ++state -> next_offset;
@@ -723,6 +714,15 @@ bool Lexer::parseEString(LexerControl * state) {
                     del_lex = lex_estring_end;
                     flags = slf_unstack_delimiter;
                 }
+            break;}
+
+            case '\\': {
+                if (!state -> strIsEmpty()) {
+                    state -> next_offset = 0;
+                    cutWord(state, lex_estring_content);
+                }
+
+                parseStringPart(state);
             break;}
 
             case 0: {
@@ -746,7 +746,7 @@ bool Lexer::parseCommand(LexerControl * state) {
     StackLexemFlag flags = slf_none;
 
     while(lex == lex_none) {
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.toLatin1()) {       
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                     ++state -> next_offset;
@@ -762,6 +762,15 @@ bool Lexer::parseCommand(LexerControl * state) {
                     del_lex = lex_command_end;
                     flags = slf_unstack_delimiter;
                 }
+            break;}
+
+            case '\\': {
+                if (!state -> strIsEmpty()) {
+                    state -> next_offset = 0;
+                    cutWord(state, lex_estring_content);
+                }
+
+                parseStringPart(state);
             break;}
 
             case 0: {
