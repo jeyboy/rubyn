@@ -646,6 +646,7 @@ bool Lexer::parseStringPart(LexerControl * state) {
         case 'a':
         case 'e': {
             state -> buffer += 2;
+            state -> next_offset = 0;
             bool res = cutWord(state, lex_literal_spec);
             --state -> buffer;
             return res;
@@ -699,8 +700,10 @@ bool Lexer::parseEString(LexerControl * state) {
     while(true) {
         switch(ECHAR0.toLatin1()) {
             case '\\': {
-                if (!state -> strIsEmpty())
+                if (!state -> strIsEmpty()) {
+                    state -> next_offset = 0;
                     cutWord(state, lex_estring_content);
+                }
 
                 parseStringPart(state);
             break;}
@@ -754,7 +757,7 @@ bool Lexer::parseCommand(LexerControl * state) {
 
             case '`': {
                 if (ECHAR_1 != '\\' || (ECHAR_1 == '\\' && ECHAR_2 == '\\')) {
-                    ++state -> buffer;
+//                    ++state -> buffer;
                     lex = lex_command_content;
                     del_lex = lex_command_end;
                     flags = slf_unstack_delimiter;
@@ -1190,26 +1193,20 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
 
                     case 'x': { //    \xnn 	# character with hexadecimal value nn
                         ++state -> buffer;
+                        cpart |= ccp_hex;
 
-                        if (isBlank(ECHAR0)) {
-                            parsed = has_error = true;
-                            break;
+                        if (!isHDigit(ECHAR0)) {
+                           has_error = true;
                         }
 
-                        if (isHDigit(ECHAR0)) {
-                            ++state -> buffer;
-                            cpart |= ccp_hex;
+                        ++state -> buffer;
+
+                        if (!isHDigit(ECHAR0)) {
+                            has_error = true;
                         }
 
-                        if (isBlank(ECHAR0)) {
-                            parsed = true;
-                            break;
-                        }
-
-                        if (isHDigit(ECHAR0)) {
-                            ++state -> buffer;
-                            parsed = true;
-                        }
+                        ++state -> buffer;
+                        parsed = true;
                     break; }
 
                     case 8:
@@ -1268,19 +1265,23 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
                         if (ECHAR0 == '{') {
                             ++state -> buffer;
 
-                            for(int i = 0; i < 5; i++) {
+                            for(int i = 0; i <= 5; i++) {
                                 if (isHDigit(ECHAR0)) {
                                     ++state -> buffer;
                                 }
-                                else {
+                                else if (ECHAR0 == '}') {
+                                    ++state -> buffer;
+                                    parsed = true;
+                                } else {
+                                    has_error = true;
                                     break;
                                 }
                             }
 
-                            if (ECHAR0 == '}')
-                                ++state -> buffer;
-                            else
-                                has_error = true;
+                            if (!has_error) {
+                                has_error = !parsed;
+                            }
+                            parsed = true;
                         } else {
                             for(int i = 0; i < 4; i++) {
                                 if (isHDigit(ECHAR0)) {
@@ -1309,9 +1310,11 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
         }
     };
 
-    while(isWord(ECHAR0)) {
-        has_error = true;
-        ++state -> buffer;
+    if (target_lex != lex_literal_code) {
+        while(isWord(ECHAR0)) {
+            has_error = true;
+            ++state -> buffer;
+        }
     }
 
     bool res = cutWord(state, target_lex);
