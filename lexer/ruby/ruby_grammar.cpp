@@ -105,6 +105,11 @@ void Grammar::initParas() {
     para_tokens[lex_commentary_start] = pt_foldable_comment;
     para_tokens[lex_commentary_end] = pt_close_foldable_comment;
     para_closers[pt_foldable_comment] = pt_close_foldable_comment;
+
+    para_tokens[lex_command_start] = pt_command;
+    para_tokens[lex_command_end] = pt_close_command;
+    para_closers[pt_command] = pt_close_command;
+
 }
 
 void Grammar::initFlags(StackLexemFlag & flags, const Ruby::StateLexem & lex, const Ruby::StateLexem & last_non_blank_lex) {
