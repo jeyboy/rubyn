@@ -94,6 +94,7 @@ namespace Ruby {
         inline bool isBufferStart() { return buffer == start; }
         inline bool isBufferEof() { return buffer >= end; }
         inline bool bufferIsEmpty() { return start == end; }
+        inline bool strIsEmpty() { return buffer - prev == 0; }
 
         inline void cachingPredicate() {
             cached_str_pos = bufferPos();

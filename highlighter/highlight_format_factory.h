@@ -97,6 +97,10 @@ protected:
 
     void registerStringBorderFormat();
 
+    void registerStringSpecFormat();
+
+    void registerStringCodeFormat();
+
     void registerStringFormat();
 
     void registerTernaryFormat();

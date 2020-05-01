@@ -622,6 +622,45 @@ bool Lexer::parseNumber(LexerControl * state) {
     return cutWord(state, predef);
 }
 
+//lex_string_spec
+
+bool Lexer::parseStringPart(LexerControl * state) {
+    //    '\n' #  newline (0x0a)
+    //    '\s' #  space (0x20)
+    //    '\r' #  carriage return (0x0d)
+    //    '\t' #  tab (0x09)
+    //    '\v' #  vertical tab (0x0b)
+    //    '\f' #  formfeed (0x0c)
+    //    '\b' #  backspace (0x08)
+    //    '\a' #  bell/alert (0x07)
+    //    '\e' #  escape (0x1b)
+
+    switch(ECHAR1.toLatin1()) {
+        case 'n':
+        case 's':
+        case 'r':
+        case 't':
+        case 'v':
+        case 'f':
+        case 'b':
+        case 'a':
+        case 'e': {
+            state -> buffer += 2;
+            bool res = cutWord(state, lex_literal_spec);
+            --state -> buffer;
+            return res;
+        break;}
+
+        default: {
+            bool res = parseCharCode(state, lex_literal_code);
+            --state -> buffer;
+            return res;
+        }
+    }
+
+    return false;
+}
+
 bool Lexer::parseString(LexerControl * state) {
     StateLexem lex = lex_none;
     StateLexem del_lex = lex_none;
@@ -659,6 +698,13 @@ bool Lexer::parseEString(LexerControl * state) {
 
     while(true) {
         switch(ECHAR0.toLatin1()) {
+            case '\\': {
+                if (!state -> strIsEmpty())
+                    cutWord(state, lex_estring_content);
+
+                parseStringPart(state);
+            break;}
+
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                     ++state -> next_offset;
@@ -707,7 +753,7 @@ bool Lexer::parseCommand(LexerControl * state) {
             break; }
 
             case '`': {
-                if (ECHAR_1 != '\\') {
+                if (ECHAR_1 != '\\' || (ECHAR_1 == '\\' && ECHAR_2 == '\\')) {
                     ++state -> buffer;
                     lex = lex_command_content;
                     del_lex = lex_command_end;
@@ -1079,7 +1125,17 @@ bool Lexer::parseComment(LexerControl * state) {
     return false;
 }
 
-bool Lexer::parseCharCode(LexerControl * state) {
+bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
+    //    '\nnn' #  character with octal value nnn
+    //    '\xnn'   # character with hexadecimal value nn
+    //    '\unnnn' #  Unicode code point U+nnnn (Ruby 1.9 and later)
+    //    '\u{nnnnn}' #   Unicode code point U+nnnnn with more than four hex digits must be enclosed in curly braces
+    //    '\cx' #  control-x
+    //    '\C-x' #   control-x
+    //    '\M-x' #   meta-x
+    //    '\M-\C-x' #  meta-control-x
+    //    '\x' #  character x itself (for example \" is the double quote character)
+
     bool has_error = false;
     bool parsed = false;
     state -> next_offset = 0;
@@ -1258,7 +1314,7 @@ bool Lexer::parseCharCode(LexerControl * state) {
         ++state -> buffer;
     }
 
-    bool res = cutWord(state, lex_char_sequence);
+    bool res = cutWord(state, target_lex);
 
     if (has_error)
         state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong symbol code"));

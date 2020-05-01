@@ -58,6 +58,8 @@ enum Identifier : UID_TYPE {
     hid_spec_keyword,
     hid_numeric,
     hid_string,
+    hid_string_spec,
+    hid_string_code,
     hid_string_border,
     hid_regexp,
     hid_regexp_border,

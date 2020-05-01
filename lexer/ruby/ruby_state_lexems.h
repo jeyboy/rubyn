@@ -258,6 +258,9 @@ namespace Ruby {
         lex_commentary_content,
         lex_commentary_end,
 
+        lex_literal_spec, // \n, \t
+        lex_literal_code, // \u2344, \xf4
+
         lex_command_start,
         lex_command_content,
         lex_command_interception,

@@ -519,6 +519,13 @@ Identifier Grammar::toHighlightable(const Ruby::StateLexem & lexem) {
         case lex_cheredoc_content:
             return hid_string;
 
+        case lex_literal_spec:
+            return hid_string_spec;
+
+        case lex_literal_code:
+            return hid_string_code;
+
+
         case lex_regexp_content:
             return hid_regexp;
 
