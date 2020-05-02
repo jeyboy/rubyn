@@ -163,10 +163,10 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 //        f.close();
 //    }
 
-    RubyDocParser parser;
+//    RubyDocParser parser;
 
-    parser.parse(QLatin1Literal("F://rubyn test//ruby_t"));
-    parser.saveParsedDatum(QLatin1Literal("F://rubyn test//ruby_t_parsed"));
+//    parser.parse(QLatin1Literal("F://rubyn test//ruby_t"));
+//    parser.saveParsedDatum(QLatin1Literal("F://rubyn test//ruby_t_parsed"));
 
 
 //    RubydocParser().parseFile(QLatin1Literal("F://rubyn test//Array.html"), QLatin1Literal("F://rubyn test//array.rb"));

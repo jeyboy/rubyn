@@ -369,7 +369,7 @@ void RubyDocParser::procMethod(const QString & signature, Html::Tag * method_blo
             if (findSimbolsSub(first_signature, '(', ')', sig_pos, sig_len)) {
                 out.args_mask = first_signature.mid(sig_pos, sig_len).trimmed();
 
-                if (out.args_mask.indexOf("[,") != -1) {
+                if (out.args_mask.indexOf("[,") != -1 || (out.args_mask.startsWith('[') && out.args_mask.endsWith(']'))) {
                     out.args_mask = several_vars;
                     is_mask = true;
                 } else {
