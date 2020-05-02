@@ -958,7 +958,10 @@ bool Lexer::parseHeredoc(LexerControl * state) {
     if (lex == lex_none) {
         switch(state -> stack_token -> lexem) {
             case lex_heredoc_start:
-            case lex_heredoc_intended_start: { state -> moveBufferToEnd(); break;}
+            case lex_heredoc_intended_start: {
+                lex = Grammar::obj().stateForHeredoc((Ruby::StateLexem)state -> stack_token -> lexem, true);
+                state -> moveBufferToEnd();
+            break;}
 
             case lex_eheredoc_intended_start:
             case lex_cheredoc_intended_start:
