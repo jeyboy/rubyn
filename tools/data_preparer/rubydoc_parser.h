@@ -3,6 +3,7 @@
 
 #include <qobject.h>
 #include <qhash.h>
+#include <qregularexpression.h>
 
 struct DataObj;
 struct DataMethod;
@@ -13,7 +14,7 @@ namespace Html {
     class Tag;
 }
 
-class RubydocParser : public QObject {
+class RubyDocParser : public QObject {
     Q_OBJECT
 
     enum Prefix : char {
@@ -59,9 +60,12 @@ class RubydocParser : public QObject {
     void dumpDescription(QStringList & desc, QTextStream & out, const QByteArray & level_padding);
     void dumpObject(DataObj & data_obj, QTextStream & out);
 
+    const QRegularExpression module_regexp = QRegularExpression("\\bmodule\\b");
+    const QRegularExpression class_regexp = QRegularExpression("\\bmodule\\b");
+    const QLatin1String several_vars = QLatin1Literal("*several_variants");
 public:
-    RubydocParser(QObject * parent = nullptr);
-    ~RubydocParser();
+    RubyDocParser(QObject * parent = nullptr);
+    ~RubyDocParser();
 
     bool parse(const QString & inpath);
     bool saveParsedDatum(const QString & outpath);

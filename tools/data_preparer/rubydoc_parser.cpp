@@ -13,7 +13,7 @@
 #include <qdiriterator.h>
 #include <qhash.h>
 
-bool RubydocParser::findSimbolsSub(const QString & str, const char & s, const char & e, int & spos, int & len) {
+bool RubyDocParser::findSimbolsSub(const QString & str, const char & s, const char & e, int & spos, int & len) {
     spos = str.indexOf(s);
 
     if (spos > -1) {
@@ -28,7 +28,7 @@ bool RubydocParser::findSimbolsSub(const QString & str, const char & s, const ch
     return false;
 }
 
-QByteArray RubydocParser::clearLine(const QByteArray & line) {
+QByteArray RubyDocParser::clearLine(const QByteArray & line) {
     QByteArray res;
     res.reserve(line.size());
 
@@ -102,7 +102,7 @@ QByteArray RubydocParser::clearLine(const QByteArray & line) {
 }
 
 //TODO: refactor required
-void RubydocParser::writeLine(const QByteArray & datum, QStringList & out, const char & prefix, const int & max_line_len) {
+void RubyDocParser::writeLine(const QByteArray & datum, QStringList & out, const char & prefix, const int & max_line_len) {
     if (datum.length() <= max_line_len) {
         out.append(QString(prefix % datum));
         return;
@@ -145,7 +145,7 @@ void RubydocParser::writeLine(const QByteArray & datum, QStringList & out, const
     }
 }
 
-void RubydocParser::procHeader(Html::Tag * h, QStringList & out, const char & prefix) {
+void RubyDocParser::procHeader(Html::Tag * h, QStringList & out, const char & prefix) {
     QByteArray str;
 
     Html::Set hchilds = h -> children();
@@ -160,7 +160,7 @@ void RubydocParser::procHeader(Html::Tag * h, QStringList & out, const char & pr
     out << str.prepend(prefix);
 }
 
-void RubydocParser::procDescription(const Html::Set & parts, QStringList & out, const QString & inpath) {
+void RubyDocParser::procDescription(const Html::Set & parts, QStringList & out, const QString & inpath) {
     int curr_uid = Html::Tag::tg_none;
 
     for(Html::Set::ConstIterator tag = parts.cbegin(); tag != parts.cend(); tag++) {
@@ -307,7 +307,7 @@ void RubydocParser::procDescription(const Html::Set & parts, QStringList & out, 
     }
 }
 
-void RubydocParser::procMethod(const QString & signature, Html::Tag * method_block, DataMethod & out, const QString & inpath) {
+void RubyDocParser::procMethod(const QString & signature, Html::Tag * method_block, DataMethod & out, const QString & inpath) {
     Html::Set divs = method_block -> find("div");
 
     uint sigs_count = 0;
@@ -319,14 +319,17 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
         QByteArray div_class = (*div) -> rawClasses();
 
         if (div_class == QByteArrayLiteral("method-heading")) {
-            ++sigs_count;
-
             Html::Tag * mseq = (*div) -> findFirst(".method-callseq");
 
             if (mseq) {
-                out.signatures.append(
-                    QString(clearLine(mseq -> text()))
-                );
+                QByteArray signature = mseq -> text();
+
+                signature = clearLine(signature.split(':').last());
+
+                if (!out.signatures.contains(signature)) {
+                    ++sigs_count;
+                    out.signatures.append(signature);
+                }
             } else {
                 Html::Tag * mname = (*div) -> findFirst(".method-name");
                 Html::Tag * margs = (*div) -> findFirst(".method-args");
@@ -339,6 +342,7 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
                     if (margs)
                         msig.append(margs -> text());
 
+                    ++sigs_count;
                     out.signatures.append(msig);
                 } else {
                     Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method name in file: ") % inpath, QStringList() << divs[0] -> texts());
@@ -356,12 +360,21 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
 
         QString & first_signature = out.signatures.first();
 
+        first_signature.replace(module_regexp, "module_name");
+        first_signature.replace(class_regexp, "class_name");
+
         if (sigs_count == 1) {
             int sig_pos, sig_len;
 
             if (findSimbolsSub(first_signature, '(', ')', sig_pos, sig_len)) {
                 out.args_mask = first_signature.mid(sig_pos, sig_len).trimmed();
-                is_mask = out.args_mask.endsWith('.');
+
+                if (out.args_mask.indexOf("[,") != -1) {
+                    out.args_mask = several_vars;
+                    is_mask = true;
+                } else {
+                    is_mask = out.args_mask.endsWith('.');
+                }
             }
         }
 
@@ -401,7 +414,7 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
                 }
             }
         } else {
-            out.args_mask = QLatin1Literal("*several_variants");
+            out.args_mask = several_vars;
         }
 
 
@@ -421,7 +434,7 @@ void RubydocParser::procMethod(const QString & signature, Html::Tag * method_blo
     }
 }
 
-bool RubydocParser::parseFile(const QString & path, const QString & name, DataObj & out, const uint & level, const bool & attach) {
+bool RubyDocParser::parseFile(const QString & path, const QString & name, DataObj & out, const uint & level, const bool & attach) {
     QString inpath(path % '/' % name);
 
     QFile datafile(inpath);
@@ -495,11 +508,11 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
                 }
             }
 
-            /////////////////// REMOVE ME LATER
-            if (out.obj_type != "class" && out.obj_type != "module") {
-                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("New target type: ") % out.obj_type % QLatin1Literal(" in file: ") % inpath);
-            }
-            //////////////////////////////////////
+//            /////////////////// REMOVE ME LATER
+//            if (out.obj_type != "class" && out.obj_type != "module") {
+//                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("New target type: ") % out.obj_type % QLatin1Literal(" in file: ") % inpath);
+//            }
+//            //////////////////////////////////////
 
             Html::Set includes_texts = metadata_block -> find("#includes-section li a text");
 
@@ -673,7 +686,7 @@ bool RubydocParser::parseFile(const QString & path, const QString & name, DataOb
     return true;
 }
 
-bool RubydocParser::parseFolder(const QString & path) {
+bool RubyDocParser::parseFolder(const QString & path) {
     bool ignore_folders = false;
 
     QDirIterator files_it(path, QDir::Files | QDir::Hidden);
@@ -710,22 +723,22 @@ bool RubydocParser::parseFolder(const QString & path) {
     return true;
 }
 
-RubydocParser::RubydocParser(QObject * parent) : QObject(parent) {
+RubyDocParser::RubyDocParser(QObject * parent) : QObject(parent) {
 //    ThreadUtils::obj().run(
 //        this, &FilesProcManager::cleanerProc,
 //        new Func()
 //    );
 }
 
-RubydocParser::~RubydocParser() {
+RubyDocParser::~RubyDocParser() {
 
 }
 
-bool RubydocParser::parse(const QString & inpath) {
+bool RubyDocParser::parse(const QString & inpath) {
     return parseFolder(inpath);
 }
 
-void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const QByteArray & level_padding) {
+void RubyDocParser::dumpDescription(QStringList & desc, QTextStream & out, const QByteArray & level_padding) {
     if (!desc.isEmpty()) {
         char prev_val = 0;
 
@@ -792,7 +805,7 @@ void RubydocParser::dumpDescription(QStringList & desc, QTextStream & out, const
     }
 }
 
-void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
+void RubyDocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
     if (data_obj.obj_type.isEmpty() && data_obj.description.isEmpty())
         return;
 
@@ -916,7 +929,7 @@ void RubydocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
     out << level_padding << "end";
 }
 
-bool RubydocParser::saveParsedDatum(const QString & outpath) {
+bool RubyDocParser::saveParsedDatum(const QString & outpath) {
     if (!Dir::createPath(outpath))
         return false;
 

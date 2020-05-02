@@ -246,7 +246,10 @@ void Page::parse(const char * data, Tag * root_tag) {
                             }
                         } else {
                             sflags = StateFlags(sflags | sf_has_errors);
-                            qDebug() << "IGNORE CLOSING OF TAG: " << NAME_BUFF << " around " << QByteArray(pdata - 60, 60);
+
+                            if (pflags & pf_verbose) {
+                                qDebug() << "IGNORE CLOSING OF TAG: " << NAME_BUFF << " around " << QByteArray(pdata - 60, 60);
+                            }
 
                             Tag * curr = elem -> parent();
                             QByteArray block_name = NAME_BUFF.toLower();
@@ -258,7 +261,11 @@ void Page::parse(const char * data, Tag * root_tag) {
 
                                 if (curr -> name() == block_name) {
                                     elem = curr -> parent();
-                                    qDebug() << "+++ TREE STATE CORRECTION: " << buf.append(elem -> name());
+
+                                    if (pflags & pf_verbose) {
+                                        qDebug() << "+++ TREE STATE CORRECTION: " << buf.append(elem -> name());
+                                    }
+
                                     break;
                                 }
 

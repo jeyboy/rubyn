@@ -74,6 +74,9 @@ namespace Html {
             pf_simplify_text = 128,
             pf_simplify_mnemonics = 256,
 
+
+            pf_verbose = 65536,
+
             pf_default = pf_skip_comment | pf_skip_newlines | pf_trim_text // | pf_skip_mnemonics_decoding | pf_skip_content_decoding
         };
     private:

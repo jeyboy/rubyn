@@ -413,16 +413,16 @@ bool Lexer::parseMethodName(LexerControl * state) {
     while(true) {
         switch(ECHAR0.toLatin1()) {
             case '(': {
-                return cutWord(state, lex_none, lex_none, slf_stack_delimiter);
+                return cutWord(state, lex_method_def_name, lex_none, slf_stack_delimiter);
             }
 
             case ' ': {
-                return cutWord(state);
+                return cutWord(state, lex_method_def_name);
             break;}
 
             case 0: {
                 state -> next_offset = 0;
-                return cutWord(state);
+                return cutWord(state, lex_method_def_name);
             break;}
         }
 

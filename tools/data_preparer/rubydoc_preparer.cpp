@@ -183,7 +183,7 @@ bool RubyDocPreparer::prepareVersionPack(const QString & version, VersionUrls & 
         return true;
     }
 
-    RubydocParser parser;
+    RubyDocParser parser;
     Archive ar;
 
     /////////////////////// DOWNLOAD //////////////////////////
