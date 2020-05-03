@@ -1220,39 +1220,42 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
                         if (!isHDigit(ECHAR0)) {
                            has_error = true;
                         }
+                        else {
+                            ++state -> buffer;
 
-                        ++state -> buffer;
-
-                        if (!isHDigit(ECHAR0)) {
-                            has_error = true;
+                            if (!isHDigit(ECHAR0)) {
+                                has_error = true;
+                            }
+                            else {
+                                ++state -> buffer;
+                            }
                         }
 
-                        ++state -> buffer;
                         parsed = true;
                     break; }
 
-                    case 8:
-                    case 9: { parsed = has_error = true; break;}
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 7:
-                    case 0: { // \nnn #	character with octal value nnn
+                    case '8':
+                    case '9': { parsed = has_error = true; break;}
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '0': { // \nnn #	character with octal value nnn
                         ++state -> buffer;
 
                         for(int i = 0; i < 3; i++) {
                             switch(ECHAR0.toLatin1()) {
-                                case 1:
-                                case 2:
-                                case 3:
-                                case 4:
-                                case 5:
-                                case 6:
-                                case 7:
-                                case 0: {
+                                case '1':
+                                case '2':
+                                case '3':
+                                case '4':
+                                case '5':
+                                case '6':
+                                case '7':
+                                case '0': {
                                     ++state -> buffer;
                                 break;}
 
@@ -1469,11 +1472,11 @@ void Lexer::lexicate(LexerControl * state) {
                 StateLexem del_state = lex_none;
                 StackLexemFlag flags = slf_none;
 
-                if (ECHAR1 == ':')
+                if (ECHAR1 == ':') {
                     ++state -> next_offset;
-                // else if (ECHAR1 == '"' || ECHAR1 == '\'')
-                //  parse symbol in quotas
-                else { // if we have deal with symbol
+//                } else if (ECHAR1 == '"' || ECHAR1 == '\'') {
+////                    parse symbol in quotas
+                } else { // if we have deal with symbol
                     EDITOR_LEN_TYPE len = state -> strLength();
 
                     if (len > 0 && isWord(ECHAR_1)) {
