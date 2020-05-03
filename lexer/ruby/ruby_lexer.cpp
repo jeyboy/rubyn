@@ -1471,6 +1471,8 @@ void Lexer::lexicate(LexerControl * state) {
 
                 if (ECHAR1 == ':')
                     ++state -> next_offset;
+                // else if (ECHAR1 == '"' || ECHAR1 == '\'')
+                //  parse symbol in quotas
                 else { // if we have deal with symbol
                     EDITOR_LEN_TYPE len = state -> strLength();
 
@@ -1933,8 +1935,6 @@ void Lexer::handle(const QString & text, IHighlighter * lighter) {
         prev_udata && prev_udata -> token_control ? prev_udata -> token_control : udata -> token_begin,
         lighter
     );
-
-    qDebug() << text;
 
     state.setBuffer(text);
 

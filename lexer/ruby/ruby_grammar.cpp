@@ -477,7 +477,7 @@ Identifier Grammar::toHighlightable(const Ruby::StateLexem & lexem) {
         case lex_eheredoc_intended_mark:
         case lex_cheredoc_mark:
         case lex_cheredoc_intended_mark:
-            return hid_label;
+            return hid_string_label;
 
 
         case lex_method_def_name:

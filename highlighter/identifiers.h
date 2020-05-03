@@ -44,6 +44,7 @@ enum Identifier : UID_TYPE {
 
     hid_operator,
     hid_label,
+    hid_string_label,
 
 //    hid_obj_def,
 //    hid_obj_call,

@@ -257,6 +257,17 @@ void HighlightFormatFactory::registerLabelFormat() {
     _formats.insert(hid_label, format);
 }
 
+void HighlightFormatFactory::registerStringLabelFormat() {
+    QTextCharFormat format;
+    format.setFontWeight(QFont::Black);
+    format.setFontUnderline(true);
+    format.setForeground(QColor::fromRgb(0, 120, 0));
+    format.setUnderlineColor(QColor::fromRgb(0, 120, 0));
+    format.setUnderlineStyle(QTextCharFormat::SingleUnderline);
+    _formats.insert(hid_string_label, format);
+}
+
+
 void HighlightFormatFactory::registerOperatorFormat() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Black);
@@ -450,6 +461,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
 
     registerUnclosedParaFormat();
     registerLabelFormat();
+    registerStringLabelFormat();
     registerOperatorFormat();
     registerSpecKeywordFormat();
     registerKeywordFormat();

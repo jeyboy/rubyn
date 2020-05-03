@@ -79,6 +79,8 @@ protected:
 
     void registerLabelFormat();
 
+    void registerStringLabelFormat();
+
     void registerOperatorFormat();
 
     void registerSpecKeywordFormat();
