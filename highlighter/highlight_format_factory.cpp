@@ -368,6 +368,12 @@ void HighlightFormatFactory::registerNumericFormat() {
     _formats.insert(hid_numeric, format);
 }
 
+void HighlightFormatFactory::registerRangeFormat() {
+    QTextCharFormat format;
+    format.setForeground(QColor::fromRgb(255, 0, 0));
+    _formats.insert(hid_range, format);
+}
+
 void HighlightFormatFactory::registerRegularExpresionFormat() {
     QTextCharFormat format;
     format.setBackground(QColor::fromRgb(0, 255, 0, 32));
@@ -460,6 +466,7 @@ HighlightFormatFactory::HighlightFormatFactory() {
 //        registerMethodFormat();
     registerCommentFormat();
     registerNumericFormat();
+    registerRangeFormat();
     registerRegularExpresionFormat();
     registerRegularExpresionBorderFormat();
 //        registerPreprocessingFormat();

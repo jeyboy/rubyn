@@ -491,14 +491,27 @@ bool Lexer::parseNumber(LexerControl * state) {
             case '7':
             case '8':
             case '9': { predef = lex_dec; break;}
+            case '.': { predef = lex_float; break;}
             default: {
                 ended = true;
                 predef = lex_dec;
             }
         }
 
+        if (predef == lex_float && ECHAR2 == '.') {
+           ended = true;
+        }
+
         ++state -> buffer;
-    } else predef = lex_dec;
+    } else {
+        predef = lex_dec;
+
+        if (ECHAR1 == '.' && ECHAR2 == '.') {
+            ended = true;
+        }
+
+        ++state -> buffer;
+    }
 
     bool is_valid = predef != lex_hex && predef != lex_bin;
 

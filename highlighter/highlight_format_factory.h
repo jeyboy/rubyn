@@ -109,6 +109,8 @@ protected:
 
     void registerNumericFormat();
 
+    void registerRangeFormat();
+
     void registerRegularExpresionFormat();
 
     void registerRegularExpresionBorderFormat();
