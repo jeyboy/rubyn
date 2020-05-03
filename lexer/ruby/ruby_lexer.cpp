@@ -499,18 +499,16 @@ bool Lexer::parseNumber(LexerControl * state) {
         }
 
         if (predef == lex_float && ECHAR2 == '.') {
+            ++state -> buffer;
            ended = true;
         }
-
-        ++state -> buffer;
     } else {
         predef = lex_dec;
 
         if (ECHAR1 == '.' && ECHAR2 == '.') {
+            ++state -> buffer;
             ended = true;
         }
-
-        ++state -> buffer;
     }
 
     bool is_valid = predef != lex_hex && predef != lex_bin;
@@ -634,8 +632,6 @@ bool Lexer::parseNumber(LexerControl * state) {
 
     return cutWord(state, predef);
 }
-
-//lex_string_spec
 
 bool Lexer::parseStringPart(LexerControl * state) {
     //    '\n' #  newline (0x0a)
