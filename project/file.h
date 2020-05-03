@@ -143,6 +143,8 @@ public:
 
     bool dumpState(QVariant & data);
     bool restoreState(QVariant & data);
+    bool isWordWrap();
+    void setWordWrap(const bool & wrap);
 
     QPoint scrollState(const bool & drop = false);
     bool setScrollState(const QPoint & coords);

@@ -74,7 +74,7 @@ void TextDocument::openFile() {
         setPlainText(ar);
     }
 
-    force_word_wrap = true; //_file -> firstStr().length() > 10000 || content_length > pack_limit;
+    _word_wrap = _file -> firstStr().length() > 10000 || content_length > pack_limit;
 }
 
 bool TextDocument::identificateLexer() {
@@ -93,7 +93,7 @@ bool TextDocument::registerStateChangedCallback(QObject * target, const char * s
     return true;
 }
 
-TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _file(file), layout(nullptr), force_word_wrap(false) {
+TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _file(file), layout(nullptr) {
     layout = new TextDocumentLayout(this);
     layout -> setCursorWidth(2);
     setDocumentLayout(layout);
@@ -136,6 +136,7 @@ TextDocument::~TextDocument() {
 }
 
 const QString & TextDocument::documentUid() { return _file -> uid(); }
+const QString TextDocument::docName() { return _file -> name(); }
 
 void TextDocument::lexicate(const QString & text, IHighlighter * highlighter) {
     if (_lexer)
@@ -235,8 +236,6 @@ ParaCell * TextDocument::getPara(const QTextBlock & block, const EDITOR_POS_TYPE
 }
 
 bool TextDocument::save() {
-    return false; // TODO: remove me
-
     if (!isModified())
         return true;
 
@@ -400,6 +399,7 @@ bool TextDocument::restore(const QVariant & data) {
 void TextDocument::emitBreakpointAdded(const EDITOR_POS_TYPE & line_num) { emit breakpointAdded(_file -> path(), line_num); }
 void TextDocument::emitBreakpointRemoved(const EDITOR_POS_TYPE & line_num)  { emit breakpointRemoved(_file -> path(), line_num); }
 void TextDocument::emitBreakpointMoved(const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & line_num)  { emit breakpointMoved(_file -> path(), old_line_num, line_num); }
+void TextDocument::setWordWrap(const bool & word_wrap) { emit wordWrapChanged(_word_wrap = word_wrap); }
 
 //void TextDocument::readNextBlock() {
 //    if (isFullyReaded()) return;

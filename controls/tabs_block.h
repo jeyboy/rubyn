@@ -35,6 +35,7 @@ class TabsBlock : public QWidget {
     QMenu * _files_list;
 
     void setupLayout();
+    bool _lock_saving;
 public:
     TabsBlock(QWidget * parent = nullptr);
     ~TabsBlock();
@@ -80,6 +81,7 @@ protected slots:
     void closeCurrentTab();
     void closeExceptCurrentTab();
     void showTabsContextMenu(const QPoint &);
+    void showHelpBtnContextMenu();
 
     void newTabsBlockRequest();
 };

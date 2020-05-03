@@ -21,6 +21,7 @@ public:
     QListWidgetItem * addTab(const QIcon & ico, const QString & text);
     void removeTab(QListWidgetItem *);
 
+    File * currentTabFile();
     File * tabFile(const int & index);
     File * tabFile(QListWidgetItem * tab);
 protected:

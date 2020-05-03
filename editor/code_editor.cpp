@@ -103,6 +103,8 @@ void CodeEditor::openDocument(File * file) {
         disconnect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
 //        disconnect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
         disconnect(wrapper, &TextDocument::rowRedrawRequired, this, &CodeEditor::redrawRow);
+        disconnect(wrapper, &TextDocument::wordWrapChanged, this, &CodeEditor::wordWrapChanged);
+
 
         if (display_cacher -> size() > 0) {
             wrapper -> setHorizontalScrollPos(horizontalScrollBar() -> value());
@@ -124,7 +126,7 @@ void CodeEditor::openDocument(File * file) {
 
         wrapper = file -> asText();
 
-        setLineWrapMode(wrapper -> force_word_wrap ? WidgetWidth : NoWrap);
+        wordWrapChanged(wrapper -> isWordWrap());
 
         change_scroll_pos_required = wrapper -> scrollPredefined();
         move_to_char_required = wrapper -> moveToChar();
@@ -142,6 +144,7 @@ void CodeEditor::openDocument(File * file) {
 //        connect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
         connect(wrapper, &TextDocument::rowRedrawRequired, this, &CodeEditor::redrawRow);
 //        connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
+        connect(wrapper, &TextDocument::wordWrapChanged, this, &CodeEditor::wordWrapChanged);
 
         show_foldings_panel = wrapper -> canHasFoldings();
         show_breakpoints_panel = wrapper -> canHasBreakpoints();
@@ -1910,7 +1913,10 @@ bool CodeEditor::findPara(ActiveParaInfo & info, QTextBlock blk, ParaCell * para
     return initiated;
 }
 
-
+void CodeEditor::wordWrapChanged(const bool & word_wrap) {
+    setLineWrapMode(word_wrap ? WidgetWidth : NoWrap);
+//    setWordWrapMode(word_wrap ? QTextOption::WordWrap : QTextOption::NoWrap);
+}
 
 //void CodeEditor::searchIsShow(const bool & show) { //TODO: used?
 //    qDebug() << "CodeEditor::searchIsShow" << show;

@@ -44,7 +44,7 @@ void TabsBlock::setupLayout() {
     _active_btn -> setStyleSheet("background: qlineargradient(x1:0 y1:0, x2:1 y2:0, stop:0 rgba(0, 255, 255, 255), stop:1 rgba(0, 204, 255, 255)); border-radius: 3px; border: 1px solid black;");
     _active_btn -> hide();
 
-//    connect(_active_btn, SIGNAL(clicked()), this, SLOT(updateEditor()));
+    connect(_active_btn, SIGNAL(clicked()), this, SLOT(showHelpBtnContextMenu()));
 
     row_layout -> addWidget(_active_btn, 0);
 
@@ -86,7 +86,7 @@ void TabsBlock::setupLayout() {
 }
 
 TabsBlock::TabsBlock(QWidget * parent) : QWidget(parent), _bar(nullptr), _active_btn(nullptr), _list_btn(nullptr), _scroll_left_btn(nullptr),
-    _scroll_right_btn(nullptr), _editor(nullptr), _breakpoints(nullptr), _files_list(nullptr)
+    _scroll_right_btn(nullptr), _editor(nullptr), _breakpoints(nullptr), _files_list(nullptr), _lock_saving(true)
 {
 //    setStyleSheet("QWidget:focus {background-color: #FFFFCC;}");
 
@@ -258,13 +258,15 @@ void TabsBlock::fileClosed(const QString & uid) {
 }
 
 void TabsBlock::saveFiles() {
-    QHash<QString, QListWidgetItem *>::Iterator it = _bar -> _tabs_linkages.begin();
+    if (!_lock_saving) {
+        QHash<QString, QListWidgetItem *>::Iterator it = _bar -> _tabs_linkages.begin();
 
-    for(; it != _bar -> _tabs_linkages.end(); it++) {
-        File * f = _bar -> tabFile(it.value());
+        for(; it != _bar -> _tabs_linkages.end(); it++) {
+            File * f = _bar -> tabFile(it.value());
 
-        if (f && f -> isChanged()) {
-            f -> save();
+            if (f && f -> isChanged()) {
+                f -> save();
+            }
         }
     }
 }
@@ -373,6 +375,37 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
 
         menu.exec(_bar -> mapToGlobal(point));
     }
+}
+
+void TabsBlock::showHelpBtnContextMenu() {
+    emit activated(this);
+
+    QMenu menu(this);
+
+    QAction * action = menu.addAction(tr("Lock save"), this, [=]() {
+        _lock_saving = !_lock_saving;
+    });
+    action -> setCheckable(true);
+    action -> setChecked(_lock_saving);
+
+    menu.addSeparator();
+
+    File * file = _bar -> currentTabFile();
+    if (file) {
+        action = menu.addAction(tr("Word wrap"), this, [=]() {
+            File * file = _bar -> currentTabFile();
+
+            if (file) {
+                file -> setWordWrap(!file -> isWordWrap());
+            }
+        });
+
+        action -> setCheckable(true);
+        action -> setChecked(file -> isWordWrap());
+    }
+
+
+    menu.exec(_bar -> mapToGlobal(_active_btn -> pos()));
 }
 
 void TabsBlock::newTabsBlockRequest() {

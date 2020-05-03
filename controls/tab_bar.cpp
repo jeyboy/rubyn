@@ -107,6 +107,10 @@ void TabBar::removeTab(QListWidgetItem * tab) {
     delete tab;
 }
 
+File * TabBar::currentTabFile() {
+    return tabFile(currentRow());
+}
+
 File * TabBar::tabFile(const int & index) {
     if (index < 0) return nullptr;
 

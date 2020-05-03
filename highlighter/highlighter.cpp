@@ -24,6 +24,7 @@ void Highlighter::setDocument(TextDocument * new_doc) {
     }
 
     if (new_doc) {
+        Logger::obj().info("Parsing", new_doc -> docName());
         doc = new_doc;
 
         connect(doc, &QTextDocument::contentsChange, this, &Highlighter::reformatBlocks);

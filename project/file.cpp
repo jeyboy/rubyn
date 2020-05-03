@@ -310,6 +310,13 @@ bool File::restoreState(QVariant & data) {
     return false;
 }
 
+bool File::isWordWrap() {
+    return document() -> isWordWrap();
+}
+void File::setWordWrap(const bool & wrap) {
+    document() -> setWordWrap(wrap);
+}
+
 QPoint File::scrollState(const bool & drop) {
     //TODO: implement restore on IDocument level
     if (isText()) {

@@ -574,6 +574,7 @@ signals:
     void searchResultsFinded(const int & count);
 
 public slots:
+    void wordWrapChanged(const bool & word_wrap);
 //    void searchIsShow(const bool & show) Q_DECL_OVERRIDE;
     void searchInitiated(const QRegularExpression & pattern, const bool & scroll = true) Q_DECL_OVERRIDE;
     void searchNextResult(QString * replace = nullptr) Q_DECL_OVERRIDE;

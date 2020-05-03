@@ -23,7 +23,6 @@ protected:
     bool registerStateChangedCallback(QObject * target, const char * slot);
 public:
     TextDocumentLayout * layout;
-    bool force_word_wrap;
 
     TextDocument(File * file);
 
@@ -35,6 +34,7 @@ public:
     const QLatin1String & tabSpace() { return tab_space; }
 
     const QString & documentUid();
+    const QString docName();
 
 //    void readNextBlock();
 
@@ -60,8 +60,10 @@ public:
     void emitBreakpointAdded(const EDITOR_POS_TYPE & line_num);
     void emitBreakpointRemoved(const EDITOR_POS_TYPE & line_num);
     void emitBreakpointMoved(const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & line_num);
+    void setWordWrap(const bool & word_wrap);
 
 signals:
+    void wordWrapChanged(const bool & word_wrap);
     void rowRedrawRequired(const EDITOR_POS_TYPE & pos);
     void blocksLayoutChange(const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount);
     void hasChanges(const QString & uid, const bool & has);
