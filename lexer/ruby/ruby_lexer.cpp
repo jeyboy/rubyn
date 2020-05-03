@@ -494,6 +494,7 @@ bool Lexer::parseNumber(LexerControl * state) {
             case '.': { predef = lex_float; break;}
             default: {
                 ended = true;
+                ++state -> buffer;
                 predef = lex_dec;
             }
         }
@@ -1933,6 +1934,7 @@ void Lexer::handle(const QString & text, IHighlighter * lighter) {
         lighter
     );
 
+    qDebug() << text;
 
     state.setBuffer(text);
 
