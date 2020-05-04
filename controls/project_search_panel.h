@@ -6,6 +6,7 @@
 #include <qhash.h>
 #include <qwidget.h>
 #include <qregularexpression.h>
+#include <qdatetime.h>
 
 class ProjectSearchItemDelegate;
 class QTreeWidget;
@@ -25,6 +26,7 @@ class FileSearchResult;
 class ProjectSearchPanel : public QWidget {
     Q_OBJECT
 
+    QDateTime search_time;
     int items_found;
     QHash<QString, QTreeWidgetItem *> search_roots;
 

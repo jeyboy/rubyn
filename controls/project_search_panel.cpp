@@ -306,10 +306,19 @@ void ProjectSearchPanel::process() {
     results_itm -> setExpanded(true);
     search_roots.clear();
     items_found = 0;
+//    search_results -> setUpdatesEnabled(false);
+//    search_time = QDateTime::currentDateTime();
     dir_search -> search(regex, paths_value, project_tree);
 }
 
 void ProjectSearchPanel::addResult(FileSearchResult * result) {
+//    QDateTime curr_time = QDateTime::currentDateTime();
+
+//    if (search_time.msecsTo(curr_time) >= 1000) {
+//        search_time = curr_time;
+//        search_results -> setUpdatesEnabled(true);
+//    }
+
     QString name;
 
     if (!search_roots.contains(result -> path)) {
@@ -342,9 +351,12 @@ void ProjectSearchPanel::addResult(FileSearchResult * result) {
     pitm -> addChild(itm);
 
     delete result;
+
+//    search_results -> setUpdatesEnabled(false);
 }
 
 void ProjectSearchPanel::searchFinished() {
+//    search_results -> setUpdatesEnabled(true);
     search_roots.clear();
     search_results -> header() -> setSectionResizeMode(0, QHeaderView::Interactive);
 }

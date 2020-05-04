@@ -12,7 +12,7 @@ void Lexer::highlightMarkupInComments(LexerControl * state) {
     state -> buffer -= state -> token -> length;
 
     while(true) {
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.unicode()) {
             case 'i':
             case 'I': {
                 if (ECHAR4 == ':' && (ECHAR1 == 'N' || ECHAR1 == 'n') && (ECHAR2 == 'F' || ECHAR2 == 'f') && (ECHAR3 == 'O' || ECHAR3 == 'o')) {
@@ -74,7 +74,7 @@ void Lexer::registerModule(LexerControl * state) {
 
 
 void Lexer::identifyWordType(LexerControl * state) {
-    switch(SCHAR0.toLatin1()) {
+    switch(SCHAR0.unicode()) {
         case ':': { state -> lex_word = lex_symbol; break;}
         case '$': { state -> lex_word = lex_var_global; break;}
         case '@': {
@@ -411,7 +411,7 @@ bool Lexer::parseMethodName(LexerControl * state) {
     //    A method name can't begin with a number, and the characters !, ? and = can only appear at the end.
 
     while(true) {
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.unicode()) {
             case '(': {
                 return cutWord(state, lex_method_def_name, lex_none, slf_stack_delimiter);
             }
@@ -472,7 +472,7 @@ bool Lexer::parseNumber(LexerControl * state) {
     StateLexem predef = lex_none;
 
     if (ECHAR0 == '0') {
-        switch(ECHAR1.toLatin1()) {
+        switch(ECHAR1.unicode()) {
             case 'X':
             case 'x': { predef = lex_hex; break; }
             case 'B':
@@ -517,12 +517,12 @@ bool Lexer::parseNumber(LexerControl * state) {
     while(!ended) {
         ++state -> buffer;
 
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.unicode()) {
             case '.': {
                 if (predef == lex_float)
                     ended = true;
                 else {
-                    switch(ECHAR1.toLatin1()) {
+                    switch(ECHAR1.unicode()) {
                         case '0':
                         case '1':
                         case '2':
@@ -645,7 +645,7 @@ bool Lexer::parseStringPart(LexerControl * state) {
     //    '\a' #  bell/alert (0x07)
     //    '\e' #  escape (0x1b)
 
-    switch(ECHAR1.toLatin1()) {
+    switch(ECHAR1.unicode()) {
         case 'n':
         case 's':
         case 'r':
@@ -678,7 +678,7 @@ bool Lexer::parseString(LexerControl * state) {
     StackLexemFlag flags = slf_none;
 
     while(true) {
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.unicode()) {
             case '\'': {
                 if (ECHAR_1 != '\\' || (ECHAR_1 == '\\' && ECHAR_2 == '\\')) {
                     lex = lex_string_content;
@@ -708,7 +708,7 @@ bool Lexer::parseEString(LexerControl * state) {
     StackLexemFlag flags = slf_none;
 
     while(true) {
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.unicode()) {
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                     ++state -> next_offset;
@@ -756,7 +756,7 @@ bool Lexer::parseCommand(LexerControl * state) {
     StackLexemFlag flags = slf_none;
 
     while(lex == lex_none) {
-        switch(ECHAR0.toLatin1()) {       
+        switch(ECHAR0.unicode()) {
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                     ++state -> next_offset;
@@ -827,7 +827,7 @@ bool Lexer::parsePercentagePresenation(LexerControl * state) {
     bool is_interable = stack_lexem != lex_percent_presentation_start;
 
     while(true) {
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.unicode()) {
             case '#': {
                 if (is_interable) {
                     if (ECHAR1 == '{' && ECHAR_1 != '\\') {
@@ -978,7 +978,7 @@ bool Lexer::parseHeredoc(LexerControl * state) {
             case lex_eheredoc_start:
             case lex_cheredoc_start: {
                 while(true) {
-                    switch(ECHAR0.toLatin1()) {
+                    switch(ECHAR0.unicode()) {
                         case '#': {
                             if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                                 ++state -> next_offset;
@@ -1014,7 +1014,7 @@ bool Lexer::parseRegexp(LexerControl * state) {
     StackLexemFlag flags = slf_none;
 
     while(true) {
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.unicode()) {
             case '#': {
                 if (ECHAR1 == '{' && ECHAR_1 != '\\') {
                     ++state -> next_offset;
@@ -1054,7 +1054,7 @@ bool Lexer::parseRegexp(LexerControl * state) {
     lex = lex_none;
 
     while(lex == lex_none) {
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.unicode()) {
             case 'm': // Treat a newline as a character matched by .
             case 'i': // Ignore case
             case 'x': // Ignore whitespace and comments in the pattern
@@ -1102,7 +1102,7 @@ bool Lexer::parseRegexpGroup(LexerControl * state) {
     bool parsed = false;
 
     while(!parsed) {
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.unicode()) {
             case '1':
             case '2':
             case '3':
@@ -1168,11 +1168,11 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
     quint8 cpart = ccp_none;
 
     while(!parsed) {
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.unicode()) {
             case '\\': {
                 ++state -> buffer;
 
-                switch(ECHAR0.toLatin1()) {
+                switch(ECHAR0.unicode()) {
                     case 'C': { //    \C-\M-x #	meta-control-x
                         ++state -> buffer;
                         has_error |= (cpart & ccp_ctrl);
@@ -1246,8 +1246,8 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
                     case '0': { // \nnn #	character with octal value nnn
                         ++state -> buffer;
 
-                        for(int i = 0; i < 2 && !has_error; i++) {
-                            switch(ECHAR0.toLatin1()) {
+                        for(int i = 0; i < 2 && !parsed; i++) {
+                            switch(ECHAR0.unicode()) {
                                 case '1':
                                 case '2':
                                 case '3':
@@ -1260,9 +1260,7 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
                                 break;}
 
                                 default: {
-//                                    if (isWord(ECHAR0)) {
-                                        has_error = true;
-//                                    }
+                                    parsed = true;
                                 }
                             }
                         }
@@ -1368,7 +1366,7 @@ void Lexer::lexicate(LexerControl * state) {
         goto exit;
 
     while(true) {
-        switch(ECHAR0.toLatin1()) {
+        switch(ECHAR0.unicode()) {
             case ' ': {
                 StateLexem status = lex_blanks;
 
@@ -1711,7 +1709,7 @@ void Lexer::lexicate(LexerControl * state) {
                 StateLexem res = lex_none;
                 QChar braker = '\0';
 
-                switch(ECHAR1.toLatin1()) {
+                switch(ECHAR1.unicode()) {
                     case '=': { ++state -> next_offset; break; }
 
                     case '{':
@@ -1799,7 +1797,7 @@ void Lexer::lexicate(LexerControl * state) {
                 bool has_match = false;
                 const QChar & next_char = ECHAR1;
 
-                switch(next_char.toLatin1()) {
+                switch(next_char.unicode()) {
                     case '!':
                     case '=':
                     case '*':
@@ -1828,7 +1826,7 @@ void Lexer::lexicate(LexerControl * state) {
                         const QChar & n1_char = ECHAR2;
 
                         if (next_char == '-') {
-                            switch(n1_char.toLatin1()) {
+                            switch(n1_char.unicode()) {
                                 case '0':
                                 case 'a':
                                 case 'd':
