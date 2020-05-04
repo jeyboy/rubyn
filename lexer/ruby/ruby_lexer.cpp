@@ -1234,8 +1234,8 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
                         parsed = true;
                     break; }
 
-                    case '8':
-                    case '9': { parsed = has_error = true; break;}
+//                    case '8':
+//                    case '9': { parsed = has_error = true; break;}
                     case '1':
                     case '2':
                     case '3':
