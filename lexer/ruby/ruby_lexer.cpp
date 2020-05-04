@@ -551,7 +551,7 @@ bool Lexer::parseNumber(LexerControl * state) {
             case 'F': {
                 if (predef != lex_hex) {
                     state -> cacheAndLightWithMessage(
-                        lex_error,
+                        lex_inner_error,
                         QByteArrayLiteral("Error in number: wrong literal")
                     );
 
@@ -563,7 +563,7 @@ bool Lexer::parseNumber(LexerControl * state) {
             case 'E': {
                 if (predef < lex_dec) {
                     state -> cacheAndLightWithMessage(
-                        lex_error,
+                        lex_inner_error,
                         QByteArrayLiteral("Error in number: exponent part available only for decimals")
                     );
 
@@ -571,7 +571,7 @@ bool Lexer::parseNumber(LexerControl * state) {
                 } else if (predef >= lex_dec) {
                     if (has_exp_part) {
                         state -> cacheAndLightWithMessage(
-                            lex_error,
+                            lex_inner_error,
                             QByteArrayLiteral("Error in number: double exponent part")
                         );
                     } else {
@@ -589,7 +589,7 @@ bool Lexer::parseNumber(LexerControl * state) {
             case '9': {
                 if (predef < lex_dec) {
                     state -> cacheAndLightWithMessage(
-                        lex_error,
+                        lex_inner_error,
                         QByteArrayLiteral("Error in number: 0-7 literals only")
                     );
 
@@ -606,7 +606,7 @@ bool Lexer::parseNumber(LexerControl * state) {
             case '7': {
                 if (predef < lex_oct) {
                     state -> cacheAndLightWithMessage(
-                        lex_error,
+                        lex_inner_error,
                         QByteArrayLiteral("Error in number: 0,1 literals only")
                     );
 
@@ -624,7 +624,7 @@ bool Lexer::parseNumber(LexerControl * state) {
 
     if (!is_valid) { // if is hex or is bin and does not have any value: 0x or 0b
         state -> cacheAndLightWithMessage(
-            lex_error,
+            lex_inner_error,
             QByteArrayLiteral("Error in number: must have value")
         );
 
@@ -813,7 +813,7 @@ bool Lexer::parsePercentagePresenation(LexerControl * state) {
     TokenCell * stack_state = state -> stack_token;
 
     if (!stack_state || !stack_state -> data) {
-        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack state"));
+        state -> cacheAndLightWithMessage(lex_inner_error, QByteArrayLiteral("Wrong stack state"));
         return true; // false;
     }
 
@@ -897,7 +897,7 @@ bool Lexer::parseHeredocMarks(LexerControl * state, Ruby::StateLexem & lex) {
                 break;}
 
                 case 0: {
-                    state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Heredoc mark is not closed"));
+                    state -> cacheAndLightWithMessage(lex_inner_error, QByteArrayLiteral("Heredoc mark is not closed"));
                     ended = true;
                 break;}
             }
@@ -921,7 +921,7 @@ bool Lexer::parseHeredocMarks(LexerControl * state, Ruby::StateLexem & lex) {
 
 bool Lexer::parseHeredoc(LexerControl * state) {
     if (!state -> stack_token || !state -> stack_token -> data) {
-        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack status for heredoc content"));
+        state -> cacheAndLightWithMessage(lex_inner_error, QByteArrayLiteral("Wrong stack status for heredoc content"));
         return true; // false;
     }
 
@@ -961,7 +961,7 @@ bool Lexer::parseHeredoc(LexerControl * state) {
                 }
             break;}
 
-            default: state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong stack status for heredoc content"));
+            default: state -> cacheAndLightWithMessage(lex_inner_error, QByteArrayLiteral("Wrong stack status for heredoc content"));
         }
     }
 
@@ -1091,7 +1091,7 @@ bool Lexer::parseRegexp(LexerControl * state) {
 
 
     if (has_wrong_flags) {
-        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong regexp flag"));
+        state -> cacheAndLightWithMessage(lex_inner_error, QByteArrayLiteral("Wrong regexp flag"));
     }
 
     return status;
@@ -1126,7 +1126,7 @@ bool Lexer::parseRegexpGroup(LexerControl * state) {
     bool res = cutWord(state, lex_method);
 
     if (has_error)
-        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong symbol code"));
+        state -> cacheAndLightWithMessage(lex_inner_error, QByteArrayLiteral("Wrong symbol code"));
 
     return res;
 }
@@ -1246,7 +1246,7 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
                     case '0': { // \nnn #	character with octal value nnn
                         ++state -> buffer;
 
-                        for(int i = 0; i < 3; i++) {
+                        for(int i = 0; i < 2 && !has_error; i++) {
                             switch(ECHAR0.toLatin1()) {
                                 case '1':
                                 case '2':
@@ -1260,14 +1260,14 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
                                 break;}
 
                                 default: {
-                                    if (isWord(ECHAR0)) {
+//                                    if (isWord(ECHAR0)) {
                                         has_error = true;
-                                    }
-
-                                    parsed = true;
+//                                    }
                                 }
                             }
                         }
+
+                        parsed = true;
                     break;}
 
                     case 'c': { // \cx #	control-x
@@ -1344,8 +1344,9 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
 
     bool res = cutWord(state, target_lex);
 
-    if (has_error)
-        state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Wrong symbol code"));
+    if (has_error) {
+        state -> cacheAndLightWithMessage(lex_inner_error, QByteArrayLiteral("Wrong symbol code"));
+    }
 
     return res;
 }
@@ -1857,7 +1858,7 @@ void Lexer::lexicate(LexerControl * state) {
                 if (!cutWord(state)) goto exit;
 
                 if (!has_match)
-                    state -> cacheAndLightWithMessage(lex_error, QByteArrayLiteral("Expression requires"));
+                    state -> cacheAndLightWithMessage(lex_inner_error, QByteArrayLiteral("Expression requires"));
 
                 else goto iterate;
             break;}

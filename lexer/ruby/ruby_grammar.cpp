@@ -554,6 +554,8 @@ Identifier Grammar::toHighlightable(const Ruby::StateLexem & lexem) {
 
         case lex_word: return hid_unknown_name;
 
+        case lex_inner_error: return hid_inner_error;
+
         case lex_error: return hid_error;
 
         case lex_dot_dot:

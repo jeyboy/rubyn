@@ -78,6 +78,7 @@ enum Identifier : UID_TYPE {
 
     hid_unknown_name,
 
+    hid_inner_error,
     hid_error,
     hid_warning,
     hid_notice

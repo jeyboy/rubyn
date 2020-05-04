@@ -200,6 +200,7 @@ void HighlightFormatFactory::registerErrorFormat() {
     format.setUnderlineColor(QColor(Qt::red));
     format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
     format.setFontItalic(true);
+    _formats.insert(hid_inner_error, format);
     _formats.insert(hid_error, format);
 }
 

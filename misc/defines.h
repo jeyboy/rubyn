@@ -31,7 +31,7 @@
 #define state_level_bits_offset 16 //sizeof(LEXEM_TYPE) / 2 * 8
 #define state_scope_bits_offset 25 //sizeof(LEXEM_TYPE) / 4 * 3 * 8
 
-#define DefaultStateLexems lex_min = -8, lex_end_line = -7, lex_end_doc = -6, lex_spacing = -5, lex_tab = -4, lex_tabs = -3, lex_blank = -2, lex_blanks = -1, lex_none = 0, lex_error = 1, lex_warning, lex_notice, lex_undefined, lex_ignore, lex_default, lex_reserved = 10
+#define DefaultStateLexems lex_min = -8, lex_end_line = -7, lex_end_doc = -6, lex_spacing = -5, lex_tab = -4, lex_tabs = -3, lex_blank = -2, lex_blanks = -1, lex_none = 0, lex_error = 1, lex_inner_error = 2, lex_warning, lex_notice, lex_undefined, lex_ignore, lex_default, lex_reserved = 10
 
 #define NO_INFO -1
 
