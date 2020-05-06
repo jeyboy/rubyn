@@ -109,7 +109,6 @@ void Grammar::initParas() {
     para_tokens[lex_command_start] = pt_command;
     para_tokens[lex_command_end] = pt_close_command;
     para_closers[pt_command] = pt_close_command;
-
 }
 
 void Grammar::initFlags(StackLexemFlag & flags, const Ruby::StateLexem & lex, const Ruby::StateLexem & last_non_blank_lex) {

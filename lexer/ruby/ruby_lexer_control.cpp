@@ -140,14 +140,16 @@ ParaCell * LexerControl::paraParent(int & lines_between, ParaCell * para, const 
         } else {
             if (it -> is_opener && it -> is_foldable == foldable) {
                 if (!only_blockators || (only_blockators && it -> is_blockator)) {
-                    if (it -> canBeClosedBy(para -> para_type)) {
+//                    if (it -> para_type != pt_heredoc || para -> para_type == pt_close_heredoc) {
+//                    if (it -> canBeClosedBy(para -> para_type)) {
                         return it;
-                    }
+//                    }
                 }
             }
 
-            // heredoc can placed anywhere
-            if (!it -> is_opener && it -> closer && (para -> para_type == it -> para_type/* || para -> para_type != pt_close_heredoc*/)) {
+
+            // skip only if type is equal to target one: ] => ] and etc.
+            if (!it -> is_opener && it -> closer /*&& (para -> para_type == it -> para_type)*/) {
                 it = it -> closer;
             }
 
@@ -195,9 +197,7 @@ void LexerControl::attachPara(const Ruby::ParaLexem & ptype, const uint & flags,
                     user_data -> level -= lines_between > 0 ? 2 : 1;
 
                     parent -> is_oneliner = parent -> is_blockator ? lines_between == 1 : lines_between < 2;
-
-//                    if (para -> is_foldable)
-                        parent = paraParent(lines_between, para, true, true);
+                    parent = paraParent(lines_between, para, true, true);
 
                 } else if (lines_between > 0 && parent -> is_blockator != replaceable) {
                     parent -> is_oneliner = lines_between < 2;
@@ -227,9 +227,9 @@ void LexerControl::attachPara(const Ruby::ParaLexem & ptype, const uint & flags,
             control_para = prevFoldableInActiveParaLine(parent);
             return;
         }
-    } else {
+    } /*else {
         para -> potential_closer_para_type = grammar -> potentialCloserParaType((Ruby::ParaLexem &)para -> para_type);
-    }
+    }*/
 
     if (para -> is_foldable) {
         control_para = para;

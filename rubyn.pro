@@ -140,6 +140,7 @@ HEADERS  += ide_window.h \
     controls/line_dialog.h \
     controls/project_search_dialog.h \
     controls/project_search_panel.h \
+    data_source/gems.h \
     delegates/project_search_item_delegate.h \
     editor/custom/custom_chars.h \
     editor/custom/custom_cursor.h \

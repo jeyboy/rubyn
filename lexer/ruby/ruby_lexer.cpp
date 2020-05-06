@@ -472,7 +472,9 @@ bool Lexer::parseNumber(LexerControl * state) {
     StateLexem predef = lex_none;
 
     if (ECHAR0 == '0') {
-        switch(ECHAR1.unicode()) {
+        ++state -> buffer;
+
+        switch(ECHAR0.unicode()) {
             case 'X':
             case 'x': { predef = lex_hex; break; }
             case 'B':
@@ -494,12 +496,11 @@ bool Lexer::parseNumber(LexerControl * state) {
             case '.': { predef = lex_float; break;}
             default: {
                 ended = true;
-                ++state -> buffer;
                 predef = lex_dec;
             }
         }
 
-        if (predef == lex_float && ECHAR2 == '.') {
+        if (predef == lex_float && ECHAR1 == '.') {
             ++state -> buffer;
            ended = true;
         }
