@@ -1289,13 +1289,14 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
                         if (ECHAR0 == '{') {
                             ++state -> buffer;
 
-                            for(int i = 0; i <= 5; i++) {
+                            for(int i = 0; i <= 5 && !parsed; i++) {
                                 if (isHDigit(ECHAR0)) {
                                     ++state -> buffer;
                                 }
                                 else if (ECHAR0 == '}') {
                                     ++state -> buffer;
                                     parsed = true;
+                                    has_error = i == 0;
                                 } else {
                                     has_error = true;
                                     break;
@@ -1312,6 +1313,7 @@ bool Lexer::parseCharCode(LexerControl * state, const StateLexem & target_lex) {
                                     ++state -> buffer;
                                 }
                                 else {
+                                    has_error = i == 0;
                                     break;
                                 }
                             }
