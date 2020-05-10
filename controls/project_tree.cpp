@@ -348,6 +348,8 @@ void ProjectTree::keyPressEvent(QKeyEvent * e) {
 void ProjectTree::branchAdded(QTreeWidgetItem * item) {
     addTopLevelItem(item);
     item -> setExpanded(true);
+    setCurrentItem(item);
+    scrollToItem(item, QAbstractItemView::PositionAtTop);
 }
 
 void ProjectTree::folderAdded(const QString & /*name*/) {
