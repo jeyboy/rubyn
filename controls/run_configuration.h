@@ -7,14 +7,16 @@ class QToolBar;
 class QComboBox;
 class QAction;
 class QToolButton;
+class QMenu;
 
 class RunConfiguration : public QObject {
     Q_OBJECT
 
-    QComboBox * _config_list;
+    QMenu * _run_menu;
+    QMenu * _debbug_menu;
 
-    QAction * _run;
-    QAction * _debbug;
+    QToolButton * _run;
+    QToolButton * _debbug;
     QToolButton * _console_btn;
 public:
     RunConfiguration(QObject * parent = nullptr);
@@ -22,7 +24,11 @@ public:
     void buildPanel(QToolBar * bar);
 
 protected slots:
-    void configSelectionChanged(int index);
+    void configure();
+
+public slots:
+    void projectAdded(const QString &);
+    void projectRemoved(const QString &);
 };
 
 #endif // RUN_CONFIGURATION_H

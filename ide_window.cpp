@@ -216,6 +216,12 @@ void IDEWindow::setupConsole(const QString & path, const QString & header) {
     setupConsole(console, header);
 }
 
+
+
+
+
+
+
 void IDEWindow::splitterMoved(int /*pos*/, int index) {
     QSplitter * obj = static_cast<QSplitter *>(sender());
 

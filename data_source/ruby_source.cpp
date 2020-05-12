@@ -3,6 +3,15 @@
 #include "project/project.h"
 
 RubySource::RubySource(Project * project) : _project(project) {
+
+
+//    /bin/bash -c "/home/jb/.rvm/bin/rvm ruby-2.6.1@patient-forms do /home/jb/.rvm/rubies/ruby-2.6.1/bin/ruby /home/jb/.rvm/gems/ruby-2.6.1@patient-forms/gems/ruby-debug-ide-0.8.0.beta21/bin/rdebug-ide --key-value --step-over-in-blocks --disable-int-handler --evaluation-timeout 10 --evaluation-control --time-limit 100 --memory-limit 0 --rubymine-protocol-extensions --port 33111 --host 0.0.0.0 --dispatcher-port 34868 -- /home/jb/projects/monitorhealth-patient-forms-complex/bin/rails console -- --prompt simple"
+
+
+//    gem uninstall bundler -v ">= 2.0"
+//    gem install bundler -v "< 2.0"
+//    gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1)"
+
     //    Check the location where gems are being installed with gem env:
     //        $ gem env home
     //        # => ~/.rbenv/versions/<ruby-version>/lib/ruby/gems/...

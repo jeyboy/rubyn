@@ -5,8 +5,9 @@
 #include <qtoolbutton.h>
 #include <qlayout.h>
 #include <qdebug.h>
+#include <qmenu.h>
 
-RunConfiguration::RunConfiguration(QObject * parent) : QObject(parent), _config_list(nullptr), _run(nullptr), _debbug(nullptr) {
+RunConfiguration::RunConfiguration(QObject * parent) : QObject(parent), _run_menu(nullptr), _debbug_menu(nullptr), _run(nullptr), _debbug(nullptr), _console_btn(nullptr) {
 
 }
 
@@ -17,42 +18,52 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
         bar -> addWidget(empty);
     };
 
+    _run = new QToolButton(bar);
+    _run -> setIcon(QIcon(QLatin1Literal(":/tools/run")));
+    _run -> setPopupMode(QToolButton::InstantPopup);
 
-    _config_list = new QComboBox(bar);
+    _run_menu = new QMenu(_run);
 
-    _config_list -> addItem(QLatin1Literal("None"));
-    _config_list -> addItem(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Add new"), QVariant::fromValue(QByteArrayLiteral("+")));
+    _run_menu -> addAction(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Configure"), this, SLOT("configure()"));
 
-    connect(_config_list, SIGNAL(currentIndexChanged(int)), this, SLOT(configSelectionChanged(int)));
+    _run -> setMenu(_run_menu);
 
-    bar -> addWidget(_config_list);
+//    _run -> setDisabled(true);
+
+    bar -> addWidget(_run);
+
     addExtraSeparator(bar);
 
-    _run = bar -> addAction(QIcon(QLatin1Literal(":/tools/run")), QLatin1Literal());
-    _run -> setDisabled(true);
+
+    _debbug = new QToolButton(bar);
+    _debbug -> setIcon(QIcon(QLatin1Literal(":/tools/debug")));
+    _debbug -> setPopupMode(QToolButton::InstantPopup);
+
+    _debbug_menu = new QMenu(_debbug);
+    _debbug_menu -> addAction(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Configure"), this, SLOT("configure()"));
+
+    _debbug -> setMenu(_debbug_menu);
+//    _debbug -> setDisabled(true);
+
+    bar -> addWidget(_debbug);
+
     addExtraSeparator(bar);
 
-    _debbug = bar -> addAction(QIcon(QLatin1Literal(":/tools/debug")), QLatin1Literal());
-    _debbug -> setDisabled(true);
-    addExtraSeparator(bar);
-
-    bar -> addSeparator();
-
-    _console_btn = new QToolButton(bar);
-    _console_btn -> setIcon(QIcon(QLatin1Literal(":/tools/console")));
-    _console_btn -> setPopupMode(QToolButton::InstantPopup);
+//    _console_btn = new QToolButton(bar);
+//    _console_btn -> setIcon(QIcon(QLatin1Literal(":/tools/console")));
+//    _console_btn -> setPopupMode(QToolButton::InstantPopup);
 
 
-    QAction * console_btn_cfg = new QAction(QIcon(QLatin1Literal(":/tools/run_config")), "Configure", bar);
-    _console_btn -> addAction(console_btn_cfg);
+//    QAction * console_btn_cfg = new QAction(QIcon(QLatin1Literal(":/tools/run_config")), "Configure", bar);
+//    _console_btn -> addAction(console_btn_cfg);
 
-    QAction * bla = bar -> addWidget(_console_btn);
-    bla -> setDisabled(true);
+//    QAction * bla = bar -> addWidget(_console_btn);
+//    bla -> setDisabled(true);
 
 
 
 
-    bar -> layout() -> itemAt(bar -> layout() -> count() - 1) -> setAlignment(Qt::AlignJustify);
+//    bar -> layout() -> itemAt(bar -> layout() -> count() - 1) -> setAlignment(Qt::AlignJustify);
 
 //    QLayout * lay = bar -> layout();
 //    for(int i = 0; i < lay -> count(); ++i) {
@@ -64,18 +75,14 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
 //    }
 }
 
-void RunConfiguration::configSelectionChanged(int index) {
-    QVariant data = _config_list -> itemData(index);
+void RunConfiguration::configure() {
 
-    if (data.isNull()) {
-        // TODO: disable all buttons
-    } else {
-        QByteArray udata = data.toByteArray();
+}
 
-        if (udata == QByteArrayLiteral("+")) {
-            // TODO: show modal for new config
-        } else {
-            // TODO: update buttons state
-        }
-    }
+void RunConfiguration::projectAdded(const QString & path) {
+//    _run -> setDisabled(true);
+//    _debbug -> setDisabled(true);
+}
+void RunConfiguration::projectRemoved(const QString & path) {
+
 }

@@ -17,6 +17,7 @@ SOURCES += main.cpp\
     controls/line_dialog.cpp \
     controls/project_search_dialog.cpp \
     controls/project_search_panel.cpp \
+    controls/project_widget.cpp \
     data_source/ruby_source.cpp \
     delegates/project_search_item_delegate.cpp \
     editor/custom/custom_chars.cpp \
@@ -141,6 +142,7 @@ HEADERS  += ide_window.h \
     controls/line_dialog.h \
     controls/project_search_dialog.h \
     controls/project_search_panel.h \
+    controls/project_widget.h \
     data_source/gems.h \
     data_source/ruby_source.h \
     delegates/project_search_item_delegate.h \
