@@ -24,11 +24,15 @@ public:
     void buildPanel(QToolBar * bar);
 
 protected slots:
+    void run();
     void configure();
 
+signals:
+    void runRequires(const QString & path, const QString & run_type);
+
 public slots:
-    void projectAdded(const QString &);
-    void projectRemoved(const QString &);
+    void projectAdded(const QString & path, const QString & name);
+    void projectRemoved(const QString & path);
 };
 
 #endif // RUN_CONFIGURATION_H

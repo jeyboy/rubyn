@@ -75,7 +75,7 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
         delete color;
     }
 
-    emit Projects::obj().projectInitiated(view_item);
+    emit Projects::obj(). projectInitiated(view_item);
 }
 
 RecursiveFolder::RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent, const QString & folder_name, const uint & level, QColor * color) : IFolder(parent, folder_name, false) {

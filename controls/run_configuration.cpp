@@ -25,10 +25,9 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
     _run_menu = new QMenu(_run);
 
     _run_menu -> addAction(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Configure"), this, SLOT("configure()"));
+    _run_menu -> addSeparator();
 
     _run -> setMenu(_run_menu);
-
-//    _run -> setDisabled(true);
 
     bar -> addWidget(_run);
 
@@ -41,9 +40,9 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
 
     _debbug_menu = new QMenu(_debbug);
     _debbug_menu -> addAction(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Configure"), this, SLOT("configure()"));
+    _debbug_menu -> addSeparator();
 
     _debbug -> setMenu(_debbug_menu);
-//    _debbug -> setDisabled(true);
 
     bar -> addWidget(_debbug);
 
@@ -75,14 +74,38 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
 //    }
 }
 
+void RunConfiguration::run() {
+
+}
+
 void RunConfiguration::configure() {
 
 }
 
-void RunConfiguration::projectAdded(const QString & path) {
-//    _run -> setDisabled(true);
-//    _debbug -> setDisabled(true);
-}
-void RunConfiguration::projectRemoved(const QString & path) {
+void RunConfiguration::projectAdded(const QString & path, const QString & name) {
+    QAction * act = _run_menu -> addAction(QIcon(QLatin1Literal(":/tools/run")), name, this, SLOT("run()"));
+    act -> setProperty("path", path);
 
+    act = _debbug_menu -> addAction(QIcon(QLatin1Literal(":/tools/debug")), name, this, SLOT("run()"));
+    act -> setProperty("path", path);
+}
+
+void RunConfiguration::projectRemoved(const QString & path) {
+    QList<QAction *> lst = _run_menu -> findChildren<QAction *>();
+
+    for(QList<QAction *>::Iterator it = lst.begin(); it != lst.end(); it++) {
+        if ((*it) -> property("path").toString() == path) {
+            _run_menu -> removeAction((*it));
+            break;
+        }
+    }
+
+    lst = _debbug_menu -> findChildren<QAction *>();
+
+    for(QList<QAction *>::Iterator it = lst.begin(); it != lst.end(); it++) {
+        if ((*it) -> property("path").toString() == path) {
+            _debbug_menu -> removeAction((*it));
+            break;
+        }
+    }
 }

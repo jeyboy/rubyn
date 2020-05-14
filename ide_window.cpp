@@ -829,6 +829,12 @@ void IDEWindow::setupToolWindows() {
 
     run_config -> buildPanel(control_bar);
 
+    connect(&Projects::obj(), &Projects::projectInitiated, [=](QTreeWidgetItem * tree_item) {
+        run_config -> projectAdded(tree_item -> data(0, TREE_PATH_UID).toString(), tree_item -> data(0, Qt::DisplayRole).toString());
+    });
+
+    connect(&Projects::obj(), &Projects::projectRemoved, run_config, &RunConfiguration::projectRemoved);
+
     control_bar -> addSeparator();
 
     QAction * _color_picker = control_bar -> addAction(QIcon(QLatin1Literal(":/tools/color_picker")), QLatin1Literal());
