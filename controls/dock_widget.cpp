@@ -2,6 +2,7 @@
 
 #include <qevent.h>
 #include <qtoolbutton.h>
+#include <qtabbar.h>
 //#include <qdatetime.h>
 
 #include "header_dock_widget.h"
@@ -17,6 +18,14 @@ DockWidget::DockWidget(const QString & title, QWidget * parent, const Qt::DockWi
     setObjectName(title);
     setAllowedAreas(areas);
     setFeatures(QDockWidget::NoDockWidgetFeatures);
+
+    connect(this, &DockWidget::topLevelChanged, [=](bool /*top_level*/) {
+        updateIcons();
+    });
+
+    connect(this, &DockWidget::dockLocationChanged, [=](Qt::DockWidgetArea /*area*/) {
+        updateIcons();
+    });
 }
 
 void DockWidget::setBehaviour(const Features & params) {
@@ -36,6 +45,12 @@ void DockWidget::setWindowTitle(const QString & new_title) {
     QDockWidget::setWindowTitle(new_title);
 }
 
+void DockWidget::setWindowIco(const QString & ico_path, const QString & tab_ico_path) {
+    header -> setIcon(ico_path);
+    setProperty("ico", tab_ico_path);
+    updateIcons();
+}
+
 void DockWidget::showSearch(const bool & show) {
     header -> showSearch(show);
 }
@@ -50,6 +65,30 @@ QToolButton * DockWidget::insertHeaderButton(const QIcon & ico, QObject * target
 void DockWidget::registerSearchCallbacks(const DockWidgetSearchConnector & connector) {
     header -> registerSearchCallbacks(connector);
 }
+
+void DockWidget::updateIcons() {
+    QWidget * widget = parentWidget();
+
+    if (widget) {
+        QList<QTabBar *> tabbars = widget -> findChildren<QTabBar *>(QString(), Qt::FindDirectChildrenOnly);
+        QList<QTabBar *>::Iterator it = tabbars.begin();
+
+        for(; it != tabbars.end(); it++) {
+            for(int index = 0; index < (*it) -> count(); index++) {
+
+            DockWidget * widget = (DockWidget *)((*it) -> tabData(index).toInt());
+            if (!widget -> property("ico").isNull()) {
+                (*it) -> setTabIcon(index, QIcon(widget -> property("ico").toString()));
+            }
+
+//                if (this == ((DockWidget *)((*it) -> tabData(index).toInt()))) {
+
+//                }
+            }
+        }
+    }
+}
+
 
 void DockWidget::closeEvent(QCloseEvent * e) {
     emit closing();

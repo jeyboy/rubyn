@@ -1,48 +1,62 @@
 #ifndef PROJECT_WIDGET_H
 #define PROJECT_WIDGET_H
 
-#include <qplaintextedit.h>
+#include <qwidget.h>
 
-#include "tools/process.h"
+//#include <qplaintextedit.h>
 
-class ProjectWidget : public QPlainTextEdit {
+//#include "tools/process.h"
+
+class QToolBar;
+class BreakpointsPanel;
+class DebugPanel;
+
+class ProjectWidget : public QWidget {
     Q_OBJECT
 
-    Process * process;
+    QString _path;
+    QString _cmd_type;
+
+    QToolBar * _debug_bar;
+    DebugPanel * _debug_panel;
+    BreakpointsPanel * _breakpoints;
+//    Process * process;
 public:
-    ProjectWidget(const QJsonObject & json);
-    explicit ProjectWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd = QString(), QWidget * parent = nullptr, QStringList * history_list = nullptr);
-    void output(const QString & txt);
-    void scrollDown();
+    ProjectWidget(const QString & path, const int & cmd_type, QWidget * parent = nullptr);
 
-    QJsonObject save();
-protected:
-    void setup(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QStringList * history_list);
+//    ProjectWidget(const QJsonObject & json);
+//    explicit ProjectWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd = QString(), QWidget * parent = nullptr, QStringList * history_list = nullptr);
+//    void output(const QString & txt);
+//    void scrollDown();
 
-    void keyPressEvent(QKeyEvent * e);
-    void mousePressEvent(QMouseEvent * e);
-    void mouseDoubleClickEvent(QMouseEvent * e);
-    void contextMenuEvent(QContextMenuEvent * e);
-private:
-    bool is_read_only;
-    QString cmd_command;
-    QString cmd_path;
-    QString prompt;
-    bool is_locked;
-    QStringList * history;
-    QStringList queue;
-    int history_pos;
+//    QJsonObject save();
+//protected:
+//    void setup(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QStringList * history_list);
 
-    void onEnter();
-    void insertPrompt(const bool & insert_new_block = true);
-    void historyAdd(const QString & cmd);
-    void historyBack();
-    void historyForward();
+//    void keyPressEvent(QKeyEvent * e);
+//    void mousePressEvent(QMouseEvent * e);
+//    void mouseDoubleClickEvent(QMouseEvent * e);
+//    void contextMenuEvent(QContextMenuEvent * e);
+//private:
+//    bool is_read_only;
+//    QString cmd_command;
+//    QString cmd_path;
+//    QString prompt;
+//    bool is_locked;
+//    QStringList * history;
+//    QStringList queue;
+//    int history_pos;
 
-    void onCommand(const QString & cmd);
+//    void onEnter();
+//    void insertPrompt(const bool & insert_new_block = true);
+//    void historyAdd(const QString & cmd);
+//    void historyBack();
+//    void historyForward();
 
-signals:
-    void onChange(const QString & cmd);
+//    void onCommand(const QString & cmd);
+
+//signals:
+//    void onChange(const QString & cmd);
 };
 
 #endif // PROJECT_WIDGET_H

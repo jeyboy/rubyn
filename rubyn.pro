@@ -18,6 +18,7 @@ SOURCES += main.cpp\
     controls/project_search_dialog.cpp \
     controls/project_search_panel.cpp \
     controls/project_widget.cpp \
+    controls/run_menu.cpp \
     data_source/ruby_source.cpp \
     delegates/project_search_item_delegate.cpp \
     editor/custom/custom_chars.cpp \
@@ -95,7 +96,6 @@ SOURCES += main.cpp\
     controls/completer_factory.cpp \
     controls/dumper.cpp \
     controls/toolbars.cpp \
-    controls/run_configuration.cpp \
     lexer/lexers_factory.cpp \
     highlighter/highlight_format_factory.cpp \
     editor/block_user_data.cpp \
@@ -143,6 +143,7 @@ HEADERS  += ide_window.h \
     controls/project_search_dialog.h \
     controls/project_search_panel.h \
     controls/project_widget.h \
+    controls/run_menu.h \
     data_source/gems.h \
     data_source/ruby_source.h \
     delegates/project_search_item_delegate.h \
@@ -196,6 +197,7 @@ HEADERS  += ide_window.h \
     misc/msg_info.h \
     misc/para_info.h \
     misc/para_list.h \
+    misc/run_config.h \
     misc/scope_list.h \
     styles/click_fix_style.h \
     controls/dock_widgets.h \
@@ -208,11 +210,8 @@ HEADERS  += ide_window.h \
     editor/parts/extra_area.h \
     editor/code_editor.h \
     editor/block_user_data.h \
-    highlighter/msg_info.h \
     highlighter/highlight_format_factory.h \
     highlighter/highlighter.h \
-    highlighter/para_info.h \
-    highlighter/para_list.h \
     misc/defines.h \
     misc/singleton.h \
     misc/token_list.h \
@@ -234,6 +233,7 @@ HEADERS  += ide_window.h \
     controls/tabs_block.h \
     controls/tab_bar.h \
     delegates/tab_bar_item_delegate.h \
+    styles/dockwidget_icon_style.h \
     styles/tab_bar_no_focus_style.h \
     controls/completer.h \
     misc/func.h \
@@ -280,7 +280,6 @@ HEADERS  += ide_window.h \
     controls/dumper.h \
     tools/data_preparer/data_obj.h \
     controls/toolbars.h \
-    controls/run_configuration.h \
     editor/parts/overlay_info.h \
     highlighter/identifiers.h \
     misc/dumper_obj.h \

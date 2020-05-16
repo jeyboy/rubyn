@@ -1,4 +1,4 @@
-#include "run_configuration.h"
+#include "run_menu.h"
 
 #include <qtoolbar.h>
 #include <qcombobox.h>
@@ -7,11 +7,13 @@
 #include <qdebug.h>
 #include <qmenu.h>
 
-RunConfiguration::RunConfiguration(QObject * parent) : QObject(parent), _run_menu(nullptr), _debbug_menu(nullptr), _run(nullptr), _debbug(nullptr), _console_btn(nullptr) {
+#include "misc/run_config.h"
+
+RunMenu::RunMenu(QObject * parent) : QObject(parent), _run_menu(nullptr), _debbug_menu(nullptr), _run(nullptr), _debbug(nullptr), _console_btn(nullptr) {
 
 }
 
-void RunConfiguration::buildPanel(QToolBar * bar) {
+void RunMenu::buildPanel(QToolBar * bar) {
     auto addExtraSeparator = [](QToolBar * bar) {
         QWidget * empty = new QWidget(bar);
         empty -> setFixedSize(3, 3);
@@ -19,12 +21,13 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
     };
 
     _run = new QToolButton(bar);
-    _run -> setIcon(QIcon(QLatin1Literal(":/tools/run")));
+    _run -> setIcon(QIcon(QLatin1Literal(":/tools/run2")));
     _run -> setPopupMode(QToolButton::InstantPopup);
 
     _run_menu = new QMenu(_run);
 
-    _run_menu -> addAction(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Configure"), this, SLOT("configure()"));
+    _run_menu -> addAction(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Configure"), this, &RunMenu::configure);
+
     _run_menu -> addSeparator();
 
     _run -> setMenu(_run_menu);
@@ -39,7 +42,7 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
     _debbug -> setPopupMode(QToolButton::InstantPopup);
 
     _debbug_menu = new QMenu(_debbug);
-    _debbug_menu -> addAction(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Configure"), this, SLOT("configure()"));
+    _debbug_menu -> addAction(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Configure"), this, &RunMenu::configure);
     _debbug_menu -> addSeparator();
 
     _debbug -> setMenu(_debbug_menu);
@@ -74,23 +77,29 @@ void RunConfiguration::buildPanel(QToolBar * bar) {
 //    }
 }
 
-void RunConfiguration::run() {
+void RunMenu::run() {
+    QAction * act = qobject_cast<QAction *>(sender());
+
+//    QString name = act -> property("type") == "server_with_debbug" ? "(DEBUG) " + act -> text() : act -> text();
+
+    emit runRequires(act -> property("path").toString(), act -> text(), act -> property("type").toInt());
+}
+
+void RunMenu::configure() {
 
 }
 
-void RunConfiguration::configure() {
-
-}
-
-void RunConfiguration::projectAdded(const QString & path, const QString & name) {
-    QAction * act = _run_menu -> addAction(QIcon(QLatin1Literal(":/tools/run")), name, this, SLOT("run()"));
+void RunMenu::projectAdded(const QString & path, const QString & name) {
+    QAction * act = _run_menu -> addAction(QIcon(QLatin1Literal(":/tools/run2")), name, this, &RunMenu::run);
     act -> setProperty("path", path);
+    act -> setProperty("type", RunConfig::rc_server);
 
-    act = _debbug_menu -> addAction(QIcon(QLatin1Literal(":/tools/debug")), name, this, SLOT("run()"));
+    act = _debbug_menu -> addAction(QIcon(QLatin1Literal(":/tools/debug")), name, this, &RunMenu::run);
     act -> setProperty("path", path);
+    act -> setProperty("type", RunConfig::rc_server_debug);
 }
 
-void RunConfiguration::projectRemoved(const QString & path) {
+void RunMenu::projectRemoved(const QString & path) {
     QList<QAction *> lst = _run_menu -> findChildren<QAction *>();
 
     for(QList<QAction *>::Iterator it = lst.begin(); it != lst.end(); it++) {

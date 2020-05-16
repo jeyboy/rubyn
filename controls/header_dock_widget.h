@@ -13,6 +13,7 @@ class QToolButton;
 class HeaderDockWidget : public QWidget {
     Q_OBJECT
 
+    QLabel * ico_widget;
     QLabel * title_widget;
     QToolButton * search_btn;
     SearchPanel * search_widget;
@@ -20,6 +21,7 @@ class HeaderDockWidget : public QWidget {
 public:
     HeaderDockWidget(QWidget * parent = nullptr, const QString & title = QString());
 
+    void setIcon(const QString & ico_path);
     void setTitle(const QString & title);
 
     void insertButton(QWidget * btn, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);

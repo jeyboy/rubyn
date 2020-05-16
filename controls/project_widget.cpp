@@ -1,183 +1,254 @@
 #include "project_widget.h"
 
-#include <qevent.h>
-#include <qtextobject.h>
-#include <qscrollbar.h>
-#include <qjsonobject.h>
+#include <qtoolbar.h>
+#include <qlayout.h>
+#include <qsplitter.h>
 
-ProjectWidget::ProjectWidget(const QJsonObject & json) : is_locked(false), history_pos(0) {
-    bool read_only = json.value(QLatin1Literal("read_only")).toBool();
-    QString cmd = json.value(QLatin1Literal("cmd_command")).toString();
-    QString path = json.value(QLatin1Literal("cmd_path")).toString();
-    QString def_prompt = json.value(QLatin1Literal("prompt")).toString();
-    QStringList * history_list = new QStringList(json.value(QLatin1Literal("history")).toVariant().toStringList());
+//#include <qevent.h>
+//#include <qtextobject.h>
+//#include <qscrollbar.h>
+//#include <qjsonobject.h>
 
-    setup(read_only, path, def_prompt, cmd, history_list);
+#include "breakpoints_panel.h"
+#include "editor/breakpoints_controller.h"
+
+#include "misc/run_config.h"
+#include "controls/debug_panel.h"
+#include "debugging/debug.h"
+#include "debugging/debug_stub_interface.h"
+
+ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget * parent) : QWidget(parent), _path(path), _cmd_type(cmd_type), _debug_bar(nullptr), _breakpoints(nullptr) {
+    auto addExtraSeparator = [](QToolBar * bar) {
+        QWidget * empty = new QWidget(bar);
+        empty -> setFixedSize(3, 3);
+        bar -> addWidget(empty);
+    };
+
+    QHBoxLayout * l = new QHBoxLayout(this);
+
+    _debug_bar = new QToolBar(this);
+    _debug_bar -> setOrientation(Qt::Vertical);
+    _debug_bar -> setIconSize(QSize(20, 20));
+    _debug_bar -> setFixedWidth(34);
+//    debug_bar -> setContentsMargins(1, 1, 1, 1);
+
+    QAction * run_btn = _debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/run")), QLatin1Literal());
+    run_btn -> setEnabled(false);
+    addExtraSeparator(_debug_bar);
+
+//    connect(_color_picker, &QAction::triggered, [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); _color_picker -> setChecked(color_picker_widget -> isVisible()); });
+
+    QAction * run_debug_btn = _debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/debug")), QLatin1Literal());
+//    debug_bar -> widgetForAction(run_debug_btn) -> setContentsMargins(2,2,2,2);
+    run_debug_btn -> setEnabled(false);
+
+    _debug_bar -> addSeparator();
+
+    QAction * debug_step_over_btn = _debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_over")), QLatin1Literal());
+    debug_step_over_btn -> setToolTip(QLatin1Literal("Step to next line"));
+    debug_step_over_btn -> setEnabled(false);
+    addExtraSeparator(_debug_bar);
+
+    QAction * debug_step_into_btn = _debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_into")), QLatin1Literal());
+    debug_step_into_btn -> setToolTip(QLatin1Literal("Step into object"));
+    debug_step_into_btn -> setEnabled(false);
+    addExtraSeparator(_debug_bar);
+
+    QAction * debug_step_out_btn = _debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_out")), QLatin1Literal());
+    debug_step_out_btn -> setToolTip(QLatin1Literal("Step out from object"));
+    debug_step_out_btn -> setEnabled(false);
+    addExtraSeparator(_debug_bar);
+
+    l -> addWidget(_debug_bar);
+
+    QSplitter * splitter = new QSplitter(this);
+
+    _debug_panel = new DebugPanel(this);
+
+    connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, _debug_panel, &DebugPanel::activate);
+    connect(&BreakpointsController::obj(), &BreakpointsController::deactivate, _debug_panel, &DebugPanel::deactivate);
+
+    splitter -> addWidget(_debug_panel);
+
+    l -> addWidget(splitter);
+
+    DebugStubInterface * handler = new DebugStubInterface();
+    Debug::obj().setupHandler(handler);
 }
 
-ProjectWidget::ProjectWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QWidget * parent, QStringList * history_list) : QPlainTextEdit(parent), process(nullptr), is_read_only(read_only), cmd_command(cmd), cmd_path(path), is_locked(false), history_pos(0) {
-    setup(read_only, path, def_prompt, cmd, history_list);
-}
+//ProjectWidget::ProjectWidget(const QJsonObject & json) : is_locked(false), history_pos(0) {
+//    bool read_only = json.value(QLatin1Literal("read_only")).toBool();
+//    QString cmd = json.value(QLatin1Literal("cmd_command")).toString();
+//    QString path = json.value(QLatin1Literal("cmd_path")).toString();
+//    QString def_prompt = json.value(QLatin1Literal("prompt")).toString();
+//    QStringList * history_list = new QStringList(json.value(QLatin1Literal("history")).toVariant().toStringList());
 
-void ProjectWidget::setup(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QStringList * history_list) {
-    process = new Process(this);
+//    setup(read_only, path, def_prompt, cmd, history_list);
+//}
 
-    prompt = def_prompt + QLatin1Literal("> ");
-    history = history_list ? history_list : read_only ? nullptr : new QStringList;
+//ProjectWidget::ProjectWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QWidget * parent, QStringList * history_list) : QPlainTextEdit(parent), process(nullptr), is_read_only(read_only), cmd_command(cmd), cmd_path(path), is_locked(false), history_pos(0) {
+//    setup(read_only, path, def_prompt, cmd, history_list);
+//}
 
-    QPalette p = palette();
-    p.setColor(QPalette::Base, Qt::black);
-    p.setColor(QPalette::Text, Qt::green);
-    setPalette(p);
+//void ProjectWidget::setup(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QStringList * history_list) {
+//    process = new Process(this);
 
-    if (history)
-        history_pos = history -> length();
+//    prompt = def_prompt + QLatin1Literal("> ");
+//    history = history_list ? history_list : read_only ? nullptr : new QStringList;
 
-    insertPrompt(false);
+//    QPalette p = palette();
+//    p.setColor(QPalette::Base, Qt::black);
+//    p.setColor(QPalette::Text, Qt::green);
+//    setPalette(p);
 
-    onCommand(cmd);
-}
+//    if (history)
+//        history_pos = history -> length();
 
-void ProjectWidget::keyPressEvent(QKeyEvent * e) {
-    if(is_locked)
-        return;
+//    insertPrompt(false);
 
-    const int key = e -> key();
-    Qt::KeyboardModifiers mods = e->modifiers();
+//    onCommand(cmd);
+//}
 
-    if(key >= 0x20 && key <= 0x7e && (mods == Qt::NoModifier || mods == Qt::ShiftModifier))
-        QPlainTextEdit::keyPressEvent(e);
+//void ProjectWidget::keyPressEvent(QKeyEvent * e) {
+//    if(is_locked)
+//        return;
 
-    if(key == Qt::Key_Backspace && mods == Qt::NoModifier && textCursor().positionInBlock() > prompt.length())
-        QPlainTextEdit::keyPressEvent(e);
+//    const int key = e -> key();
+//    Qt::KeyboardModifiers mods = e->modifiers();
 
-    if(key == Qt::Key_Return && mods == Qt::NoModifier)
-        onEnter();
+//    if(key >= 0x20 && key <= 0x7e && (mods == Qt::NoModifier || mods == Qt::ShiftModifier))
+//        QPlainTextEdit::keyPressEvent(e);
 
-    if(key == Qt::Key_Up && mods == Qt::NoModifier)
-        historyBack();
+//    if(key == Qt::Key_Backspace && mods == Qt::NoModifier && textCursor().positionInBlock() > prompt.length())
+//        QPlainTextEdit::keyPressEvent(e);
 
-    if(key == Qt::Key_Down && mods == Qt::NoModifier)
-        historyForward();
+//    if(key == Qt::Key_Return && mods == Qt::NoModifier)
+//        onEnter();
 
-    QString cmd = textCursor().block().text().mid(prompt.length());
-    emit onChange(cmd);
-}
+//    if(key == Qt::Key_Up && mods == Qt::NoModifier)
+//        historyBack();
 
-void ProjectWidget::mousePressEvent(QMouseEvent *) {
-    setFocus();
-}
+//    if(key == Qt::Key_Down && mods == Qt::NoModifier)
+//        historyForward();
 
-void ProjectWidget::mouseDoubleClickEvent(QMouseEvent * e) {
-//    int pos = textCursor().position();
+//    QString cmd = textCursor().block().text().mid(prompt.length());
+//    emit onChange(cmd);
+//}
 
-//    QPlainTextEdit::mouseDoubleClickEvent(e);
+//void ProjectWidget::mousePressEvent(QMouseEvent *) {
+//    setFocus();
+//}
 
-//    QTextCursor c = textCursor();
-//    c.setPosition(pos);
+//void ProjectWidget::mouseDoubleClickEvent(QMouseEvent * e) {
+////    int pos = textCursor().position();
 
-//    setTextCursor(c);
-}
+////    QPlainTextEdit::mouseDoubleClickEvent(e);
 
-void ProjectWidget::contextMenuEvent(QContextMenuEvent *) {
+////    QTextCursor c = textCursor();
+////    c.setPosition(pos);
 
-}
+////    setTextCursor(c);
+//}
 
-void ProjectWidget::onEnter() {
-    QString cmd = textCursor().block().text().mid(prompt.length());
+//void ProjectWidget::contextMenuEvent(QContextMenuEvent *) {
 
-    if (!cmd.isEmpty()) {
-        is_locked = true;
+//}
 
-        historyAdd(cmd);
+//void ProjectWidget::onEnter() {
+//    QString cmd = textCursor().block().text().mid(prompt.length());
 
-        emit onCommand(cmd);
-    }
+//    if (!cmd.isEmpty()) {
+//        is_locked = true;
 
-    insertPrompt();
-}
+//        historyAdd(cmd);
 
-void ProjectWidget::output(const QString & txt) {
-    textCursor().insertBlock();
+//        emit onCommand(cmd);
+//    }
 
-    QTextCharFormat format;
-    format.setForeground(Qt::white);
-    textCursor().setBlockCharFormat(format);
-    textCursor().insertText(txt);
+//    insertPrompt();
+//}
 
-    insertPrompt();
+//void ProjectWidget::output(const QString & txt) {
+//    textCursor().insertBlock();
 
-    is_locked = false;
-}
+//    QTextCharFormat format;
+//    format.setForeground(Qt::white);
+//    textCursor().setBlockCharFormat(format);
+//    textCursor().insertText(txt);
 
-void ProjectWidget::insertPrompt(const bool & insert_new_block) {
-    if(insert_new_block)
-        textCursor().insertBlock();
+//    insertPrompt();
 
-    QTextCharFormat format;
-    format.setForeground(Qt::green);
-    textCursor().setBlockCharFormat(format);
-    textCursor().insertText(prompt);
+//    is_locked = false;
+//}
 
-    scrollDown();
-}
+//void ProjectWidget::insertPrompt(const bool & insert_new_block) {
+//    if(insert_new_block)
+//        textCursor().insertBlock();
 
-void ProjectWidget::scrollDown() {
-    QScrollBar * vbar = verticalScrollBar();
-    vbar -> setValue(vbar -> maximum());
-}
+//    QTextCharFormat format;
+//    format.setForeground(Qt::green);
+//    textCursor().setBlockCharFormat(format);
+//    textCursor().insertText(prompt);
 
-QJsonObject ProjectWidget::save() {
-    QJsonObject res;
+//    scrollDown();
+//}
 
-    res.insert(QLatin1Literal("read_only"), is_read_only);
-    res.insert(QLatin1Literal("cmd_command"), cmd_command);
-    res.insert(QLatin1Literal("cmd_path"), cmd_path);
-    res.insert(QLatin1Literal("prompt"), prompt.mid(0, prompt.length() - 2));
+//void ProjectWidget::scrollDown() {
+//    QScrollBar * vbar = verticalScrollBar();
+//    vbar -> setValue(vbar -> maximum());
+//}
 
-    res.insert(QLatin1Literal("history"), QJsonValue::fromVariant(*history));
+//QJsonObject ProjectWidget::save() {
+//    QJsonObject res;
 
-    return res;
-}
+//    res.insert(QLatin1Literal("read_only"), is_read_only);
+//    res.insert(QLatin1Literal("cmd_command"), cmd_command);
+//    res.insert(QLatin1Literal("cmd_path"), cmd_path);
+//    res.insert(QLatin1Literal("prompt"), prompt.mid(0, prompt.length() - 2));
 
-void ProjectWidget::historyAdd(const QString & cmd) {
-    history -> append(cmd);
-    history_pos = history -> length();
-}
+//    res.insert(QLatin1Literal("history"), QJsonValue::fromVariant(*history));
 
-void ProjectWidget::historyBack() {
-    if(!history_pos)
-        return;
+//    return res;
+//}
 
-    QTextCursor cursor = textCursor();
-    cursor.movePosition(QTextCursor::StartOfBlock);
-    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-    cursor.removeSelectedText();
-    cursor.insertText(prompt + history -> at(--history_pos));
-    setTextCursor(cursor);
-}
+//void ProjectWidget::historyAdd(const QString & cmd) {
+//    history -> append(cmd);
+//    history_pos = history -> length();
+//}
 
-void ProjectWidget::historyForward() {
-    if(history_pos == history -> length())
-        return;
+//void ProjectWidget::historyBack() {
+//    if(!history_pos)
+//        return;
 
-    QTextCursor cursor = textCursor();
-    cursor.movePosition(QTextCursor::StartOfBlock);
-    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-    cursor.removeSelectedText();
+//    QTextCursor cursor = textCursor();
+//    cursor.movePosition(QTextCursor::StartOfBlock);
+//    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+//    cursor.removeSelectedText();
+//    cursor.insertText(prompt + history -> at(--history_pos));
+//    setTextCursor(cursor);
+//}
 
-    if(history_pos == history -> length() - 1)
-        cursor.insertText(prompt);
-    else
-        cursor.insertText(prompt + history -> at(+history_pos));
+//void ProjectWidget::historyForward() {
+//    if(history_pos == history -> length())
+//        return;
 
-    setTextCursor(cursor);
-}
+//    QTextCursor cursor = textCursor();
+//    cursor.movePosition(QTextCursor::StartOfBlock);
+//    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+//    cursor.removeSelectedText();
 
-void ProjectWidget::onCommand(const QString & cmd) {
-    if (process -> state() == QProcess::NotRunning) {
-        process -> start(cmd_path + '/' + cmd);
-    } else {
-        queue.append(cmd_path + '/' + cmd);
-    }
-}
+//    if(history_pos == history -> length() - 1)
+//        cursor.insertText(prompt);
+//    else
+//        cursor.insertText(prompt + history -> at(+history_pos));
+
+//    setTextCursor(cursor);
+//}
+
+//void ProjectWidget::onCommand(const QString & cmd) {
+//    if (process -> state() == QProcess::NotRunning) {
+//        process -> start(cmd_path + '/' + cmd);
+//    } else {
+//        queue.append(cmd_path + '/' + cmd);
+//    }
+//}
