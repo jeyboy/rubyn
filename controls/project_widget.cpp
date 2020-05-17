@@ -26,7 +26,7 @@ ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget
 
     QHBoxLayout * l = new QHBoxLayout(this);
     l -> setContentsMargins(1, 1, 1, 1);
-//    l -> setSpacing(2);
+    l -> setSpacing(0);
     _splitter = new QSplitter(this);
     _splitter -> setObjectName("splitter_" % objectName());
 
@@ -51,23 +51,19 @@ ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget
         )
     );
 
+    auto addExtraSeparator = [](QToolBar * bar) {
+        QWidget * empty = new QWidget(bar);
+        empty -> setFixedSize(1, 1);
+        bar -> addWidget(empty);
+    };
+
+    _debug_bar = new QToolBar(this);
+    _debug_bar -> setOrientation(Qt::Vertical);
+    _debug_bar -> setIconSize(QSize(20, 20));
+    _debug_bar -> setFixedWidth(34);
+//    debug_bar -> setContentsMargins(1, 1, 1, 1);
+
     if (run_config & rc_debug) {
-        auto addExtraSeparator = [](QToolBar * bar) {
-            QWidget * empty = new QWidget(bar);
-            empty -> setFixedSize(3, 3);
-            bar -> addWidget(empty);
-        };
-
-        _debug_bar = new QToolBar(this);
-        _debug_bar -> setOrientation(Qt::Vertical);
-        _debug_bar -> setIconSize(QSize(20, 20));
-        _debug_bar -> setFixedWidth(34);
-    //    debug_bar -> setContentsMargins(1, 1, 1, 1);
-
-        QAction * run_btn = _debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/run")), QLatin1Literal());
-        run_btn -> setEnabled(false);
-        addExtraSeparator(_debug_bar);
-
     //    connect(_color_picker, &QAction::triggered, [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); _color_picker -> setChecked(color_picker_widget -> isVisible()); });
 
         QAction * run_debug_btn = _debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/debug")), QLatin1Literal());
@@ -91,8 +87,6 @@ ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget
         debug_step_out_btn -> setEnabled(false);
         addExtraSeparator(_debug_bar);
 
-        l -> addWidget(_debug_bar);
-
         _debug_panel = new DebugPanel(this);
 
         connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, _debug_panel, &DebugPanel::activate);
@@ -102,12 +96,17 @@ ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget
 
         DebugStubInterface * handler = new DebugStubInterface();
         Debug::obj().setupHandler(handler);
+    } else {
+        QAction * run_btn = _debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/run")), QLatin1Literal());
+        run_btn -> setEnabled(false);
+        addExtraSeparator(_debug_bar);
     }
 
     _logger = new QPlainTextEdit(this);
 
     _splitter -> addWidget(_logger);
 
+    l -> addWidget(_debug_bar);
     l -> addWidget(_splitter);
 }
 
