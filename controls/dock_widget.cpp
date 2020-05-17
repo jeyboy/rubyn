@@ -40,6 +40,10 @@ void DockWidget::setBehaviour(const Features & params) {
     setFeatures((DockWidgetFeatures)(params & (dwf_destroyable - 1)));
 }
 
+QString DockWidget::windowTitle() {
+    return header -> title();
+}
+
 void DockWidget::setWindowTitle(const QString & new_title) {
     header -> setTitle(new_title);
     QDockWidget::setWindowTitle(new_title);

@@ -2,6 +2,7 @@
 #define PROJECT_WIDGET_H
 
 #include <qwidget.h>
+#include <qjsonobject.h>
 
 //#include <qplaintextedit.h>
 
@@ -16,7 +17,7 @@ class ProjectWidget : public QWidget {
     Q_OBJECT
 
     QString _path;
-    QString _cmd_type;
+    int _cmd_type;
 
     QToolBar * _debug_bar;
     DebugPanel * _debug_panel;
@@ -25,6 +26,9 @@ class ProjectWidget : public QWidget {
 //    Process * process;
 public:
     ProjectWidget(const QString & path, const int & cmd_type, QWidget * parent = nullptr);
+
+    void load(const QJsonObject & obj);
+    QJsonObject save();
 
 //    ProjectWidget(const QJsonObject & json);
 //    explicit ProjectWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd = QString(), QWidget * parent = nullptr, QStringList * history_list = nullptr);

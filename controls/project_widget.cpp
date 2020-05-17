@@ -109,6 +109,21 @@ ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget
     l -> addWidget(splitter);
 }
 
+void ProjectWidget::load(const QJsonObject & obj) {
+
+}
+
+QJsonObject ProjectWidget::save() {
+    QJsonObject res;
+
+    res.insert(QLatin1Literal("path"), _path);
+    res.insert(QLatin1Literal("cmd_type"), _cmd_type);
+
+//    res.insert(QLatin1Literal("history"), QJsonValue::fromVariant(*history));
+
+    return res;
+}
+
 //ProjectWidget::ProjectWidget(const QJsonObject & json) : is_locked(false), history_pos(0) {
 //    bool read_only = json.value(QLatin1Literal("read_only")).toBool();
 //    QString cmd = json.value(QLatin1Literal("cmd_command")).toString();
@@ -229,19 +244,6 @@ ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget
 //void ProjectWidget::scrollDown() {
 //    QScrollBar * vbar = verticalScrollBar();
 //    vbar -> setValue(vbar -> maximum());
-//}
-
-//QJsonObject ProjectWidget::save() {
-//    QJsonObject res;
-
-//    res.insert(QLatin1Literal("read_only"), is_read_only);
-//    res.insert(QLatin1Literal("cmd_command"), cmd_command);
-//    res.insert(QLatin1Literal("cmd_path"), cmd_path);
-//    res.insert(QLatin1Literal("prompt"), prompt.mid(0, prompt.length() - 2));
-
-//    res.insert(QLatin1Literal("history"), QJsonValue::fromVariant(*history));
-
-//    return res;
 //}
 
 //void ProjectWidget::historyAdd(const QString & cmd) {

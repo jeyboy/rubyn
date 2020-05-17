@@ -34,6 +34,7 @@ public:
 
     void setBehaviour(const Features & params);
 
+    QString windowTitle();
     void setWindowTitle(const QString & new_title);
     void setWindowIco(const QString & ico_path, const QString & tab_ico_path);
 

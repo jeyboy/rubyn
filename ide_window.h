@@ -27,6 +27,7 @@ class DebugPanel;
 class BreakpointsPanel;
 class ProjectSearchPanel;
 class ConsoleWidget;
+class ProjectWidget;
 
 
 namespace Ui { class IDEWindow; }
@@ -94,7 +95,7 @@ protected slots:
     void setupConsole(ConsoleWidget * console, const QString & header = QLatin1Literal("Sys Console"));
     void setupConsole(const QString & path, const QString & header = QLatin1Literal("Sys Console"));
 
-    void setupProjectPanel(const QString & path, const QString & header, const int & cmd_type);
+    ProjectWidget * setupProjectPanel(const QString & path, const QString & header, const int & cmd_type);
 
     void splitterMoved(int pos, int index);
     void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false, const bool & vertical = true, const QPoint & scroll_pos = QPoint(0, 0));

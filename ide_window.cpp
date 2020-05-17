@@ -215,7 +215,7 @@ void IDEWindow::setupConsole(const QString & path, const QString & header) {
 }
 
 
-void IDEWindow::setupProjectPanel(const QString & path, const QString & header, const int & cmd_type) {
+ProjectWidget * IDEWindow::setupProjectPanel(const QString & path, const QString & header, const int & cmd_type) {
     RunConfig run_config = RunConfig(cmd_type);
 
     QString token = QString::number(cmd_type) % '|' % path;
@@ -234,11 +234,21 @@ void IDEWindow::setupProjectPanel(const QString & path, const QString & header, 
         );
         widget -> setBehaviour(DockWidget::Features(DockWidget::dwf_movable | DockWidget::dwf_closable));
 
+        connect(widget, &DockWidget::closing, [=]() {
+            DockWidget * w = project_widgets.take(token);
+
+            if (w) {
+                w -> deleteLater();
+            }
+        });
+
         DockWidgets::obj().append(widget, Qt::BottomDockWidgetArea);
         project_widgets.insert(token, widget);
     }
 
     project_widgets[token] -> raise();
+
+    return qobject_cast<ProjectWidget *>(project_widgets[token] -> widget());
 }
 
 void IDEWindow::splitterMoved(int /*pos*/, int index) {

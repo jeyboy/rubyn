@@ -16,6 +16,7 @@
 //#include "controls/universal_editor.h"
 #include "controls/dock_widget.h"
 #include "controls/console_widget.h"
+#include "controls/project_widget.h"
 
 #include "project/ifolder.h"
 
@@ -231,6 +232,46 @@ void Dumper::saveConsoles(IDEWindow * w, JsonObj & json) {
         json.insert(QLatin1Literal("consoles"), ar);
 }
 
+void Dumper::loadProjectWidgets(IDEWindow * w, JsonObj & json) {
+    QJsonArray pro_widgets = json.arr(QLatin1Literal("pro_widgets"));
+
+    if (pro_widgets.isEmpty())
+        return;
+
+    for(JsonArr::Iterator it = pro_widgets.begin(); it != pro_widgets.end(); it++) {
+        QJsonObject obj = (*it).toObject();
+
+        ProjectWidget * project_widget = w -> setupProjectPanel(
+            obj.value(QLatin1Literal("path")).toString(),
+            obj.value(QLatin1Literal("header")).toString(),
+            obj.value(QLatin1Literal("cmd_type")).toInt()
+        );
+
+        project_widget -> load(obj);
+    }
+}
+
+void Dumper::saveProjectWidgets(IDEWindow * w, JsonObj & json) {
+    QList<DockWidget *> dock_widgets = w -> findChildren<DockWidget *>();
+
+    QJsonArray ar;
+
+    for(QList<DockWidget *>::Iterator it = dock_widgets.begin(); it != dock_widgets.end(); it++) {
+        ProjectWidget * project_widget = qobject_cast<ProjectWidget *>((*it) -> widget());
+
+        if (project_widget) {
+            QJsonObject obj = project_widget -> save();
+            obj.insert(QLatin1Literal("header"), (*it) -> windowTitle());
+            ar << obj;
+        }
+    }
+
+    if (ar.size() > 0)
+        json.insert(QLatin1Literal("pro_widgets"), ar);
+}
+
+
+
 
 QString Dumper::intArrToStr(const QList<int> & arr) {
     QString res;
@@ -269,6 +310,7 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
         loadTree(w, obj);
         loadTabs(w, obj);
         loadConsoles(w, obj);
+        loadProjectWidgets(w, obj);
     }
 
     QVariant geometry_state = settings.value(QLatin1Literal("geometry"));
@@ -329,6 +371,7 @@ void Dumper::save(IDEWindow * w, const QString & settings_filename) {
     saveTree(w, obj);
     saveTabs(w, obj);
     saveConsoles(w, obj);
+    saveProjectWidgets(w, obj);
 
     settings.setValue(QLatin1Literal("data"), obj.toJsonStr());
     settings.setValue(QLatin1Literal("geometry"), w -> saveGeometry());

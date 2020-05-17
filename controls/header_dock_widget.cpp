@@ -53,6 +53,10 @@ void HeaderDockWidget::setIcon(const QString & ico_path) {
     ico_widget -> setPixmap(QPixmap(ico_path).scaled(16, 16, Qt::KeepAspectRatio));
 }
 
+QString HeaderDockWidget::title() {
+    return title_widget -> text();
+}
+
 void HeaderDockWidget::setTitle(const QString & title) {
     title_widget -> setText(title);
 }

@@ -22,6 +22,7 @@ public:
     HeaderDockWidget(QWidget * parent = nullptr, const QString & title = QString());
 
     void setIcon(const QString & ico_path);
+    QString title();
     void setTitle(const QString & title);
 
     void insertButton(QWidget * btn, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);

@@ -25,6 +25,9 @@ class Dumper : public QObject {
     void loadConsoles(IDEWindow * w, JsonObj & json);
     void saveConsoles(IDEWindow * w, JsonObj & json);
 
+    void loadProjectWidgets(IDEWindow * w, JsonObj & json);
+    void saveProjectWidgets(IDEWindow * w, JsonObj & json);
+
     QString intArrToStr(const QList<int> & arr);
     QList<int> strToIntArr(const QString & str);
 public:
