@@ -52,6 +52,8 @@ class IDEWindow : public QMainWindow {
 
     QLabel * pos_status;
 
+    QHash<QString, DockWidget *> project_widgets;
+
     void setupPosOutput();
     void setupEditor(QSplitter * list = nullptr);
     void setupFileMenu();

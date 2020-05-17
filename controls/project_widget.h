@@ -10,6 +10,7 @@
 class QToolBar;
 class BreakpointsPanel;
 class DebugPanel;
+class QPlainTextEdit;
 
 class ProjectWidget : public QWidget {
     Q_OBJECT
@@ -20,6 +21,7 @@ class ProjectWidget : public QWidget {
     QToolBar * _debug_bar;
     DebugPanel * _debug_panel;
     BreakpointsPanel * _breakpoints;
+    QPlainTextEdit * _logger;
 //    Process * process;
 public:
     ProjectWidget(const QString & path, const int & cmd_type, QWidget * parent = nullptr);
