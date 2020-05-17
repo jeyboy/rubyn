@@ -233,6 +233,7 @@ ProjectWidget * IDEWindow::setupProjectPanel(const QString & path, const QString
             run_config & rc_debug ? ":/tools/debug" : ":/tools/run2"
         );
         widget -> setBehaviour(DockWidget::Features(DockWidget::dwf_movable | DockWidget::dwf_closable));
+        widget -> setObjectName("project_" % token);
 
         connect(widget, &DockWidget::closing, [=]() {
             DockWidget * w = project_widgets.take(token);

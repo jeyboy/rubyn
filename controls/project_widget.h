@@ -8,6 +8,7 @@
 
 //#include "tools/process.h"
 
+class QSplitter;
 class QToolBar;
 class BreakpointsPanel;
 class DebugPanel;
@@ -19,6 +20,7 @@ class ProjectWidget : public QWidget {
     QString _path;
     int _cmd_type;
 
+    QSplitter * _splitter;
     QToolBar * _debug_bar;
     DebugPanel * _debug_panel;
     BreakpointsPanel * _breakpoints;

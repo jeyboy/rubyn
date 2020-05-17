@@ -19,16 +19,18 @@
 #include "debugging/debug_stub_interface.h"
 
 ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget * parent)
-    : QWidget(parent), _path(path), _cmd_type(cmd_type), _debug_bar(nullptr), _breakpoints(nullptr), _logger(nullptr)
+    : QWidget(parent), _path(path), _cmd_type(cmd_type), _splitter(nullptr), _debug_bar(nullptr), _breakpoints(nullptr), _logger(nullptr)
 {
+    setObjectName("widget_" % QString::number(cmd_type) % '|' % path);
     RunConfig run_config = RunConfig(cmd_type);
 
     QHBoxLayout * l = new QHBoxLayout(this);
     l -> setContentsMargins(1, 1, 1, 1);
 //    l -> setSpacing(2);
-    QSplitter * splitter = new QSplitter(this);
+    _splitter = new QSplitter(this);
+    _splitter -> setObjectName("splitter_" % objectName());
 
-    splitter -> setStyleSheet(
+    _splitter -> setStyleSheet(
         QLatin1Literal(
             "QSplitter::handle {"
             "   border: 2px solid #ddd;"
@@ -96,7 +98,7 @@ ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget
         connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, _debug_panel, &DebugPanel::activate);
         connect(&BreakpointsController::obj(), &BreakpointsController::deactivate, _debug_panel, &DebugPanel::deactivate);
 
-        splitter -> addWidget(_debug_panel);
+        _splitter -> addWidget(_debug_panel);
 
         DebugStubInterface * handler = new DebugStubInterface();
         Debug::obj().setupHandler(handler);
@@ -104,13 +106,13 @@ ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget
 
     _logger = new QPlainTextEdit(this);
 
-    splitter -> addWidget(_logger);
+    _splitter -> addWidget(_logger);
 
-    l -> addWidget(splitter);
+    l -> addWidget(_splitter);
 }
 
 void ProjectWidget::load(const QJsonObject & obj) {
-
+    _splitter -> restoreState(QByteArray::fromBase64(obj.value(QLatin1Literal("splitter_state")).toString().toLatin1()));
 }
 
 QJsonObject ProjectWidget::save() {
@@ -118,6 +120,7 @@ QJsonObject ProjectWidget::save() {
 
     res.insert(QLatin1Literal("path"), _path);
     res.insert(QLatin1Literal("cmd_type"), _cmd_type);
+    res.insert(QLatin1Literal("splitter_state"), QLatin1String(_splitter -> saveState().toBase64()));
 
 //    res.insert(QLatin1Literal("history"), QJsonValue::fromVariant(*history));
 
