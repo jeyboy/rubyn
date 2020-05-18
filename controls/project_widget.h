@@ -14,12 +14,12 @@ class DebugPanel;
 class BasicLogger;
 class DockWidget;
 class Process;
+class RunConfig;
 
 class ProjectWidget : public QWidget {
     Q_OBJECT
 
-    QString _path;
-    int _cmd_type;
+    RunConfig * _conf;
 
     QSplitter * _splitter;
     DebugPanel * _debug_panel;
@@ -27,7 +27,7 @@ class ProjectWidget : public QWidget {
     BasicLogger * _logger;
     Process * _process;
 public:
-    ProjectWidget(const QString & path, const int & cmd_type, QWidget * parent = nullptr);
+    ProjectWidget(RunConfig * conf, QWidget * parent = nullptr);
 
     void initButtons(DockWidget * cntr);
 

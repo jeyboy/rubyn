@@ -80,9 +80,12 @@ void RunMenu::buildPanel(QToolBar * bar) {
 void RunMenu::run() {
     QAction * act = qobject_cast<QAction *>(sender());
 
-//    QString name = act -> property("type") == "server_with_debbug" ? "(DEBUG) " + act -> text() : act -> text();
+    RunConfig * conf = new RunConfig((RunConfig::CmdType)act -> property("type").toInt());
 
-    emit runRequires(act -> property("path").toString(), act -> text(), act -> property("type").toInt());
+    conf -> name = act -> text();
+    conf -> work_dir = act -> property("dir").toString();
+
+    emit runRequires(conf);
 }
 
 void RunMenu::configure() {

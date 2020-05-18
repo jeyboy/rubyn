@@ -22,11 +22,10 @@
 #include "debugging/debug.h"
 #include "debugging/debug_stub_interface.h"
 
-ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget * parent)
-    : QWidget(parent), _path(path), _cmd_type(cmd_type), _splitter(nullptr), _breakpoints(nullptr), _logger(nullptr), _process(nullptr)
+ProjectWidget::ProjectWidget(RunConfig * conf, QWidget * parent)
+    : QWidget(parent), _conf(conf), _splitter(nullptr), _breakpoints(nullptr), _logger(nullptr), _process(nullptr)
 {
-    RunConfig::CmdType run_config = RunConfig::CmdType(_cmd_type);
-    setObjectName("widget_" % QString::number(cmd_type) % '|' % path);
+    setObjectName("widget_" % conf -> token());
 
     QHBoxLayout * l = new QHBoxLayout(this);
     l -> setContentsMargins(1, 1, 1, 1);
@@ -56,7 +55,7 @@ ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget
         )
     );
 
-    if (run_config & RunConfig::rc_debug) {
+    if (conf -> cmd_type & RunConfig::rc_debug) {
         _debug_panel = new DebugPanel(this);
 
         connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, _debug_panel, &DebugPanel::activate);
@@ -77,9 +76,7 @@ ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget
 }
 
 void ProjectWidget::initButtons(DockWidget * cntr) {
-    RunConfig::CmdType run_config = RunConfig::CmdType(_cmd_type);
-
-    if (run_config & RunConfig::rc_debug) {
+    if (_conf -> cmd_type & RunConfig::rc_debug) {
         QToolButton * btn;
 
         cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/debug")), this, SLOT(debug()), 0);

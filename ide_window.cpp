@@ -215,21 +215,19 @@ void IDEWindow::setupConsole(const QString & path, const QString & header) {
 }
 
 
-ProjectWidget * IDEWindow::setupProjectPanel(const QString & path, const QString & header, const int & cmd_type) {
-    RunConfig::CmdType run_config = RunConfig::CmdType(cmd_type);
-
-    QString token = QString::number(cmd_type) % '|' % path;
+ProjectWidget * IDEWindow::setupProjectPanel(RunConfig * conf) {
+    QString token = conf -> token();
 
     if (!project_widgets.contains(token)) {
-        ProjectWidget * pw = new ProjectWidget(path, cmd_type, this);
+        ProjectWidget * pw = new ProjectWidget(conf, this);
 
-        DockWidget * widget = DockWidgets::obj().createWidget(header, pw, Qt::BottomDockWidgetArea);
+        DockWidget * widget = DockWidgets::obj().createWidget(conf -> name, pw, Qt::BottomDockWidgetArea);
 
         pw -> initButtons(widget);
 
         widget -> setWindowIco(
-            run_config & RunConfig::rc_debug ? ":/tabs/debug" : ":/tools/run",
-            run_config & RunConfig::rc_debug ? ":/tools/debug" : ":/tools/run2"
+            conf -> cmd_type & RunConfig::rc_debug ? ":/tabs/debug" : ":/tools/run",
+            conf -> cmd_type & RunConfig::rc_debug ? ":/tools/debug" : ":/tools/run2"
         );
         widget -> setBehaviour(DockWidget::Features(DockWidget::dwf_movable | DockWidget::dwf_closable));
         widget -> setObjectName("project_" % token);
@@ -244,6 +242,8 @@ ProjectWidget * IDEWindow::setupProjectPanel(const QString & path, const QString
 
         DockWidgets::obj().append(widget, Qt::BottomDockWidgetArea);
         project_widgets.insert(token, widget);
+    } else {
+        delete conf;
     }
 
     project_widgets[token] -> raise();

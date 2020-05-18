@@ -49,5 +49,8 @@ void Process::bindOutput(IProcessLogger * logger) {
 }
 
 void Process::proc(const QString & cmd) {
+    //    if (process -> state() == QProcess::NotRunning) {
+    //        process -> start(cmd_path + '/' + cmd);
 
+    start(cmd);
 }

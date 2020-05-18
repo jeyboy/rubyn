@@ -8,6 +8,7 @@ class QComboBox;
 class QAction;
 class QToolButton;
 class QMenu;
+class RunConfig;
 
 class RunMenu : public QObject {
     Q_OBJECT
@@ -28,7 +29,7 @@ protected slots:
     void configure();
 
 signals:
-    void runRequires(const QString & path, const QString & name, const int & run_type);
+    void runRequires(RunConfig * conf);
 
 public slots:
     void projectAdded(const QString & path, const QString & name);

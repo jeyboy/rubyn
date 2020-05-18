@@ -2,6 +2,7 @@
 #define RUN_CONFIG_H
 
 #include <qstring.h>
+#include <qstringlist.h>
 
 struct RunConfig {
     enum CmdType : int {
@@ -17,6 +18,24 @@ struct RunConfig {
 
         rc_custom_debug = rc_custom | rc_rails_console
     };
+
+
+    QString name;
+    QString work_dir;
+    QString env;
+    QString custom_cmd;
+    QStringList env_variables;
+    int port;
+    CmdType cmd_type;
+
+    QString token() {
+        return QString::number(cmd_type) + '|' + name.replace('|', '+') + '|' + work_dir + '|' + ;
+    }
+
+    RunConfig(const CmdType & cmd_type) : port(3000), cmd_type(cmd_type) {
+
+    }
+
 
     QString wrapWithDebug(const QString & cmd) {
         return cmd;
