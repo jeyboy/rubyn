@@ -14,6 +14,7 @@
 #include "breakpoints_panel.h"
 #include "editor/breakpoints_controller.h"
 
+#include "loggers/basic_logger.h"
 #include "tools/process.h"
 #include "misc/run_config.h"
 #include "controls/debug_panel.h"
@@ -67,10 +68,9 @@ ProjectWidget::ProjectWidget(const QString & path, const int & cmd_type, QWidget
         Debug::obj().setupHandler(handler);
     }
 
-    _logger = new QPlainTextEdit(this);
-    _logger -> setReadOnly(true);
+    _logger = new BasicLogger(this);
 
-    _splitter -> addWidget(_logger);
+    _splitter -> addWidget((QWidget *)_logger);
 
 //    l -> addWidget(_debug_bar);
     l -> addWidget(_splitter);
@@ -107,8 +107,6 @@ QJsonObject ProjectWidget::save() {
     res.insert(QLatin1Literal("path"), _path);
     res.insert(QLatin1Literal("cmd_type"), _cmd_type);
     res.insert(QLatin1Literal("splitter_state"), QLatin1String(_splitter -> saveState().toBase64()));
-
-//    res.insert(QLatin1Literal("history"), QJsonValue::fromVariant(*history));
 
     return res;
 }

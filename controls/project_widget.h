@@ -11,7 +11,7 @@
 class QSplitter;
 class BreakpointsPanel;
 class DebugPanel;
-class QPlainTextEdit;
+class BasicLogger;
 class DockWidget;
 class Process;
 
@@ -24,7 +24,7 @@ class ProjectWidget : public QWidget {
     QSplitter * _splitter;
     DebugPanel * _debug_panel;
     BreakpointsPanel * _breakpoints;
-    QPlainTextEdit * _logger;
+    BasicLogger * _logger;
     Process * _process;
 public:
     ProjectWidget(const QString & path, const int & cmd_type, QWidget * parent = nullptr);

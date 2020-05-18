@@ -49,6 +49,7 @@ SOURCES += main.cpp\
     lexer/ruby/ruby_predefined.cpp \
     lexer/yaml/yaml_lexer_frontend.cpp \
     lexer/yaml/yaml_predefined.cpp \
+    loggers/basic_logger.cpp \
     misc/info_collector.cpp \
     project/file.cpp \
     project/project.cpp \
@@ -193,6 +194,7 @@ HEADERS  += ide_window.h \
     lexer/yaml/yaml_lexer_frontend.h \
     lexer/yaml/yaml_predefined.h \
     lexer/yaml/yaml_state_lexems.h \
+    loggers/basic_logger.h \
     misc/info_collector.h \
     misc/msg_info.h \
     misc/para_info.h \
@@ -251,6 +253,7 @@ HEADERS  += ide_window.h \
     tools/html/html_set.h \
     tools/html/html_tag.h \
     tools/html/unicode.h \
+    loggers/iprocess_logger.h \
     tools/json/json.h \
     tools/json/json_arr.h \
     tools/json/json_global.h \

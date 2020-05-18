@@ -6,10 +6,16 @@
 
 #include <qprocess.h>
 
+class IProcessLogger;
+
 class Process : public QProcess {
 
 public:
     Process(QObject * parent = Q_NULLPTR);
+
+    void bindOutput(IProcessLogger * logger);
+
+    void proc(const QString & cmd);
 
     //    void setWorkingDirectory(const QString &dir);
     //    void setEnvironment(const QStringList &environment);
