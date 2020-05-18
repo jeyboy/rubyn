@@ -221,12 +221,11 @@ ProjectWidget * IDEWindow::setupProjectPanel(const QString & path, const QString
     QString token = QString::number(cmd_type) % '|' % path;
 
     if (!project_widgets.contains(token)) {
-        DockWidget * widget =
-            DockWidgets::obj().createWidget(
-                header,
-                new ProjectWidget(path, cmd_type, this),
-                Qt::BottomDockWidgetArea
-            );
+        ProjectWidget * pw = new ProjectWidget(path, cmd_type, this);
+
+        DockWidget * widget = DockWidgets::obj().createWidget(header, pw, Qt::BottomDockWidgetArea);
+
+        pw -> initButtons(widget);
 
         widget -> setWindowIco(
             run_config & rc_debug ? ":/tabs/debug" : ":/tools/run",

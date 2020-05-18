@@ -6,7 +6,7 @@
 #include <qlabel.h>
 #include <qtoolbutton.h>
 
-HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QWidget(parent), ico_widget(nullptr) {
+HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QWidget(parent), _default_pos(2), ico_widget(nullptr) {
     setAttribute(Qt::WA_StyledBackground, true);
     setMinimumHeight(26);
     setStyleSheet("HeaderDockWidget { background-color: rgba(0, 0, 0, .6); }");
@@ -70,7 +70,7 @@ void HeaderDockWidget::insertButton(QWidget * btn, QObject * target, const char 
     if (pos < 0)
         _layout -> addWidget(btn, 0, alignment);
     else
-        _layout -> insertWidget(pos < 0 ? pos : (pos + 3), btn, 0, alignment);
+        _layout -> insertWidget(pos < 0 ? _default_pos : (pos + 3), btn, 0, alignment);
 }
 
 QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target, const char * slot, const int pos, const Qt::Alignment & alignment) {

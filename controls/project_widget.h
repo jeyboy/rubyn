@@ -9,10 +9,10 @@
 //#include "tools/process.h"
 
 class QSplitter;
-class QToolBar;
 class BreakpointsPanel;
 class DebugPanel;
 class QPlainTextEdit;
+class DockWidget;
 
 class ProjectWidget : public QWidget {
     Q_OBJECT
@@ -21,7 +21,6 @@ class ProjectWidget : public QWidget {
     int _cmd_type;
 
     QSplitter * _splitter;
-    QToolBar * _debug_bar;
     DebugPanel * _debug_panel;
     BreakpointsPanel * _breakpoints;
     QPlainTextEdit * _logger;
@@ -29,8 +28,19 @@ class ProjectWidget : public QWidget {
 public:
     ProjectWidget(const QString & path, const int & cmd_type, QWidget * parent = nullptr);
 
+    void initButtons(DockWidget * cntr);
+
     void load(const QJsonObject & obj);
     QJsonObject save();
+
+protected slots:
+    void run();
+    void debug();
+
+    void stepOver();
+    void stepInto();
+    void stepOut();
+
 
 //    ProjectWidget(const QJsonObject & json);
 //    explicit ProjectWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd = QString(), QWidget * parent = nullptr, QStringList * history_list = nullptr);

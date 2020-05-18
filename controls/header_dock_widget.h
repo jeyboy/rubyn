@@ -13,6 +13,8 @@ class QToolButton;
 class HeaderDockWidget : public QWidget {
     Q_OBJECT
 
+    int _default_pos;
+
     QLabel * ico_widget;
     QLabel * title_widget;
     QToolButton * search_btn;
