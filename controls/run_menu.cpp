@@ -92,11 +92,11 @@ void RunMenu::configure() {
 void RunMenu::projectAdded(const QString & path, const QString & name) {
     QAction * act = _run_menu -> addAction(QIcon(QLatin1Literal(":/tools/run2")), name, this, &RunMenu::run);
     act -> setProperty("path", path);
-    act -> setProperty("type", RunConfig::rc_server);
+    act -> setProperty("type", RunConfig::rc_rails_server);
 
     act = _debbug_menu -> addAction(QIcon(QLatin1Literal(":/tools/debug")), name, this, &RunMenu::run);
     act -> setProperty("path", path);
-    act -> setProperty("type", RunConfig::rc_server_debug);
+    act -> setProperty("type", RunConfig::rc_rails_server_debug);
 }
 
 void RunMenu::projectRemoved(const QString & path) {

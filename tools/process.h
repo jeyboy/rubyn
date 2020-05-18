@@ -7,11 +7,15 @@
 #include <qprocess.h>
 
 class Process : public QProcess {
+
 public:
     Process(QObject * parent = Q_NULLPTR);
 
-//    void setWorkingDirectory(const QString &dir);
-//    void setEnvironment(const QStringList &environment);
+    //    void setWorkingDirectory(const QString &dir);
+    //    void setEnvironment(const QStringList &environment);
+
+    //    if (process -> state() == QProcess::NotRunning) {
+    //        process -> start(cmd_path + '/' + cmd);
 
 //    void setStandardOutputFile(const QString &fileName, OpenMode mode = Truncate);
 //    void setStandardErrorFile(const QString &fileName, OpenMode mode = Truncate);

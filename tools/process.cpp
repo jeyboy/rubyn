@@ -3,3 +3,4 @@
 Process::Process(QObject * parent) : QProcess(parent) {
 
 }
+
