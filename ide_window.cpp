@@ -3,7 +3,6 @@
 
 //#include "editor/document_types/text_document.h"
 //#include "editor/custom/custom_document.h"
-#include "editor/breakpoints_controller.h"
 
 #include "project/projects.h"
 #include "project/project.h"
@@ -17,19 +16,19 @@
 #include "controls/tabs_block.h"
 #include "controls/logger.h"
 #include "controls/dumper.h"
-#include "controls/run_configuration.h"
+#include "controls/run_menu.h"
 #include "controls/color_picker.h"
 #include "controls/color_button.h"
-#include "controls/debug_panel.h"
 #include "controls/breakpoints_panel.h"
 #include "controls/project_search_panel.h"
+#include "controls/project_widget.h"
 #include "controls/dock_widget_search_connector.h"
 #include "controls/console_widget.h"
 
-//#include "editor/custom/custom_chars.h"
+#include "misc/run_config.h"
+#include "styles/dockwidget_icon_style.h"
 
-#include "debugging/debug.h"
-#include "debugging/debug_stub_interface.h"
+//#include "editor/custom/custom_chars.h"
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
@@ -53,7 +52,7 @@
 //#include "tools/archive.h"
 //#include "tools/files_proc_manager.h"
 
-IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), active_editor(nullptr), widgets_list(nullptr),
+IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWindow), color_picker_widget(nullptr), active_editor(nullptr), widgets_list(nullptr),
     tree(nullptr), color_picker(nullptr), ui_dumper(new Dumper()), debug_panel(nullptr), breakpoints_panel(nullptr), run_config(nullptr), pos_status(nullptr)
 {
     ui -> setupUi(this);
@@ -99,7 +98,6 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
         "}"
     );
 
-    setupDebug();
     setupToolWindows();
     setupPosOutput();
     setupFileMenu();
@@ -214,6 +212,43 @@ void IDEWindow::setupConsole(const QString & path, const QString & header) {
     ConsoleWidget * console = createConsole(path);
 
     setupConsole(console, header);
+}
+
+
+ProjectWidget * IDEWindow::setupProjectPanel(const QString & path, const QString & header, const int & cmd_type) {
+    RunConfig run_config = RunConfig(cmd_type);
+
+    QString token = QString::number(cmd_type) % '|' % path;
+
+    if (!project_widgets.contains(token)) {
+        ProjectWidget * pw = new ProjectWidget(path, cmd_type, this);
+
+        DockWidget * widget = DockWidgets::obj().createWidget(header, pw, Qt::BottomDockWidgetArea);
+
+        pw -> initButtons(widget);
+
+        widget -> setWindowIco(
+            run_config & rc_debug ? ":/tabs/debug" : ":/tools/run",
+            run_config & rc_debug ? ":/tools/debug" : ":/tools/run2"
+        );
+        widget -> setBehaviour(DockWidget::Features(DockWidget::dwf_movable | DockWidget::dwf_closable));
+        widget -> setObjectName("project_" % token);
+
+        connect(widget, &DockWidget::closing, [=]() {
+            DockWidget * w = project_widgets.take(token);
+
+            if (w) {
+                w -> deleteLater();
+            }
+        });
+
+        DockWidgets::obj().append(widget, Qt::BottomDockWidgetArea);
+        project_widgets.insert(token, widget);
+    }
+
+    project_widgets[token] -> raise();
+
+    return qobject_cast<ProjectWidget *>(project_widgets[token] -> widget());
 }
 
 void IDEWindow::splitterMoved(int /*pos*/, int index) {
@@ -612,11 +647,6 @@ bool IDEWindow::editorInWidget(TabsBlock * editor, QWidget * target) {
     return false;
 }
 
-void IDEWindow::setupDebug() {
-    DebugStubInterface * handler = new DebugStubInterface();
-    Debug::obj().setupHandler(handler);
-}
-
 void IDEWindow::setupToolWindows() {
     DockWidgets::obj().registerContainer(this);
     Toolbars::obj().registerContainer(this);
@@ -633,6 +663,7 @@ void IDEWindow::setupToolWindows() {
             Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea
         );
 
+//    widget -> setStyle(new DockwidgetIconStyle(QIcon(":/tools/indent"), widget -> style()));
     widget -> setBehaviour(DockWidget::dwf_movable);
 
     DockWidgets::obj().append(widget);
@@ -654,174 +685,29 @@ void IDEWindow::setupToolWindows() {
 
     widget -> registerSearchCallbacks(connector);
 
+    setupColorBoxWindow();
 
+    setupLogWindow();
 
-    color_picker = new ColorPicker(this);
-    DockWidget * color_picker_widget =
-        DockWidgets::obj().createWidget(
-            QLatin1Literal("Color"),
-            color_picker,
-            Qt::AllDockWidgetAreas
-        );
-
-    color_picker_widget -> setBehaviour(DockWidget::Features(DockWidget::dwf_movable | DockWidget::dwf_closable));
-
-    DockWidgets::obj().append(color_picker_widget);
-
-    ColorButton * curr_color_btn = new ColorButton(this);
-    color_picker_widget -> insertHeaderButton(curr_color_btn, nullptr, nullptr, 0);
-    curr_color_btn -> setDisabled(true);
-    color_picker -> setCurrentColorButton(curr_color_btn);
-    color_picker_widget -> insertHeaderButton(QIcon(":/tools/color_picker"), color_picker, SLOT(colorPickingRequired()), 1);
-    color_picker_widget -> hide();
-
-
-
-
-
-
-
-    auto addExtraSeparator = [](QToolBar * bar) {
-        QWidget * empty = new QWidget(bar);
-        empty -> setFixedSize(3, 3);
-        bar -> addWidget(empty);
-    };
-
-    QToolBar * debug_bar = Toolbars::obj().createWidget(QLatin1Literal("Debug"));
-    debug_bar -> setOrientation(Qt::Vertical);
-    debug_bar -> setIconSize(QSize(20, 20));
-    debug_bar -> setFixedWidth(34);
-//    debug_bar -> setContentsMargins(1, 1, 1, 1);
-
-    QAction * run_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/run")), QLatin1Literal());
-    run_btn -> setEnabled(false);
-    addExtraSeparator(debug_bar);
-
-//    connect(_color_picker, &QAction::triggered, [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); _color_picker -> setChecked(color_picker_widget -> isVisible()); });
-
-    QAction * run_debug_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/debug")), QLatin1Literal());
-//    debug_bar -> widgetForAction(run_debug_btn) -> setContentsMargins(2,2,2,2);
-    run_debug_btn -> setEnabled(false);
-
-    debug_bar -> addSeparator();
-
-    QAction * debug_step_over_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_over")), QLatin1Literal());
-    debug_step_over_btn -> setToolTip(QLatin1Literal("Step to next line"));
-    debug_step_over_btn -> setEnabled(false);
-    addExtraSeparator(debug_bar);
-
-    QAction * debug_step_into_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_into")), QLatin1Literal());
-    debug_step_into_btn -> setToolTip(QLatin1Literal("Step into object"));
-    debug_step_into_btn -> setEnabled(false);
-    addExtraSeparator(debug_bar);
-
-    QAction * debug_step_out_btn = debug_bar -> addAction(QIcon(QLatin1Literal(":/tools/step_out")), QLatin1Literal());
-    debug_step_out_btn -> setToolTip(QLatin1Literal("Step out from object"));
-    debug_step_out_btn -> setEnabled(false);
-    addExtraSeparator(debug_bar);
-
-    DockWidget * debug_controls_widget =
-        DockWidgets::obj().createWidget(
-            QLatin1Literal("Debug Controls"),
-            debug_bar,
-            Qt::BottomDockWidgetArea
-        );
-
-    debug_controls_widget -> setBehaviour(DockWidget::dwf_movable);
-    debug_controls_widget -> setTitleBarWidget(new QWidget(this));
-
-    DockWidgets::obj().append(debug_controls_widget, Qt::BottomDockWidgetArea);
-
-
-
-
-
-
-
-
-    Logger::obj().initiate(QLatin1Literal("loh.txt"), true);
-
-    DockWidget * log_widget =
-        DockWidgets::obj().createWidget(
-            QLatin1Literal("Loh"),
-            Logger::obj().getEditor(),
-            Qt::BottomDockWidgetArea
-        );
-
-    log_widget -> setBehaviour(DockWidget::dwf_movable);
-    DockWidgets::obj().append(log_widget, Qt::BottomDockWidgetArea);
-
-
-
-    breakpoints_panel = new BreakpointsPanel(this);
-    BreakpointsController::obj().setPanel(breakpoints_panel);
-
-    DockWidget * breakpoints_widget =
-        DockWidgets::obj().createWidget(
-            QLatin1Literal("Breakpoints"),
-            breakpoints_panel,
-            Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
-        );
-
-    breakpoints_widget -> setBehaviour(DockWidget::dwf_movable);
-
-    DockWidgets::obj().append(breakpoints_widget, Qt::BottomDockWidgetArea);
-
-
-    debug_panel = new DebugPanel(this);
-
-    connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, debug_panel, &DebugPanel::activate);
-    connect(&BreakpointsController::obj(), &BreakpointsController::deactivate, debug_panel, &DebugPanel::deactivate);
-
-
-    DockWidget * debug_widget =
-        DockWidgets::obj().createWidget(
-            QLatin1Literal("Debug"),
-            debug_panel,
-            Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
-        );
-
-    debug_widget -> setBehaviour(DockWidget::dwf_movable);
-
-    DockWidgets::obj().insert(breakpoints_widget, debug_widget);
-
-
-
-    project_search_panel = new ProjectSearchPanel(this);
-    project_search_panel -> setProjectTree(tree);
-
-    DockWidget * project_search_widget =
-        DockWidgets::obj().createWidget(
-            QLatin1Literal("Search"),
-            project_search_panel,
-            Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
-        );
-
-    project_search_widget -> setBehaviour(DockWidget::dwf_movable);
-
-    connect(tree, &ProjectTree::pathSearchRequired, [=](const QString & paths) {
-        qDebug() << "!!!" << paths;
-        project_search_widget -> raise();
-        project_search_panel -> activate(paths);
-    });
-
-    connect(project_search_panel, &ProjectSearchPanel::resultClicked, [=](const QString & path, const EDITOR_POS_TYPE & pos) {
-        fileOpenRequired(path, nullptr, false, true, QPoint(pos, NO_INFO));
-    });
-
-    DockWidgets::obj().append(project_search_widget);
-
-
-
-
+    setupSearchWindow();
 
     // TOOLBARS
 
-    run_config = new RunConfiguration(this);
+    run_config = new RunMenu(this);
 
     QToolBar * control_bar = Toolbars::obj().createWidget(QLatin1Literal("Controls"));
 
     run_config -> buildPanel(control_bar);
+
+    connect(&Projects::obj(), &Projects::projectInitiated, [=](QTreeWidgetItem * tree_item) {
+        run_config -> projectAdded(tree_item -> data(0, TREE_PATH_UID).toString(), tree_item -> data(0, Qt::DisplayRole).toString());
+    });
+
+    connect(&Projects::obj(), &Projects::projectRemoved, run_config, &RunMenu::projectRemoved);
+
+//    void runRequires(const QString & path, const QString & name, const QString & run_type);
+
+    connect(run_config, &RunMenu::runRequires, this, &IDEWindow::setupProjectPanel);
 
     control_bar -> addSeparator();
 
@@ -838,6 +724,70 @@ void IDEWindow::setupToolWindows() {
     control_bar -> layout();
 
     Toolbars::obj().append(control_bar, Qt::TopToolBarArea);
+}
+
+void IDEWindow::setupLogWindow() {
+    Logger::obj().initiate(QLatin1Literal("loh.txt"), true);
+
+    DockWidget * log_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Loh"),
+            Logger::obj().getEditor(),
+            Qt::BottomDockWidgetArea
+        );
+
+    log_widget -> setBehaviour(DockWidget::dwf_movable);
+    log_widget -> setWindowIco(":/tabs/logger", ":/tools/logger");
+    DockWidgets::obj().append(log_widget, Qt::BottomDockWidgetArea);
+}
+
+void IDEWindow::setupSearchWindow() {
+    project_search_panel = new ProjectSearchPanel(this);
+    project_search_panel -> setProjectTree(tree);
+
+    DockWidget * project_search_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Search"),
+            project_search_panel,
+            Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
+        );
+
+    project_search_widget -> setBehaviour(DockWidget::dwf_movable);
+    project_search_widget -> setWindowIco(":/tabs/search", ":/tools/search");
+
+    connect(tree, &ProjectTree::pathSearchRequired, [=](const QString & paths) {
+        qDebug() << "!!!" << paths;
+        project_search_widget -> raise();
+        project_search_panel -> activate(paths);
+    });
+
+    connect(project_search_panel, &ProjectSearchPanel::resultClicked, [=](const QString & path, const EDITOR_POS_TYPE & pos) {
+        fileOpenRequired(path, nullptr, false, true, QPoint(pos, NO_INFO));
+    });
+
+    DockWidgets::obj().append(project_search_widget);
+}
+
+void IDEWindow::setupColorBoxWindow() {
+    color_picker = new ColorPicker(this);
+    color_picker_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Color"),
+            color_picker,
+            Qt::AllDockWidgetAreas
+        );
+
+    color_picker_widget -> setBehaviour(DockWidget::Features(DockWidget::dwf_movable | DockWidget::dwf_closable));
+    color_picker_widget -> setWindowIco(":/tabs/color_picker", ":/tools/color_picker");
+
+    DockWidgets::obj().append(color_picker_widget);
+
+    ColorButton * curr_color_btn = new ColorButton(this);
+    color_picker_widget -> insertHeaderButton(curr_color_btn, nullptr, nullptr, 0);
+    curr_color_btn -> setDisabled(true);
+    color_picker -> setCurrentColorButton(curr_color_btn);
+    color_picker_widget -> insertHeaderButton(QIcon(":/tools/color_picker"), color_picker, SLOT(colorPickingRequired()), 1);
+    color_picker_widget -> hide();
 }
 
 QWidget * IDEWindow::findEditor(QSplitter * active_table) {

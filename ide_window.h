@@ -10,6 +10,7 @@
 //http://guides.rubyonrails.org/debugging_rails_applications.html
 //https://github.com/deivid-rodriguez/byebug/blob/master/GUIDE.md
 
+class DockWidget;
 class QSplitter;
 class ProjectTree;
 class TabsBlock;
@@ -21,11 +22,12 @@ class QDragMoveEvent;
 class QDropEvent;
 class File;
 class Dumper;
-class RunConfiguration;
+class RunMenu;
 class DebugPanel;
 class BreakpointsPanel;
 class ProjectSearchPanel;
 class ConsoleWidget;
+class ProjectWidget;
 
 
 namespace Ui { class IDEWindow; }
@@ -35,6 +37,7 @@ class IDEWindow : public QMainWindow {
 
     Ui::IDEWindow * ui;
 
+    DockWidget * color_picker_widget;
     TabsBlock * active_editor;
     QSplitter * widgets_list;
 
@@ -46,9 +49,11 @@ class IDEWindow : public QMainWindow {
     BreakpointsPanel * breakpoints_panel;
     ProjectSearchPanel * project_search_panel;
 
-    RunConfiguration * run_config;
+    RunMenu * run_config;
 
     QLabel * pos_status;
+
+    QHash<QString, DockWidget *> project_widgets;
 
     void setupPosOutput();
     void setupEditor(QSplitter * list = nullptr);
@@ -66,8 +71,12 @@ class IDEWindow : public QMainWindow {
 
     friend class Dumper;
 protected:
-    void setupDebug();
     void setupToolWindows();
+    void setupLogWindow();
+    void setupSearchWindow();
+    void setupColorBoxWindow();
+
+
     QWidget * findEditor(QSplitter * active_table);
 
     void dragEnterEvent(QDragEnterEvent *);
@@ -85,6 +94,9 @@ public:
 protected slots:
     void setupConsole(ConsoleWidget * console, const QString & header = QLatin1Literal("Sys Console"));
     void setupConsole(const QString & path, const QString & header = QLatin1Literal("Sys Console"));
+
+    ProjectWidget * setupProjectPanel(const QString & path, const QString & header, const int & cmd_type);
+
     void splitterMoved(int pos, int index);
     void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false, const bool & vertical = true, const QPoint & scroll_pos = QPoint(0, 0));
     void newEditorRequired(File * file, const bool & vertical);

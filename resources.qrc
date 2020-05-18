@@ -99,6 +99,8 @@
         <file alias="step_into">icons/step_into.png</file>
         <file alias="step_out">icons/step_out.png</file>
         <file alias="step_over">icons/step_over.png</file>
+        <file alias="logger">icons/logger.png</file>
+        <file alias="run2">icons/run_on2.png</file>
     </qresource>
     <qresource prefix="/completer">
         <file alias="const">icons/completer/comp_const.png</file>
@@ -129,5 +131,11 @@
         <file alias="close_all">icons/close_all.png</file>
         <file alias="close_other">icons/close_other.png</file>
         <file alias="open_explorer">icons/open_explorer.png</file>
+    </qresource>
+    <qresource prefix="/tabs">
+        <file alias="search">icons/search_tab.png</file>
+        <file alias="color_picker">icons/tab_color_picker.png</file>
+        <file alias="debug">icons/debug_tab.png</file>
+        <file alias="logger">icons/logger2.png</file>
     </qresource>
 </RCC>

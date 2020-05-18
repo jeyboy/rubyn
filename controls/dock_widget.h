@@ -34,8 +34,9 @@ public:
 
     void setBehaviour(const Features & params);
 
+    QString windowTitle();
     void setWindowTitle(const QString & new_title);
-
+    void setWindowIco(const QString & ico_path, const QString & tab_ico_path);
 
     void insertHeaderButton(QWidget * btn, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
     QToolButton * insertHeaderButton(const QIcon & ico, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
@@ -52,6 +53,8 @@ public slots:
 //    inline void onDockLocationChanged(Qt::DockWidgetArea area) { if (area != Qt::NoDockWidgetArea) setTabBarSettings(); }
 
 protected:
+    void updateIcons();
+
 //    bool event(QEvent * event);
 //    void resizeEvent(QResizeEvent *);
     void closeEvent(QCloseEvent * e);

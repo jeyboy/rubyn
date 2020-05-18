@@ -9,6 +9,12 @@
 class Process : public QProcess {
 public:
     Process(QObject * parent = Q_NULLPTR);
+
+//    void setWorkingDirectory(const QString &dir);
+//    void setEnvironment(const QStringList &environment);
+
+//    void setStandardOutputFile(const QString &fileName, OpenMode mode = Truncate);
+//    void setStandardErrorFile(const QString &fileName, OpenMode mode = Truncate);
 };
 
 #endif // PROCESS_H

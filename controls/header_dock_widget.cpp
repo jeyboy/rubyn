@@ -6,7 +6,7 @@
 #include <qlabel.h>
 #include <qtoolbutton.h>
 
-HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QWidget(parent) {
+HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QWidget(parent), _default_pos(2), ico_widget(nullptr) {
     setAttribute(Qt::WA_StyledBackground, true);
     setMinimumHeight(26);
     setStyleSheet("HeaderDockWidget { background-color: rgba(0, 0, 0, .6); }");
@@ -15,6 +15,12 @@ HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QW
     _layout -> setContentsMargins(5, 0, 5, 0);
     _layout -> setSpacing(2);
 //    _layout -> setSizeConstraint(QLayout::SetDefaultConstraint);
+
+    ico_widget = new QLabel(this);
+    ico_widget -> setMargin(0);
+    ico_widget -> setFixedHeight(26);
+    ico_widget -> hide();
+    _layout -> addWidget(ico_widget, 0, Qt::AlignLeft);
 
     title_widget = new QLabel(title, this);
     title_widget -> setMinimumHeight(26);
@@ -42,6 +48,15 @@ HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QW
     search_widget -> setVisible(false);
 }
 
+void HeaderDockWidget::setIcon(const QString & ico_path) {
+    ico_widget -> show();
+    ico_widget -> setPixmap(QPixmap(ico_path).scaled(16, 16, Qt::KeepAspectRatio));
+}
+
+QString HeaderDockWidget::title() {
+    return title_widget -> text();
+}
+
 void HeaderDockWidget::setTitle(const QString & title) {
     title_widget -> setText(title);
 }
@@ -55,7 +70,7 @@ void HeaderDockWidget::insertButton(QWidget * btn, QObject * target, const char 
     if (pos < 0)
         _layout -> addWidget(btn, 0, alignment);
     else
-        _layout -> insertWidget(pos < 0 ? pos : (pos + 2), btn, 0, alignment);
+        _layout -> insertWidget(pos < 0 ? _default_pos : (pos + 3), btn, 0, alignment);
 }
 
 QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target, const char * slot, const int pos, const Qt::Alignment & alignment) {
