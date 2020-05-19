@@ -99,10 +99,8 @@ void ProjectWidget::load(const QJsonObject & obj) {
 }
 
 QJsonObject ProjectWidget::save() {
-    QJsonObject res;
+    QJsonObject res = _conf -> toJson();
 
-    res.insert(QLatin1Literal("path"), _path);
-    res.insert(QLatin1Literal("cmd_type"), _cmd_type);
     res.insert(QLatin1Literal("splitter_state"), QLatin1String(_splitter -> saveState().toBase64()));
 
     return res;

@@ -5,6 +5,7 @@
 #include "misc/dir.h"
 #include "misc/screen.h"
 #include "misc/variant_ptr.h"
+#include "misc/run_config.h"
 
 #include "tools/json/json.h"
 #include "tools/json/json_arr.h"
@@ -17,6 +18,7 @@
 #include "controls/dock_widget.h"
 #include "controls/console_widget.h"
 #include "controls/project_widget.h"
+#include "controls/run_menu.h"
 
 #include "project/ifolder.h"
 
@@ -241,11 +243,9 @@ void Dumper::loadProjectWidgets(IDEWindow * w, JsonObj & json) {
     for(JsonArr::Iterator it = pro_widgets.begin(); it != pro_widgets.end(); it++) {
         QJsonObject obj = (*it).toObject();
 
-        ProjectWidget * project_widget = w -> setupProjectPanel(
-            obj.value(QLatin1Literal("path")).toString(),
-            obj.value(QLatin1Literal("header")).toString(),
-            obj.value(QLatin1Literal("cmd_type")).toInt()
-        );
+        RunConfig * conf = RunConfig::fromJson(obj);
+
+        ProjectWidget * project_widget = w -> setupProjectPanel(conf);
 
         project_widget -> load(obj);
     }
