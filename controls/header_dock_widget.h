@@ -27,8 +27,8 @@ public:
     QString title();
     void setTitle(const QString & title);
 
-    void insertButton(QWidget * btn, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
-    QToolButton * insertButton(const QIcon & ico, QObject * target, const char * slot, const int pos = -1, const Qt::Alignment & alignment = Qt::AlignLeft);
+    void insertButton(QWidget * btn, QObject * target, const char * slot, const int pos = -2, const Qt::Alignment & alignment = Qt::AlignLeft);
+    QToolButton * insertButton(const QIcon & ico, QObject * target, const char * slot, const int pos = -2, const Qt::Alignment & alignment = Qt::AlignLeft);
     void registerSearchCallbacks(const DockWidgetSearchConnector & connector);
     void showSearch(const bool & show = true);
 

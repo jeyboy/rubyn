@@ -226,7 +226,7 @@ ProjectWidget * IDEWindow::setupProjectPanel(RunConfig * conf) {
         pw -> initButtons(widget);
 
         widget -> setWindowIco(
-            conf -> cmd_type & RunConfig::rc_debug ? ":/tabs/debug" : ":/tools/run",
+            /*conf -> cmd_type & RunConfig::rc_debug ? ":/tabs/debug" : ":/tools/run"*/ "",
             conf -> cmd_type & RunConfig::rc_debug ? ":/tools/debug" : ":/tools/run2"
         );
         widget -> setBehaviour(DockWidget::Features(DockWidget::dwf_movable | DockWidget::dwf_closable));

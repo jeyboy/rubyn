@@ -143,6 +143,8 @@
 
 // https://books.goalkicker.com/
 
+// https://crontab.guru/#
+
 int main(int argc, char * argv[]) {
     QApplication a(argc, argv);
     IDEWindow w;

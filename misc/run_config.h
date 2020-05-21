@@ -35,10 +35,12 @@ struct RunConfig {
 
         res.insert(QLatin1Literal("name"), name);
         res.insert(QLatin1Literal("dir"), work_dir);
-        res.insert(QLatin1Literal("env"), env);
         res.insert(QLatin1Literal("type"), cmd_type);
         res.insert(QLatin1Literal("port"), port);
 
+        if (!env.isEmpty()) {
+            res.insert(QLatin1Literal("env"), env);
+        }
 
         if (!env_variables.isEmpty()) {
             res.insert(QLatin1Literal("vars"), QJsonArray::fromStringList(env_variables));
@@ -74,8 +76,12 @@ struct RunConfig {
         return conf;
     }
 
+    QString envName() {
+        return env.isEmpty() ? "development" : env;
+    }
+
     QString token() {
-        return QString::number(cmd_type) + '|' + name.replace('|', '+') + '|' + env;
+        return QString::number(cmd_type) + '|' + name.replace('|', '+') + '|' + envName() + '|' + work_dir;
     }
 
     RunConfig(const CmdType & cmd_type) : port(3000), cmd_type(cmd_type) {

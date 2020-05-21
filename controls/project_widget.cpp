@@ -75,22 +75,26 @@ ProjectWidget::ProjectWidget(RunConfig * conf, QWidget * parent)
     l -> addWidget(_splitter);
 }
 
+ProjectWidget::~ProjectWidget() {
+    delete _conf;
+}
+
 void ProjectWidget::initButtons(DockWidget * cntr) {
     if (_conf -> cmd_type & RunConfig::rc_debug) {
         QToolButton * btn;
 
-        cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/debug")), this, SLOT(debug()), 0);
+        btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/step_out")), this, SLOT(stepOut()), -1);
+        btn -> setToolTip(QLatin1Literal("Step out from object"));
 
-        btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/step_over")), this, SLOT(stepOver()), 1);
-        btn -> setToolTip(QLatin1Literal("Step to next line"));
-
-        btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/step_into")), this, SLOT(stepInto()), 2);
+        btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/step_into")), this, SLOT(stepInto()), -1);
         btn -> setToolTip(QLatin1Literal("Step into object"));
 
-        btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/step_out")), this, SLOT(stepOut()), 3);
-        btn -> setToolTip(QLatin1Literal("Step out from object"));
+        btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/step_over")), this, SLOT(stepOver()), -1);
+        btn -> setToolTip(QLatin1Literal("Step to next line"));
+
+        cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/debug")), this, SLOT(debug()), -1);
     } else {
-        cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/run2")), this, SLOT(run()), 0);
+        cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/run2")), this, SLOT(run()), -1);
     }
 }
 
@@ -107,9 +111,7 @@ QJsonObject ProjectWidget::save() {
 }
 
 void ProjectWidget::run() {
-    _process = new Process(this);
-
-
+//    _process = new Process(this);
 }
 void ProjectWidget::debug() {}
 

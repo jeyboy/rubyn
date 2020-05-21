@@ -49,8 +49,12 @@ HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QW
 }
 
 void HeaderDockWidget::setIcon(const QString & ico_path) {
-    ico_widget -> show();
-    ico_widget -> setPixmap(QPixmap(ico_path).scaled(16, 16, Qt::KeepAspectRatio));
+    if (ico_path.isEmpty()) {
+        ico_widget -> hide();
+    } else {
+        ico_widget -> show();
+        ico_widget -> setPixmap(QPixmap(ico_path).scaled(16, 16, Qt::KeepAspectRatio));
+    }
 }
 
 QString HeaderDockWidget::title() {
@@ -67,10 +71,10 @@ void HeaderDockWidget::insertButton(QWidget * btn, QObject * target, const char 
     if (target)
         connect(btn, SIGNAL(released()), target, slot);
 
-    if (pos < 0)
+    if (pos < -1)
         _layout -> addWidget(btn, 0, alignment);
     else
-        _layout -> insertWidget(pos < 0 ? _default_pos : (pos + 3), btn, 0, alignment);
+        _layout -> insertWidget(pos == -1 ? 0 : (pos + 3), btn, 0, alignment);
 }
 
 QToolButton * HeaderDockWidget::insertButton(const QIcon & ico, QObject * target, const char * slot, const int pos, const Qt::Alignment & alignment) {

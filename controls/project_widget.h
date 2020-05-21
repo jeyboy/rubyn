@@ -28,6 +28,7 @@ class ProjectWidget : public QWidget {
     Process * _process;
 public:
     ProjectWidget(RunConfig * conf, QWidget * parent = nullptr);
+    ~ProjectWidget();
 
     void initButtons(DockWidget * cntr);
 

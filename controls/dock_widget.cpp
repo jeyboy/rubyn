@@ -33,7 +33,7 @@ void DockWidget::setBehaviour(const Features & params) {
         setAttribute(Qt::WA_DeleteOnClose, true);
 
     if (params & dwf_closable) {
-        QToolButton * cls_btn = insertHeaderButton(QIcon(QLatin1Literal(":/tools/close")), this, SLOT(close()), -1);
+        QToolButton * cls_btn = insertHeaderButton(QIcon(QLatin1Literal(":/tools/close")), this, SLOT(close()), -2);
         cls_btn -> setStyleSheet("background: transparent");
     }
 
