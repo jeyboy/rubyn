@@ -5,7 +5,7 @@
 #include <qscrollbar.h>
 #include <qjsonobject.h>
 
-ConsoleWidget::ConsoleWidget(const QJsonObject & json) : is_locked(false), history_pos(0) {
+ConsoleWidget::ConsoleWidget(const QJsonObject & json, QWidget * parent) : BasicLogger(parent), is_locked(false), history_pos(0) {
     bool read_only = json.value(QLatin1Literal("read_only")).toBool();
     QString cmd = json.value(QLatin1Literal("cmd_command")).toString();
     QString path = json.value(QLatin1Literal("cmd_path")).toString();
@@ -15,12 +15,17 @@ ConsoleWidget::ConsoleWidget(const QJsonObject & json) : is_locked(false), histo
     setup(read_only, path, def_prompt, cmd, history_list);
 }
 
-ConsoleWidget::ConsoleWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QWidget * parent, QStringList * history_list) : QPlainTextEdit(parent), process(nullptr), is_read_only(read_only), cmd_command(cmd), cmd_path(path), is_locked(false), history_pos(0) {
+ConsoleWidget::ConsoleWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QWidget * parent, QStringList * history_list) : BasicLogger(parent), process(nullptr), is_read_only(read_only), cmd_command(cmd), cmd_path(path), is_locked(false), history_pos(0) {
     setup(read_only, path, def_prompt, cmd, history_list);
 }
 
 void ConsoleWidget::setup(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QStringList * history_list) {
+    setReadOnly(read_only);
+
     process = new Process(this);
+
+    process -> setWorkingDirectory(path);
+    process -> bindOutput(this);
 
     prompt = def_prompt + QLatin1Literal("> ");
     history = history_list ? history_list : read_only ? nullptr : new QStringList;
@@ -33,9 +38,10 @@ void ConsoleWidget::setup(const bool & read_only, const QString & path, const QS
     if (history)
         history_pos = history -> length();
 
-    insertPrompt(false);
+    insertPrompt(true);
 
-    onCommand(cmd);
+    if (!cmd.isEmpty())
+        onCommand(cmd);
 }
 
 void ConsoleWidget::keyPressEvent(QKeyEvent * e) {
@@ -176,8 +182,8 @@ void ConsoleWidget::historyForward() {
 
 void ConsoleWidget::onCommand(const QString & cmd) {
     if (process -> state() == QProcess::NotRunning) {
-        process -> start(cmd_path + '/' + cmd);
+        process -> proc(/*cmd_path + '/' +*/ cmd);
     } else {
-        queue.append(cmd_path + '/' + cmd);
+        queue.append(/*cmd_path + '/' +*/ cmd);
     }
 }

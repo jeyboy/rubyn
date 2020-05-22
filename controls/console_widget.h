@@ -1,16 +1,15 @@
 #ifndef CONSOLE_WIDGET_H
 #define CONSOLE_WIDGET_H
 
-#include <qplaintextedit.h>
-
 #include "tools/process.h"
+#include "loggers/basic_logger.h"
 
-class ConsoleWidget : public QPlainTextEdit {
+class ConsoleWidget : public BasicLogger {
     Q_OBJECT
 
     Process * process;
 public:
-    ConsoleWidget(const QJsonObject & json);
+    ConsoleWidget(const QJsonObject & json, QWidget * parent = nullptr);
     explicit ConsoleWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd = QString(), QWidget * parent = nullptr, QStringList * history_list = nullptr);
     void output(const QString & txt);
     void scrollDown();

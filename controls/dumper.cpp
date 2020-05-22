@@ -215,7 +215,7 @@ void Dumper::loadConsoles(IDEWindow * w, JsonObj & json) {
         return;
 
     for(JsonArr::Iterator it = consoles.begin(); it != consoles.end(); it++)
-        w -> setupConsole(new ConsoleWidget((*it).toObject()));
+        w -> setupConsole(new ConsoleWidget((*it).toObject(), w));
 }
 
 void Dumper::saveConsoles(IDEWindow * w, JsonObj & json) {
