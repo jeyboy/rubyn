@@ -1,0 +1,1 @@
+https://github.com/sinatra/sinatra#available-template-languages

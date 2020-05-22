@@ -111,7 +111,12 @@ QJsonObject ProjectWidget::save() {
 }
 
 void ProjectWidget::run() {
-//    _process = new Process(this);
+    _process = new Process(this);
+    _process -> bindOutput(_logger);
+    _process -> setWorkingDirectory(_conf -> work_dir);
+    _process -> setEnvironment(_conf -> env_variables);
+
+    _process -> proc(_conf -> cmd);
 }
 void ProjectWidget::debug() {}
 

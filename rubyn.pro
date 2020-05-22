@@ -356,3 +356,6 @@ mac: {
 #    SOURCES += modules/controls/qxtglobalshortcut_mac.cpp
     SOURCES += tools/filesystem_watcher/watcher_mac.cpp
 }
+
+DISTFILES += \
+    lexer/info.txt

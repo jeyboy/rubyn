@@ -1,6 +1,8 @@
 #ifndef RUN_CONFIG_H
 #define RUN_CONFIG_H
 
+#include <qmap.h>
+#include <qvariant.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qjsonobject.h>
@@ -25,9 +27,9 @@ struct RunConfig {
     QString name;
     QString work_dir;
     QString env;
-    QString custom_cmd;
+    QString cmd;
     QStringList env_variables;
-    int port;
+    QVariantMap run_params;
     CmdType cmd_type;
 
     QJsonObject toJson() {
@@ -36,7 +38,7 @@ struct RunConfig {
         res.insert(QLatin1Literal("name"), name);
         res.insert(QLatin1Literal("dir"), work_dir);
         res.insert(QLatin1Literal("type"), cmd_type);
-        res.insert(QLatin1Literal("port"), port);
+        res.insert(QLatin1Literal("cmd"), cmd);
 
         if (!env.isEmpty()) {
             res.insert(QLatin1Literal("env"), env);
@@ -46,8 +48,8 @@ struct RunConfig {
             res.insert(QLatin1Literal("vars"), QJsonArray::fromStringList(env_variables));
         }
 
-        if (!custom_cmd.isEmpty()) {
-            res.insert(QLatin1Literal("custom"), custom_cmd);
+        if (!run_params.isEmpty()) {
+            res.insert(QLatin1Literal("pars"), QJsonObject::fromVariantMap(run_params));
         }
 
         return res;
@@ -59,22 +61,34 @@ struct RunConfig {
         conf -> name = obj.value("name").toString();
         conf -> work_dir = obj.value("dir").toString();
         conf -> env = obj.value("env").toString();
-        conf -> port = obj.value("port").toInt();
-
-        if (obj.contains("custom")) {
-            conf -> custom_cmd = obj.value("custom").toString();
-        }
+        conf -> cmd = obj.value("cmd").toString();
 
         if (obj.contains("vars")) {
             QJsonArray arr = obj.value("vars").toArray();
 
             for(QJsonArray::Iterator it = arr.begin(); it != arr.end(); it++) {
-                conf -> custom_cmd.append((*it).toString());
+                conf -> env_variables.append((*it).toString());
             }
+        }
+
+        if (obj.contains("pars")) {
+            conf -> run_params = obj.value("pars").toObject().toVariantMap();
         }
 
         return conf;
     }
+
+
+//    int port() {
+//        if (run_params.contains(QLatin1Literal("port"))) {
+//            QString p = run_params[QLatin1Literal("port")];
+
+//            if (!p.isEmpty())
+//                return p.toInt();
+//        }
+
+//        return 3000;
+//    }
 
     QString envName() {
         return env.isEmpty() ? "development" : env;
@@ -84,8 +98,8 @@ struct RunConfig {
         return QString::number(cmd_type) + '|' + name.replace('|', '+') + '|' + envName() + '|' + work_dir;
     }
 
-    RunConfig(const CmdType & cmd_type) : port(3000), cmd_type(cmd_type) {
-
+    RunConfig(const CmdType & cmd_type) : cmd_type(cmd_type) {
+        cmd = cmdConfigToCmd(cmd_type);
     }
 
 
@@ -94,13 +108,69 @@ struct RunConfig {
     }
 
     QString cmdConfigToCmd(const CmdType & conf) {
+//        http://rusrails.ru/a-guide-to-the-rails-command-line#rails-server
+
         switch(conf) {
             case rc_rails_server: {
+                //  -e, [--environment=ENVIRONMENT]              # Specifies the environment to run this server under (test/development/production).
+                //  -p, [--port=port]                            # Runs Rails on the specified port - defaults to 3000.
+                //  -b, [--binding=IP]                           # Binds Rails to the specified IP - defaults to 'localhost' in development and '0.0.0.0' in other environments'.
+                //  -c, [--config=file]                          # Uses a custom rackup configuration.
+                //                                               # Default: config.ru
+                //  -d, [--daemon], [--no-daemon]                # Runs server as a Daemon.
+                //  -u, [--using=name]                           # Specifies the Rack server used to run the application (thin/puma/webrick).
+                //  -P, [--pid=PID]                              # Specifies the PID file.
+                //                                               # Default: tmp/pids/server.pid
+                //  -C, [--dev-caching], [--no-dev-caching]      # Specifies whether to perform caching in development.
+                //      [--early-hints], [--no-early-hints]      # Enables HTTP/2 early hints.
+                //      [--log-to-stdout], [--no-log-to-stdout]  # Whether to log to stdout. Enabled by default in development when not daemonized.
 
+                QString res = QLatin1Literal("bundle exec rails s -e ") + envName();
+
+                QVariantMap::Iterator it = run_params.begin();
+
+                for(; it != run_params.end(); it++) {
+                    QString val = it.value().toString();
+
+                    if (it.key().startsWith("--")) {
+                        if (val.isEmpty()) {
+                            res += " " + it.key();
+                        } else {
+                            res += " " + it.key() + '=' + val;
+                        }
+
+                    } else if (it.key().startsWith('-')) {
+                        res += " " + it.key() + ' ' + val;
+                    }
+                }
+
+                return res;
             }
 
             case rc_rails_console: {
+                //  -e, [--environment=ENVIRONMENT]  # Specifies the environment to run this console under (test/development/production).
+                //  -s, [--sandbox], [--no-sandbox]  # Rollback database modifications on exit.
 
+                QString res = QLatin1Literal("bundle exec rails c -e ") + envName();
+
+                QVariantMap::Iterator it = run_params.begin();
+
+                for(; it != run_params.end(); it++) {
+                    QString val = it.value().toString();
+
+                    if (it.key().startsWith("--")) {
+                        if (val.isEmpty()) {
+                            res += " " + it.key();
+                        } else {
+                            res += " " + it.key() + '=' + val;
+                        }
+
+                    } else if (it.key().startsWith('-')) {
+                        res += " " + it.key() + ' ' + val;
+                    }
+                }
+
+                return res;
             }
 
             case rc_rails_server_debug:

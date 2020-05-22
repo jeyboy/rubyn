@@ -9,7 +9,7 @@
 class IProcessLogger;
 
 class Process : public QProcess {
-
+    IProcessLogger * _logger;
 public:
     Process(QObject * parent = Q_NULLPTR);
 

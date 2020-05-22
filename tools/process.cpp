@@ -7,6 +7,8 @@ Process::Process(QObject * parent) : QProcess(parent) {
 }
 
 void Process::bindOutput(IProcessLogger * logger) {
+    _logger = logger;
+
 //    connect(this, &Process::started, [=]() {
 
 //    });
@@ -51,6 +53,8 @@ void Process::bindOutput(IProcessLogger * logger) {
 void Process::proc(const QString & cmd) {
     //    if (process -> state() == QProcess::NotRunning) {
     //        process -> start(cmd_path + '/' + cmd);
+
+    _logger -> printNotify("Run \"" + cmd + "\"");
 
     start(cmd);
 }
