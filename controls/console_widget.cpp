@@ -1,5 +1,6 @@
 #include "console_widget.h"
 
+#include <qdebug.h>
 #include <qevent.h>
 #include <qtextobject.h>
 #include <qscrollbar.h>
@@ -93,7 +94,7 @@ void ConsoleWidget::onEnter() {
     QString cmd = textCursor().block().text().mid(prompt.length());
 
     if (!cmd.isEmpty()) {
-        is_locked = true;
+//        is_locked = true;
 
         historyAdd(cmd);
 
@@ -181,6 +182,8 @@ void ConsoleWidget::historyForward() {
 }
 
 void ConsoleWidget::onCommand(const QString & cmd) {
+    qDebug() << "%%% " << process -> state();
+
     if (process -> state() == QProcess::NotRunning) {
         process -> proc(/*cmd_path + '/' +*/ cmd);
     } else {

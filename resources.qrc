@@ -101,6 +101,7 @@
         <file alias="step_over">icons/step_over.png</file>
         <file alias="logger">icons/logger.png</file>
         <file alias="run2">icons/run_on2.png</file>
+        <file alias="console2">icons/console2.png</file>
     </qresource>
     <qresource prefix="/completer">
         <file alias="const">icons/completer/comp_const.png</file>
