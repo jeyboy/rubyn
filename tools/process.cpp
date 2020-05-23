@@ -6,48 +6,48 @@ Process::Process(QObject * parent) : QProcess(parent) {
 
 }
 
+
+
 void Process::bindOutput(IProcessLogger * logger) {
     _logger = logger;
 
-//    connect(this, &Process::started, [=]() {
+    if (_logger) {
+        connect(this, &Process::errorOccurred, [=](const QProcess::ProcessError & /*error*/) {
+            _logger -> printError(errorString());
+        });
 
-//    });
+        connect(this, &Process::stateChanged, [=](const QProcess::ProcessState & state) {
+            switch(state) {
+                case QProcess::Starting: {
+                    _logger -> printNotify(readLine());
+                break;}
 
-    connect(this, &Process::errorOccurred, [=](const QProcess::ProcessError & /*error*/) {
-        logger -> printError(errorString());
-    });
+                case QProcess::Running: {
+                    _logger -> printNotify(readLine());
+                break;}
 
-    connect(this, &Process::stateChanged, [=](const QProcess::ProcessState & state) {
-        switch(state) {
-            case QProcess::Starting: {
-                logger -> printNotify(readLine());
-            break;}
+                default: {
+    //                logger -> printNotify(readLine());
+                }
+            };
+        });
 
-            case QProcess::Running: {
-                logger -> printNotify(readLine());
-            break;}
+        connect(this, &Process::readyReadStandardOutput, [=]() {
+            setReadChannel(QProcess::StandardOutput);
 
-            default: {
-//                logger -> printNotify(readLine());
+            while(canReadLine()) {
+                _logger -> printText(readLine());
             }
-        };
-    });
+        });
 
-    connect(this, &Process::readyReadStandardOutput, [=]() {
-        setReadChannel(QProcess::StandardOutput);
+        connect(this, &Process::readyReadStandardError, [=]() {
+            setReadChannel(QProcess::StandardError);
 
-        while(canReadLine()) {
-            logger -> printText(readLine());
-        }
-    });
-
-    connect(this, &Process::readyReadStandardError, [=]() {
-        setReadChannel(QProcess::StandardError);
-
-        while(canReadLine()) {
-            logger -> printError(readLine());
-        }
-    });
+            while(canReadLine()) {
+                _logger -> printError(readLine());
+            }
+        });
+    }
 }
 
 void Process::proc(const QString & cmd) {

@@ -20,6 +20,10 @@ ConsoleWidget::ConsoleWidget(const bool & read_only, const QString & path, const
     setup(read_only, path, def_prompt, cmd, history_list);
 }
 
+ConsoleWidget::~ConsoleWidget() {
+    delete process;
+}
+
 void ConsoleWidget::setup(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QStringList * history_list) {
     setReadOnly(read_only);
 

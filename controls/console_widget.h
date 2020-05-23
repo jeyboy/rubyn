@@ -11,6 +11,7 @@ class ConsoleWidget : public BasicLogger {
 public:
     ConsoleWidget(const QJsonObject & json, QWidget * parent = nullptr);
     explicit ConsoleWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd = QString(), QWidget * parent = nullptr, QStringList * history_list = nullptr);
+    ~ConsoleWidget();
     void output(const QString & txt);
     void scrollDown();
 
