@@ -226,8 +226,9 @@ void Dumper::saveConsoles(IDEWindow * w, JsonObj & json) {
     for(QList<DockWidget *>::Iterator it = dock_widgets.begin(); it != dock_widgets.end(); it++) {
         ConsoleWidget * console = qobject_cast<ConsoleWidget *>((*it) -> widget());
 
-        if (console)
+        if (console && (*it) -> isVisible()) {
             ar << console -> save();
+        }
     }
 
     if (ar.size() > 0)

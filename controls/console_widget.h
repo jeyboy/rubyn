@@ -23,7 +23,6 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent * e);
     void contextMenuEvent(QContextMenuEvent * e);
 private:
-    bool is_read_only;
     QString cmd_command;
     QString cmd_path;
     QString prompt;

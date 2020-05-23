@@ -15,7 +15,7 @@ ConsoleWidget::ConsoleWidget(const QJsonObject & json, QWidget * parent) : Basic
     setup(read_only, path, def_prompt, cmd, history_list);
 }
 
-ConsoleWidget::ConsoleWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QWidget * parent, QStringList * history_list) : BasicLogger(parent), process(nullptr), is_read_only(read_only), cmd_command(cmd), cmd_path(path), is_locked(false), history_pos(0) {
+ConsoleWidget::ConsoleWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd, QWidget * parent, QStringList * history_list) : BasicLogger(parent), process(nullptr), cmd_command(cmd), cmd_path(path), is_locked(false), history_pos(0) {
     setup(read_only, path, def_prompt, cmd, history_list);
 }
 
@@ -136,7 +136,7 @@ void ConsoleWidget::scrollDown() {
 QJsonObject ConsoleWidget::save() {
     QJsonObject res;
 
-    res.insert(QLatin1Literal("read_only"), is_read_only);
+    res.insert(QLatin1Literal("read_only"), isReadOnly());
     res.insert(QLatin1Literal("cmd_command"), cmd_command);
     res.insert(QLatin1Literal("cmd_path"), cmd_path);
     res.insert(QLatin1Literal("prompt"), prompt.mid(0, prompt.length() - 2));
