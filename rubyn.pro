@@ -358,4 +358,6 @@ mac: {
 }
 
 DISTFILES += \
-    lexer/info.txt
+    lexer/cmd.txt \
+    lexer/info.txt \
+    lexer/utils.txt

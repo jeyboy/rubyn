@@ -3,10 +3,7 @@
 #include "loggers/iprocess_logger.h"
 
 Process::Process(QObject * parent) : QProcess(parent) {
-
 }
-
-
 
 void Process::bindOutput(IProcessLogger * logger) {
     _logger = logger;

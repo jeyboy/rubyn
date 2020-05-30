@@ -116,7 +116,7 @@ void ProjectWidget::run() {
     _process -> setWorkingDirectory(_conf -> work_dir);
     _process -> setEnvironment(_conf -> env_variables);
 
-    _process -> proc(_conf -> cmd);
+    _process -> proc(_conf -> runCmd());
 }
 void ProjectWidget::debug() {}
 

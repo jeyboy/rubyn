@@ -98,8 +98,12 @@ struct RunConfig {
         return QString::number(cmd_type) + '|' + name.replace('|', '+') + '|' + envName() + '|' + work_dir;
     }
 
+    QString runCmd() {
+        return cmd.length() > 0 ? cmd : cmdConfigToCmd(cmd_type);
+    }
+
     RunConfig(const CmdType & cmd_type) : cmd_type(cmd_type) {
-        cmd = cmdConfigToCmd(cmd_type);
+//        cmd = cmdConfigToCmd(cmd_type);
     }
 
 
@@ -108,7 +112,73 @@ struct RunConfig {
     }
 
     QString cmdConfigToCmd(const CmdType & conf) {
-//        http://rusrails.ru/a-guide-to-the-rails-command-line#rails-server
+        //   http://rusrails.ru/a-guide-to-the-rails-command-line#rails-server
+
+        //    https://ss64.com/nt/cmd.html
+
+        //    Syntax
+        //          CMD [charset] [options]
+
+        //          CMD [charset] [options] [/C Command]
+
+        //          CMD [charset] [options] [/K Command]
+
+        //    Options
+        //       /C     Run Command and then terminate
+
+        //       /K     Run Command and then return to the CMD prompt.
+        //              This is useful for testing, to examine variables
+
+        //       Command : The command, program or batch script to be run.
+        //                 This can even be several commands separated with '&'
+        //                 (the whole should also be surrounded by "quotes")
+
+        //       /T:fg  Sets the foreground/background colours
+
+        //       /A     Output ANSI characters
+        //       /U     Output UNICODE characters (UCS-2 le)
+        //              These options will affect piping or redirecting to a file.
+        //              Most common text files are ANSI, use these switches
+        //              when you need to convert the character set.
+
+        //       /D     Ignore registry AutoRun commands
+        //              HKLM | HKCU \Software\Microsoft\Command Processor\AutoRun
+
+        //       /E:ON  Enable CMD Command Extensions (default)
+        //       /X     Enable CMD Command Extensions (old switch for compatibility)
+        //       /E:OFF Disable CMD Command Extensions
+        //       /Y     Disable CMD Command Extensions (old switch for compatibility)
+
+        //       /F:ON  Enable auto-completion of pathnames entered at the CMD prompt
+        //       /F:OFF Disable auto-completion of pathnames entered at the CMD prompt (default)
+
+        //            At the command prompt Ctrl-D gives folder name completion and Ctrl-F gives File and folder name completion.
+
+        //            These key-strokes will display the first matching path. Thereafter, repeated pressing of the same control key will cycle through the list of matching paths. Pressing SHIFT with the control key will move through the list backwards.
+
+        //       /Q    Turn echo off
+
+        //       /S    Strip " quote characters from command.
+        //             If command starts with a quote, the first and last quote chars in command
+        //             will be removed, whether /s is specified or not.
+
+        //       /V:ON Enable delayed environment variable expansion
+        //             this allows a FOR loop to specify !variable! instead of %variable%
+        //             expanding the variable at execution time instead of at input time.
+
+        //       /V:OFF
+        //             Disable delayed environment expansion.
+        //             Delayed Environment expansion can also be set with SETLOCAL
+
+
+
+        //    "cd /d c:\cool_folder\another_cool_folder"
+
+
+        //    start("cmd.exe");
+
+
+
 
         switch(conf) {
             case rc_rails_server: {
@@ -125,26 +195,32 @@ struct RunConfig {
                 //      [--early-hints], [--no-early-hints]      # Enables HTTP/2 early hints.
                 //      [--log-to-stdout], [--no-log-to-stdout]  # Whether to log to stdout. Enabled by default in development when not daemonized.
 
-                QString res = QLatin1Literal("bundle exec rails s -e ") + envName();
+                #ifdef Q_OS_WIN
+                    QString res = "cmd.exe /C \"cd /d " + work_dir + " & bundle exec rails s -e " + envName();
 
-                QVariantMap::Iterator it = run_params.begin();
+                    QVariantMap::Iterator it = run_params.begin();
 
-                for(; it != run_params.end(); it++) {
-                    QString val = it.value().toString();
+                    for(; it != run_params.end(); it++) {
+                        QString val = it.value().toString();
 
-                    if (it.key().startsWith("--")) {
-                        if (val.isEmpty()) {
-                            res += " " + it.key();
-                        } else {
-                            res += " " + it.key() + '=' + val;
+                        if (it.key().startsWith("--")) {
+                            if (val.isEmpty()) {
+                                res += " " + it.key();
+                            } else {
+                                res += " " + it.key() + '=' + val;
+                            }
+
+                        } else if (it.key().startsWith('-')) {
+                            res += " " + it.key() + ' ' + val;
                         }
-
-                    } else if (it.key().startsWith('-')) {
-                        res += " " + it.key() + ' ' + val;
                     }
-                }
 
-                return res;
+                    return res + '"';
+                #elif Q_OS_MAC
+                    "";
+                #else
+                    "/bin/bash -c \"/home/jb/.rvm/bin/rvm ruby-2.4.5@monitorhealth do /home/jb/.rvm/rubies/ruby-2.4.5/bin/ruby /home/jb/.rvm/gems/ruby-2.4.5@monitorhealth/gems/ruby-debug-ide-0.8.0.beta24/bin/rdebug-ide --key-value --step-over-in-blocks --disable-int-handler --evaluation-timeout 10 --evaluation-control --time-limit 100 --memory-limit 0 --rubymine-protocol-extensions --port 35205 --host 0.0.0.0 --dispatcher-port 35567 -- /home/jb/projects/customer-monitorhealth-healthhub-server/bin/rails console -- --prompt simple\"";
+                #endif
             }
 
             case rc_rails_console: {
