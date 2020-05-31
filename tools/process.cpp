@@ -6,15 +6,7 @@ Process::Process(QObject * parent) : QProcess(parent) {
 }
 
 Process::~Process() {
-    if (state() == QProcess::Running) {
-        terminate();
-        waitForFinished(3000);
-
-        if (state() == QProcess::Running) {
-            kill();
-            waitForFinished(3000);
-        }
-    }
+    stop();
 }
 
 void Process::bindOutput(IProcessLogger * logger) {
@@ -67,6 +59,18 @@ void Process::proc(const QString & cmd) {
     _logger -> printNotify("Run \"" + cmd + "\"");
 
     start(cmd);
+}
+
+void Process::stop() {
+    if (state() == QProcess::Running) {
+        terminate();
+        waitForFinished(3000);
+
+        if (state() == QProcess::Running) {
+            kill();
+            waitForFinished(3000);
+        }
+    }
 }
 
 bool Process::getVal(const QString & cmd, QString & res) {

@@ -23,7 +23,7 @@
 #include "debugging/debug_stub_interface.h"
 
 ProjectWidget::ProjectWidget(RunConfig * conf, QWidget * parent)
-    : QWidget(parent), _conf(conf), _splitter(nullptr), _breakpoints(nullptr), _logger(nullptr), _process(nullptr)
+    : QWidget(parent), _conf(conf), _splitter(nullptr), _breakpoints(nullptr), _logger(nullptr), _process(nullptr), _run_btn(nullptr), _stop_btn(nullptr)
 {
     setObjectName("widget_" % conf -> token());
 
@@ -93,10 +93,17 @@ void ProjectWidget::initButtons(DockWidget * cntr) {
         btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/step_over")), this, SLOT(stepOver()), -1);
         btn -> setToolTip(QLatin1Literal("Step to next line"));
 
-        cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/debug")), this, SLOT(debug()), -1);
+        _stop_btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/debug_stop")), this, SLOT(stopProcess()), -1);
+
+        _run_btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/debug")), this, SLOT(debug()), -1);
     } else {
-        cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/run2")), this, SLOT(run()), -1);
+        _stop_btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/tool_stop")), this, SLOT(stopProcess()), -1);
+
+        _run_btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/run2")), this, SLOT(run()), -1);
     }
+
+    _stop_btn -> setToolTip(QLatin1Literal("Stop server"));
+    _stop_btn -> hide();
 }
 
 void ProjectWidget::load(const QJsonObject & obj) {
@@ -117,9 +124,30 @@ void ProjectWidget::run() {
     _process -> setWorkingDirectory(_conf -> work_dir);
     _process -> setEnvironment(_conf -> env_variables);
 
+    connect(_process, &Process::stateChanged, [=](const QProcess::ProcessState & state) {
+        switch(state) {
+            case QProcess::Running: {
+                _stop_btn -> show();
+                _run_btn -> hide();
+            break;}
+
+            case QProcess::NotRunning: {
+                _run_btn -> show();
+                _stop_btn -> hide();
+            break;}
+
+            default: {}
+        };
+    });
+
     _process -> proc(_conf -> runCmd());
 }
 void ProjectWidget::debug() {}
+
+void ProjectWidget::stopProcess() {
+    delete _process;
+    _process = nullptr;
+}
 
 void ProjectWidget::stepOver() {}
 void ProjectWidget::stepInto() {}

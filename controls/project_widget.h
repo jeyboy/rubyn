@@ -15,6 +15,7 @@ class BasicLogger;
 class DockWidget;
 class Process;
 class RunConfig;
+class QToolButton;
 
 class ProjectWidget : public QWidget {
     Q_OBJECT
@@ -26,6 +27,9 @@ class ProjectWidget : public QWidget {
     BreakpointsPanel * _breakpoints;
     BasicLogger * _logger;
     Process * _process;
+
+    QToolButton * _run_btn;
+    QToolButton * _stop_btn;
 public:
     ProjectWidget(RunConfig * conf, QWidget * parent = nullptr);
     ~ProjectWidget();
@@ -38,6 +42,7 @@ public:
 protected slots:
     void run();
     void debug();
+    void stopProcess();
 
     void stepOver();
     void stepInto();

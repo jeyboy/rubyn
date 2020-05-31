@@ -18,6 +18,8 @@ public:
 
     void proc(const QString & cmd);
 
+    void stop();
+
     static bool getVal(const QString & cmd, QString & res);
 
     //    void setWorkingDirectory(const QString &dir);
