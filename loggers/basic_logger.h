@@ -13,10 +13,10 @@ class BasicLogger : public QPlainTextEdit, public IProcessLogger {
         void setReadOnly(const bool & read_only = true);
 
     public slots:
-        void printAlert(const QString & msg);
-        void printNotify(const QString & msg);
-        void printText(const QString & msg);
-        void printError(const QString & msg);
+        void printAlert(const QString & msg, const bool add_new_line = false);
+        void printNotify(const QString & msg, const bool add_new_line = false);
+        void printText(const QString & msg, const bool add_new_line = false);
+        void printError(const QString & msg, const bool add_new_line = false);
 };
 
 #endif // BASIC_LOGGER_H

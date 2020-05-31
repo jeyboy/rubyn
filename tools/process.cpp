@@ -14,7 +14,7 @@ void Process::bindOutput(IProcessLogger * logger) {
 
     if (_logger) {
         connect(this, &Process::errorOccurred, [=](const QProcess::ProcessError & /*error*/) {
-            _logger -> printError(errorString());
+            _logger -> printError(errorString(), true);
         });
 
         connect(this, &Process::stateChanged, [=](const QProcess::ProcessState & state) {
@@ -45,7 +45,7 @@ void Process::bindOutput(IProcessLogger * logger) {
             setReadChannel(QProcess::StandardError);
 
             while(canReadLine()) {
-                _logger -> printError(readLine());
+                _logger -> printError(readLine(), true);
             }
         });
     }
@@ -55,8 +55,8 @@ void Process::proc(const QString & cmd) {
     //    if (process -> state() == QProcess::NotRunning) {
     //        process -> start(cmd_path + '/' + cmd);
 
-    _logger -> printNotify(workingDirectory());
-    _logger -> printNotify("Run \"" + cmd + "\"");
+    _logger -> printNotify(workingDirectory() + "\r\n");
+    _logger -> printNotify("Run \"" + cmd + "\"\r\n");
 
     start(cmd);
 }

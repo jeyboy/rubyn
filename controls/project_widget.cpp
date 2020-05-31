@@ -77,7 +77,11 @@ ProjectWidget::ProjectWidget(RunConfig * conf, QWidget * parent)
 
 ProjectWidget::~ProjectWidget() {
     delete _conf;
-    delete _process;
+
+    if (_process) {
+        disconnect(_process);
+        delete _process;
+    }
 }
 
 void ProjectWidget::initButtons(DockWidget * cntr) {
@@ -119,6 +123,8 @@ QJsonObject ProjectWidget::save() {
 }
 
 void ProjectWidget::run() {
+    _logger -> clear();
+
     _process = new Process(this);
     _process -> bindOutput(_logger);
     _process -> setWorkingDirectory(_conf -> work_dir);
