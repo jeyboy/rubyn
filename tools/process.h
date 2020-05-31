@@ -12,10 +12,13 @@ class Process : public QProcess {
     IProcessLogger * _logger;
 public:
     Process(QObject * parent = Q_NULLPTR);
+    virtual ~Process();
 
     void bindOutput(IProcessLogger * logger);
 
     void proc(const QString & cmd);
+
+    static bool getVal(const QString & cmd, QString & res);
 
     //    void setWorkingDirectory(const QString &dir);
     //    void setEnvironment(const QStringList &environment);

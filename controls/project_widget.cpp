@@ -77,6 +77,7 @@ ProjectWidget::ProjectWidget(RunConfig * conf, QWidget * parent)
 
 ProjectWidget::~ProjectWidget() {
     delete _conf;
+    delete _process;
 }
 
 void ProjectWidget::initButtons(DockWidget * cntr) {

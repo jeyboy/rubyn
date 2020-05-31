@@ -1,12 +1,17 @@
 #ifndef RUN_CONFIG_H
 #define RUN_CONFIG_H
 
+#include <qregularexpression.h>
 #include <qmap.h>
 #include <qvariant.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qjsonobject.h>
 #include <qjsonarray.h>
+
+#include <qdebug.h>
+
+#include "tools/process.h"
 
 struct RunConfig {
     enum CmdType : int {
@@ -196,7 +201,28 @@ struct RunConfig {
                 //      [--log-to-stdout], [--no-log-to-stdout]  # Whether to log to stdout. Enabled by default in development when not daemonized.
 
                 #ifdef Q_OS_WIN
-                    QString res = "cmd.exe /C \"cd /d " + work_dir + " & bundle exec rails s -e " + envName();
+                    QString rails_path;
+                    Process::getVal("cmd.exe /C \"where rails\"", rails_path);
+
+                    QStringList paths = rails_path.split("\r\n");
+                    int pos = -1, it_pos = 0;
+                    QRegularExpression pattern("rails.bat", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::CaseInsensitiveOption);
+
+                    for(QStringList::Iterator it = paths.begin(); it != paths.end(); it++, ++it_pos) {
+                        if ((*it).indexOf(pattern) != -1) {
+                            pos = it_pos;
+                            break;
+                        }
+                    }
+
+                    if (pos != -1) {
+                        rails_path = paths.takeAt(pos);
+                    } else {
+                        rails_path = paths.takeFirst();
+                    }
+
+                    QString res = rails_path + " s -e " + envName();
+//                    QString res = "cmd.exe /C \"cd /d " + work_dir + " & call bundle exec rails s -e " + envName();
 
                     QVariantMap::Iterator it = run_params.begin();
 
@@ -215,7 +241,8 @@ struct RunConfig {
                         }
                     }
 
-                    return res + '"';
+                    return res;
+//                    return res + '"';
                 #elif Q_OS_MAC
                     "";
                 #else

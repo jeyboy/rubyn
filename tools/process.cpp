@@ -5,6 +5,18 @@
 Process::Process(QObject * parent) : QProcess(parent) {
 }
 
+Process::~Process() {
+    if (state() == QProcess::Running) {
+        terminate();
+        waitForFinished(3000);
+
+        if (state() == QProcess::Running) {
+            kill();
+            waitForFinished(3000);
+        }
+    }
+}
+
 void Process::bindOutput(IProcessLogger * logger) {
     _logger = logger;
 
@@ -55,4 +67,51 @@ void Process::proc(const QString & cmd) {
     _logger -> printNotify("Run \"" + cmd + "\"");
 
     start(cmd);
+}
+
+bool Process::getVal(const QString & cmd, QString & res) {
+    bool cmd_res = false;
+
+    QProcess pr;
+    pr.setReadChannel(QProcess::StandardOutput);
+
+//    connect(&pr, &Process::readyReadStandardOutput, [&pr]() {
+//        pr.setReadChannel(QProcess::StandardOutput);
+//    });
+
+//    connect(&pr, &Process::readyReadStandardError, [&pr]() {
+//        pr.setReadChannel(QProcess::StandardError);
+//    });
+
+    pr.start(cmd);
+
+    if (!pr.waitForStarted())
+        return false;
+
+    int steps = 0;
+    int limit = 10;
+
+    while(true) {
+        if (++steps >= limit)
+            break;
+
+        if (pr.waitForReadyRead(25)) {
+            cmd_res = true;
+            break;
+        }
+
+        if (pr.state() != QProcess::Running) {
+            break;
+        }
+    }
+
+    res = pr.readAll();
+
+    pr.waitForFinished(200);
+
+    if (pr.state() == QProcess::Running) {
+        pr.kill();
+    }
+
+    return cmd_res;
 }
