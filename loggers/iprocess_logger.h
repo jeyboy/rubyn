@@ -4,7 +4,12 @@
 #include <qstring.h>
 
 class IProcessLogger {
+    protected:
+        bool _last_is_error;
     public:
+        IProcessLogger() { _last_is_error = false; }
+
+        inline bool lastPrintedIsError() { return _last_is_error; }
         virtual void setReadOnly(const bool & read_only = true) = 0;
 
         virtual void printAlert(const QString & msg, const bool add_new_line = false) = 0;

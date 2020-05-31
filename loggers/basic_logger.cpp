@@ -10,30 +10,42 @@ void BasicLogger::setReadOnly(const bool & read_only) {
 }
 
 void BasicLogger::printAlert(const QString & msg, const bool add_new_line) {
-    if (add_new_line) { textCursor().insertBlock(); }
+    if (add_new_line) {
+        textCursor().insertBlock();
+    }
 
     QTextCharFormat format;
     format.setForeground(QColor::fromRgb(212, 175, 55));
     textCursor().setBlockCharFormat(format);
     textCursor().insertText(msg);
+
+    _last_is_error = false;
 }
 
 void BasicLogger::printNotify(const QString & msg, const bool add_new_line) {
-    if (add_new_line) { textCursor().insertBlock(); }
+    if (add_new_line) {
+        textCursor().insertBlock();
+    }
 
     QTextCharFormat format;
     format.setForeground(QColor::fromRgb(0, 155, 0));
     textCursor().setBlockCharFormat(format);
     textCursor().insertText(msg);
+
+    _last_is_error = false;
 }
 
 void BasicLogger::printText(const QString & msg, const bool add_new_line) {
-    if (add_new_line) { textCursor().insertBlock(); }
+    if (add_new_line) {
+        textCursor().insertBlock();
+    }
 
     QTextCharFormat format;
     format.setForeground(Qt::black);
     textCursor().setBlockCharFormat(format);
     textCursor().insertText(msg);
+
+    _last_is_error = false;
 }
 
 void BasicLogger::printError(const QString & msg, const bool add_new_line) {
@@ -43,4 +55,6 @@ void BasicLogger::printError(const QString & msg, const bool add_new_line) {
     format.setForeground(Qt::red);
     textCursor().setBlockCharFormat(format);
     textCursor().insertText(msg);
+
+    _last_is_error = true;
 }

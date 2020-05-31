@@ -7,9 +7,11 @@
 #include <qprocess.h>
 
 class IProcessLogger;
+class QTimer;
 
 class Process : public QProcess {
     IProcessLogger * _logger;
+    QTimer * _timer;
 public:
     Process(QObject * parent = Q_NULLPTR);
     virtual ~Process();

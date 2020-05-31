@@ -2,14 +2,25 @@
 
 #include "loggers/iprocess_logger.h"
 
-Process::Process(QObject * parent) : QProcess(parent) {
+#include <qtimer.h>
+#include <qdebug.h>
+
+Process::Process(QObject * parent) : QProcess(parent), _timer(nullptr) {
+//    setProcessChannelMode(QProcess::MergedChannels);
+//    _timer = new QTimer(this);
+//    _timer -> setInterval(50);
+
+//    connect(_timer, &QTimer::timeout, [=]() {
+//        qDebug() << "TIMER" << readAll();
+////        qDebug() << "TIMER" << waitForReadyRead(_timer -> interval() - 5);
+//    });
 }
 
 Process::~Process() {
     stop();
 }
 
-void Process::bindOutput(IProcessLogger * logger) {
+void Process::bindOutput(IProcessLogger * logger) {   
     _logger = logger;
 
     if (_logger) {
@@ -17,36 +28,42 @@ void Process::bindOutput(IProcessLogger * logger) {
             _logger -> printError(errorString(), true);
         });
 
-        connect(this, &Process::stateChanged, [=](const QProcess::ProcessState & state) {
-            switch(state) {
-                case QProcess::Starting: {
-                    _logger -> printNotify(readLine());
-                break;}
+//        connect(this, &Process::stateChanged, [=](const QProcess::ProcessState & state) {
+//            switch(state) {
+//                case QProcess::Starting: {
+////                    _logger -> printNotify(readLine());
+//                break;}
 
-                case QProcess::Running: {
-                    _logger -> printNotify(readLine());
-                break;}
+//                case QProcess::Running: {
+////                    _logger -> printNotify(readLine());
+//                    _timer -> start();
+//                break;}
 
-                default: {
-    //                logger -> printNotify(readLine());
-                }
-            };
-        });
+//                default: {
+//    //                logger -> printNotify(readLine());
+//                    _timer -> stop();
+//                }
+//            };
+//        });
 
         connect(this, &Process::readyReadStandardOutput, [=]() {
-            setReadChannel(QProcess::StandardOutput);
-
-            while(canReadLine()) {
-                _logger -> printText(readLine());
-            }
+            _logger -> printText(readAllStandardOutput());
         });
 
         connect(this, &Process::readyReadStandardError, [=]() {
-            setReadChannel(QProcess::StandardError);
+//            setReadChannel(QProcess::StandardError);
 
-            while(canReadLine()) {
-                _logger -> printError(readLine(), true);
-            }
+//            qint64 available = bytesAvailable();
+
+//            QString msg = read(available);
+
+////            while(canReadLine()) {
+//////                _logger -> printError(readLine());
+////                msg.append(readLine());
+////            }
+
+            QString msg = readAllStandardError();
+            _logger -> printError((_logger -> lastPrintedIsError() ? "" : "\r\n") + msg + "\r\n");
         });
     }
 }
@@ -58,7 +75,7 @@ void Process::proc(const QString & cmd) {
     _logger -> printNotify(workingDirectory() + "\r\n");
     _logger -> printNotify("Run \"" + cmd + "\"\r\n");
 
-    start(cmd);
+    start(cmd); // , QProcess::Unbuffered | QProcess::ReadWrite
 }
 
 void Process::stop() {

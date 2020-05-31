@@ -79,7 +79,7 @@ ProjectWidget::~ProjectWidget() {
     delete _conf;
 
     if (_process) {
-        disconnect(_process);
+        _process -> disconnect();
         delete _process;
     }
 }
@@ -128,7 +128,7 @@ void ProjectWidget::run() {
     _process = new Process(this);
     _process -> bindOutput(_logger);
     _process -> setWorkingDirectory(_conf -> work_dir);
-    _process -> setEnvironment(_conf -> env_variables);
+    _process -> setEnvironment(_conf -> env_variables << "BUF_1_=0");
 
     connect(_process, &Process::stateChanged, [=](const QProcess::ProcessState & state) {
         switch(state) {
