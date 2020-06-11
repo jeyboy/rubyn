@@ -54,6 +54,8 @@ public:
     bool dump(QVariant & data);
     bool restore(const QVariant & data);
 
+    void highlight(QRegularExpression * reg_exp, const bool & scroll = true);
+
 //    inline void setRevision(const int & new_revision) { _revision = new_revision; }
 //    inline int revision() { return _revision; }
 
@@ -63,6 +65,7 @@ public:
     void setWordWrap(const bool & word_wrap);
 
 signals:
+    void highlightRequires(const QRegularExpression & reg_exp, const bool & scroll);
     void wordWrapChanged(const bool & word_wrap);
     void rowRedrawRequired(const EDITOR_POS_TYPE & pos);
     void blocksLayoutChange(const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount);

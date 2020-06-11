@@ -103,6 +103,8 @@ public:
     bool dump(QVariant & data) Q_DECL_OVERRIDE;
     bool restore(const QVariant & data) Q_DECL_OVERRIDE;
 
+    void highlight(QRegularExpression * reg_exp, const bool & scroll = true);
+
 ////    inline void setRevision(const int & new_revision) { _revision = new_revision; }
 ////    inline int revision() { return _revision; }
 

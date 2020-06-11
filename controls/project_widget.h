@@ -27,6 +27,7 @@ class ProjectWidget : public QWidget {
     BreakpointsPanel * _breakpoints;
     BasicLogger * _logger;
     Process * _process;
+    QStringList _pids;
 
     QToolButton * _run_btn;
     QToolButton * _stop_btn;
@@ -48,6 +49,7 @@ protected slots:
     void stepInto();
     void stepOut();
 
+    inline void attachPid(const QString & pid) { _pids << pid; }
 
 //    ProjectWidget(const QJsonObject & json);
 //    explicit ProjectWidget(const bool & read_only, const QString & path, const QString & def_prompt, const QString & cmd = QString(), QWidget * parent = nullptr, QStringList * history_list = nullptr);

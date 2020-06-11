@@ -90,6 +90,15 @@ void Process::stop() {
     }
 }
 
+bool Process::killProcess(const QString & pid) {
+    QString output;
+    bool res = getVal("taskkill /F /PID " + pid, output);
+
+    // check output
+
+    return res;
+}
+
 bool Process::getVal(const QString & cmd, QString & res) {
     bool cmd_res = false;
 

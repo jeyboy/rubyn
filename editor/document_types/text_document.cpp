@@ -396,6 +396,11 @@ bool TextDocument::restore(const QVariant & data) {
     return false;
 }
 
+void TextDocument::highlight(QRegularExpression * reg_exp, const bool & scroll) {
+    if (reg_exp)
+        emit highlightRequires(*reg_exp, scroll);
+}
+
 void TextDocument::emitBreakpointAdded(const EDITOR_POS_TYPE & line_num) { emit breakpointAdded(_file -> path(), line_num); }
 void TextDocument::emitBreakpointRemoved(const EDITOR_POS_TYPE & line_num)  { emit breakpointRemoved(_file -> path(), line_num); }
 void TextDocument::emitBreakpointMoved(const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & line_num)  { emit breakpointMoved(_file -> path(), old_line_num, line_num); }

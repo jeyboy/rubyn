@@ -471,6 +471,10 @@ bool TreeDocument::restore(const QVariant & data) {
     return false;
 }
 
+void TreeDocument::highlight(QRegularExpression * reg_exp, const bool & scroll) {
+
+}
+
 //void TextDocument::hasUnsavedChanges(const bool & has) {
 //    emit hasChanges(_file -> uid(), has);
 //}

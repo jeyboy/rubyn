@@ -22,6 +22,7 @@ public:
 
     void stop();
 
+    static bool killProcess(const QString & pid);
     static bool getVal(const QString & cmd, QString & res);
 
     //    void setWorkingDirectory(const QString &dir);

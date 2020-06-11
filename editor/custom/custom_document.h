@@ -33,6 +33,8 @@ namespace Custom {
 
         void clear();
 
+        void highlight(QRegularExpression * reg_exp, const bool & scroll = true);
+
         void insertLine(IBlock * after, const QByteArray & line);
         void appendLine(const QByteArray & line);
         quint64 linesCount() { return _lines_count; }

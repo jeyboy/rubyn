@@ -175,11 +175,6 @@ struct RunConfig {
         //             Disable delayed environment expansion.
         //             Delayed Environment expansion can also be set with SETLOCAL
 
-
-
-        //    "cd /d c:\cool_folder\another_cool_folder"
-
-
         //    start("cmd.exe");
 
 
@@ -221,8 +216,8 @@ struct RunConfig {
                         rails_path = paths.takeFirst();
                     }
 
-                    QString res = rails_path + " s -e " + envName();
-//                    QString res = "cmd.exe /C \"cd /d " + work_dir + " & call bundle exec rails s -e " + envName();
+//                    QString res = rails_path + " s -e " + envName();
+                    QString res = "cmd.exe /C \"cd /d " + work_dir + " & call bundle exec rails s -e " + envName();
 
                     QVariantMap::Iterator it = run_params.begin();
 
@@ -241,8 +236,8 @@ struct RunConfig {
                         }
                     }
 
-                    return res;
-//                    return res + '"';
+//                    return res;
+                    return res + '"';
                 #elif Q_OS_MAC
                     "";
                 #else

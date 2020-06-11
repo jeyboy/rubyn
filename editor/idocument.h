@@ -38,6 +38,8 @@ public:
     virtual bool registerStateChangedCallback(QObject * /*target*/, const char * /*slot*/) { return false; }
     virtual void setWordWrap(const bool & word_wrap) { _word_wrap = word_wrap; }
 
+    virtual void highlight(QRegularExpression * reg_exp, const bool & scroll = true) = 0;
+
     inline bool scrollPredefined() { return scroll_pos.rx() > 0 || scroll_pos.ry() > 0; }
     inline void setHorizontalScrollPos(const int & pos) { scroll_pos.rx() = pos; }
     inline void setVerticalScrollPos(const int & pos) { scroll_pos.ry() = pos; }

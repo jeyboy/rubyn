@@ -80,8 +80,9 @@ ProjectWidget::~ProjectWidget() {
 
     if (_process) {
         _process -> disconnect();
-        delete _process;
     }
+
+    stopProcess();
 }
 
 void ProjectWidget::initButtons(DockWidget * cntr) {
@@ -128,7 +129,7 @@ void ProjectWidget::run() {
     _process = new Process(this);
     _process -> bindOutput(_logger);
     _process -> setWorkingDirectory(_conf -> work_dir);
-    _process -> setEnvironment(_conf -> env_variables << "BUF_1_=0");
+    _process -> setEnvironment(_conf -> env_variables/* << "BUF_1_=0"*/);
 
     connect(_process, &Process::stateChanged, [=](const QProcess::ProcessState & state) {
         switch(state) {
@@ -151,8 +152,17 @@ void ProjectWidget::run() {
 void ProjectWidget::debug() {}
 
 void ProjectWidget::stopProcess() {
-    delete _process;
-    _process = nullptr;
+    if (_process) {
+//        _process -> disconnect();
+        delete _process;
+        _process = nullptr;
+
+        if (!_pids.isEmpty()) {
+            for(QStringList::Iterator it = _pids.begin(); it != _pids.end(); it++) {
+                Process::killProcess(*it);
+            }
+        }
+    }
 }
 
 void ProjectWidget::stepOver() {}

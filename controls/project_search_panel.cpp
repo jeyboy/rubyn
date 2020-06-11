@@ -122,7 +122,8 @@ void ProjectSearchPanel::prepareResultsWidget() {
     connect(search_results, &QTreeWidget::itemActivated, [=](QTreeWidgetItem * item, int /*column*/) {
         emit resultClicked(
             item -> data(0, PROJECT_SEARCH_PATH_UID).toString(),
-            item -> data(0, PROJECT_SEARCH_PATH_POS_UID).toUInt()
+            item -> data(0, PROJECT_SEARCH_PATH_POS_UID).toUInt(),
+            regex
         );
     });
 }

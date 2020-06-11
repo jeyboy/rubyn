@@ -73,6 +73,10 @@ void Document::clear() {
     _inline_pos = 0;
 }
 
+void Document::highlight(QRegularExpression * reg_exp, const bool & scroll) {
+
+}
+
 void Document::insertLine(IBlock * after, const QByteArray & line) {
     _last = new TextBlock(line, after);
     quint64 line_len = quint64(line.length());

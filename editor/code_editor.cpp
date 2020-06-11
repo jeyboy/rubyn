@@ -104,6 +104,7 @@ void CodeEditor::openDocument(File * file) {
 //        disconnect(wrapper, &TextDocument::blocksLayoutChange, this, &CodeEditor::blocksLayoutChanged);
         disconnect(wrapper, &TextDocument::rowRedrawRequired, this, &CodeEditor::redrawRow);
         disconnect(wrapper, &TextDocument::wordWrapChanged, this, &CodeEditor::wordWrapChanged);
+        disconnect(wrapper, &TextDocument::highlightRequires, this, &CodeEditor::searchInitiated);
 
 
         if (display_cacher -> size() > 0) {
@@ -145,6 +146,7 @@ void CodeEditor::openDocument(File * file) {
         connect(wrapper, &TextDocument::rowRedrawRequired, this, &CodeEditor::redrawRow);
 //        connect(this, SIGNAL(modificationChanged(bool)), wrapper, SLOT(hasUnsavedChanges(const bool &)));
         connect(wrapper, &TextDocument::wordWrapChanged, this, &CodeEditor::wordWrapChanged);
+        connect(wrapper, &TextDocument::highlightRequires, this, &CodeEditor::searchInitiated);
 
         show_foldings_panel = wrapper -> canHasFoldings();
         show_breakpoints_panel = wrapper -> canHasBreakpoints();

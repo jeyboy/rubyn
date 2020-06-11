@@ -282,11 +282,12 @@ void IDEWindow::splitterMoved(int /*pos*/, int index) {
     }
 }
 
-void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool & in_new, const bool & vertical, const QPoint & scroll_pos) {
+void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool & in_new, const bool & vertical, const QPoint & scroll_pos, QRegularExpression * reg_exp) {
     File * _file = nullptr;
 
     if (!Projects::identificate(name, folder, _file)) {
         Logger::error(QStringLiteral("IDE"), QStringLiteral("Cant find folder for file: '") % name % '\'');
+        delete reg_exp;
         return;
     }
 
@@ -314,6 +315,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
     if (_file == nullptr) {
         qDebug() << "FILE IS NULL";
         Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Cant find file: '") % name % '\'');
+        delete reg_exp;
         return;
     }
 
@@ -340,6 +342,8 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
          } else {
              doc -> setMoveToCharPos(scroll_pos.x());
          }
+
+         doc -> highlight(reg_exp);
     }
 
 //    if (_file -> isText()) {
@@ -353,6 +357,8 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
         newEditorRequired(_file, vertical);
     else
         active_editor -> openFile(_file);
+
+    delete reg_exp;
 }
 
 void IDEWindow::newEditorRequired(File * file, const bool & vertical) {
@@ -766,8 +772,8 @@ void IDEWindow::setupSearchWindow() {
         project_search_panel -> activate(paths);
     });
 
-    connect(project_search_panel, &ProjectSearchPanel::resultClicked, [=](const QString & path, const EDITOR_POS_TYPE & pos) {
-        fileOpenRequired(path, nullptr, false, true, QPoint(pos, NO_INFO));
+    connect(project_search_panel, &ProjectSearchPanel::resultClicked, [=](const QString & path, const EDITOR_POS_TYPE & pos, const QRegularExpression & regex) {
+        fileOpenRequired(path, nullptr, false, true, QPoint(pos, NO_INFO), new QRegularExpression(regex));
     });
 
     DockWidgets::obj().append(project_search_widget);

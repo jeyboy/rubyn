@@ -4,6 +4,7 @@
 #include <qmainwindow.h>
 #include <qlist.h>
 #include <qurl.h>
+#include <qregularexpression.h>
 
 //https://www.youtube.com/watch?v=GwgF8GcynV0
 //http://rusrails.ru/debugging-rails-applications
@@ -99,7 +100,7 @@ protected slots:
     ProjectWidget * setupProjectPanel(RunConfig * conf);
 
     void splitterMoved(int pos, int index);
-    void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false, const bool & vertical = true, const QPoint & scroll_pos = QPoint(0, 0));
+    void fileOpenRequired(const QString & name, void * folder, const bool & in_new = false, const bool & vertical = true, const QPoint & scroll_pos = QPoint(0, 0), QRegularExpression * reg_exp = nullptr);
     void newEditorRequired(File * file, const bool & vertical);
     void setActiveEditor(TabsBlock *);
     void editorIsEmpty(TabsBlock *);
