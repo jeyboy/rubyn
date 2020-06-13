@@ -342,8 +342,6 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
          } else {
              doc -> setMoveToCharPos(scroll_pos.x());
          }
-
-         doc -> highlight(reg_exp);
     }
 
 //    if (_file -> isText()) {
@@ -357,6 +355,10 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
         newEditorRequired(_file, vertical);
     else
         active_editor -> openFile(_file);
+
+    if (doc) {
+        doc -> highlight(reg_exp);
+    }
 
     delete reg_exp;
 }
