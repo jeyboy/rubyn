@@ -25,6 +25,9 @@
 #include "controls/dock_widget_search_connector.h"
 #include "controls/console_widget.h"
 
+#include "editor/breakpoints_controller.h"
+#include "controls/debug_panel.h"
+
 #include "misc/run_config.h"
 #include "styles/dockwidget_icon_style.h"
 
@@ -703,6 +706,39 @@ void IDEWindow::setupToolWindows() {
     setupLogWindow();
 
     setupSearchWindow();
+
+    breakpoints_panel = new BreakpointsPanel(this);
+    BreakpointsController::obj().setPanel(breakpoints_panel);
+
+    DockWidget * breakpoints_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Breakpoints"),
+            breakpoints_panel,
+            Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
+        );
+
+    breakpoints_widget -> setBehaviour(DockWidget::dwf_movable);
+
+    DockWidgets::obj().append(breakpoints_widget, Qt::BottomDockWidgetArea);
+
+
+    debug_panel = new DebugPanel(this);
+
+    connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, debug_panel, &DebugPanel::activate);
+    connect(&BreakpointsController::obj(), &BreakpointsController::deactivate, debug_panel, &DebugPanel::deactivate);
+
+
+    DockWidget * debug_widget =
+        DockWidgets::obj().createWidget(
+            QLatin1Literal("Debug"),
+            debug_panel,
+            Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
+        );
+
+    debug_widget -> setBehaviour(DockWidget::dwf_movable);
+
+    DockWidgets::obj().insert(breakpoints_widget, debug_widget);
+
 
     // TOOLBARS
 
