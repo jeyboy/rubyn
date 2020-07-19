@@ -12,7 +12,7 @@ class Project {
     QUrl _project_uri;
     PROJECT_FORMAT_TYPE _project_format;
 
-    IFolder * root;
+    IFolder * _root;
 public:
     Project(const QUrl & uri = QUrl());
     ~Project();

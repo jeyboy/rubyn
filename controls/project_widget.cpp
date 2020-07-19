@@ -65,6 +65,12 @@ ProjectWidget::ProjectWidget(RunConfig * conf, QWidget * parent)
 
         DebugStubInterface * handler = new DebugStubInterface();
         Debug::obj().setupHandler(handler);
+
+
+        _breakpoints = new BreakpointsPanel(this);
+        BreakpointsController::obj().addPanel(conf -> runCmd(), _breakpoints);
+
+        _splitter -> addWidget(_breakpoints);
     }
 
     _logger = new BasicLogger(this);
@@ -168,6 +174,7 @@ void ProjectWidget::stopProcess() {
 void ProjectWidget::stepOver() {}
 void ProjectWidget::stepInto() {}
 void ProjectWidget::stepOut() {}
+
 
 
 //void ProjectWidget::output(const QString & txt) {

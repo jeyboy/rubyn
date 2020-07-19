@@ -24,8 +24,8 @@ class QDropEvent;
 class File;
 class Dumper;
 class RunMenu;
-class DebugPanel;
-class BreakpointsPanel;
+//class DebugPanel;
+//class BreakpointsPanel;
 class ProjectSearchPanel;
 class ConsoleWidget;
 class ProjectWidget;
@@ -47,8 +47,8 @@ class IDEWindow : public QMainWindow {
     ColorPicker * color_picker;
     Dumper * ui_dumper;
 
-    DebugPanel * debug_panel;
-    BreakpointsPanel * breakpoints_panel;
+//    DebugPanel * debug_panel;
+//    BreakpointsPanel * breakpoints_panel;
     ProjectSearchPanel * project_search_panel;
 
     RunMenu * run_config;

@@ -7,11 +7,11 @@
 Project::Project(const QUrl & uri) {
     _project_format = ProjectIdentificator::proc(uri.toLocalFile());
 
-    root = new RecursiveFolder(uri.toLocalFile());
+    _root = new RecursiveFolder(uri.toLocalFile());
 }
 
 Project::~Project() {
-    delete root;
+    delete _root;
 }
 
 void Project::rename(const QString & /*new_name*/) {
@@ -20,7 +20,7 @@ void Project::rename(const QString & /*new_name*/) {
 
 File * Project::findFile(const QString & inner_path) {
     QStringList parts = inner_path.split('/', QString::SkipEmptyParts);
-    return root -> findFile(parts);
+    return _root -> findFile(parts);
 }
 
 //bool Project::addFile(const QUrl & uri, const bool & open) {
