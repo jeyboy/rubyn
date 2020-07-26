@@ -29,7 +29,7 @@ File * Project::findFile(const QString & inner_path) {
 
 //    if (!_files.contains(uri)) {
 //        new_file = true;
-//        file = new File(uri, this);
+//        file = new File(File::pathToHash(uri.toLocal()), uri, this);
 
 //        if (file -> isOpened())
 //            _files.insert(uri, file);

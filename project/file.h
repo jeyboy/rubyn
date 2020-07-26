@@ -32,6 +32,7 @@ protected:
 
     QString first_non_null_str;
 
+    uint _project_uid;
     uint level;
     uint opened_count;
 
@@ -51,6 +52,7 @@ public:
     static QString default_uid;
     static bool isFolder(const QUrl & url) { return isFolder(url.toLocalFile()); }
     static bool isFolder(const QString & url);
+    static uint pathToHash(const QString & url);
 
     enum FileOps {
         fo_none = 0,
@@ -64,7 +66,7 @@ public:
     void close();
     inline bool save() { return _doc && _doc -> save(); }
 
-    File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops = fo_none);
+    File(const uint & project_uid, const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops = fo_none);
 
     virtual ~File();
 
@@ -84,6 +86,8 @@ public:
 //        return size() > 1499999;
         return false;
     }
+
+    inline uint projectUid() { return _project_uid; }
 
     inline qint64 size() {
         if (!isOpened())

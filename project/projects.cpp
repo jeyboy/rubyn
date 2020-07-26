@@ -93,7 +93,7 @@ bool Projects::identificate(const QString & name, void * folder, File *& file) {
                 return false;
 
             QFileInfo finfo(name);
-            file = new File(0, finfo.fileName(), name, File::fo_open);
+            file = new File(File::pathToHash(name), 0, finfo.fileName(), name, File::fo_open);
             file -> setExternal(true);
             obj()._external_files.insert(file -> uid(), file);
         }

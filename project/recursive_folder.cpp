@@ -6,14 +6,14 @@
 #include <qdiriterator.h>
 #include <qcolor.h>
 
-void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path, QColor * color, const uint & level) {
+void RecursiveFolder::proc(const uint & project_uid, QTreeWidgetItem * view_item, const QString & path, QColor * color, const uint & level) {
     QDirIterator dir_it(path, QDir::AllDirs | QDir::NoDotAndDotDot);
 
     while(dir_it.hasNext()) {
         QString dir_path = dir_it.next();
         QString dir_name = dir_it.fileName();
 
-        RecursiveFolder * folder = new RecursiveFolder(this, view_item, dir_name, level + 1, color);
+        RecursiveFolder * folder = new RecursiveFolder(project_uid, this, view_item, dir_name, level + 1, color);
         if (folder -> _valid) {
             _folders.insert(dir_name, folder);
         } else {
@@ -31,7 +31,7 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path, QC
         QString path = files_it.next();
         QString name = files_it.fileName();
 
-        File * file = new File(level, name, path);
+        File * file = new File(project_uid, level, name, path);
         _files.insert(name, file);
 
         QTreeWidgetItem * item = new QTreeWidgetItem(view_item, QStringList() << name);
@@ -48,6 +48,7 @@ void RecursiveFolder::proc(QTreeWidgetItem * view_item, const QString & path, QC
 RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder(path, false) {
     QString obj_name = name();
     FormatType ico_type = icoType(obj_name);
+    uint project_uid = File::pathToHash(path);
 
     QTreeWidgetItem * view_item = new QTreeWidgetItem(QStringList() << obj_name);
     view_item -> setData(0, TREE_FOLDER_UID, QVariant::fromValue<void *>(this));
@@ -69,7 +70,7 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
 
 //        (Folder *)view_item -> data(0, TREE_FOLDER_UID).value<void *>() -> name();
 
-    proc(view_item, path, color, 0);
+    proc(project_uid, view_item, path, color, 0);
 
     if (color_clearing_required) {
         delete color;
@@ -78,7 +79,7 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
     emit Projects::obj(). projectInitiated(view_item);
 }
 
-RecursiveFolder::RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent, const QString & folder_name, const uint & level, QColor * color) : IFolder(parent, folder_name, false) {
+RecursiveFolder::RecursiveFolder(const uint & project_uid, IFolder * parent, QTreeWidgetItem * view_parent, const QString & folder_name, const uint & level, QColor * color) : IFolder(parent, folder_name, false) {
     FormatType ico_type = icoType(folder_name, level);
 
     QTreeWidgetItem * curr_view_item = new QTreeWidgetItem(view_parent, QStringList() << folder_name);
@@ -98,7 +99,7 @@ RecursiveFolder::RecursiveFolder(IFolder * parent, QTreeWidgetItem * view_parent
         curr_view_item -> setData(0, TREE_COLOR_UID, *color);
     }
 
-    proc(curr_view_item, fullPath(), color, level);
+    proc(project_uid, curr_view_item, fullPath(), color, level);
 
     if (color_clearing_required) {
         delete color;

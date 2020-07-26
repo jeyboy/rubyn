@@ -71,6 +71,8 @@ bool File::isFolder(const QString & url) {
     return f.isDir();
 }
 
+uint File::pathToHash(const QString & url) { return qHash(url); }
+
 bool File::identifyType(const QString & name, LexerContext *& _context, const uint & level) {
     QString lower_name = name.toLower();
     QStringList parts = lower_name.split('.', QString::SkipEmptyParts);
@@ -214,9 +216,9 @@ void File::close() {
     closeDevice();
 }
 
-File::File(const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops)
+File::File(const uint & project_uid, const uint & inproject_level, const QString & name, const QString & path, const FileOps & ops)
     : _doc(nullptr), _device(nullptr), _context(new LexerContext()), _path(path),
-      _name(name), level(inproject_level), opened_count(0), is_external(false)
+      _name(name), _project_uid(project_uid), level(inproject_level), opened_count(0), is_external(false)
 {
     identifyType(_name, _context, level);
 
