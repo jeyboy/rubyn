@@ -10,13 +10,13 @@
 class BreakpointsController : public QObject, public Singleton<BreakpointsController> {
     Q_OBJECT
 
-    QHash<QString, BreakpointsPanel *> _panels;
+    QHash<uint, BreakpointsPanel *> _panels;
 public:
-    void addPanel(const QString & project_uid, BreakpointsPanel * panel);
+    void addPanel(const uint & project_uid, BreakpointsPanel * panel);
 
 signals:   
-    void activateBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num);
-    void removeBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void activateBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
+    void removeBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
 
     void deactivate();
     void stepOver();
@@ -27,10 +27,10 @@ public slots:
     void pathRemoved(const QString & path);
     void pathRenamed(const QString & old_path, const QString & new_path);
 
-    void breakpointAdded(const QString & path, const EDITOR_POS_TYPE & line_num);
-    void breakpointMoved(const QString & path, const EDITOR_POS_TYPE & prev_line_num, const EDITOR_POS_TYPE & line_num);
-    void breakpointRemoved(const QString & path, const EDITOR_POS_TYPE & line_num);
-    void breakpointDisabled(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointAdded(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointMoved(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & prev_line_num, const EDITOR_POS_TYPE & line_num);
+    void breakpointRemoved(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointDisabled(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
 };
 
 #endif // BREAKPOINTS_CONTROLLER_H

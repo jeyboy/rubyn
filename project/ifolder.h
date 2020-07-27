@@ -36,6 +36,7 @@ public:
 
     QString name();
     QString fullPath();
+    uint id();
 
     File * findFile(QStringList & path_parts);
 

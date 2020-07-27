@@ -14,6 +14,10 @@ Project::~Project() {
     delete _root;
 }
 
+uint Project::id() {
+    return _root -> id();
+}
+
 void Project::rename(const QString & /*new_name*/) {
     // TODO: write me
 }

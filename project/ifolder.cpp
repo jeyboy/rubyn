@@ -87,6 +87,10 @@ QString IFolder::fullPath() {
     else return _name;
 }
 
+uint IFolder::id() {
+    return File::pathToHash(fullPath());
+}
+
 File * IFolder::findFile(QStringList & path_parts) {
     QString part = path_parts.takeFirst();
 

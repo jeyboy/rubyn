@@ -32,8 +32,8 @@ signals:
     void runRequires(RunConfig * conf);
 
 public slots:
-    void projectAdded(const QString & path, const QString & name);
-    void projectRemoved(const QString & path);
+    void projectAdded(const uint & project_id, const QString & path, const QString & name);
+    void projectRemoved(const uint & project_id, const QString & path);
 };
 
 #endif // RUN_MENU_H

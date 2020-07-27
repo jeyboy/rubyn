@@ -48,11 +48,11 @@ signals:
     void errorOccurred(QString & source, QString & info);
     void fileIconChanged(const QString & name, const QIcon & ico);
 
-    void projectAdded(void * project);
-    void projectRemoved(const QString & path);
+    void projectAdded(const uint & project_id, void * project);
+    void projectRemoved(const uint & project_id, const QString & path);
     void projectRenamed(void * project, const QString & prev_name);
 
-    void projectInitiated(QTreeWidgetItem *);
+    void projectInitiated(const uint & project_id, QTreeWidgetItem *);
 
 //    void fileAdded(File *);
 //    void fileRemoved(File *);

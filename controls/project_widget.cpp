@@ -68,7 +68,7 @@ ProjectWidget::ProjectWidget(RunConfig * conf, QWidget * parent)
 
 
         _breakpoints = new BreakpointsPanel(this);
-        BreakpointsController::obj().addPanel(conf -> runCmd(), _breakpoints);
+        BreakpointsController::obj().addPanel(conf -> uid(), _breakpoints);
 
         _splitter -> addWidget(_breakpoints);
     }

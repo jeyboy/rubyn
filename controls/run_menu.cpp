@@ -92,21 +92,23 @@ void RunMenu::configure() {
 
 }
 
-void RunMenu::projectAdded(const QString & path, const QString & name) {
+void RunMenu::projectAdded(const uint & project_id, const QString & path, const QString & name) {
     QAction * act = _run_menu -> addAction(QIcon(QLatin1Literal(":/tools/run2")), name, this, &RunMenu::run);
     act -> setProperty("dir", path);
     act -> setProperty("type", RunConfig::rc_rails_server);
+    act -> setProperty("uid", project_id);
 
     act = _debbug_menu -> addAction(QIcon(QLatin1Literal(":/tools/debug")), name, this, &RunMenu::run);
     act -> setProperty("dir", path);
     act -> setProperty("type", RunConfig::rc_rails_server_debug);
+    act -> setProperty("uid", project_id);
 }
 
-void RunMenu::projectRemoved(const QString & path) {
+void RunMenu::projectRemoved(const uint & project_id, const QString & path) {
     QList<QAction *> lst = _run_menu -> findChildren<QAction *>();
 
     for(QList<QAction *>::Iterator it = lst.begin(); it != lst.end(); it++) {
-        if ((*it) -> property("path").toString() == path) {
+        if ((*it) -> property("uid").toUInt() == project_id) {
             _run_menu -> removeAction((*it));
             break;
         }
@@ -115,7 +117,7 @@ void RunMenu::projectRemoved(const QString & path) {
     lst = _debbug_menu -> findChildren<QAction *>();
 
     for(QList<QAction *>::Iterator it = lst.begin(); it != lst.end(); it++) {
-        if ((*it) -> property("path").toString() == path) {
+        if ((*it) -> property("uid").toUInt() == project_id) {
             _debbug_menu -> removeAction((*it));
             break;
         }

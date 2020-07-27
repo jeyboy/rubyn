@@ -71,9 +71,9 @@ signals:
     void wordHovered(const QPoint & point, const int & start, const int & end);
     void highlightingComplete();
 
-    void breakpointAdded(const QString & path, const EDITOR_POS_TYPE & line_num);
-    void breakpointMoved(const QString & path, const EDITOR_POS_TYPE & prev_line_num, const EDITOR_POS_TYPE & line_num);
-    void breakpointRemoved(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointAdded(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointMoved(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & prev_line_num, const EDITOR_POS_TYPE & line_num);
+    void breakpointRemoved(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
 
 public slots:
     void activateBreakpoint(const EDITOR_POS_TYPE & line_num);

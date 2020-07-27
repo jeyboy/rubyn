@@ -56,7 +56,7 @@ BreakpointsPanel::BreakpointsPanel(QWidget * parent) : QWidget(parent), breakpoi
     l -> addWidget(breakpoints, 1);
 }
 
-void BreakpointsPanel::activateBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num) {
+void BreakpointsPanel::activateBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num) {
     if (active_breakpoint) {
         active_breakpoint -> setData(Qt::BackgroundRole, QVariant());
 //        active_breakpoint -> setData(Qt::ForegroundRole, QVariant());
@@ -70,12 +70,13 @@ void BreakpointsPanel::activateBreakpoint(const QString & path, const EDITOR_POS
 //    active_breakpoint -> setData(Qt::ForegroundRole, QColor(255, 255, 255));
 }
 
-void BreakpointsPanel::addBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num) {
+void BreakpointsPanel::addBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num) {
 //    emit breakpointAdded(path, line_num);
 
     QListWidgetItem * itm = new QListWidgetItem(QIcon(QLatin1Literal(":/breakpoint")), buildName(path, line_num));
     itm -> setData(Qt::UserRole + 1, path);
     itm -> setData(Qt::UserRole + 2, line_num);
+    itm -> setData(Qt::UserRole + 3, project_id);
 
     if (!records.contains(path))
         records.insert(path, QHash<EDITOR_POS_TYPE, QListWidgetItem * >());
@@ -84,7 +85,7 @@ void BreakpointsPanel::addBreakpoint(const QString & path, const EDITOR_POS_TYPE
 
     breakpoints -> addItem(itm);
 }
-void BreakpointsPanel::moveBreakpoint(const QString & path, const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & new_line_num) {
+void BreakpointsPanel::moveBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & new_line_num) {
     if (!records.contains(path))
         return;
 
@@ -105,7 +106,7 @@ void BreakpointsPanel::moveBreakpoint(const QString & path, const EDITOR_POS_TYP
         }
     }
 }
-void BreakpointsPanel::removeBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num) {
+void BreakpointsPanel::removeBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num) {
     if (!records.contains(path))
         return;
 
@@ -141,8 +142,9 @@ void BreakpointsPanel::deleteBreakpointItem() {
 
     QString path = item -> data(Qt::UserRole + 1).toString();
     EDITOR_POS_TYPE line_num = item -> data(Qt::UserRole + 2).toInt();
+    uint project_id = item -> data(Qt::UserRole + 3).toUInt();
 
-    removeBreakpoint(path, line_num);
+    removeBreakpoint(project_id, path, line_num);
 }
 
 void BreakpointsPanel::breakpointDoubleClicked(QListWidgetItem * item) {
@@ -150,6 +152,7 @@ void BreakpointsPanel::breakpointDoubleClicked(QListWidgetItem * item) {
 
     QString path = item -> data(Qt::UserRole + 1).toString();
     EDITOR_POS_TYPE line_num = item -> data(Qt::UserRole + 2).toInt();
+    uint project_id = item -> data(Qt::UserRole + 3).toUInt();
 
-    activateBreakpoint(path, line_num);
+    activateBreakpoint(project_id, path, line_num);
 }

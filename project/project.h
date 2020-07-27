@@ -17,6 +17,8 @@ public:
     Project(const QUrl & uri = QUrl());
     ~Project();
 
+    uint id();
+
     inline PROJECT_FORMAT_TYPE projectFormat() { return _project_format; }
 
     void rename(const QString & new_name);

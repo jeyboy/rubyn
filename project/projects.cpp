@@ -61,7 +61,7 @@ void Projects::closeProject(const QString & path) {
 
     delete project;
 
-    emit projectRemoved(path);
+    emit projectRemoved(project -> id(), path);
 }
 
 bool Projects::identificate(const QString & name, void * folder, File *& file) {
@@ -120,7 +120,7 @@ bool Projects::open(const QUrl & uri) {
 
    _projects.insert(uri, project);
 
-    emit projectAdded(project);
+    emit projectAdded(project -> id(), project);
 
     return true;
 }

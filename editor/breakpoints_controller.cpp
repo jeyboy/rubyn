@@ -1,6 +1,6 @@
 #include "breakpoints_controller.h"
 
-void BreakpointsController::addPanel(const QString & project_uid, BreakpointsPanel * panel) {
+void BreakpointsController::addPanel(const uint & project_uid, BreakpointsPanel * panel) {
     _panels.insert(project_uid, panel);
 
     if (panel) {
@@ -20,17 +20,19 @@ void BreakpointsController::pathRenamed(const QString & old_path, const QString 
 
 }
 
-void BreakpointsController::breakpointAdded(const QString & path, const EDITOR_POS_TYPE & line_num) {
+void BreakpointsController::breakpointAdded(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num) {
+    if (_panels.contains())
+
 //    _panel -> addBreakpoint(path, line_num);
 }
-void BreakpointsController::breakpointMoved(const QString & path, const EDITOR_POS_TYPE & prev_line_num, const EDITOR_POS_TYPE & line_num) {
+void BreakpointsController::breakpointMoved(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & prev_line_num, const EDITOR_POS_TYPE & line_num) {
 //    _panel -> moveBreakpoint(path, prev_line_num, line_num);
 }
-void BreakpointsController::breakpointRemoved(const QString & path, const EDITOR_POS_TYPE & line_num) {
+void BreakpointsController::breakpointRemoved(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num) {
 //    _panel -> removeBreakpoint(path, line_num);
-    emit removeBreakpoint(path, line_num);
+    emit removeBreakpoint(project_id, path, line_num);
 }
 
-void BreakpointsController::breakpointDisabled(const QString & path, const EDITOR_POS_TYPE & line_num) {
-    qDebug() << "BreakpointsController::breakpointDisabled" << path << line_num;
+void BreakpointsController::breakpointDisabled(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num) {
+    qDebug() << "BreakpointsController::breakpointDisabled" << project_id << path << line_num;
 }

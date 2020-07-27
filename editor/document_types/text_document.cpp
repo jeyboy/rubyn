@@ -127,7 +127,7 @@ TextDocument::TextDocument(File * file) : IDocument(file), highlighter(nullptr),
     });
 
     connect(this, &TextDocument::blocksLayoutChange, [=](const EDITOR_POS_TYPE & pos, const EDITOR_POS_TYPE & amount) {
-        BreakpointsController::obj().breakpointMoved(_file -> path(), pos, pos + amount);
+        BreakpointsController::obj().breakpointMoved(_file -> projectUid(), _file -> path(), pos, pos + amount);
     });
 }
 
@@ -401,9 +401,9 @@ void TextDocument::highlight(QRegularExpression * reg_exp, const bool & scroll) 
         emit highlightRequires(*reg_exp, scroll);
 }
 
-void TextDocument::emitBreakpointAdded(const EDITOR_POS_TYPE & line_num) { emit breakpointAdded(_file -> path(), line_num); }
-void TextDocument::emitBreakpointRemoved(const EDITOR_POS_TYPE & line_num)  { emit breakpointRemoved(_file -> path(), line_num); }
-void TextDocument::emitBreakpointMoved(const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & line_num)  { emit breakpointMoved(_file -> path(), old_line_num, line_num); }
+void TextDocument::emitBreakpointAdded(const EDITOR_POS_TYPE & line_num) { emit breakpointAdded(_file -> projectUid(), _file -> path(), line_num); }
+void TextDocument::emitBreakpointRemoved(const EDITOR_POS_TYPE & line_num)  { emit breakpointRemoved(_file -> projectUid(), _file -> path(), line_num); }
+void TextDocument::emitBreakpointMoved(const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & line_num)  { emit breakpointMoved(_file -> projectUid(), _file -> path(), old_line_num, line_num); }
 void TextDocument::setWordWrap(const bool & word_wrap) { emit wordWrapChanged(_word_wrap = word_wrap); }
 
 //void TextDocument::readNextBlock() {

@@ -28,11 +28,11 @@ signals:
     void breakpointDisabled(const QString & path, const EDITOR_POS_TYPE & line_num);
 
 public slots:
-    void activateBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void activateBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
 
-    void addBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num);
-    void moveBreakpoint(const QString & path, const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & new_line_num);
-    void removeBreakpoint(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void addBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
+    void moveBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & old_line_num, const EDITOR_POS_TYPE & new_line_num);
+    void removeBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
 
 protected slots:
     void deleteBreakpointItem();

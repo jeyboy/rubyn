@@ -29,6 +29,7 @@ struct RunConfig {
     };
 
 
+    uint id;
     QString name;
     QString work_dir;
     QString env;
@@ -40,6 +41,7 @@ struct RunConfig {
     QJsonObject toJson() {
         QJsonObject res;
 
+        res.insert(QLatin1Literal("id"), double(id));
         res.insert(QLatin1Literal("name"), name);
         res.insert(QLatin1Literal("dir"), work_dir);
         res.insert(QLatin1Literal("type"), cmd_type);
@@ -63,6 +65,7 @@ struct RunConfig {
     static RunConfig * fromJson(const QJsonObject & obj) {
         RunConfig * conf = new RunConfig(CmdType(obj.value(QLatin1Literal("type")).toInt()));
 
+        conf -> id = obj.value("id").toDouble();
         conf -> name = obj.value("name").toString();
         conf -> work_dir = obj.value("dir").toString();
         conf -> env = obj.value("env").toString();
@@ -94,6 +97,8 @@ struct RunConfig {
 
 //        return 3000;
 //    }
+
+    uint uid() { return id; }
 
     QString envName() {
         return env.isEmpty() ? "development" : env;
