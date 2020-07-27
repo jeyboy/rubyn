@@ -127,7 +127,7 @@ bool TreeDocument::registerStateChangedCallback(QObject * target, const char * s
     return true;
 }
 
-TreeDocument::TreeDocument(File * file, QObject * parent) : QAbstractItemModel(parent), IDocument()/*, highlighter(nullptr)*/, _file(file), mRootItem{new TreeItem} {
+TreeDocument::TreeDocument(File * file, QObject * parent) : QAbstractItemModel(parent), IDocument(file)/*, highlighter(nullptr)*/, mRootItem{new TreeItem} {
     setFullyReaded(true);
 
     mHeaders.append("key");

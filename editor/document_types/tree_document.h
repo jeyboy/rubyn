@@ -13,7 +13,6 @@
 #include "editor/idocument.h"
 
 class Project;
-class File;
 //class IHighlighter;
 
 
@@ -66,7 +65,6 @@ class TreeDocument : public QAbstractItemModel, public IDocument {
 
     QJsonValue genJson(TreeItem *) const;
 protected:
-    File * _file;
     TreeItem * mRootItem;
     QStringList mHeaders;
 

@@ -9,11 +9,13 @@
 #define READ_LIMIT 512000LL // ~512 kb
 
 class ILexer;
+class File;
 
 class IDocument {
     bool _fully_readed;
 protected:
     ILexer * _lexer;
+    File * _file;
 
     QPoint scroll_pos;
     int to_char_pos;
@@ -24,12 +26,13 @@ protected:
 
     inline void setFullyReaded(const bool & readed) { _fully_readed = readed; }
 public:
-    inline IDocument() : _fully_readed(false), _lexer(nullptr), scroll_pos(0, 0), to_char_pos(-1), _word_wrap(false) {}
+    inline IDocument(File * file = nullptr) : _fully_readed(false), _lexer(nullptr), _file(file), scroll_pos(0, 0), to_char_pos(-1), _word_wrap(false) {}
     virtual ~IDocument();
 
     inline bool isFullyReaded() const { return _fully_readed; }
     inline bool isWordWrap() const { return _word_wrap; }
     virtual bool isChanged() const { return false; }
+    uint projectUid();
 
     virtual bool save() { return false; }
     virtual bool dump(QVariant & /*data*/) { return false; }

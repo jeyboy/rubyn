@@ -8,7 +8,6 @@
 #include "editor/text_document_layout.h"
 
 class Project;
-class File;
 class IHighlighter;
 
 class TextDocument : public QTextDocument, public IDocument {
@@ -16,8 +15,6 @@ class TextDocument : public QTextDocument, public IDocument {
 
     IHighlighter * highlighter;
 protected:
-    File * _file;
-
     void openFile();
     bool identificateLexer();
     bool registerStateChangedCallback(QObject * target, const char * slot);

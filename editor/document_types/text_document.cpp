@@ -93,7 +93,7 @@ bool TextDocument::registerStateChangedCallback(QObject * target, const char * s
     return true;
 }
 
-TextDocument::TextDocument(File * file) : IDocument(), highlighter(nullptr), _file(file), layout(nullptr) {
+TextDocument::TextDocument(File * file) : IDocument(file), highlighter(nullptr), layout(nullptr) {
     layout = new TextDocumentLayout(this);
     layout -> setCursorWidth(2);
     setDocumentLayout(layout);
