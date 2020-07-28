@@ -108,7 +108,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
     setupSplitter();
 
     connect(tree, SIGNAL(fileActivated(QString, void*)), this, SLOT(fileOpenRequired(QString, void*)));
-    connect(&Projects::obj(), SIGNAL(projectInitiated(QTreeWidgetItem*)), tree, SLOT(branchAdded(QTreeWidgetItem*)));
+    connect(&Projects::obj(), SIGNAL(projectInitiated(const uint &, QTreeWidgetItem *)), tree, SLOT(branchAdded(const uint &, QTreeWidgetItem *)));
 
 //    openFolder(QUrl::fromLocalFile("F:/rubyn test/projects/rails 4 - RebelsMarketplace"));
 //    openFile(QUrl::fromLocalFile("F:/rubyn test/ruby/test1.rb"));

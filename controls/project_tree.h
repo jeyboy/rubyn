@@ -56,7 +56,7 @@ signals:
 //    void fileDeleted(void * folder, const QString & name);
 
 public slots:
-    void branchAdded(QTreeWidgetItem * item);
+    void branchAdded(const uint & project_id, QTreeWidgetItem * item);
     void folderAdded(const QString & name);
     void fileAdded(const QString & name, void * folder);
 

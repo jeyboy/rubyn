@@ -345,7 +345,7 @@ void ProjectTree::keyPressEvent(QKeyEvent * e) {
 }
 
 
-void ProjectTree::branchAdded(QTreeWidgetItem * item) {
+void ProjectTree::branchAdded(const uint & project_id, QTreeWidgetItem * item) {
     addTopLevelItem(item);
     item -> setExpanded(true);
     setCurrentItem(item);
