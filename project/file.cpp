@@ -71,7 +71,12 @@ bool File::isFolder(const QString & url) {
     return f.isDir();
 }
 
-uint File::pathToHash(const QString & url) { return qHash(url); }
+uint File::pathToHash(const QString & url) {
+    uint res = qHash(url);
+
+    qDebug() << "pathToHash" << url << res;
+    return res;
+}
 
 bool File::identifyType(const QString & name, LexerContext *& _context, const uint & level) {
     QString lower_name = name.toLower();

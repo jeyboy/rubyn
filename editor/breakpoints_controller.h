@@ -12,7 +12,7 @@ class BreakpointsController : public QObject, public Singleton<BreakpointsContro
 
     QHash<uint, BreakpointsPanel *> _panels;
 public:
-    void addPanel(const uint & project_uid, BreakpointsPanel * panel);
+    void addPanel(const uint & project_id, BreakpointsPanel * panel);
 
 signals:   
     void activateBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);

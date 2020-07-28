@@ -84,6 +84,7 @@ void RunMenu::run() {
 
     conf -> name = act -> text();
     conf -> work_dir = act -> property("dir").toString();
+    conf -> id = act -> property("uid").toUInt();
 
     emit runRequires(conf);
 }
