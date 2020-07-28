@@ -21,15 +21,23 @@ void BreakpointsController::pathRenamed(const QString & old_path, const QString 
 }
 
 void BreakpointsController::breakpointAdded(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num) {
-    if (_panels.contains())
-
-//    _panel -> addBreakpoint(path, line_num);
+    if (_panels.contains(project_id)) {
+        BreakpointsPanel * panel = _panels[project_id];
+        panel -> addBreakpoint(project_id, path, line_num);
+    }
 }
 void BreakpointsController::breakpointMoved(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & prev_line_num, const EDITOR_POS_TYPE & line_num) {
-//    _panel -> moveBreakpoint(path, prev_line_num, line_num);
+    if (_panels.contains(project_id)) {
+        BreakpointsPanel * panel = _panels[project_id];
+        panel -> moveBreakpoint(project_id, path, prev_line_num, line_num);
+    }
 }
 void BreakpointsController::breakpointRemoved(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num) {
-//    _panel -> removeBreakpoint(path, line_num);
+    if (_panels.contains(project_id)) {
+        BreakpointsPanel * panel = _panels[project_id];
+        panel -> removeBreakpoint(project_id, path, line_num);
+    }
+
     emit removeBreakpoint(project_id, path, line_num);
 }
 

@@ -116,12 +116,12 @@ TextDocument::TextDocument(File * file) : IDocument(file), highlighter(nullptr),
     connect(this, &TextDocument::breakpointMoved, &BreakpointsController::obj(), &BreakpointsController::breakpointMoved);
     connect(this, &TextDocument::breakpointRemoved, &BreakpointsController::obj(), &BreakpointsController::breakpointRemoved);
 
-    connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, [=](const QString & path, const EDITOR_POS_TYPE & line_num) {
+    connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, [=](const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num) {
         if (_file -> path() == path)
             activateBreakpoint(line_num);
     });
 
-    connect(&BreakpointsController::obj(), &BreakpointsController::removeBreakpoint, [=](const QString & path, const EDITOR_POS_TYPE & line_num) {
+    connect(&BreakpointsController::obj(), &BreakpointsController::removeBreakpoint, [=](const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num) {
         if (_file -> path() == path)
             removeBreakpoint(line_num);
     });
