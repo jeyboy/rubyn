@@ -24,8 +24,8 @@ public:
     BreakpointsPanel(QWidget * parent = nullptr);
 
 signals:
-    void breakpointRemoved(const QString & path, const EDITOR_POS_TYPE & line_num);
-    void breakpointDisabled(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointRemoved(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
+    void breakpointDisabled(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
 
 public slots:
     void activateBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);

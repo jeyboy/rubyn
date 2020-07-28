@@ -132,7 +132,7 @@ void BreakpointsPanel::removeBreakpoint(const uint & project_id, const QString &
         active_breakpoint = nullptr;
 
     delete item;
-    emit breakpointRemoved(path, line_num);
+    emit breakpointRemoved(project_id, path, line_num);
 }
 
 void BreakpointsPanel::deleteBreakpointItem() {

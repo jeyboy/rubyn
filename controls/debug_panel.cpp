@@ -63,7 +63,7 @@ DebugPanel::DebugPanel(QWidget * parent) : QWidget(parent), view(nullptr), new_i
 //    void itemChanged(QTreeWidgetItem *item, int column);
 }
 
-void DebugPanel::activate(const QString & /*path*/, const EDITOR_POS_TYPE & /*line_num*/) {
+void DebugPanel::activate(const uint & project_id, const QString & /*path*/, const EDITOR_POS_TYPE & /*line_num*/) {
     qDebug() << "DebugPanel::activate";
 }
 

@@ -14,7 +14,7 @@ public:
     DebugPanel(QWidget * parent = nullptr);
 
 public slots:
-    void activate(const QString & path, const EDITOR_POS_TYPE & line_num);
+    void activate(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num);
     void deactivate();
 
     void openNewRecord();
