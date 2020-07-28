@@ -309,9 +309,9 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
         JsonObj obj = JsonObj::fromJsonStr(data.toString());
 
         loadTree(w, obj);
+        loadProjectWidgets(w, obj);
         loadTabs(w, obj);
         loadConsoles(w, obj);
-        loadProjectWidgets(w, obj);
     }
 
     QVariant geometry_state = settings.value(QLatin1Literal("geometry"));
