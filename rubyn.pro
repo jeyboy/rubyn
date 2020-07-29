@@ -14,6 +14,8 @@ TEMPLATE = app
 QMAKE_LFLAGS += -Wl,--large-address-aware
 
 SOURCES += main.cpp\
+    controls/debug_frames.cpp \
+    controls/debug_frames_view.cpp \
     controls/line_dialog.cpp \
     controls/project_search_dialog.cpp \
     controls/project_search_panel.cpp \
@@ -140,6 +142,8 @@ SOURCES += main.cpp\
     controls/console_widget.cpp
 
 HEADERS  += ide_window.h \
+    controls/debug_frames.h \
+    controls/debug_frames_view.h \
     controls/line_dialog.h \
     controls/project_search_dialog.h \
     controls/project_search_panel.h \

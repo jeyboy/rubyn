@@ -11,6 +11,7 @@
 class QSplitter;
 class BreakpointsPanel;
 class DebugPanel;
+class DebugFrames;
 class BasicLogger;
 class DockWidget;
 class Process;
@@ -24,6 +25,7 @@ class ProjectWidget : public QWidget {
 
     QSplitter * _splitter;
     DebugPanel * _debug_panel;
+    DebugFrames * _debug_frames;
     BreakpointsPanel * _breakpoints;
     BasicLogger * _logger;
     Process * _process;

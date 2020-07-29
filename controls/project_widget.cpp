@@ -5,6 +5,7 @@
 #include <qtoolbutton.h>
 #include <qsplitter.h>
 #include <qplaintextedit.h>
+#include <qtabwidget.h>
 
 //#include <qevent.h>
 //#include <qtextobject.h>
@@ -18,18 +19,22 @@
 #include "tools/process.h"
 #include "misc/run_config.h"
 #include "controls/debug_panel.h"
+#include "controls/debug_frames.h"
 #include "controls/dock_widget.h"
 #include "debugging/debug.h"
 #include "debugging/debug_stub_interface.h"
 
 ProjectWidget::ProjectWidget(RunConfig * conf, QWidget * parent)
-    : QWidget(parent), _conf(conf), _splitter(nullptr), _breakpoints(nullptr), _logger(nullptr), _process(nullptr), _run_btn(nullptr), _stop_btn(nullptr)
+    : QWidget(parent), _conf(conf), _splitter(nullptr), _debug_frames(nullptr), _breakpoints(nullptr), _logger(nullptr), _process(nullptr), _run_btn(nullptr), _stop_btn(nullptr)
 {
     setObjectName("widget_" % conf -> token());
 
     QHBoxLayout * l = new QHBoxLayout(this);
     l -> setContentsMargins(1, 1, 1, 1);
     l -> setSpacing(0);
+
+    QTabWidget * tabs = new QTabWidget(this);
+    l -> addWidget(tabs);
 
     _splitter = new QSplitter(this);
     _splitter -> setObjectName("splitter_" % objectName());
@@ -55,7 +60,16 @@ ProjectWidget::ProjectWidget(RunConfig * conf, QWidget * parent)
         )
     );
 
+    _logger = new BasicLogger(this);
+
+    tabs -> addTab(_logger, "Log");
+
     if (conf -> cmd_type & RunConfig::rc_debug) {
+        _debug_frames = new DebugFrames(this);
+
+        _splitter -> addWidget(_debug_frames);
+
+
         _debug_panel = new DebugPanel(this);
 
         connect(&BreakpointsController::obj(), &BreakpointsController::activateBreakpoint, _debug_panel, &DebugPanel::activate);
@@ -71,14 +85,14 @@ ProjectWidget::ProjectWidget(RunConfig * conf, QWidget * parent)
         BreakpointsController::obj().addPanel(conf -> uid(), _breakpoints);
 
         _splitter -> addWidget(_breakpoints);
+
+        tabs -> addTab(_splitter, "Debug");
     }
 
-    _logger = new BasicLogger(this);
-
-    _splitter -> addWidget((QWidget *)_logger);
+//    _splitter -> addWidget((QWidget *)_logger);
 
 //    l -> addWidget(_debug_bar);
-    l -> addWidget(_splitter);
+//    l -> addWidget(_splitter);
 }
 
 ProjectWidget::~ProjectWidget() {
