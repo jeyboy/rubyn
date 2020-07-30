@@ -3,6 +3,8 @@
 #include <qevent.h>
 
 DebugFramesView::DebugFramesView(QWidget * parent) : QTreeWidget(parent) {
+//    setHeaderHidden(true);
+
 //    connect(model(), &QAbstractItemModel::rowsInserted, this, &DebugView::modelRowsInserted);
 //    connect(model(), &QAbstractItemModel::rowsRemoved, this, &DebugView::modelRowsRemoved);
 }

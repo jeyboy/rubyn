@@ -11,7 +11,7 @@
 DebugFrames::DebugFrames(QWidget * parent) : QWidget(parent), view(nullptr)/*, new_itm(nullptr)*/ {
     view = new DebugFramesView(this);
     view -> setColumnCount(1);
-    view -> setHeaderLabels(QStringList() << QString());
+    view -> setHeaderLabels(QStringList() << QString("Frames"));
     view -> setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 //    view -> setWordWrap(true);
     view -> setAlternatingRowColors(true);
