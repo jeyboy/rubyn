@@ -196,7 +196,7 @@ void CodeEditor::setFont(const QFont & font) {
 
 void CodeEditor::setCharsLimiterLineAt(const uint & char_pos) {
     chars_limit_line = char_pos;
-    chars_limit_offset_x = round(symbol_width * chars_limit_line);
+    chars_limit_offset_x = qRound(symbol_width * chars_limit_line);
 
     update();
 }

@@ -10,7 +10,7 @@
 
 #define TIME_MARK QDateTime::currentDateTime().toString(QLatin1String("dd.MM.yyyy hh:mm:ss "))
 
-typedef QLatin1Literal LStr;
+typedef QLatin1String LStr;
 
 class QFile;
 class QTextStream;
