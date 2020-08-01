@@ -96,15 +96,15 @@ bool Dir::showInGraphicalShell(const QString & path_in) {
         output = browser_proc.readLine().simplified();
 
         if (output == "dolphin.desktop" || output == "org.kde.dolphin.desktop") {
-            browser_proc.startDetached("dolphin", QStringList() << "--select" << QDir::toNativeSeparators(path));
+            browser_proc.startDetached("dolphin", QStringList() << "--select" << QDir::toNativeSeparators(path_in));
         } else if (output == "nautilus.desktop" || output == "org.gnome.Nautilus.desktop" || output == "nautilus-folder-handler.desktop") {
-            browser_proc.startDetached("nautilus", QStringList() << "--no-desktop" << QDir::toNativeSeparators(path));
+            browser_proc.startDetached("nautilus", QStringList() << "--no-desktop" << QDir::toNativeSeparators(path_in));
         } else if (output == "caja-folder-handler.desktop") {
-            browser_proc.startDetached("caja", QStringList() << "--no-desktop" << QDir::toNativeSeparators(path));
+            browser_proc.startDetached("caja", QStringList() << "--no-desktop" << QDir::toNativeSeparators(path_in));
         } else if (output == "nemo.desktop") {
-            browser_proc.startDetached("nemo", QStringList() << "--no-desktop" << QDir::toNativeSeparators(path));
+            browser_proc.startDetached("nemo", QStringList() << "--no-desktop" << QDir::toNativeSeparators(path_in));
         } else if (output == "kfmclient_dir.desktop") {
-            browser_proc.startDetached("konqueror", QStringList() << "--select" << QDir::toNativeSeparators(path));
+            browser_proc.startDetached("konqueror", QStringList() << "--select" << QDir::toNativeSeparators(path_in));
         } else {
             Logger::obj().error("showInGraphicalShell", "Unsupported desktop type: " % output);
 

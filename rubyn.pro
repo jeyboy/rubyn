@@ -11,8 +11,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = rubyn
 TEMPLATE = app
 
-QMAKE_LFLAGS += -Wl,--large-address-aware
-
 SOURCES += main.cpp\
     controls/debug_frames.cpp \
     controls/debug_frames_view.cpp \
@@ -355,6 +353,7 @@ unix:!mac {
 win32: {
 #    SOURCES += modules/controls/qxtglobalshortcut_win.cpp
     SOURCES += tools/filesystem_watcher/watcher_win.cpp
+    QMAKE_LFLAGS += -Wl, --large-address-aware
 }
 mac: {
 #    SOURCES += modules/controls/qxtglobalshortcut_mac.cpp
