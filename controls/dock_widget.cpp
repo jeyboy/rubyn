@@ -80,7 +80,7 @@ void DockWidget::updateIcons() {
         for(; it != tabbars.end(); it++) {
             for(int index = 0; index < (*it) -> count(); index++) {
 
-            DockWidget * widget = (DockWidget *)((*it) -> tabData(index).toInt());
+            DockWidget * widget = (DockWidget *)((*it) -> tabData(index).toLongLong());
             if (!widget -> property("ico").isNull()) {
                 (*it) -> setTabIcon(index, QIcon(widget -> property("ico").toString()));
             }
