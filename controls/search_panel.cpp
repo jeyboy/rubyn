@@ -22,7 +22,7 @@ void SearchPanel::buildLayout() {
     btn -> setMenu(menu);
     btn -> setPopupMode(QToolButton::InstantPopup);
     btn -> setCursor(QCursor(Qt::PointingHandCursor));
-//    btn -> setStyleSheet(QLatin1Literal("QToolButton { border: none; } QToolButton::menu-indicator { top: 3px; left: 3px; width: 4px, height: 4px; } "));
+//    btn -> setStyleSheet(QLatin1String("QToolButton { border: none; } QToolButton::menu-indicator { top: 3px; left: 3px; width: 4px, height: 4px; } "));
     options_btn -> setDefaultWidget(btn);
 
     addAction(options_btn, QLineEdit::LeadingPosition);
@@ -33,7 +33,7 @@ void SearchPanel::buildLayout() {
     btn -> setIcon(QPixmap(":/row_right").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     btn -> setCursor(QCursor(Qt::PointingHandCursor));
     move_prev_btn -> setDefaultWidget(btn);
-    btn -> setToolTip(QLatin1Literal("Move to next"));
+    btn -> setToolTip(QLatin1String("Move to next"));
     addAction(move_prev_btn, QLineEdit::TrailingPosition);
     connect(btn, &QToolButton::clicked, [=]() { emit toNextResult(); });
 
@@ -43,12 +43,12 @@ void SearchPanel::buildLayout() {
     btn -> setIcon(QPixmap(":/row_left").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     btn -> setCursor(QCursor(Qt::PointingHandCursor));
     move_next_btn -> setDefaultWidget(btn);
-    btn -> setToolTip(QLatin1Literal("Move to prev"));
+    btn -> setToolTip(QLatin1String("Move to prev"));
     addAction(move_next_btn, QLineEdit::TrailingPosition);
     connect(btn, &QToolButton::clicked, [=]() { emit toPrevResult(); });
 
 
-    flag_case_sensitive = new QCheckBox(QLatin1Literal("Match Case"), menu);
+    flag_case_sensitive = new QCheckBox(QLatin1String("Match Case"), menu);
     QWidgetAction * flag_case_sensitive_action = new QWidgetAction(menu);
     flag_case_sensitive_action -> setDefaultWidget(flag_case_sensitive);
     menu -> addAction(flag_case_sensitive_action);
@@ -58,7 +58,7 @@ void SearchPanel::buildLayout() {
             emit find(regex);
     });
 
-    flag_whole_word_only = new QCheckBox(QLatin1Literal("Words"), menu);
+    flag_whole_word_only = new QCheckBox(QLatin1String("Words"), menu);
     QWidgetAction * flag_whole_word_only_action = new QWidgetAction(menu);
     flag_whole_word_only_action -> setDefaultWidget(flag_whole_word_only);
     menu -> addAction(flag_whole_word_only_action);
@@ -68,7 +68,7 @@ void SearchPanel::buildLayout() {
             emit find(regex);
     });
 
-    flag_reg_exp = new QCheckBox(QLatin1Literal("Regex"), menu);
+    flag_reg_exp = new QCheckBox(QLatin1String("Regex"), menu);
     QWidgetAction * flag_reg_exp_action = new QWidgetAction(menu);
     flag_reg_exp_action -> setDefaultWidget(flag_reg_exp);
     menu -> addAction(flag_reg_exp_action);
@@ -78,7 +78,7 @@ void SearchPanel::buildLayout() {
             emit find(regex);
     });
 
-    flag_unicode = new QCheckBox(QLatin1Literal("Unicode"), menu);
+    flag_unicode = new QCheckBox(QLatin1String("Unicode"), menu);
     QWidgetAction * flag_unicode_action = new QWidgetAction(menu);
     flag_unicode_action -> setDefaultWidget(flag_unicode);
     menu -> addAction(flag_unicode_action);
@@ -106,7 +106,7 @@ QRegularExpression SearchPanel::buildRegex(const QString & pattern) {
     if (flag_unicode -> isChecked())
         options |= QRegularExpression::UseUnicodePropertiesOption;
 
-    val = val.replace(QRegularExpression(QLatin1Literal("\r|\n")), QLatin1Literal("|"));
+    val = val.replace(QRegularExpression(QLatin1String("\r|\n")), QLatin1String("|"));
 
     is_multiline = val != pattern;
 
@@ -114,7 +114,7 @@ QRegularExpression SearchPanel::buildRegex(const QString & pattern) {
         val = QRegularExpression::escape(val);
 
     if (flag_whole_word_only -> isChecked())
-        val = QLatin1Literal("\\b") % val % QLatin1Literal("\\b");
+        val = QLatin1String("\\b") % val % QLatin1String("\\b");
 
     QRegularExpression res(val, options);
     res.optimize();
@@ -192,7 +192,7 @@ QSize SearchPanel::sizeHint() const {
 void SearchPanel::predicateIsCorrect() {
     qDebug() << "SearchPanel::predicateIsCorrect";
 
-    setToolTip(QLatin1Literal("Searching..."));
+    setToolTip(QLatin1String("Searching..."));
     qDebug() << "predicateIsCorrect";
     setStyleSheet(QLatin1String());
 }
@@ -200,17 +200,17 @@ void SearchPanel::predicateHasError(const QString & error) {
     qDebug() << "SearchPanel::predicateHasError" << error;
 
     setToolTip(error);
-    setStyleSheet(QLatin1Literal("SearchPanel { border: 2px solid #FF0000;}"));
+    setStyleSheet(QLatin1String("SearchPanel { border: 2px solid #FF0000;}"));
 }
 
 void SearchPanel::finded(const int & count) {
     qDebug() << "SearchPanel::finded" << count;
 
     if (count == 0 && !text().isEmpty()) {
-        setStyleSheet(QLatin1Literal("SearchPanel { background-color: rgba(255, 0, 0, 0.4); color: #FFFFFF; }"));
+        setStyleSheet(QLatin1String("SearchPanel { background-color: rgba(255, 0, 0, 0.4); color: #FFFFFF; }"));
     } else {
         setStyleSheet(QLatin1String());
     }
 
-    setToolTip(QLatin1Literal("Found: ") + QString::number(count));
+    setToolTip(QLatin1String("Found: ") + QString::number(count));
 }

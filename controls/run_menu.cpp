@@ -21,12 +21,12 @@ void RunMenu::buildPanel(QToolBar * bar) {
     };
 
     _run = new QToolButton(bar);
-    _run -> setIcon(QIcon(QLatin1Literal(":/tools/run2")));
+    _run -> setIcon(QIcon(QLatin1String(":/tools/run2")));
     _run -> setPopupMode(QToolButton::InstantPopup);
 
     _run_menu = new QMenu(_run);
 
-    _run_menu -> addAction(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Configure"), this, &RunMenu::configure);
+    _run_menu -> addAction(QIcon(QLatin1String(":/tools/run_config")), QLatin1String("Configure"), this, &RunMenu::configure);
 
     _run_menu -> addSeparator();
 
@@ -38,11 +38,11 @@ void RunMenu::buildPanel(QToolBar * bar) {
 
 
     _debbug = new QToolButton(bar);
-    _debbug -> setIcon(QIcon(QLatin1Literal(":/tools/debug")));
+    _debbug -> setIcon(QIcon(QLatin1String(":/tools/debug")));
     _debbug -> setPopupMode(QToolButton::InstantPopup);
 
     _debbug_menu = new QMenu(_debbug);
-    _debbug_menu -> addAction(QIcon(QLatin1Literal(":/tools/run_config")), QLatin1Literal("Configure"), this, &RunMenu::configure);
+    _debbug_menu -> addAction(QIcon(QLatin1String(":/tools/run_config")), QLatin1String("Configure"), this, &RunMenu::configure);
     _debbug_menu -> addSeparator();
 
     _debbug -> setMenu(_debbug_menu);
@@ -52,11 +52,11 @@ void RunMenu::buildPanel(QToolBar * bar) {
     addExtraSeparator(bar);
 
 //    _console_btn = new QToolButton(bar);
-//    _console_btn -> setIcon(QIcon(QLatin1Literal(":/tools/console")));
+//    _console_btn -> setIcon(QIcon(QLatin1String(":/tools/console")));
 //    _console_btn -> setPopupMode(QToolButton::InstantPopup);
 
 
-//    QAction * console_btn_cfg = new QAction(QIcon(QLatin1Literal(":/tools/run_config")), "Configure", bar);
+//    QAction * console_btn_cfg = new QAction(QIcon(QLatin1String(":/tools/run_config")), "Configure", bar);
 //    _console_btn -> addAction(console_btn_cfg);
 
 //    QAction * bla = bar -> addWidget(_console_btn);
@@ -94,12 +94,12 @@ void RunMenu::configure() {
 }
 
 void RunMenu::projectAdded(const uint & project_id, const QString & path, const QString & name) {
-    QAction * act = _run_menu -> addAction(QIcon(QLatin1Literal(":/tools/run2")), name, this, &RunMenu::run);
+    QAction * act = _run_menu -> addAction(QIcon(QLatin1String(":/tools/run2")), name, this, &RunMenu::run);
     act -> setProperty("dir", path);
     act -> setProperty("type", RunConfig::rc_rails_server);
     act -> setProperty("uid", project_id);
 
-    act = _debbug_menu -> addAction(QIcon(QLatin1Literal(":/tools/debug")), name, this, &RunMenu::run);
+    act = _debbug_menu -> addAction(QIcon(QLatin1String(":/tools/debug")), name, this, &RunMenu::run);
     act -> setProperty("dir", path);
     act -> setProperty("type", RunConfig::rc_rails_server_debug);
     act -> setProperty("uid", project_id);

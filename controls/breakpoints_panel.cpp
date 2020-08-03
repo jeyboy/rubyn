@@ -21,26 +21,26 @@ BreakpointsPanel::BreakpointsPanel(QWidget * parent) : QWidget(parent), breakpoi
 
     QToolButton * btn0 = new QToolButton(control_panel);
     btn0 -> setIconSize(QSize(16, 16));
-    btn0 -> setIcon(QIcon(QLatin1Literal(":/breakpoint_disabled")));
-    btn0 -> setToolTip(QLatin1Literal("Disable selected"));
+    btn0 -> setIcon(QIcon(QLatin1String(":/breakpoint_disabled")));
+    btn0 -> setToolTip(QLatin1String("Disable selected"));
     control_panel -> addWidget(btn0);
 
 
     QToolButton * btn1 = new QToolButton(control_panel);
     QIcon ico;
 
-    ico.addPixmap(QPixmap(QLatin1Literal(":/breakpoint_disable_all")), QIcon::Normal, QIcon::Off);
-    ico.addPixmap(QPixmap(QLatin1Literal(":/breakpoint_enable_all")), QIcon::Normal, QIcon::On);
+    ico.addPixmap(QPixmap(QLatin1String(":/breakpoint_disable_all")), QIcon::Normal, QIcon::Off);
+    ico.addPixmap(QPixmap(QLatin1String(":/breakpoint_enable_all")), QIcon::Normal, QIcon::On);
 
     btn1 -> setIcon(ico);
-    btn1 -> setToolTip(QLatin1Literal("Disable all"));
+    btn1 -> setToolTip(QLatin1String("Disable all"));
     btn1 -> setCheckable(true);
     control_panel -> addWidget(btn1);
 
 
     QToolButton * btn2 = new QToolButton(control_panel);
-    btn2 -> setIcon(QIcon(QLatin1Literal(":/breakpoint_delete_all")));
-    btn2 -> setToolTip(QLatin1Literal("Remove all"));
+    btn2 -> setIcon(QIcon(QLatin1String(":/breakpoint_delete_all")));
+    btn2 -> setToolTip(QLatin1String("Remove all"));
     control_panel -> addWidget(btn2);
 
     breakpoints = new QListWidget(this);
@@ -73,7 +73,7 @@ void BreakpointsPanel::activateBreakpoint(const uint & project_id, const QString
 void BreakpointsPanel::addBreakpoint(const uint & project_id, const QString & path, const EDITOR_POS_TYPE & line_num) {
 //    emit breakpointAdded(path, line_num);
 
-    QListWidgetItem * itm = new QListWidgetItem(QIcon(QLatin1Literal(":/breakpoint")), buildName(path, line_num));
+    QListWidgetItem * itm = new QListWidgetItem(QIcon(QLatin1String(":/breakpoint")), buildName(path, line_num));
     itm -> setData(Qt::UserRole + 1, path);
     itm -> setData(Qt::UserRole + 2, line_num);
     itm -> setData(Qt::UserRole + 3, project_id);

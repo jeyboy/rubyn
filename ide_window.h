@@ -94,8 +94,8 @@ public:
     ~IDEWindow();
 
 protected slots:
-    void setupConsole(ConsoleWidget * console, const QString & header = QLatin1Literal("Sys Console"));
-    void setupConsole(const QString & path, const QString & header = QLatin1Literal("Sys Console"));
+    void setupConsole(ConsoleWidget * console, const QString & header = QLatin1String("Sys Console"));
+    void setupConsole(const QString & path, const QString & header = QLatin1String("Sys Console"));
 
     ProjectWidget * setupProjectPanel(RunConfig * conf);
 

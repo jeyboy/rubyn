@@ -78,7 +78,7 @@ public:
     inline QPointer<LoggerWindow> & getEditor() { return m_editor; }
 
     void startMark();
-    void endMark(const bool & append_to_average = false, const QString & initiator = QLatin1Literal("Time:"), const QString & value = QString());
+    void endMark(const bool & append_to_average = false, const QString & initiator = QLatin1String("Time:"), const QString & value = QString());
     void clearMarks() { mark_averages.clear(); }
 
 private:

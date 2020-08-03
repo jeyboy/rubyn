@@ -6,21 +6,21 @@
 
 FormatType IFolder::icoType(const QString & name, const uint & level) {
     if (level == 1) {
-        if (name == QLatin1Literal("tmp")) {
+        if (name == QLatin1String("tmp")) {
             return FormatType::ft_folder_temp;
-        } else if (name == QLatin1Literal("test") || name == QLatin1Literal("spec") || name == QLatin1Literal("tests")) {
+        } else if (name == QLatin1String("test") || name == QLatin1String("spec") || name == QLatin1String("tests")) {
             return FormatType::ft_folder_test;
-        } else if (name == QLatin1Literal("log")) {
+        } else if (name == QLatin1String("log")) {
             return FormatType::ft_folder_log;
-        } else if (name == QLatin1Literal("public")) {
+        } else if (name == QLatin1String("public")) {
             return FormatType::ft_folder_public;
-        } else if (name == QLatin1Literal("db")) {
+        } else if (name == QLatin1String("db")) {
             return FormatType::ft_folder_db;
-        } else if (name == QLatin1Literal("config")) {
+        } else if (name == QLatin1String("config")) {
             return FormatType::ft_folder_config;
-        } else if (name == QLatin1Literal("app")) {
+        } else if (name == QLatin1String("app")) {
             return FormatType::ft_folder_app;
-        } else if (name == QLatin1Literal("lib")) {
+        } else if (name == QLatin1String("lib")) {
             return FormatType::ft_folder_lib;
         }
     }

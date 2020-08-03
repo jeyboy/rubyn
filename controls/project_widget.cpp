@@ -40,7 +40,7 @@ ProjectWidget::ProjectWidget(RunConfig * conf, QWidget * parent)
     _splitter -> setObjectName("splitter_" % objectName());
 
     _splitter -> setStyleSheet(
-        QLatin1Literal(
+        QLatin1String(
             "QSplitter::handle {"
             "   border: 2px solid #ddd;"
             "   background-color: #555;"
@@ -109,36 +109,36 @@ void ProjectWidget::initButtons(DockWidget * cntr) {
     if (_conf -> cmd_type & RunConfig::rc_debug) {
         QToolButton * btn;
 
-        btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/step_out")), this, SLOT(stepOut()), -1);
-        btn -> setToolTip(QLatin1Literal("Step out from object"));
+        btn = cntr -> insertHeaderButton(QIcon(QLatin1String(":/tools/step_out")), this, SLOT(stepOut()), -1);
+        btn -> setToolTip(QLatin1String("Step out from object"));
 
-        btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/step_into")), this, SLOT(stepInto()), -1);
-        btn -> setToolTip(QLatin1Literal("Step into object"));
+        btn = cntr -> insertHeaderButton(QIcon(QLatin1String(":/tools/step_into")), this, SLOT(stepInto()), -1);
+        btn -> setToolTip(QLatin1String("Step into object"));
 
-        btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/step_over")), this, SLOT(stepOver()), -1);
-        btn -> setToolTip(QLatin1Literal("Step to next line"));
+        btn = cntr -> insertHeaderButton(QIcon(QLatin1String(":/tools/step_over")), this, SLOT(stepOver()), -1);
+        btn -> setToolTip(QLatin1String("Step to next line"));
 
-        _stop_btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/debug_stop")), this, SLOT(stopProcess()), -1);
+        _stop_btn = cntr -> insertHeaderButton(QIcon(QLatin1String(":/tools/debug_stop")), this, SLOT(stopProcess()), -1);
 
-        _run_btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/debug")), this, SLOT(debug()), -1);
+        _run_btn = cntr -> insertHeaderButton(QIcon(QLatin1String(":/tools/debug")), this, SLOT(debug()), -1);
     } else {
-        _stop_btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/tool_stop")), this, SLOT(stopProcess()), -1);
+        _stop_btn = cntr -> insertHeaderButton(QIcon(QLatin1String(":/tools/tool_stop")), this, SLOT(stopProcess()), -1);
 
-        _run_btn = cntr -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/run2")), this, SLOT(run()), -1);
+        _run_btn = cntr -> insertHeaderButton(QIcon(QLatin1String(":/tools/run2")), this, SLOT(run()), -1);
     }
 
-    _stop_btn -> setToolTip(QLatin1Literal("Stop server"));
+    _stop_btn -> setToolTip(QLatin1String("Stop server"));
     _stop_btn -> hide();
 }
 
 void ProjectWidget::load(const QJsonObject & obj) {
-    _splitter -> restoreState(QByteArray::fromBase64(obj.value(QLatin1Literal("splitter_state")).toString().toLatin1()));
+    _splitter -> restoreState(QByteArray::fromBase64(obj.value(QLatin1String("splitter_state")).toString().toLatin1()));
 }
 
 QJsonObject ProjectWidget::save() {
     QJsonObject res = _conf -> toJson();
 
-    res.insert(QLatin1Literal("splitter_state"), QLatin1String(_splitter -> saveState().toBase64()));
+    res.insert(QLatin1String("splitter_state"), QLatin1String(_splitter -> saveState().toBase64()));
 
     return res;
 }

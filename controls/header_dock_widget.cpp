@@ -32,11 +32,11 @@ HeaderDockWidget::HeaderDockWidget(QWidget * parent, const QString & title) : QW
     title_widget -> setStyleSheet("color: white;");
 
     _layout -> addWidget(title_widget, 0, Qt::AlignLeft);
-    _layout -> addWidget(new QLabel(QLatin1Literal(" "), this), 0, Qt::AlignLeft);
+    _layout -> addWidget(new QLabel(QLatin1String(" "), this), 0, Qt::AlignLeft);
     _layout -> addStretch(0);
 
-    search_btn = insertButton(QIcon(QLatin1Literal(":/tools/search")), this, SLOT(toggleSearch()), 0);
-    search_btn -> setToolTip(QLatin1Literal("Find files and folders <br/><b>Ctrl + F</b>")); // "Find files and folders <br/><font color='#22aaff'>Ctrl + F</font>"
+    search_btn = insertButton(QIcon(QLatin1String(":/tools/search")), this, SLOT(toggleSearch()), 0);
+    search_btn -> setToolTip(QLatin1String("Find files and folders <br/><b>Ctrl + F</b>")); // "Find files and folders <br/><font color='#22aaff'>Ctrl + F</font>"
     search_btn -> setVisible(false);
 
     search_widget = new SearchPanel(this);

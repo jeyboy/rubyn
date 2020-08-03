@@ -41,29 +41,29 @@ struct RunConfig {
     QJsonObject toJson() {
         QJsonObject res;
 
-        res.insert(QLatin1Literal("id"), double(id));
-        res.insert(QLatin1Literal("name"), name);
-        res.insert(QLatin1Literal("dir"), work_dir);
-        res.insert(QLatin1Literal("type"), cmd_type);
-        res.insert(QLatin1Literal("cmd"), cmd);
+        res.insert(QLatin1String("id"), double(id));
+        res.insert(QLatin1String("name"), name);
+        res.insert(QLatin1String("dir"), work_dir);
+        res.insert(QLatin1String("type"), cmd_type);
+        res.insert(QLatin1String("cmd"), cmd);
 
         if (!env.isEmpty()) {
-            res.insert(QLatin1Literal("env"), env);
+            res.insert(QLatin1String("env"), env);
         }
 
         if (!env_variables.isEmpty()) {
-            res.insert(QLatin1Literal("vars"), QJsonArray::fromStringList(env_variables));
+            res.insert(QLatin1String("vars"), QJsonArray::fromStringList(env_variables));
         }
 
         if (!run_params.isEmpty()) {
-            res.insert(QLatin1Literal("pars"), QJsonObject::fromVariantMap(run_params));
+            res.insert(QLatin1String("pars"), QJsonObject::fromVariantMap(run_params));
         }
 
         return res;
     }
 
     static RunConfig * fromJson(const QJsonObject & obj) {
-        RunConfig * conf = new RunConfig(CmdType(obj.value(QLatin1Literal("type")).toInt()));
+        RunConfig * conf = new RunConfig(CmdType(obj.value(QLatin1String("type")).toInt()));
 
         conf -> id = obj.value("id").toDouble();
         conf -> name = obj.value("name").toString();
@@ -88,8 +88,8 @@ struct RunConfig {
 
 
 //    int port() {
-//        if (run_params.contains(QLatin1Literal("port"))) {
-//            QString p = run_params[QLatin1Literal("port")];
+//        if (run_params.contains(QLatin1String("port"))) {
+//            QString p = run_params[QLatin1String("port")];
 
 //            if (!p.isEmpty())
 //                return p.toInt();
@@ -254,7 +254,7 @@ struct RunConfig {
                 //  -e, [--environment=ENVIRONMENT]  # Specifies the environment to run this console under (test/development/production).
                 //  -s, [--sandbox], [--no-sandbox]  # Rollback database modifications on exit.
 
-                QString res = QLatin1Literal("bundle exec rails c -e ") + envName();
+                QString res = QLatin1String("bundle exec rails c -e ") + envName();
 
                 QVariantMap::Iterator it = run_params.begin();
 

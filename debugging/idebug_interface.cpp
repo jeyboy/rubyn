@@ -11,4 +11,4 @@ bool IDebugInterface::enableBreakpoint(const QString & /*path*/, const int & /*l
 bool IDebugInterface::addBreakpoint(const QString & /*path*/, const int & /*line_num*/) { return false; }
 bool IDebugInterface::removeBreakpoint(const QString & /*path*/, const int & /*line_num*/) { return false; }
 
-QString IDebugInterface::resolve(const QString & /*record*/) { return QLatin1Literal("Unsupported"); }
+QString IDebugInterface::resolve(const QString & /*record*/) { return QLatin1String("Unsupported"); }

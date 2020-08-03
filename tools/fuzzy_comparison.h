@@ -2,6 +2,7 @@
 #define FUZZY_COMPARISON
 
 #include <qstring.h>
+#include <qstringbuilder.h>
 #include <qlist.h>
 #include <qregularexpression.h>
 
@@ -56,7 +57,7 @@ public:
 
         qreal hits = 0;
         int padd = group_length - 1;
-//        QString buff = QLatin1Literal(" ").repeated(padd);
+//        QString buff = QLatin1String(" ").repeated(padd);
         QString buff(padd, ' ');
         QString source = buff % str1 % buff;
         QString target = buff % str2 % buff;

@@ -37,7 +37,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
 
 
     setStyleSheet(
-        QLatin1Literal(
+        QLatin1String(
             "EditorSearch {"
             "   background-color: #555;"
             "}"
@@ -70,12 +70,12 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
         main_layout -> addLayout(search_layout);
         main_layout -> addLayout(replace_layout);
 
-        l2 = new QLabel(QLatin1Literal("Replace with:"), this);
+        l2 = new QLabel(QLatin1String("Replace with:"), this);
         l2 -> setFont(cfont);
 
         replace_layout -> addWidget(l2, 0);
         replace_predicate = new QLineEdit(this);
-        replace_predicate -> setPlaceholderText(QLatin1Literal("Replacement"));
+        replace_predicate -> setPlaceholderText(QLatin1String("Replacement"));
         replace_predicate -> setMinimumWidth(150);
         replace_layout -> addWidget(replace_predicate, 1);
 
@@ -85,7 +85,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
         btn -> setIcon(QPixmap(":/search_replace_btn").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         btn -> setCursor(QCursor(Qt::PointingHandCursor));
         replace_all_btn -> setDefaultWidget(btn);
-        btn -> setToolTip(QLatin1Literal("Replace all"));
+        btn -> setToolTip(QLatin1String("Replace all"));
         replace_predicate -> addAction(replace_all_btn, QLineEdit::TrailingPosition);
         connect(btn, &QToolButton::clicked, [=]() { emit replaceAll(replace_predicate -> text()); });
 
@@ -95,7 +95,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
         btn -> setIcon(QPixmap(":/row_right").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         btn -> setCursor(QCursor(Qt::PointingHandCursor));
         replace_prev_btn -> setDefaultWidget(btn);
-        btn -> setToolTip(QLatin1Literal("Replace current and move to next"));
+        btn -> setToolTip(QLatin1String("Replace current and move to next"));
         replace_predicate -> addAction(replace_prev_btn, QLineEdit::TrailingPosition);
         connect(btn, &QToolButton::clicked, [=]() { emit toNextResult(new QString(replace_predicate -> text())); });
 
@@ -105,7 +105,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
         btn -> setIcon(QPixmap(":/row_left").scaled(14, 14, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         btn -> setCursor(QCursor(Qt::PointingHandCursor));
         replace_next_btn -> setDefaultWidget(btn);
-        btn -> setToolTip(QLatin1Literal("Replace current and move to prev"));
+        btn -> setToolTip(QLatin1String("Replace current and move to prev"));
         replace_predicate -> addAction(replace_next_btn, QLineEdit::TrailingPosition);
         connect(btn, &QToolButton::clicked, [=]() { emit toPrevResult(new QString(replace_predicate -> text())); });
     }
@@ -124,7 +124,7 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
     search_layout -> addWidget(l1, 0);
     predicate = new SearchPanel(this);
     predicate -> setMinimumWidth(150);
-    predicate -> setPlaceholderText(QLatin1Literal("Search"));
+    predicate -> setPlaceholderText(QLatin1String("Search"));
     search_layout -> addWidget(predicate, 1);
 
     connect(predicate, &SearchPanel::find, [=](const QRegularExpression & pattern) { emit find(pattern); });
@@ -136,8 +136,8 @@ EditorSearch::EditorSearch(const bool & has_replace, QWidget * parent) : QWidget
 
     btn = new QToolButton(this);
     btn -> setIcon(QPixmap(":/tools/close").scaled(btn -> iconSize().width(), btn -> iconSize().height(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    btn -> setToolTip(QLatin1Literal("Close"));
-    btn -> setStyleSheet(QLatin1Literal("border: none;"));
+    btn -> setToolTip(QLatin1String("Close"));
+    btn -> setStyleSheet(QLatin1String("border: none;"));
     connect(btn, &QToolButton::clicked, [=]() { hide(); emit close(); });
     search_layout -> addWidget(btn, 0);
 }
@@ -159,26 +159,26 @@ void EditorSearch::changeVisibility(const bool & show) {
 void EditorSearch::predicateIsCorrect() {
     qDebug() << "EditorSearch::predicateIsCorrect";
 
-    predicate -> setToolTip(QLatin1Literal("Searching..."));
-    predicate -> setStyleSheet(QLatin1Literal("QLineEdit { border: 1px solid green;}"));
+    predicate -> setToolTip(QLatin1String("Searching..."));
+    predicate -> setStyleSheet(QLatin1String("QLineEdit { border: 1px solid green;}"));
 }
 void EditorSearch::predicateHasError(const QString & error) {
     qDebug() << "EditorSearch::predicateHasError" << error;
 
     predicate -> setToolTip(error);
-    predicate -> setStyleSheet(QLatin1Literal("QLineEdit { border: 1px solid red;}"));
+    predicate -> setStyleSheet(QLatin1String("QLineEdit { border: 1px solid red;}"));
 }
 
 void EditorSearch::finded(const int & count) {
     qDebug() << "EditorSearch::finded" << count;
 
     if (count > 0) {
-        predicate -> setStyleSheet(QLatin1Literal());
+        predicate -> setStyleSheet(QLatin1String());
         l1 -> setText(SEARCH_LABEL_TEXT % '\n' % '(' % QString::number(count) % ')');
     } else if (!predicate -> text().isEmpty()) {
-        predicate -> setStyleSheet(QLatin1Literal("QLineEdit { color: #FFFFFF; background-color: rgba(255, 0, 0, .4);}"));
+        predicate -> setStyleSheet(QLatin1String("QLineEdit { color: #FFFFFF; background-color: rgba(255, 0, 0, .4);}"));
         l1 -> setText(SEARCH_LABEL_TEXT);
     }
 
-    predicate -> setToolTip(QLatin1Literal("Found ") + QString::number(count));
+    predicate -> setToolTip(QLatin1String("Found ") + QString::number(count));
 }

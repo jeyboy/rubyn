@@ -12,7 +12,7 @@ QColor TabBar::remote_file_color = QColor(255, 0, 0, 48);
 
 TabBar::TabBar(QWidget * parent) : QListWidget(parent), hscroll_range(-1), _internal_move(false) {
 //    setStyleSheet(
-//        QLatin1Literal(
+//        QLatin1String(
 //            "QListView::item:selected:!active {"
 //            "   background: qlineargradient(x1: 0, y1: 0.5, x2: 0, y2: 1, stop: 0 rgba(177,217,244, .4), stop: 1 rgba(192,224,246, .4));"
 //            "}"

@@ -127,15 +127,15 @@ bool File::identifyType(const QString & name, LexerContext *& _context, const ui
 }
 
 bool File::identifyTypeByShebang(const QString & str, LexerContext *& context) {
-    if (str.startsWith(QLatin1Literal("#!"))) {
-        QRegularExpression regex(QLatin1Literal("\\b(ruby)\\b"), QRegularExpression::CaseInsensitiveOption);
+    if (str.startsWith(QLatin1String("#!"))) {
+        QRegularExpression regex(QLatin1String("\\b(ruby)\\b"), QRegularExpression::CaseInsensitiveOption);
 
         QRegularExpressionMatch match = regex.match(str);
 
         if (match.hasMatch()) {
             QString captured = match.captured(1);
 
-            if (captured.toLower() == QLatin1Literal("ruby")) {
+            if (captured.toLower() == QLatin1String("ruby")) {
                 context -> append(ft_file_rb);
             }
         }

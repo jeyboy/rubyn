@@ -852,25 +852,25 @@
 
 QLatin1String Color::componentName(const Component & c) {
     switch(c) {
-        case cc_alpha: return QLatin1Literal("A");
-        case cc_rgb_r: return QLatin1Literal("R");
-        case cc_rgb_g: return QLatin1Literal("G");
-        case cc_rgb_b: return QLatin1Literal("B");
-        case cc_hsv_h: return QLatin1Literal("H");
-        case cc_hsv_s: return QLatin1Literal("S");
-        case cc_hsv_v: return QLatin1Literal("V");
-        case cc_hsl_h: return QLatin1Literal("H");
-        case cc_hsl_s: return QLatin1Literal("S");
-        case cc_hsl_l: return QLatin1Literal("L");
-        case cc_hwb_h: return QLatin1Literal("H");
-        case cc_hwb_w: return QLatin1Literal("W");
-        case cc_hwb_b: return QLatin1Literal("B");
-        case cc_cmyk_c: return QLatin1Literal("C");
-        case cc_cmyk_m: return QLatin1Literal("M");
-        case cc_cmyk_y: return QLatin1Literal("Y");
-        case cc_cmyk_k: return QLatin1Literal("K");
+        case cc_alpha: return QLatin1String("A");
+        case cc_rgb_r: return QLatin1String("R");
+        case cc_rgb_g: return QLatin1String("G");
+        case cc_rgb_b: return QLatin1String("B");
+        case cc_hsv_h: return QLatin1String("H");
+        case cc_hsv_s: return QLatin1String("S");
+        case cc_hsv_v: return QLatin1String("V");
+        case cc_hsl_h: return QLatin1String("H");
+        case cc_hsl_s: return QLatin1String("S");
+        case cc_hsl_l: return QLatin1String("L");
+        case cc_hwb_h: return QLatin1String("H");
+        case cc_hwb_w: return QLatin1String("W");
+        case cc_hwb_b: return QLatin1String("B");
+        case cc_cmyk_c: return QLatin1String("C");
+        case cc_cmyk_m: return QLatin1String("M");
+        case cc_cmyk_y: return QLatin1String("Y");
+        case cc_cmyk_k: return QLatin1String("K");
 
-        default: return QLatin1Literal("Unknown");
+        default: return QLatin1String("Unknown");
     }
 }
 

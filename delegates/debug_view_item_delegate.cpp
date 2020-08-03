@@ -5,7 +5,7 @@
 
 #include <qpainter.h>
 
-QLatin1String DebugViewItemDelegate::default_text = QLatin1Literal("Evaluate...");
+QLatin1String DebugViewItemDelegate::default_text = QLatin1String("Evaluate...");
 
 DebugViewItemDelegate::DebugViewItemDelegate(QObject * parent) : QStyledItemDelegate(parent) {
 
@@ -57,7 +57,7 @@ void DebugViewItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem
 QWidget * DebugViewItemDelegate::createEditor(QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index) const {
     QWidget * res = QStyledItemDelegate::createEditor(parent, option, index);
 
-    res -> setStyleSheet(QLatin1Literal("border: none;"));
+    res -> setStyleSheet(QLatin1String("border: none;"));
     res -> setMinimumWidth(12);
     res -> setBaseSize(-1, -1);
     res -> setFocus();

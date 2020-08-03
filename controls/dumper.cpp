@@ -27,7 +27,7 @@
 #include <qscrollbar.h>
 
 void Dumper::loadTree(IDEWindow * w, JsonObj & json) {
-    JsonArr arr = json.arr(QLatin1Literal("tree"));
+    JsonArr arr = json.arr(QLatin1String("tree"));
 
     if (arr.isEmpty())
         return;
@@ -49,7 +49,7 @@ void Dumper::saveTree(IDEWindow * w, JsonObj & json) {
         QVariant data = top -> data(0, TREE_FOLDER_UID);
 
         if (data.isNull()) {
-            Logger::error(QLatin1Literal("Dumper"), QLatin1Literal("Cant save project: ") % top -> text(0));
+            Logger::error(QLatin1String("Dumper"), QLatin1String("Cant save project: ") % top -> text(0));
         }
         else {
             IFolder * folder = VariantPtr<IFolder>::asPtr(data);
@@ -57,11 +57,11 @@ void Dumper::saveTree(IDEWindow * w, JsonObj & json) {
         }
     }
 
-    json.insert(QLatin1Literal("tree"), arr);
+    json.insert(QLatin1String("tree"), arr);
 }
 
 void Dumper::loadTabs(IDEWindow * w, JsonObj & json) {
-    QJsonObject editors = json.obj(QLatin1Literal("editors"));
+    QJsonObject editors = json.obj(QLatin1String("editors"));
 
     TabsBlock * active = nullptr;
 
@@ -75,7 +75,7 @@ void Dumper::saveTabs(IDEWindow * w, JsonObj & json) {
     QJsonObject editors_json;
     saveSplitter(w, w -> widgets_list, editors_json);
 
-    json.insert(QLatin1Literal("editors"), editors_json);
+    json.insert(QLatin1String("editors"), editors_json);
 }
 
 void Dumper::saveTab(IDEWindow * w, TabsBlock * editor, QJsonObject & widget_obj) {
@@ -88,16 +88,16 @@ void Dumper::saveTab(IDEWindow * w, TabsBlock * editor, QJsonObject & widget_obj
 
         if (!tab_path.isNull()) {
             QJsonObject tab_data;
-            tab_data.insert(QLatin1Literal("path"), tab_path);
+            tab_data.insert(QLatin1String("path"), tab_path);
 
             QVariant state;
             if (editor -> tabDumpState(j, state))
-                tab_data.insert(QLatin1Literal("state"), QJsonValue::fromVariant(state));
+                tab_data.insert(QLatin1String("state"), QJsonValue::fromVariant(state));
 
             QPoint scroll_data = editor -> tabScrollPos(j);
 
-            tab_data.insert(QLatin1Literal("scroll_x"), scroll_data.x());
-            tab_data.insert(QLatin1Literal("scroll_y"), scroll_data.y());
+            tab_data.insert(QLatin1String("scroll_x"), scroll_data.x());
+            tab_data.insert(QLatin1String("scroll_y"), scroll_data.y());
 
             tabs_arr.append(tab_data);
         }
@@ -106,17 +106,17 @@ void Dumper::saveTab(IDEWindow * w, TabsBlock * editor, QJsonObject & widget_obj
     QString curr_path = editor -> currentTabFilePath();
 
     if (!curr_path.isNull())
-        widget_obj.insert(QLatin1Literal("current"), curr_path);
+        widget_obj.insert(QLatin1String("current"), curr_path);
 
-    widget_obj.insert(QLatin1Literal("tabs"), tabs_arr);
+    widget_obj.insert(QLatin1String("tabs"), tabs_arr);
 
     QPoint scroll_val = editor -> currentTabScrollPos();
 
-    widget_obj.insert(QLatin1Literal("scroll_x"), scroll_val.x());
-    widget_obj.insert(QLatin1Literal("scroll_y"), scroll_val.y());
+    widget_obj.insert(QLatin1String("scroll_x"), scroll_val.x());
+    widget_obj.insert(QLatin1String("scroll_y"), scroll_val.y());
 
     if (w -> active_editor == editor)
-        widget_obj.insert(QLatin1Literal("is_active"), true);
+        widget_obj.insert(QLatin1String("is_active"), true);
 }
 
 void Dumper::saveSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
@@ -133,13 +133,13 @@ void Dumper::saveSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
             if (limit == 0)
                 continue;
 
-            json.insert(QLatin1Literal("type"), "e");
+            json.insert(QLatin1String("type"), "e");
             saveTab(w, editor, json);
         } else {
             QSplitter * splitter = qobject_cast<QSplitter *>(widget);
 
             if (splitter) {
-                json.insert(QLatin1Literal("type"), "s");
+                json.insert(QLatin1String("type"), "s");
                 saveSplitter(w, splitter, json);
             } else {
                 qDebug() << "PIPI";
@@ -150,15 +150,15 @@ void Dumper::saveSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj) {
         arr << json;
     }
 
-    obj.insert(QLatin1Literal("dir"), list -> orientation());
-    obj.insert(QLatin1Literal("sizes"), intArrToStr(list -> sizes()));
-    obj.insert(QLatin1Literal("child"), arr);
+    obj.insert(QLatin1String("dir"), list -> orientation());
+    obj.insert(QLatin1String("sizes"), intArrToStr(list -> sizes()));
+    obj.insert(QLatin1String("child"), arr);
 }
 
 void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, TabsBlock *& active) {
-    list -> setOrientation(static_cast<Qt::Orientation>(obj.value(QLatin1Literal("dir")).toInt()));
+    list -> setOrientation(static_cast<Qt::Orientation>(obj.value(QLatin1String("dir")).toInt()));
 
-    QJsonArray children = obj.value(QLatin1Literal("child")).toArray();
+    QJsonArray children = obj.value(QLatin1String("child")).toArray();
 
     if (children.isEmpty())
         return;
@@ -166,27 +166,27 @@ void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, Ta
     for(QJsonArray::Iterator child = children.begin(); child != children.end(); child++) {
         JsonObj child_obj = (*child).toObject();
 
-        if (child_obj.string(QLatin1Literal("type")) == QLatin1Literal("e")) {           
-            QString curr_path = child_obj.string(QLatin1Literal("current"));
+        if (child_obj.string(QLatin1String("type")) == QLatin1String("e")) {
+            QString curr_path = child_obj.string(QLatin1String("current"));
 
-            QPoint scroll_data(child_obj.integer(QLatin1Literal("scroll_x")), child_obj.integer(QLatin1Literal("scroll_y")));
+            QPoint scroll_data(child_obj.integer(QLatin1String("scroll_x")), child_obj.integer(QLatin1String("scroll_y")));
 
-            JsonArr items = child_obj.arr(QLatin1Literal("tabs"));
+            JsonArr items = child_obj.arr(QLatin1String("tabs"));
             int index = 0, counter = 0;
 
             w -> setupEditor(list);
 
-            if (child_obj.hasKey(QLatin1Literal("is_active")))
+            if (child_obj.hasKey(QLatin1String("is_active")))
                 active = w -> active_editor;
 
             for(JsonArr::Iterator item = items.begin(); item != items.end(); item++, counter++) {
                 QJsonObject obj = (*item).toObject();
 
-                QString path = obj.value(QLatin1Literal("path")).toString();
-                QVariant state = obj.value(QLatin1Literal("state")).toVariant();
+                QString path = obj.value(QLatin1String("path")).toString();
+                QVariant state = obj.value(QLatin1String("state")).toVariant();
 
 
-                QPoint tab_scroll_data(obj.value(QLatin1Literal("scroll_x")).toInt(), obj.value(QLatin1Literal("scroll_y")).toInt());
+                QPoint tab_scroll_data(obj.value(QLatin1String("scroll_x")).toInt(), obj.value(QLatin1String("scroll_y")).toInt());
 
                 if (path == curr_path) {
                     index = counter;
@@ -205,11 +205,11 @@ void Dumper::loadSplitter(IDEWindow * w, QSplitter * list, QJsonObject & obj, Ta
         }
     }
 
-    list -> setSizes(strToIntArr(obj.value(QLatin1Literal("sizes")).toString()));
+    list -> setSizes(strToIntArr(obj.value(QLatin1String("sizes")).toString()));
 }
 
 void Dumper::loadConsoles(IDEWindow * w, JsonObj & json) {
-    QJsonArray consoles = json.arr(QLatin1Literal("consoles"));
+    QJsonArray consoles = json.arr(QLatin1String("consoles"));
 
     if (consoles.isEmpty())
         return;
@@ -232,11 +232,11 @@ void Dumper::saveConsoles(IDEWindow * w, JsonObj & json) {
     }
 
     if (ar.size() > 0)
-        json.insert(QLatin1Literal("consoles"), ar);
+        json.insert(QLatin1String("consoles"), ar);
 }
 
 void Dumper::loadProjectWidgets(IDEWindow * w, JsonObj & json) {
-    QJsonArray pro_widgets = json.arr(QLatin1Literal("pro_widgets"));
+    QJsonArray pro_widgets = json.arr(QLatin1String("pro_widgets"));
 
     if (pro_widgets.isEmpty())
         return;
@@ -262,13 +262,13 @@ void Dumper::saveProjectWidgets(IDEWindow * w, JsonObj & json) {
 
         if (project_widget) {
             QJsonObject obj = project_widget -> save();
-            obj.insert(QLatin1Literal("header"), (*it) -> windowTitle());
+            obj.insert(QLatin1String("header"), (*it) -> windowTitle());
             ar << obj;
         }
     }
 
     if (ar.size() > 0)
-        json.insert(QLatin1Literal("pro_widgets"), ar);
+        json.insert(QLatin1String("pro_widgets"), ar);
 }
 
 
@@ -303,7 +303,7 @@ QList<int> Dumper::strToIntArr(const QString & str) {
 void Dumper::load(IDEWindow * w, const QString & settings_filename) {
     QSettings settings(Dir::appPath(settings_filename), QSettings::IniFormat, w);
 
-    QVariant data = settings.value(QLatin1Literal("data"));
+    QVariant data = settings.value(QLatin1String("data"));
 
     if (data.isValid()) {
         JsonObj obj = JsonObj::fromJsonStr(data.toString());
@@ -314,7 +314,7 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
         loadConsoles(w, obj);
     }
 
-    QVariant geometry_state = settings.value(QLatin1Literal("geometry"));
+    QVariant geometry_state = settings.value(QLatin1String("geometry"));
     if (geometry_state.isValid())
         w -> restoreGeometry(geometry_state.toByteArray());
 
@@ -323,7 +323,7 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
 //    ///////////////////////////////////////////////////////////
     locationCorrection(w);
 
-    QVariant obj_state = settings.value(QLatin1Literal("state"));
+    QVariant obj_state = settings.value(QLatin1String("state"));
     if (obj_state.isValid())
         w -> restoreState(obj_state.toByteArray());
     ///////////////////////////////////////////////////////////
@@ -333,12 +333,12 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
 //        showMaximized();
 //    }
 
-    QVariant tree_state = settings.value(QLatin1Literal("tree_state"));
+    QVariant tree_state = settings.value(QLatin1String("tree_state"));
     if (tree_state.isValid()) {
         w -> tree -> restoreState(tree_state.toByteArray());
     }
 
-    QVariant tree_pos = settings.value(QLatin1Literal("tree_pos"));
+    QVariant tree_pos = settings.value(QLatin1String("tree_pos"));
     if (tree_pos.isValid()) {
         QScrollBar * scroll = w -> tree -> verticalScrollBar();
         scroll -> setProperty("last_pos", tree_pos);
@@ -347,15 +347,15 @@ void Dumper::load(IDEWindow * w, const QString & settings_filename) {
         connect(scroll, SIGNAL(rangeChanged(int,int)), this, SLOT(scrollRangeChanged(int,int)));
     }
 
-    QVariant widgets_list_geom = settings.value(QLatin1Literal("widgets_list_geom"));
+    QVariant widgets_list_geom = settings.value(QLatin1String("widgets_list_geom"));
     if (widgets_list_geom.isValid())
         w -> widgets_list -> restoreGeometry(widgets_list_geom.toByteArray());
 
-    QVariant widgets_list_state = settings.value(QLatin1Literal("widgets_list_state"));
+    QVariant widgets_list_state = settings.value(QLatin1String("widgets_list_state"));
     if (widgets_list_state.isValid())
         w -> widgets_list -> restoreState(widgets_list_state.toByteArray());
 
-    QVariant active_editor_index = settings.value(QLatin1Literal("active_editor_index"));
+    QVariant active_editor_index = settings.value(QLatin1String("active_editor_index"));
 
     if (active_editor_index.isValid()) {
         TabsBlock * active = dynamic_cast<TabsBlock *>(w -> widgets_list -> widget(active_editor_index.toInt()));
@@ -374,15 +374,15 @@ void Dumper::save(IDEWindow * w, const QString & settings_filename) {
     saveConsoles(w, obj);
     saveProjectWidgets(w, obj);
 
-    settings.setValue(QLatin1Literal("data"), obj.toJsonStr());
-    settings.setValue(QLatin1Literal("geometry"), w -> saveGeometry());
-    settings.setValue(QLatin1Literal("state"), w -> saveState());
-    settings.setValue(QLatin1Literal("tree_state"), w -> tree -> saveState());
-    settings.setValue(QLatin1Literal("tree_pos"), w -> tree -> verticalScrollBar() -> value());
+    settings.setValue(QLatin1String("data"), obj.toJsonStr());
+    settings.setValue(QLatin1String("geometry"), w -> saveGeometry());
+    settings.setValue(QLatin1String("state"), w -> saveState());
+    settings.setValue(QLatin1String("tree_state"), w -> tree -> saveState());
+    settings.setValue(QLatin1String("tree_pos"), w -> tree -> verticalScrollBar() -> value());
 
-    settings.setValue(QLatin1Literal("widgets_list_state"), w -> widgets_list -> saveState());
-    settings.setValue(QLatin1Literal("widgets_list_geom"), w -> widgets_list -> saveGeometry());
-    settings.setValue(QLatin1Literal("active_editor_index"), w -> widgets_list -> indexOf(w -> active_editor));
+    settings.setValue(QLatin1String("widgets_list_state"), w -> widgets_list -> saveState());
+    settings.setValue(QLatin1String("widgets_list_geom"), w -> widgets_list -> saveGeometry());
+    settings.setValue(QLatin1String("active_editor_index"), w -> widgets_list -> indexOf(w -> active_editor));
 
     settings.sync();
 }

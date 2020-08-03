@@ -158,7 +158,7 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 //        Logger::obj().startMark();
 //        Html::Page page(&f); //, Html::Decoding::charset_utf8, Html::Page::pf_skip_comment);
 //        page.findFirst(">a");
-//        Logger::obj().endMark(QLatin1Literal("HTML"), QLatin1Literal("parsing"));
+//        Logger::obj().endMark(QLatin1String("HTML"), QLatin1String("parsing"));
 //        page.output();
 
 //        f.close();
@@ -166,23 +166,23 @@ IDEWindow::IDEWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::IDEWind
 
 //    RubyDocParser parser;
 
-//    parser.parse(QLatin1Literal("F://rubyn test//ruby_t"));
-//    parser.saveParsedDatum(QLatin1Literal("F://rubyn test//ruby_t_parsed"));
+//    parser.parse(QLatin1String("F://rubyn test//ruby_t"));
+//    parser.saveParsedDatum(QLatin1String("F://rubyn test//ruby_t_parsed"));
 
 
-//    RubydocParser().parseFile(QLatin1Literal("F://rubyn test//Array.html"), QLatin1Literal("F://rubyn test//array.rb"));
-//    RubydocParser().initParseFile(QLatin1Literal("F://rubyn test//"), QLatin1Literal("Encoding.html"), QLatin1Literal("F://rubyn test//encoding.rb"));
+//    RubydocParser().parseFile(QLatin1String("F://rubyn test//Array.html"), QLatin1String("F://rubyn test//array.rb"));
+//    RubydocParser().initParseFile(QLatin1String("F://rubyn test//"), QLatin1String("Encoding.html"), QLatin1String("F://rubyn test//encoding.rb"));
 
 //    Logger::obj().startMark();
 
-////    parser.parse(QLatin1Literal("F://rubyn test//111"));
+////    parser.parse(QLatin1String("F://rubyn test//111"));
 
-//    parser.parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_core"));
-//    parser.parse(QLatin1Literal("F://rubyn test//ruby_2_5_1_stdlib"));
+//    parser.parse(QLatin1String("F://rubyn test//ruby_2_5_1_core"));
+//    parser.parse(QLatin1String("F://rubyn test//ruby_2_5_1_stdlib"));
 
-//    parser.saveParsedDatum(QLatin1Literal("F://rubyn test//ruby_2_5_1_parsed"));
+//    parser.saveParsedDatum(QLatin1String("F://rubyn test//ruby_2_5_1_parsed"));
 
-//    Logger::obj().endMark(QLatin1Literal("Rubydoc"), QLatin1Literal("parsing"));
+//    Logger::obj().endMark(QLatin1String("Rubydoc"), QLatin1String("parsing"));
 }
 
 IDEWindow::~IDEWindow() {
@@ -195,7 +195,7 @@ IDEWindow::~IDEWindow() {
 
 
 ConsoleWidget * IDEWindow::createConsole(const QString & path, const bool & read_only) {
-    return new ConsoleWidget(read_only, path, QLatin1Literal("#"), QString(), this);
+    return new ConsoleWidget(read_only, path, QLatin1String("#"), QString(), this);
 }
 
 void IDEWindow::setupConsole(ConsoleWidget * console, const QString & header) {
@@ -317,7 +317,7 @@ void IDEWindow::fileOpenRequired(const QString & name, void * folder, const bool
 
     if (_file == nullptr) {
         qDebug() << "FILE IS NULL";
-        Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Cant find file: '") % name % '\'');
+        Logger::error(QLatin1String("IDE"), QLatin1String("Cant find file: '") % name % '\'');
         delete reg_exp;
         return;
     }
@@ -464,12 +464,12 @@ void IDEWindow::openResource(TabsBlock * target_editor, const QUrl & url) {
 
         if (File::isFolder(url)) {
 //            openFolder(url);
-            Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Unsupported resource: DIR: '") % url.toString() % '\'');
+            Logger::error(QLatin1String("IDE"), QLatin1String("Unsupported resource: DIR: '") % url.toString() % '\'');
         } else {
             openFile(url);
         }
     } else {
-        Logger::error(QLatin1Literal("IDE"), QLatin1Literal("Unsupported resource: '") % url.toString() % '\'');
+        Logger::error(QLatin1String("IDE"), QLatin1String("Unsupported resource: '") % url.toString() % '\'');
     }
 }
 
@@ -506,7 +506,7 @@ void IDEWindow::openFolder(const QUrl & url) {
     if (folder_url.isEmpty()) {
         folder_url =
             QUrl::fromLocalFile(
-                QFileDialog::getExistingDirectory(this, QLatin1Literal("Select Project Folder"), QDir::currentPath())
+                QFileDialog::getExistingDirectory(this, QLatin1String("Select Project Folder"), QDir::currentPath())
             );
     }
 
@@ -594,7 +594,7 @@ void IDEWindow::configSplitter(QSplitter * splitter, const bool & vertical) {
     splitter -> setOrientation(vertical ? Qt::Vertical : Qt::Horizontal);
 
     splitter -> setStyleSheet(
-            QLatin1Literal(
+            QLatin1String(
                 "QSplitter::handle {"
                 "   border: 2px solid #ddd;"
                 "   background-color: #555;"
@@ -674,7 +674,7 @@ void IDEWindow::setupToolWindows() {
 
     DockWidget * widget =
         DockWidgets::obj().createWidget(
-            QLatin1Literal("Files"),
+            QLatin1String("Files"),
             tree,
             Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea
         );
@@ -683,8 +683,8 @@ void IDEWindow::setupToolWindows() {
     widget -> setBehaviour(DockWidget::dwf_movable);
 
     DockWidgets::obj().append(widget);
-    QToolButton * search_target_btn = widget -> insertHeaderButton(QIcon(QLatin1Literal(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 0);
-    search_target_btn -> setToolTip(QLatin1Literal("Scroll to current active document"));
+    QToolButton * search_target_btn = widget -> insertHeaderButton(QIcon(QLatin1String(":/tools/show_target")), this, SLOT(selectCurrentFileInTree()), 0);
+    search_target_btn -> setToolTip(QLatin1String("Scroll to current active document"));
 
     connect(tree, SIGNAL(consoleRequired(const QString &)), this, SLOT(setupConsole(const QString &)));
 
@@ -711,7 +711,7 @@ void IDEWindow::setupToolWindows() {
 
     run_config = new RunMenu(this);
 
-    QToolBar * control_bar = Toolbars::obj().createWidget(QLatin1Literal("Controls"));
+    QToolBar * control_bar = Toolbars::obj().createWidget(QLatin1String("Controls"));
 
     run_config -> buildPanel(control_bar);
 
@@ -727,14 +727,14 @@ void IDEWindow::setupToolWindows() {
 
     control_bar -> addSeparator();
 
-    QAction * _color_picker = control_bar -> addAction(QIcon(QLatin1Literal(":/tools/color_picker")), QLatin1Literal());
+    QAction * _color_picker = control_bar -> addAction(QIcon(QLatin1String(":/tools/color_picker")), QLatin1String());
     _color_picker -> setCheckable(true);
     _color_picker -> setChecked(color_picker_widget -> isVisible());
     connect(_color_picker, &QAction::triggered, [=]() { color_picker_widget -> setVisible(!color_picker_widget -> isVisible()); _color_picker -> setChecked(color_picker_widget -> isVisible()); });
 
     control_bar -> addSeparator();
 
-    QAction * _save_doc = control_bar -> addAction(QIcon(QLatin1Literal(":/tools/save")), QLatin1Literal());
+    QAction * _save_doc = control_bar -> addAction(QIcon(QLatin1String(":/tools/save")), QLatin1String());
     connect(_save_doc, SIGNAL(triggered()), this, SLOT(saveEditor()));
 
     control_bar -> layout();
@@ -743,11 +743,11 @@ void IDEWindow::setupToolWindows() {
 }
 
 void IDEWindow::setupLogWindow() {
-    Logger::obj().initiate(QLatin1Literal("loh.txt"), true);
+    Logger::obj().initiate(QLatin1String("loh.txt"), true);
 
     DockWidget * log_widget =
         DockWidgets::obj().createWidget(
-            QLatin1Literal("Loh"),
+            QLatin1String("Loh"),
             Logger::obj().getEditor(),
             Qt::BottomDockWidgetArea
         );
@@ -763,7 +763,7 @@ void IDEWindow::setupSearchWindow() {
 
     DockWidget * project_search_widget =
         DockWidgets::obj().createWidget(
-            QLatin1Literal("Search"),
+            QLatin1String("Search"),
             project_search_panel,
             Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea
         );
@@ -788,7 +788,7 @@ void IDEWindow::setupColorBoxWindow() {
     color_picker = new ColorPicker(this);
     color_picker_widget =
         DockWidgets::obj().createWidget(
-            QLatin1Literal("Color"),
+            QLatin1String("Color"),
             color_picker,
             Qt::AllDockWidgetAreas
         );
@@ -813,7 +813,7 @@ QWidget * IDEWindow::findEditor(QSplitter * active_table) {
         widget = active_table -> widget(0);
 
         if (!widget) {
-            Logger::error(QLatin1Literal("editorIsEmpty"), QLatin1Literal("incorrect editors table state"));
+            Logger::error(QLatin1String("editorIsEmpty"), QLatin1String("incorrect editors table state"));
             break;
         }
 

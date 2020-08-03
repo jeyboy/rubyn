@@ -11,7 +11,7 @@
 DebugPanel::DebugPanel(QWidget * parent) : QWidget(parent), view(nullptr), new_itm(nullptr) {
     view = new DebugView(this);
     view -> setColumnCount(3);
-    view -> setHeaderLabels(QStringList() << QString() << QLatin1Literal("Name") << QLatin1Literal("Value"));
+    view -> setHeaderLabels(QStringList() << QString() << QLatin1String("Name") << QLatin1String("Value"));
     view -> setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 //    view -> setWordWrap(true);
     view -> setAlternatingRowColors(true);
@@ -36,18 +36,18 @@ DebugPanel::DebugPanel(QWidget * parent) : QWidget(parent), view(nullptr), new_i
     control_panel -> setIconSize(QSize(18, 18));
 
     QToolButton * btn0 = new QToolButton(control_panel);
-    btn0 -> setIcon(QIcon(QLatin1Literal(":/add")));
-    btn0 -> setToolTip(QLatin1Literal("Add"));
+    btn0 -> setIcon(QIcon(QLatin1String(":/add")));
+    btn0 -> setToolTip(QLatin1String("Add"));
     control_panel -> addWidget(btn0);
 
     QToolButton * btn1 = new QToolButton(control_panel);
-    btn1 -> setIcon(QIcon(QLatin1Literal(":/remove")));
-    btn1 -> setToolTip(QLatin1Literal("Remove"));
+    btn1 -> setIcon(QIcon(QLatin1String(":/remove")));
+    btn1 -> setToolTip(QLatin1String("Remove"));
     control_panel -> addWidget(btn1);
 
     QToolButton * btn2 = new QToolButton(control_panel);
-    btn2 -> setIcon(QIcon(QLatin1Literal(":/clear")));
-    btn2 -> setToolTip(QLatin1Literal("Clear"));
+    btn2 -> setIcon(QIcon(QLatin1String(":/clear")));
+    btn2 -> setToolTip(QLatin1String("Clear"));
     control_panel -> addWidget(btn2);
 
     l -> addWidget(control_panel, 0);

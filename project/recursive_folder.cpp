@@ -18,7 +18,7 @@ void RecursiveFolder::proc(const uint & project_uid, QTreeWidgetItem * view_item
             _folders.insert(dir_name, folder);
         } else {
             QString source = dir_path % '/' % dir_name;
-            QString msg = QLatin1Literal("Cant process");
+            QString msg = QLatin1String("Cant process");
 
             emit Projects::obj().errorOccurred(source, msg);
             delete folder;
@@ -71,6 +71,7 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
 //        (Folder *)view_item -> data(0, TREE_FOLDER_UID).value<void *>() -> name();
 
     proc(project_uid, view_item, path, color, 0);
+    view_item -> sortChildren(Qt::DisplayRole, Qt::AscendingOrder);
 
     if (color_clearing_required) {
         delete color;
@@ -100,6 +101,8 @@ RecursiveFolder::RecursiveFolder(const uint & project_uid, IFolder * parent, QTr
     }
 
     proc(project_uid, curr_view_item, fullPath(), color, level);
+
+    curr_view_item -> sortChildren(Qt::DisplayRole, Qt::AscendingOrder);
 
     if (color_clearing_required) {
         delete color;

@@ -61,14 +61,14 @@ Proxy * Proxy::findinSource1(const ManagerProxyType & ptype, const QByteArray & 
         query.addQueryItem(LSTR("country"), cell -> name2letters);
     }
 
-    QUrl url = QUrl(QLatin1Literal("http://gimmeproxy.com/api/getProxy"));
+    QUrl url = QUrl(QLatin1String("http://gimmeproxy.com/api/getProxy"));
     url.setQuery(query);
 
     Response * resp = Manager::procGet(url);
 
     Json json = resp -> toJson();
 
-    if (json.hasKey(QLatin1Literal("ip"))) {
+    if (json.hasKey(QLatin1String("ip"))) {
         return new Proxy(
             (ManagerProxyType)(
                 strToType(json.string(LSTR("type"))) |
@@ -109,7 +109,7 @@ Proxy * Proxy::findinSource2(const ManagerProxyType & ptype, const QByteArray & 
         query.addQueryItem(LSTR("c"), cell -> name2letters);
     }
 
-    QUrl url = QUrl(QLatin1Literal("http://www.freeproxylists.net/"));
+    QUrl url = QUrl(QLatin1String("http://www.freeproxylists.net/"));
     url.setQuery(query);
 
     int page_num = 1;
@@ -171,7 +171,7 @@ Proxy * Proxy::findinSource3(const ManagerProxyType & ptype, const QByteArray & 
     if (!country.isEmpty() && !ccell)
         return 0;
 
-    QUrl url = QUrl(QLatin1Literal("https://www.socks-proxy.net/"));
+    QUrl url = QUrl(QLatin1String("https://www.socks-proxy.net/"));
 
     Response * resp = Manager::procGet(url);
 

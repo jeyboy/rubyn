@@ -9,7 +9,7 @@ QToolBar * Toolbars::createWidget(const QString & name, const Qt::ToolBarArea & 
     bar -> setAllowedAreas(areas);
 
     bar -> setStyleSheet(
-        QLatin1Literal(
+        QLatin1String(
             "QToolBar {"
             "   border: 2px solid #ddd;"
             "   background-color: #555;"

@@ -32,7 +32,7 @@ Completer::Completer(QObject * parent) : QCompleter(parent), mdl(new QStandardIt
 
     popup() -> setIconSize(QSize(22, 22));
     popup() -> setStyleSheet(
-        QLatin1Literal(
+        QLatin1String(
             "   selection-background-color: rgba(135, 206, 250, 0.2);"
             "   selection-color: black;"
         )

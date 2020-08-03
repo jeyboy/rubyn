@@ -65,11 +65,11 @@ void TabsBlock::setupLayout() {
     row_layout -> addWidget(_scroll_right_btn, 0);
 
 
-    _files_list = new QMenu(QLatin1Literal("Files"), this);
+    _files_list = new QMenu(QLatin1String("Files"), this);
 
     _list_btn = new QToolButton(this);
-    _list_btn -> setText(QLatin1Literal("0"));
-    _list_btn -> setIcon(QIcon(QLatin1Literal(":/list")));
+    _list_btn -> setText(QLatin1String("0"));
+    _list_btn -> setIcon(QIcon(QLatin1String(":/list")));
     _list_btn -> setFixedHeight(_bar -> height());
     _list_btn -> setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     _list_btn -> setPopupMode(QToolButton::InstantPopup);
@@ -284,13 +284,13 @@ void TabsBlock::currentTabChanged(QListWidgetItem * tab) {
     File * file = _bar -> tabFile(tab);
 
     if (!file) {
-        Logger::error(QLatin1Literal("Editor"), QLatin1Literal("Internal error: can't find file: ") % file -> name());
+        Logger::error(QLatin1String("Editor"), QLatin1String("Internal error: can't find file: ") % file -> name());
         return;
     }
 
     if (_editor -> documentUid() != file -> uid()) {
         if (!_editor -> openFile(file)) {
-            Logger::error(QLatin1Literal("Editor"), QLatin1Literal("Can't open file: ") % file -> name());
+            Logger::error(QLatin1String("Editor"), QLatin1String("Can't open file: ") % file -> name());
             return;
         }
     }
@@ -355,21 +355,21 @@ void TabsBlock::showTabsContextMenu(const QPoint & point) {
 
         File * file = _bar -> tabFile(tab);
 
-        QAction * action = menu.addAction(QIcon(QLatin1Literal(":/menu/close")), tr("Close"), this, SLOT(closeCurrentTab()));
+        QAction * action = menu.addAction(QIcon(QLatin1String(":/menu/close")), tr("Close"), this, SLOT(closeCurrentTab()));
         action -> setProperty("uid", file -> uid());
 
-        action = menu.addAction(QIcon(QLatin1Literal(":/menu/close_other")), tr("Close other"), this, SLOT(closeExceptCurrentTab()));
+        action = menu.addAction(QIcon(QLatin1String(":/menu/close_other")), tr("Close other"), this, SLOT(closeExceptCurrentTab()));
         action -> setProperty("uid", file -> uid());
 
-        action = menu.addAction(QIcon(QLatin1Literal(":/menu/close_all")), tr("Close all"), this, SLOT(clear()));
+        action = menu.addAction(QIcon(QLatin1String(":/menu/close_all")), tr("Close all"), this, SLOT(clear()));
 
         menu.addSeparator();
 
-        action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_horizontal")), tr("Split"), this, SLOT(newTabsBlockRequest()));
+        action = menu.addAction(QIcon(QLatin1String(":/menu/break_horizontal")), tr("Split"), this, SLOT(newTabsBlockRequest()));
         action -> setProperty("uid", file -> uid());
         action -> setProperty("vertical", false);
 
-        action = menu.addAction(QIcon(QLatin1Literal(":/menu/break_vertical")), tr("Split"), this, SLOT(newTabsBlockRequest()));
+        action = menu.addAction(QIcon(QLatin1String(":/menu/break_vertical")), tr("Split"), this, SLOT(newTabsBlockRequest()));
         action -> setProperty("uid", file -> uid());
         action -> setProperty("vertical", true);
 

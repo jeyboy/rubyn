@@ -36,7 +36,7 @@ void ColorPicker::setuplayout() {
 
     l -> setContentsMargins(1, 1, 1, 1);
 
-    QLabel * hex_label = new QLabel(QLatin1Literal("Hex"), this);
+    QLabel * hex_label = new QLabel(QLatin1String("Hex"), this);
     QFont f = hex_label -> font();
     f.setBold(true);
     f.setKerning(true);
@@ -55,22 +55,22 @@ void ColorPicker::setuplayout() {
 
     metrics_list = new QComboBox(this);
     metrics_list -> setEditable(false);
-    metrics_list -> addItem(QLatin1Literal("0.0-1.0"), Color::cm_proportional);
-    metrics_list -> addItem(QLatin1Literal("0-255"), Color::cm_ranged);
-    metrics_list -> addItem(QLatin1Literal("0-100%"), Color::cm_percentage);
+    metrics_list -> addItem(QLatin1String("0.0-1.0"), Color::cm_proportional);
+    metrics_list -> addItem(QLatin1String("0-255"), Color::cm_ranged);
+    metrics_list -> addItem(QLatin1String("0-100%"), Color::cm_percentage);
     l -> addWidget(metrics_list, 0, 4);
 
-    metrics_list -> setCurrentText(QLatin1Literal("0-255"));
+    metrics_list -> setCurrentText(QLatin1String("0-255"));
     color_metric = Color::cm_ranged;
     connect(metrics_list, SIGNAL(currentIndexChanged(int)), this, SLOT(metricSelectionChanged(int)));
 
 
     QList<QPair<Color::Namespace, QLatin1String> > names = {
-        QPair<Color::Namespace, QLatin1String>(Color::Rgb, QLatin1Literal("RGB")),
-        QPair<Color::Namespace, QLatin1String>(Color::Hsv, QLatin1Literal("HSV")),
-        QPair<Color::Namespace, QLatin1String>(Color::Hsl, QLatin1Literal("HSL")),
-        QPair<Color::Namespace, QLatin1String>(Color::Cmyk, QLatin1Literal("CMYK")),
-        QPair<Color::Namespace, QLatin1String>(Color::Hwb, QLatin1Literal("HWB")),
+        QPair<Color::Namespace, QLatin1String>(Color::Rgb, QLatin1String("RGB")),
+        QPair<Color::Namespace, QLatin1String>(Color::Hsv, QLatin1String("HSV")),
+        QPair<Color::Namespace, QLatin1String>(Color::Hsl, QLatin1String("HSL")),
+        QPair<Color::Namespace, QLatin1String>(Color::Cmyk, QLatin1String("CMYK")),
+        QPair<Color::Namespace, QLatin1String>(Color::Hwb, QLatin1String("HWB")),
     };
     QList<QPair<Color::Namespace, QLatin1String> >::Iterator it = names.begin();
 
@@ -120,7 +120,7 @@ void ColorPicker::setuplayout() {
 //    QToolButton * down_toggle_btn = new QToolButton(this);
 //    down_toggle_btn -> setFixedHeight(12);
 //    down_toggle_btn -> setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-//    down_toggle_btn -> setText(QLatin1Literal("\\/"));
+//    down_toggle_btn -> setText(QLatin1String("\\/"));
 //    down_toggle_btn -> setStyleSheet("background-color: rgba(0,255,0, .2)");
 //    l -> addWidget(down_toggle_btn, 8, 11, 1, 5);
 
@@ -139,7 +139,7 @@ void ColorPicker::setuplayout() {
     //    left_toggle_btn -> setFixedWidth(12);
     ////    left_toggle_btn -> setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
     //    left_toggle_btn -> setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    //    left_toggle_btn -> setText(QLatin1Literal("<"));
+    //    left_toggle_btn -> setText(QLatin1String("<"));
     //    left_toggle_btn -> setStyleSheet("background-color: rgba(0,255,0, .2)");
     //    l -> addWidget(left_toggle_btn, 0, 10, 9, 1);
     ////    left_toggle_btn -> setVisible(false);
@@ -234,7 +234,7 @@ void ColorPicker::colorSpaceChanged(const int & new_namespace) {
             row3 -> change(Color::cc_hwb_b, color_metric);
         break;}
 
-        default: Logger::error(QLatin1Literal("ColorPicker"), QLatin1Literal("colorSpaceChanged: unknown namespace"));
+        default: Logger::error(QLatin1String("ColorPicker"), QLatin1String("colorSpaceChanged: unknown namespace"));
     };
 
     row_alpha -> change(Color::cc_alpha, color_metric);

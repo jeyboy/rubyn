@@ -18,7 +18,7 @@ class BreakpointsPanel : public QWidget {
 
     QListWidgetItem * active_breakpoint;
     inline QString buildName(const QString & path, const EDITOR_POS_TYPE & line_num) {
-        return path.section('/', -2) + QLatin1Literal(" (") + QString::number(line_num + 1) + ')';
+        return path.section('/', -2) + QLatin1String(" (") + QString::number(line_num + 1) + ')';
     }
 public:
     BreakpointsPanel(QWidget * parent = nullptr);

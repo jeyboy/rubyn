@@ -1,7 +1,7 @@
 #include "idocument.h"
 #include "project/file.h"
 
-QLatin1String IDocument::tab_space = QLatin1Literal("  ");
+QLatin1String IDocument::tab_space = QLatin1String("  ");
 
 QHash<QChar, bool> IDocument::word_boundary = {
     {'~', true}, {'#', true}, {'%', true},

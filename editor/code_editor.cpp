@@ -522,7 +522,7 @@ void CodeEditor::drawFoldingOverlays(QPainter & painter, const QRect & target_re
         if (it -> user_data && it -> user_data -> isFolded()) {
             if (it -> folding_overlay_text.isNull()) {
                 wrapper -> paraOpositionStr(it -> user_data -> para_control -> para_type, it -> folding_overlay_text);
-                it -> folding_overlay_text = QLatin1Literal("...") % it -> folding_overlay_text;
+                it -> folding_overlay_text = QLatin1String("...") % it -> folding_overlay_text;
             }
 
             EDITOR_POS_TYPE text_pos = it -> block_length - 1;
@@ -1109,7 +1109,7 @@ void CodeEditor::extraAreaPaintEvent(QPaintEvent * event) {
 
     event -> accept();
 
-//    Logger::obj().endMark(false, QLatin1Literal("extraAreaPaintEvent"));
+//    Logger::obj().endMark(false, QLatin1String("extraAreaPaintEvent"));
 }
 
 
@@ -1459,7 +1459,7 @@ void CodeEditor::paintEvent(QPaintEvent * e) {
 
     e -> accept();
 
-//    Logger::obj().endMark(false, QLatin1Literal("paintEvent"));
+//    Logger::obj().endMark(false, QLatin1String("paintEvent"));
 }
 
 void CodeEditor::resizeEvent(QResizeEvent * e) {
@@ -2132,7 +2132,7 @@ void CodeEditor::highlightCurrentLine() {
     }
 
     emit cursorPosChanged(
-        QLatin1Literal("Line: ") % QString::number(curr_block_number + 1) % QLatin1Literal(", Col: ") % QString::number(pos_in_block)
+        QLatin1String("Line: ") % QString::number(curr_block_number + 1) % QLatin1String(", Col: ") % QString::number(pos_in_block)
     );
 
     if (display_cacher -> size() > 0)

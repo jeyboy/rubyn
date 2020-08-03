@@ -12,9 +12,9 @@ QString FilesProcManager::data_path;
 QString FilesProcManager::tools_path;
 
 FilesProcManager::FilesProcManager() : cleaner_proc_delay(1800000) { // 1/2 hr
-    FilesProcManager::temp_path = Dir::appPath(QLatin1Literal("temp"), true);
-    FilesProcManager::data_path = Dir::appPath(QLatin1Literal("data"), true);
-    FilesProcManager::tools_path = Dir::appPath(QLatin1Literal("tools"), true);
+    FilesProcManager::temp_path = Dir::appPath(QLatin1String("temp"), true);
+    FilesProcManager::data_path = Dir::appPath(QLatin1String("data"), true);
+    FilesProcManager::tools_path = Dir::appPath(QLatin1String("tools"), true);
 
     clearTemps();
 }

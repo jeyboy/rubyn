@@ -60,7 +60,7 @@
 ////////////////////////////////
 
 #define USTR(str) QStringLiteral(str)
-#define LSTR(str) QLatin1Literal(str)
+#define LSTR(str) QLatin1String(str)
 #define QSTR_TO_CHAR(str) str.toUtf8().constData()
 
 typedef QPair<EDITOR_POS_TYPE, EDITOR_POS_TYPE> TextPart;

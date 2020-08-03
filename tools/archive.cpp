@@ -11,7 +11,7 @@
 
 //https://sevenzip.osdn.jp/chm/cmdline/switches/type.htm
 
-QString Archive::store_ext = QLatin1Literal("pup");
+QString Archive::store_ext = QLatin1String("pup");
 QRegularExpression Archive::supported_formats_reg_exp;
 QHash<QString, bool> Archive::all_formats = {
     { "7z", true }, { "bz2", true }, { "bzip2", true }, { "tbz2", true }, { "tbz", true }, { "gz", true },
@@ -126,7 +126,7 @@ QRegularExpression Archive::supportedUncompressFormats() {
         QStringList lines = output.split(LStr("\r\n"));
         bool in_list = false;
 
-        QRegularExpression regex(QLatin1Literal("\\b([a-z0-9.()]+)\\b"));
+        QRegularExpression regex(QLatin1String("\\b([a-z0-9.()]+)\\b"));
 
         for(QStringList::Iterator entry = lines.begin(); entry != lines.end(); entry++) {
             if (in_list) {

@@ -103,11 +103,11 @@ bool Projects::identificate(const QString & name, void * folder, File *& file) {
 }
 
 Projects::Projects(QObject * parent) : QObject(parent), icon_size(22) {
-    _special_files_formats.insert(QLatin1Literal("gemfile"), ft_file_gemfile);
-    _special_files_formats.insert(QLatin1Literal("rakefile"), ft_file_rb);
-    _special_files_formats.insert(QLatin1Literal("capfile"), ft_file_rb);
-    _special_files_formats.insert(QLatin1Literal("config.ru"), ft_file_rb);
-    _special_files_formats.insert(QLatin1Literal("procfile"), ft_file_yml);
+    _special_files_formats.insert(QLatin1String("gemfile"), ft_file_gemfile);
+    _special_files_formats.insert(QLatin1String("rakefile"), ft_file_rb);
+    _special_files_formats.insert(QLatin1String("capfile"), ft_file_rb);
+    _special_files_formats.insert(QLatin1String("config.ru"), ft_file_rb);
+    _special_files_formats.insert(QLatin1String("procfile"), ft_file_yml);
 }
 
 Projects::~Projects() {

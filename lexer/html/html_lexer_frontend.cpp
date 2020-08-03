@@ -1187,35 +1187,35 @@ void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
 //void LexerFrontend::paraOpositionStr(const PARA_TYPE & para, QString & res) {
 //    switch(para) {
 //        case pt_curly_bracket:
-//        case pt_foldable_curly_bracket: { res = QLatin1Literal("}"); break;}
+//        case pt_foldable_curly_bracket: { res = QLatin1String("}"); break;}
 //        case pt_close_curly_bracket:
-//        case pt_close_foldable_curly_bracket: { res = QLatin1Literal("{"); break;}
+//        case pt_close_foldable_curly_bracket: { res = QLatin1String("{"); break;}
 
 //        case pt_square_bracket:
-//        case pt_foldable_square_bracket: { res = QLatin1Literal("]"); break;}
+//        case pt_foldable_square_bracket: { res = QLatin1String("]"); break;}
 //        case pt_close_square_bracket:
-//        case pt_close_foldable_square_bracket: { res = QLatin1Literal("["); break;}
+//        case pt_close_foldable_square_bracket: { res = QLatin1String("["); break;}
 
-//        case pt_round_bracket: { res = QLatin1Literal(")"); break;}
-//        case pt_close_round_bracket: { res = QLatin1Literal("("); break;}
+//        case pt_round_bracket: { res = QLatin1String(")"); break;}
+//        case pt_close_round_bracket: { res = QLatin1String("("); break;}
 
-//        case pt_angle_bracket: { res = QLatin1Literal(">"); break;}
-//        case pt_close_angle_bracket: { res = QLatin1Literal("<"); break;}
+//        case pt_angle_bracket: { res = QLatin1String(">"); break;}
+//        case pt_close_angle_bracket: { res = QLatin1String("<"); break;}
 
-//        case pt_interpolation: { res = QLatin1Literal("}"); break;}
-//        case pt_close_interpolation: { res = QLatin1Literal("#{"); break;}
+//        case pt_interpolation: { res = QLatin1String("}"); break;}
+//        case pt_close_interpolation: { res = QLatin1String("#{"); break;}
 
 //        case pt_string:
-//        case pt_close_string: { res = QLatin1Literal("'"); break;}
+//        case pt_close_string: { res = QLatin1String("'"); break;}
 
 //        case pt_estring:
-//        case pt_close_estring: { res = QLatin1Literal("\""); break;}
+//        case pt_close_estring: { res = QLatin1String("\""); break;}
 
 //        case pt_command:
-//        case pt_close_command: { res = QLatin1Literal("`"); break;}
+//        case pt_close_command: { res = QLatin1String("`"); break;}
 
 //        case pt_regexp:
-//        case pt_close_regexp: { res = QLatin1Literal("//"); break;}
+//        case pt_close_regexp: { res = QLatin1String("//"); break;}
 
 ////        case pt_open_do_block:
 //        case pt_open_begin_block:
@@ -1227,12 +1227,12 @@ void LexerFrontend::handle(const QString & text, IHighlighter * lighter) {
 //        case pt_open_case:
 //        case pt_open_while:
 //        case pt_open_until:
-//        case pt_open_for: { res = QLatin1Literal("end"); break;}
+//        case pt_open_for: { res = QLatin1String("end"); break;}
 
 //        case pt_comment:
-//        case pt_foldable_comment: { res = QLatin1Literal("=end"); break;}
+//        case pt_foldable_comment: { res = QLatin1String("=end"); break;}
 //        case pt_close_comment:
-//        case pt_close_foldable_comment: { res = QLatin1Literal("=begin"); break;}
+//        case pt_close_foldable_comment: { res = QLatin1String("=begin"); break;}
 
 //        default: ILexer::paraOpositionStr(para, res);
 //    }

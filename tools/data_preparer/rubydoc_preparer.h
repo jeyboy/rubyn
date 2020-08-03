@@ -34,10 +34,10 @@ typedef QHash<QString, VersionUrls> DocsList;
 class RubyDocPreparer : public IRubyStubsPreparer {
     Q_OBJECT
 
-    inline QString packType() { return QLatin1Literal("7z"); }
-    inline QString versionsDataName() { return QLatin1Literal("versions"); }
+    inline QString packType() { return QLatin1String("7z"); }
+    inline QString versionsDataName() { return QLatin1String("versions"); }
     inline QString rubyPackName(const QString & version, const bool & with_type = true) {
-        QString res = QLatin1Literal("ruby_") % version;
+        QString res = QLatin1String("ruby_") % version;
 
         if (with_type) {
             res = res % '.' % packType();

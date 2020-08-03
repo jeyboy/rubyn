@@ -16,8 +16,8 @@
 
 #include <qregularexpression.h>
 
-QString VersionUrls::core_type(QLatin1Literal("core"));
-QString VersionUrls::stdlib_type(QLatin1Literal("stdlib"));
+QString VersionUrls::core_type(QLatin1String("core"));
+QString VersionUrls::stdlib_type(QLatin1String("stdlib"));
 
 RubyDocPreparer::RubyDocPreparer() {}
 
@@ -27,7 +27,7 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
     QByteArray host("https://ruby-doc.org/");
 
     Web::RequestParams * params = new Web::RequestParams(
-        QUrl(host % QLatin1Literal("downloads/"))
+        QUrl(host % QLatin1String("downloads/"))
     );
 
     Html::Page html = manager -> sendGet(params) -> toHtml();
@@ -71,8 +71,8 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
                     cache_obj.obj(version).insert(VersionUrls::stdlib_type, href);
                 } else
                     Logger::error(
-                        QLatin1Literal("RubyDocPreparer"), QLatin1Literal("Unknown link type: ") %
-                            url_type % QLatin1Literal("for href: ") % href
+                        QLatin1String("RubyDocPreparer"), QLatin1String("Unknown link type: ") %
+                            url_type % QLatin1String("for href: ") % href
                     );
             }
         }
@@ -125,8 +125,8 @@ bool RubyDocPreparer::prepare(const QString & version) {
 //                downloadRubyPack(urls);
 //            else
 //                Logger::error(
-//                    QLatin1Literal("RubyDocPreparer"),
-//                    QLatin1Literal("Corrupted links data for ruby version: ") % version
+//                    QLatin1String("RubyDocPreparer"),
+//                    QLatin1String("Corrupted links data for ruby version: ") % version
 //                );
 //        } else {
 
@@ -140,23 +140,23 @@ bool RubyDocPreparer::prepare(const QString & version) {
 //            downloadRubyPack(list[version]);
 //        } else {
 //            Logger::error(
-//                QLatin1Literal("RubyDocPreparer"),
-//                QLatin1Literal("Can find data for ruby version: ") % version
+//                QLatin1String("RubyDocPreparer"),
+//                QLatin1String("Can find data for ruby version: ") % version
 //            );
 
 //            QString nearest_version;
 
 //            if (findNearestVersion(version, list, nearest_version)) {
 //                Logger::info(
-//                    QLatin1Literal("RubyDocPreparer"),
-//                    QLatin1Literal("Finded nearest version: ") % nearest_version
+//                    QLatin1String("RubyDocPreparer"),
+//                    QLatin1String("Finded nearest version: ") % nearest_version
 //                );
 
 //                prepare(nearest_version);
 //            } else {
 //                Logger::error(
-//                    QLatin1Literal("RubyDocPreparer"),
-//                    QLatin1Literal("Cant find acceptable version for: ") % version
+//                    QLatin1String("RubyDocPreparer"),
+//                    QLatin1String("Cant find acceptable version for: ") % version
 //                );
 //            }
 //        }
@@ -269,8 +269,8 @@ bool RubyDocPreparer::findNearestVersion(const QString & target_version, QString
 //                downloadRubyPack(urls);
 //            else
 //                Logger::error(
-//                    QLatin1Literal("RubyDocPreparer"),
-//                    QLatin1Literal("Corrupted links data for ruby version: ") % version
+//                    QLatin1String("RubyDocPreparer"),
+//                    QLatin1String("Corrupted links data for ruby version: ") % version
 //                );
         } else {
             for(JsonObj::ConstIterator it = ver_obj.constBegin(); it != ver_obj.constEnd(); it++) {

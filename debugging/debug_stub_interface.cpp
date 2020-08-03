@@ -6,7 +6,7 @@ bool DebugStubInterface::enableBreakpoint(const QString & /*path*/, const EDITOR
 bool DebugStubInterface::addBreakpoint(const QString & /*path*/, const EDITOR_POS_TYPE & /*line_num*/) { return true; }
 bool DebugStubInterface::removeBreakpoint(const QString & /*path*/, const EDITOR_POS_TYPE & /*line_num*/) { return true; }
 
-QString DebugStubInterface::resolve(const QString & /*record*/) { return QLatin1Literal("Fuck yeah!"); }
+QString DebugStubInterface::resolve(const QString & /*record*/) { return QLatin1String("Fuck yeah!"); }
 
 QList<DebugBreakpoint> DebugStubInterface::breakpoints() { return entries.keys(); }
 void DebugStubInterface::clear() { entries.clear(); }

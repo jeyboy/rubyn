@@ -58,7 +58,7 @@ QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
     if (flag_unicode -> isChecked())
         options |= QRegularExpression::UseUnicodePropertiesOption;
 
-    val = val.replace(QRegularExpression(QLatin1Literal("\r|\n")), QLatin1Literal("|"));
+    val = val.replace(QRegularExpression(QLatin1String("\r|\n")), QLatin1String("|"));
 
     is_multiline = val != pattern;
 
@@ -66,7 +66,7 @@ QRegularExpression ProjectSearchPanel::buildRegex(const QString & pattern) {
         val = QRegularExpression::escape(val);
 
     if (flag_whole_word_only -> isChecked())
-        val = QLatin1Literal("\\b") % val % QLatin1Literal("\\b");
+        val = QLatin1String("\\b") % val % QLatin1String("\\b");
 
     QRegularExpression res(val, options);
     res.optimize();
@@ -141,7 +141,7 @@ void ProjectSearchPanel::prepareOptionsWidget() {
 
     predicate -> addAction(options_btn, QLineEdit::LeadingPosition);
 
-    flag_case_sensitive = new QCheckBox(QLatin1Literal("Match Case"), menu);
+    flag_case_sensitive = new QCheckBox(QLatin1String("Match Case"), menu);
     QWidgetAction * flag_case_sensitive_action = new QWidgetAction(menu);
     flag_case_sensitive_action -> setDefaultWidget(flag_case_sensitive);
     menu -> addAction(flag_case_sensitive_action);
@@ -153,7 +153,7 @@ void ProjectSearchPanel::prepareOptionsWidget() {
 //        }
     });
 
-    flag_whole_word_only = new QCheckBox(QLatin1Literal("Words"), menu);
+    flag_whole_word_only = new QCheckBox(QLatin1String("Words"), menu);
     QWidgetAction * flag_whole_word_only_action = new QWidgetAction(menu);
     flag_whole_word_only_action -> setDefaultWidget(flag_whole_word_only);
     menu -> addAction(flag_whole_word_only_action);
@@ -165,7 +165,7 @@ void ProjectSearchPanel::prepareOptionsWidget() {
 //        }
     });
 
-    flag_reg_exp = new QCheckBox(QLatin1Literal("Regex"), menu);
+    flag_reg_exp = new QCheckBox(QLatin1String("Regex"), menu);
     QWidgetAction * flag_reg_exp_action = new QWidgetAction(menu);
     flag_reg_exp_action -> setDefaultWidget(flag_reg_exp);
     menu -> addAction(flag_reg_exp_action);
@@ -177,7 +177,7 @@ void ProjectSearchPanel::prepareOptionsWidget() {
 //        }
     });
 
-    flag_unicode = new QCheckBox(QLatin1Literal("Unicode"), menu);
+    flag_unicode = new QCheckBox(QLatin1String("Unicode"), menu);
     QWidgetAction * flag_unicode_action = new QWidgetAction(menu);
     flag_unicode_action -> setDefaultWidget(flag_unicode);
     menu -> addAction(flag_unicode_action);
@@ -218,26 +218,26 @@ ProjectSearchPanel::ProjectSearchPanel(QWidget * parent) : QWidget(parent), patt
 
 //    QToolButton * btn0 = new QToolButton(control_panel);
 //    btn0 -> setIconSize(QSize(16, 16));
-//    btn0 -> setIcon(QIcon(QLatin1Literal(":/breakpoint_disabled")));
-//    btn0 -> setToolTip(QLatin1Literal("Disable selected"));
+//    btn0 -> setIcon(QIcon(QLatin1String(":/breakpoint_disabled")));
+//    btn0 -> setToolTip(QLatin1String("Disable selected"));
 //    control_panel -> addWidget(btn0);
 
 
 //    QToolButton * btn1 = new QToolButton(control_panel);
 //    QIcon ico;
 
-//    ico.addPixmap(QPixmap(QLatin1Literal(":/breakpoint_disable_all")), QIcon::Normal, QIcon::Off);
-//    ico.addPixmap(QPixmap(QLatin1Literal(":/breakpoint_enable_all")), QIcon::Normal, QIcon::On);
+//    ico.addPixmap(QPixmap(QLatin1String(":/breakpoint_disable_all")), QIcon::Normal, QIcon::Off);
+//    ico.addPixmap(QPixmap(QLatin1String(":/breakpoint_enable_all")), QIcon::Normal, QIcon::On);
 
 //    btn1 -> setIcon(ico);
-//    btn1 -> setToolTip(QLatin1Literal("Disable all"));
+//    btn1 -> setToolTip(QLatin1String("Disable all"));
 //    btn1 -> setCheckable(true);
 //    control_panel -> addWidget(btn1);
 
 
 //    QToolButton * btn2 = new QToolButton(control_panel);
-//    btn2 -> setIcon(QIcon(QLatin1Literal(":/breakpoint_delete_all")));
-//    btn2 -> setToolTip(QLatin1Literal("Remove all"));
+//    btn2 -> setIcon(QIcon(QLatin1String(":/breakpoint_delete_all")));
+//    btn2 -> setToolTip(QLatin1String("Remove all"));
 //    control_panel -> addWidget(btn2);
 
     search_results = new QTreeWidget(this);

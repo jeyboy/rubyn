@@ -171,7 +171,7 @@ public:
 //                _folders.insert(dir_name, folder);
 //            } else {
 //                QString source = dir_path % '/' % dir_name;
-//                QString msg = QLatin1Literal("Cant process");
+//                QString msg = QLatin1String("Cant process");
 
 //                emit Projects::obj().errorOccurred(source, msg);
 //                delete folder;

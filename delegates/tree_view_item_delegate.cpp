@@ -5,7 +5,7 @@
 
 #include <qpainter.h>
 
-QLatin1String TreeViewItemDelegate::default_text = QLatin1Literal("Evaluate...");
+QLatin1String TreeViewItemDelegate::default_text = QLatin1String("Evaluate...");
 
 TreeViewItemDelegate::TreeViewItemDelegate(QObject * parent) : QStyledItemDelegate(parent) {
 
@@ -47,7 +47,7 @@ void TreeViewItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 QWidget * TreeViewItemDelegate::createEditor(QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index) const {
     QWidget * res = QStyledItemDelegate::createEditor(parent, option, index);
 
-    res -> setStyleSheet(QLatin1Literal("border: none;"));
+    res -> setStyleSheet(QLatin1String("border: none;"));
     res -> setMinimumWidth(12);
     res -> setFocus();
 

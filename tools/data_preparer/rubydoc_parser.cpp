@@ -90,7 +90,7 @@ QByteArray RubyDocParser::clearLine(const QByteArray & line) {
                         continue;
                     }
 
-                    Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("New UTF-8 symb"), QStringList() << QString::number(*ptr) << QString::number(*(ptr + 1)) << QString::number(*(ptr + 2)));
+                    Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("New UTF-8 symb"), QStringList() << QString::number(*ptr) << QString::number(*(ptr + 1)) << QString::number(*(ptr + 2)));
                 }
         }
 
@@ -290,17 +290,17 @@ void RubyDocParser::procDescription(const Html::Set & parts, QStringList & out, 
             case Html::Tag::tg_div: {
                 if ((*tag) -> rawClasses() != QByteArrayLiteral("method-source-code"))
                     Logger::obj().write(
-                        QLatin1Literal("RubydocParser"),
-                        QLatin1Literal("Unknown tag type in description: ") % (*tag) -> name() %
-                            QLatin1Literal(" in file: ") % inpath
+                        QLatin1String("RubydocParser"),
+                        QLatin1String("Unknown tag type in description: ") % (*tag) -> name() %
+                            QLatin1String(" in file: ") % inpath
                     );
             break;}
 
             default: {
                 Logger::obj().write(
-                    QLatin1Literal("RubydocParser"),
-                    QLatin1Literal("Unknown tag type in description: ") % (*tag) -> name() %
-                        QLatin1Literal(" in file: ") % inpath
+                    QLatin1String("RubydocParser"),
+                    QLatin1String("Unknown tag type in description: ") % (*tag) -> name() %
+                        QLatin1String(" in file: ") % inpath
                 );
             }
         }
@@ -345,7 +345,7 @@ void RubyDocParser::procMethod(const QString & signature, Html::Tag * method_blo
                     ++sigs_count;
                     out.signatures.append(msig);
                 } else {
-                    Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method name in file: ") % inpath, QStringList() << divs[0] -> texts());
+                    Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Cant parse method name in file: ") % inpath, QStringList() << divs[0] -> texts());
                 }
             }
         } else if (div_class == QByteArrayLiteral("aliases")) {
@@ -396,7 +396,7 @@ void RubyDocParser::procMethod(const QString & signature, Html::Tag * method_blo
 
                     if (pos == -1) {
                         pos = 0;
-                        Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse method inner args:") % signature % QLatin1Literal("in file: ") % inpath);
+                        Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Cant parse method inner args:") % signature % QLatin1String("in file: ") % inpath);
                     }
                     else {
                         pos += signature.length();
@@ -419,7 +419,7 @@ void RubyDocParser::procMethod(const QString & signature, Html::Tag * method_blo
 
 
         if (sigs_count == 1 && !is_mask) {
-            if (out.signatures.first().indexOf(QLatin1Literal("->")) == -1)
+            if (out.signatures.first().indexOf(QLatin1String("->")) == -1)
                 out.signatures.clear();
         }
     }
@@ -449,7 +449,7 @@ bool RubyDocParser::parseFile(const QString & path, const QString & name, DataOb
         Html::Tag * metadata_block = page.findFirst("#metadata");
 
         if (!metadata_block) {
-            Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse metadata block in file: ") % inpath);
+            Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Cant parse metadata block in file: ") % inpath);
             datafile.close();
             return false;
         }
@@ -457,7 +457,7 @@ bool RubyDocParser::parseFile(const QString & path, const QString & name, DataOb
         Html::Tag * doc_block = page.findFirst("#documentation");
 
         if (!doc_block) {
-            Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse documentation block in file: ") % inpath);
+            Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Cant parse documentation block in file: ") % inpath);
             datafile.close();
             return false;
         }
@@ -468,7 +468,7 @@ bool RubyDocParser::parseFile(const QString & path, const QString & name, DataOb
             Html::Tag * doc_header = doc_block -> findFirst("h1");
 
             if (!doc_header) {
-                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse doc header in file: ") % inpath);
+                Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Cant parse doc header in file: ") % inpath);
                 datafile.close();
                 return false;
             }
@@ -479,7 +479,7 @@ bool RubyDocParser::parseFile(const QString & path, const QString & name, DataOb
             Html::Tag * doc_description = doc_block -> findFirst("#description");
 
             if (!doc_description) {
-                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant parse doc description in file: ") % inpath);
+                Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Cant parse doc description in file: ") % inpath);
                 datafile.close();
                 return false;
             }
@@ -510,7 +510,7 @@ bool RubyDocParser::parseFile(const QString & path, const QString & name, DataOb
 
 //            /////////////////// REMOVE ME LATER
 //            if (out.obj_type != "class" && out.obj_type != "module") {
-//                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("New target type: ") % out.obj_type % QLatin1Literal(" in file: ") % inpath);
+//                Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("New target type: ") % out.obj_type % QLatin1String(" in file: ") % inpath);
 //            }
 //            //////////////////////////////////////
 
@@ -578,7 +578,7 @@ bool RubyDocParser::parseFile(const QString & path, const QString & name, DataOb
 
                             case Html::Tag::tg_dd: {
                                 if (!dt_tag) {
-                                    Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Wrong order in constants list: ") % out.name % QLatin1Literal(" in file: ") % inpath);
+                                    Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Wrong order in constants list: ") % out.name % QLatin1String(" in file: ") % inpath);
                                 } else {
                                     QByteArray desc = (*const_tag) -> texts();
 
@@ -630,7 +630,7 @@ bool RubyDocParser::parseFile(const QString & path, const QString & name, DataOb
                     if (methods_formats.contains(signature))
                         signature = methods_formats[signature];
                     else {
-                        Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant find signature for method: ") % signature % QLatin1Literal(" in file: ") % inpath);
+                        Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Cant find signature for method: ") % signature % QLatin1String(" in file: ") % inpath);
                     }
 
                     DataMethod & meth = out.methods[signature];
@@ -679,7 +679,7 @@ bool RubyDocParser::parseFile(const QString & path, const QString & name, DataOb
 
         datafile.close();
     } else {
-        Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant open file: ") % inpath);
+        Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Cant open file: ") % inpath);
         return false;
     }
 
@@ -698,7 +698,7 @@ bool RubyDocParser::parseFolder(const QString & path) {
         if (filename[0].isUpper()) {
             QString name = filename.section('.', 0, 0);
 
-            if (name.endsWith(QLatin1Literal("_rdoc")) || name.endsWith(QLatin1Literal("_rb")))
+            if (name.endsWith(QLatin1String("_rdoc")) || name.endsWith(QLatin1String("_rb")))
                 continue;
 
             ignore_folders = true;
@@ -793,7 +793,7 @@ void RubyDocParser::dumpDescription(QStringList & desc, QTextStream & out, const
                 break;}
 
                 default:            {
-                    Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant identificate description line type: ") % (*desc_line));
+                    Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Cant identificate description line type: ") % (*desc_line));
                 }
             }
 
@@ -895,7 +895,7 @@ void RubyDocParser::dumpObject(DataObj & data_obj, QTextStream & out) {
                     out << level_padding << target_prefix << "private def ";
                 break;}
 
-                default: Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant identificate method type: ") % QByteArray::number(meth_obj.lex_type));
+                default: Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Cant identificate method type: ") % QByteArray::number(meth_obj.lex_type));
             }
 
             out << meth.key() << '(' << meth_obj.args_mask << ')' << Logger::nl << level_padding << target_prefix << "end" << Logger::nl;
@@ -940,10 +940,10 @@ bool RubyDocParser::saveParsedDatum(const QString & outpath) {
             int amount = 0;
             QString filename = obj.key();
             Info::camelcaseToUnderscore(filename);
-            outfile_path = outpath % '/' % filename % QLatin1Literal(".rb");
+            outfile_path = outpath % '/' % filename % QLatin1String(".rb");
 
             while(QFile::exists(outfile_path)) {
-                outfile_path = outpath % '/' % filename % QString::number(++amount) % QLatin1Literal(".rb");
+                outfile_path = outpath % '/' % filename % QString::number(++amount) % QLatin1String(".rb");
             }
 
             QFile outfile(outfile_path);
@@ -960,7 +960,7 @@ bool RubyDocParser::saveParsedDatum(const QString & outpath) {
                 out.flush();
                 outfile.close();
             } else {
-                Logger::obj().write(QLatin1Literal("RubydocParser"), QLatin1Literal("Cant open output file: ") % filename);
+                Logger::obj().write(QLatin1String("RubydocParser"), QLatin1String("Cant open output file: ") % filename);
                 return false;
             }
         }

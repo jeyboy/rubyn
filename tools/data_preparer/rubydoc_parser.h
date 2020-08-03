@@ -62,7 +62,7 @@ class RubyDocParser : public QObject {
 
     const QRegularExpression module_regexp = QRegularExpression("\\bmodule\\b");
     const QRegularExpression class_regexp = QRegularExpression("\\bmodule\\b");
-    const QLatin1String several_vars = QLatin1Literal("*several_variants");
+    const QLatin1String several_vars = QLatin1String("*several_variants");
 public:
     RubyDocParser(QObject * parent = nullptr);
     ~RubyDocParser();

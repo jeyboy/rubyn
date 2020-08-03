@@ -101,7 +101,7 @@ QByteArray ProjectTree::saveState() {
     QJsonObject obj;
 
     saveStateHelper(invisibleRootItem(), obj);
-    obj.insert(QLatin1Literal("*fill*"), item_delegate -> isFilled());
+    obj.insert(QLatin1String("*fill*"), item_delegate -> isFilled());
 
     return Json(obj).toJsonStr();
 }
@@ -110,7 +110,7 @@ void ProjectTree::restoreState(const QByteArray & state) {
     setUpdatesEnabled(false);
 
     JsonObj obj(JsonObj::fromJsonStr(state));
-    item_delegate -> setFill(obj.boolean(QLatin1Literal("*fill*"), true));
+    item_delegate -> setFill(obj.boolean(QLatin1String("*fill*"), true));
 
     loadStateHelper(invisibleRootItem(), obj);
 
@@ -318,7 +318,7 @@ void ProjectTree::keyPressEvent(QKeyEvent * e) {
         }
         else {
             if (e -> modifiers() == Qt::ControlModifier && key_code == Qt::Key_F) {
-                emit searchRequired(QLatin1Literal());
+                emit searchRequired(QLatin1String());
                 e -> accept();
                 return;
             }
@@ -416,7 +416,7 @@ void ProjectTree::showContextMenu(const QPoint & point) {
 
     QTreeWidgetItem * curr_item = itemAt(point);
 
-    QAction action0(QIcon(QLatin1Literal(":/menu/palette")), "Fill Sections", this);
+    QAction action0(QIcon(QLatin1String(":/menu/palette")), "Fill Sections", this);
     action0.setCheckable(true);
     action0.setChecked(item_delegate -> isFilled());
     connect(&action0, &QAction::triggered, [=]() { item_delegate -> toggleFill(); });
@@ -428,7 +428,7 @@ void ProjectTree::showContextMenu(const QPoint & point) {
         QVariant path = curr_item -> data(0, TREE_PATH_UID);
 
         if (path.isValid()) {
-            QAction * close_action = new QAction(QIcon(QLatin1Literal(":/tools/console")), "Close", this);
+            QAction * close_action = new QAction(QIcon(QLatin1String(":/tools/console")), "Close", this);
             connect(close_action, &QAction::triggered, [=]() { closeProject(path.toString()); });
 
             menu.addAction(close_action);
@@ -437,7 +437,7 @@ void ProjectTree::showContextMenu(const QPoint & point) {
     }
 
     if (curr_item && !curr_item -> parent()) {
-        QAction * console_action = new QAction(QIcon(QLatin1Literal(":/tools/console")), "Open sys console", this);
+        QAction * console_action = new QAction(QIcon(QLatin1String(":/tools/console")), "Open sys console", this);
         connect(console_action, &QAction::triggered, [=]() {
             QString project_path = currentItem() -> data(0, TREE_PATH_UID).toString();
             emit consoleRequired(project_path);
@@ -448,27 +448,27 @@ void ProjectTree::showContextMenu(const QPoint & point) {
     }
 
 
-    QAction action1(QIcon(QLatin1Literal(":/menu/collapse_all")), "Collapse All", this);
+    QAction action1(QIcon(QLatin1String(":/menu/collapse_all")), "Collapse All", this);
     connect(&action1, SIGNAL(triggered()), this, SLOT(collapseAll()));
     menu.addAction(&action1);
 
-    QAction action2(QIcon(QLatin1Literal(":/menu/expand_all")), "Expand All", this);
+    QAction action2(QIcon(QLatin1String(":/menu/expand_all")), "Expand All", this);
     connect(&action2, SIGNAL(triggered()), this, SLOT(expandAll()));
     menu.addAction(&action2);
 
     if (curr_item && curr_item -> childCount() > 0) {
-        QAction * action3 = new QAction(QIcon(QLatin1Literal(":/menu/collapse")), "Collapse children", &menu);
+        QAction * action3 = new QAction(QIcon(QLatin1String(":/menu/collapse")), "Collapse children", &menu);
         connect(action3, SIGNAL(triggered()), this, SLOT(collapseChildren()));
         menu.addAction(action3);
 
-        QAction * action4 = new QAction(QIcon(QLatin1Literal(":/menu/expand")), "Expand children", &menu);
+        QAction * action4 = new QAction(QIcon(QLatin1String(":/menu/expand")), "Expand children", &menu);
         connect(action4, SIGNAL(triggered()), this, SLOT(expandChildren()));
         menu.addAction(action4);
     }
 
     menu.addSeparator();
 
-    QAction * action4 = new QAction(QIcon(QLatin1Literal(":/menu/open_explorer")), "Open in explorer", &menu);
+    QAction * action4 = new QAction(QIcon(QLatin1String(":/menu/open_explorer")), "Open in explorer", &menu);
     connect(action4, &QAction::triggered, [=]() {
         QString path;
         getPath(currentItem(), path);

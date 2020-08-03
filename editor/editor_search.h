@@ -8,7 +8,7 @@ class SearchPanel;
 class QCheckBox;
 class QLabel;
 
-#define SEARCH_LABEL_TEXT QLatin1Literal("Search:")
+#define SEARCH_LABEL_TEXT QLatin1String("Search:")
 
 class EditorSearch : public QWidget {
     Q_OBJECT
