@@ -52,6 +52,9 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
     item_delegate = new ProjectTreeItemDelegate(this);
     setItemDelegate(item_delegate);
 
+    setSortingEnabled(true);
+    sortByColumn(TREE_SORT_UID, Qt::AscendingOrder);
+
     invisibleRootItem() -> setData(0, TREE_FOLDER_UID, QVariant(0));
 }
 

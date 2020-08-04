@@ -13,6 +13,7 @@
 #define TREE_EXPAND_STATE_UID Qt::UserRole + 12
 #define TREE_COLOR_UID Qt::UserRole + 20
 #define TREE_HAS_ERROR_UID Qt::UserRole + 21
+#define TREE_SORT_UID Qt::UserRole + 22
 
 #define PROJECT_SEARCH_MATCH_POS_UID Qt::UserRole
 #define PROJECT_SEARCH_MATCH_LEN_UID Qt::UserRole + 1
