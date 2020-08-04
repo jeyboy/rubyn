@@ -203,6 +203,7 @@ HEADERS  += ide_window.h \
     misc/para_list.h \
     misc/run_config.h \
     misc/scope_list.h \
+    project/project_tree_entry.h \
     styles/click_fix_style.h \
     controls/dock_widgets.h \
     editor/idocument.h \

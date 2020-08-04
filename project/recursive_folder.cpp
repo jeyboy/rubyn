@@ -2,11 +2,11 @@
 
 #include "file.h"
 
-#include <qtreewidget.h>
+#include "project/project_tree_entry.h"
 #include <qdiriterator.h>
 #include <qcolor.h>
 
-void RecursiveFolder::proc(const uint & project_uid, QTreeWidgetItem * view_item, const QString & path, QColor * color, const uint & level) {
+void RecursiveFolder::proc(const uint & project_uid, ProjectTreeEntry * view_item, const QString & path, QColor * color, const uint & level) {
     QDirIterator dir_it(path, QDir::AllDirs | QDir::NoDotAndDotDot);
 
     while(dir_it.hasNext()) {
@@ -34,8 +34,7 @@ void RecursiveFolder::proc(const uint & project_uid, QTreeWidgetItem * view_item
         File * file = new File(project_uid, level, name, path);
         _files.insert(name, file);
 
-        QTreeWidgetItem * item = new QTreeWidgetItem(view_item, QStringList() << name);
-        item -> setData(0, TREE_SORT_UID, "1" + name);
+        ProjectTreeEntry * item = new ProjectTreeEntry(view_item, QStringList() << name);
         item -> setIcon(0, file -> ico());
         item -> setToolTip(0, name);
 
@@ -51,11 +50,10 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
     FormatType ico_type = icoType(obj_name);
     uint project_uid = File::pathToHash(path);
 
-    QTreeWidgetItem * view_item = new QTreeWidgetItem(QStringList() << obj_name);
+    ProjectTreeEntry * view_item = new ProjectTreeEntry(QStringList() << obj_name);
     view_item -> setData(0, TREE_FOLDER_UID, QVariant::fromValue<void *>(this));
     view_item -> setData(0, TREE_LEVEL_UID, 0);
     view_item -> setData(0, TREE_PATH_UID, path);
-    view_item -> setData(0, TREE_SORT_UID, "0" + obj_name);
     view_item -> setIcon(0, Projects::obj().getIco(ico_type));
     view_item -> setToolTip(0, obj_name);
 
@@ -81,10 +79,10 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
     emit Projects::obj().projectInitiated(project_uid, view_item);
 }
 
-RecursiveFolder::RecursiveFolder(const uint & project_uid, IFolder * parent, QTreeWidgetItem * view_parent, const QString & folder_name, const uint & level, QColor * color) : IFolder(parent, folder_name, false) {
+RecursiveFolder::RecursiveFolder(const uint & project_uid, IFolder * parent, ProjectTreeEntry * view_parent, const QString & folder_name, const uint & level, QColor * color) : IFolder(parent, folder_name, false) {
     FormatType ico_type = icoType(folder_name, level);
 
-    QTreeWidgetItem * curr_view_item = new QTreeWidgetItem(view_parent, QStringList() << folder_name);
+    ProjectTreeEntry * curr_view_item = new ProjectTreeEntry(view_parent, QStringList() << folder_name);
     curr_view_item -> setData(0, TREE_FOLDER_UID, QVariant::fromValue<void *>(this));
     curr_view_item -> setData(0, TREE_LEVEL_UID, level);
     curr_view_item -> setData(0, TREE_SORT_UID, "0" + folder_name);
