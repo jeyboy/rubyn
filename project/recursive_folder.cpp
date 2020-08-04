@@ -85,7 +85,6 @@ RecursiveFolder::RecursiveFolder(const uint & project_uid, IFolder * parent, Pro
     ProjectTreeEntry * curr_view_item = new ProjectTreeEntry(view_parent, QStringList() << folder_name);
     curr_view_item -> setData(0, TREE_FOLDER_UID, QVariant::fromValue<void *>(this));
     curr_view_item -> setData(0, TREE_LEVEL_UID, level);
-    curr_view_item -> setData(0, TREE_SORT_UID, "0" + folder_name);
     curr_view_item -> setIcon(0, Projects::obj().getIco(ico_type));
     curr_view_item -> setToolTip(0, folder_name);
 

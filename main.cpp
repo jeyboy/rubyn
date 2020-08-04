@@ -147,9 +147,13 @@
 
 int main(int argc, char * argv[]) {
     QApplication a(argc, argv);
+
     #ifdef Q_OS_LINUX
-        a.setWheelScrollLines(7);
+        a.setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Ceil);
+        a.setWheelScrollLines(3);
     #endif
+
+    a.setWindowIcon(QIcon(":/background"));
 
     IDEWindow w;
     w.show();
