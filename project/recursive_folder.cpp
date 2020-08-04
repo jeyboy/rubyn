@@ -71,7 +71,6 @@ RecursiveFolder::RecursiveFolder(const QString & path, QColor * color) : IFolder
 //        (Folder *)view_item -> data(0, TREE_FOLDER_UID).value<void *>() -> name();
 
     proc(project_uid, view_item, path, color, 0);
-    view_item -> sortChildren(Qt::DisplayRole, Qt::AscendingOrder);
 
     if (color_clearing_required) {
         delete color;
@@ -101,8 +100,6 @@ RecursiveFolder::RecursiveFolder(const uint & project_uid, IFolder * parent, QTr
     }
 
     proc(project_uid, curr_view_item, fullPath(), color, level);
-
-    curr_view_item -> sortChildren(Qt::DisplayRole, Qt::AscendingOrder);
 
     if (color_clearing_required) {
         delete color;

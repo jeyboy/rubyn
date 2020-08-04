@@ -83,8 +83,8 @@ public:
     inline QString unitSize() { return Info::toUnits(size()); }
 
     inline bool tooLarge() {
-//        return size() > 1499999;
-        return false;
+        return size() > 1499999;
+//        return false;
     }
 
     inline uint projectUid() { return _project_uid; }
