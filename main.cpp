@@ -146,6 +146,8 @@
 // https://crontab.guru/#
 
 int main(int argc, char * argv[]) {
+//    QApplication::setDesktopSettingsAware(false);
+
     QApplication a(argc, argv);
 
     #ifdef Q_OS_LINUX

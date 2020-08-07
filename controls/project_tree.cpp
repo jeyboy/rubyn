@@ -57,29 +57,31 @@ ProjectTree::ProjectTree(QWidget * parent) : QTreeWidget(parent) {
 
     invisibleRootItem() -> setData(0, TREE_FOLDER_UID, QVariant(0));
 
-    setStyleSheet(
-        QString(
-            "QTreeView::item {"
-            "   background-color: transparent;"
-            "   color: blue;"
-            "}"
-            "QTreeView::branch {"
-            "   background-color: white;"
-            "}"
-            "QTreeView::branch:open {"
-            "   image: url(:/folding_open);"
-            "}"
-            "QTreeView::branch:open:hover {"
-            "   image: url(:/folding_open_hover);"
-            "}"
-            "QTreeView::branch:closed:has-children {"
-            "   image: url(:/folding_close);"
-            "}"
-            "QTreeView::branch:closed:has-children:hover {"
-            "   image: url(:/folding_close_hover);"
-            "}"
-        )
-    );
+    #ifdef Q_OS_LINUX
+        setStyleSheet(
+            QString(
+                "QTreeView::item {"
+                "   background-color: transparent;"
+                "   color: blue;"
+                "}"
+                "QTreeView::branch {"
+                "   background-color: white;"
+                "}"
+                "QTreeView::branch:open {"
+                "   image: url(:/folding_open);"
+                "}"
+                "QTreeView::branch:open:hover {"
+                "   image: url(:/folding_open_hover);"
+                "}"
+                "QTreeView::branch:closed:has-children {"
+                "   image: url(:/folding_close);"
+                "}"
+                "QTreeView::branch:closed:has-children:hover {"
+                "   image: url(:/folding_close_hover);"
+                "}"
+            )
+        );
+    #endif
 }
 
 ProjectTree::~ProjectTree() {
