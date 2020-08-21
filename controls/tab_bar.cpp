@@ -65,6 +65,17 @@ TabBar::TabBar(QWidget * parent) : QListWidget(parent), hscroll_range(-1), _inte
 
 //    setAlternatingRowColors(true);
 
+    #ifdef Q_OS_LINUX
+        setStyleSheet(
+            QLatin1String(
+                "QListView::item:selected:!active {"
+                "   background: qlineargradient(x1: 0, y1: 0.5, x2: 0, y2: 1, stop: 0 rgba(177,217,244, .6), stop: 1 rgba(192,224,246, .8));"
+                "   color: #000;"
+                "}"
+            )
+        );
+    #endif
+
     setMaximumHeight(30);
     setIconSize(QSize(22, 22));
 
