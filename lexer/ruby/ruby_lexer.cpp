@@ -328,7 +328,6 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
 
         is_method_def = state -> lex_word == lex_method_def;
 
-
         if (state -> cached_length) {
             Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
 
@@ -1953,7 +1952,7 @@ void Lexer::handle(const QString & text, IHighlighter * lighter) {
         }
     }
 
-    udata -> syncLine(state.stack_token, state.token, state.control_para, state.para);
+    udata -> syncLine(state.stack_token, state.token, state.control_para, state.para, state.scope);
 
     int prev_state = lighter -> userState();
     int new_state = rubyLineState(udata, prev_state, override_status);

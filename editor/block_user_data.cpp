@@ -5,12 +5,13 @@
 BlockUserData::BlockUserData(const UserDataFlags & data_flags)
     : flags(data_flags), token_begin(nullptr), token_end(nullptr), token_control(nullptr),
       para_begin(nullptr), para_end(nullptr), para_control(nullptr),
-      level(DEFAULT_LEVEL), can_have_debug_point(true), msgs(nullptr)
+      scope_begin(nullptr), scope_end(nullptr), level(DEFAULT_LEVEL), can_have_debug_point(true), msgs(nullptr)
 {}
 
 BlockUserData::~BlockUserData() {
     TokenList::removeLine(token_begin, token_end);
     ParaList::removeLine(para_begin, para_end);
+    ScopeList::removeLine(scope_begin, scope_end);
 }
 
 ParaCell * BlockUserData::parentPara() {
@@ -104,7 +105,13 @@ ParaCell * BlockUserData::lineControlPara() {
     return para_begin;
 }
 
-void BlockUserData::syncLine(TokenCell * control_sync_token, TokenCell * sync_token, ParaCell * control_sync_para, ParaCell * sync_para) {
+ScopeCell * BlockUserData::lineControlScope() {
+    scope_end -> prev -> next = nullptr; // detach end line
+
+    return scope_begin;
+}
+
+void BlockUserData::syncLine(TokenCell * control_sync_token, TokenCell * sync_token, ParaCell * control_sync_para, ParaCell * sync_para, ScopeCell * sync_scope) {
     token_control = control_sync_token;
     para_control = control_sync_para;
 
@@ -126,6 +133,12 @@ void BlockUserData::syncLine(TokenCell * control_sync_token, TokenCell * sync_to
 
     para_end -> prev = sync_para;
     para_end -> prev -> next = para_end;
+
+    /////// SYNC SCOPE //////////
+    removeScopeSequence(sync_scope -> next);
+
+    scope_end -> prev = sync_scope;
+    scope_end -> prev -> next = scope_end;
 }
 
 void BlockUserData::removeTokenSequence(TokenCell * tkn) {
@@ -139,6 +152,17 @@ void BlockUserData::removeTokenSequence(TokenCell * tkn) {
     }
 }
 void BlockUserData::removeParaSequence(ParaCell * tkn) {
+    if (tkn) {
+        while(tkn -> next) {
+            tkn = tkn -> next;
+            delete tkn -> prev;
+        }
+
+        delete tkn;
+    }
+}
+
+void BlockUserData::removeScopeSequence(ScopeCell * tkn) {
     if (tkn) {
         while(tkn -> next) {
             tkn = tkn -> next;

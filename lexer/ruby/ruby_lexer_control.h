@@ -47,6 +47,8 @@ namespace Ruby {
         ParaCell * control_para;
         ParaCell * active_para;
 
+        ScopeCell * scope;
+
         Identifier last_uid;
 
         EDITOR_POS_TYPE cached_str_pos;
@@ -69,7 +71,7 @@ namespace Ruby {
             lex_prev_word(lex_none), lex_word(lex_none), lex_delimiter(lex_none), next_offset(1), heredoc_token(nullptr),
             stack_token(stack_token), token(user_data -> lineControlToken()), last_non_blank_token(nullptr),
             heredoc_para(nullptr), para(user_data -> lineControlPara()), control_para(nullptr), active_para(nullptr),
-            last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2),
+            scope(user_data -> lineControlScope()), last_uid(hid_none), cached_str_pos(0), cached_length(0), last_light_pos(-2),
             last_light_len(0), user_data(user_data)
         {}
 

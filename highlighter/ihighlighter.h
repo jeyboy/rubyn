@@ -12,7 +12,7 @@ protected:
 
     TokenList * _tokens;
     ParaList * _paras;
-//    Scope * _scope;
+    ScopeList * _scopes;
 
     inline void initFormats(const int length) {
         if (fill_styles)
@@ -30,7 +30,7 @@ protected:
         return false;
     }
 public:
-    IHighlighter() : fill_styles(true), _tokens(new TokenList()), _paras(new ParaList()) {}
+    IHighlighter() : fill_styles(true), _tokens(new TokenList()), _paras(new ParaList()), _scopes(new ScopeList()) {}
     virtual ~IHighlighter();
 
     virtual BlockUserData * prevUserData() = 0;

@@ -36,6 +36,7 @@ void IHighlighter::initCurrentBlockUserData(BlockUserData * prev_udata, BlockUse
 
         _tokens -> registerLine(udata -> token_begin, udata -> token_end, prev_udata ? prev_udata -> token_end : nullptr);
         _paras -> registerLine(udata -> para_begin, udata -> para_end, prev_udata ? prev_udata -> para_end : nullptr);
+        _scopes -> registerLine(udata -> scope_begin, udata -> scope_end, prev_udata ? prev_udata -> scope_end : nullptr);
 
         setCurrentUserData(udata);
     }

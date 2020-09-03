@@ -8,6 +8,9 @@
 #include "misc/msg_info.h"
 
 #include "misc/token_list.h"
+
+#include "misc/scope_list.h"
+
 //#include "misc/stack.h"
 
 #define DEFAULT_LEVEL 0
@@ -31,7 +34,10 @@ struct BlockUserData : public QTextBlockUserData {
 
     ParaCell * para_begin;
     ParaCell * para_end;
-    ParaCell * para_control;  
+    ParaCell * para_control;
+
+    ScopeCell * scope_begin;
+    ScopeCell * scope_end;
 
     int level;
     bool can_have_debug_point;
@@ -50,8 +56,9 @@ struct BlockUserData : public QTextBlockUserData {
     // maybe better to remove full tokens sequence in another thread instead of use sync and etc ???
     TokenCell * lineControlToken();
     ParaCell * lineControlPara();
+    ScopeCell * lineControlScope();
 
-    void syncLine(TokenCell * control_sync_token, TokenCell * sync_token, ParaCell * control_sync_para, ParaCell * sync_para);
+    void syncLine(TokenCell * control_sync_token, TokenCell * sync_token, ParaCell * control_sync_para, ParaCell * sync_para, ScopeCell * sync_scope);
 
     inline DATA_FLAGS_TYPE foldingState() {
         DATA_FLAGS_TYPE res = flags & udf_folded;
@@ -69,6 +76,7 @@ struct BlockUserData : public QTextBlockUserData {
 
     void removeTokenSequence(TokenCell * tkn);
     void removeParaSequence(ParaCell * tkn);
+    void removeScopeSequence(ScopeCell * tkn);
 
     inline int levelForNextBlock() {
         return level + (
