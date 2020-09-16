@@ -1,7 +1,7 @@
 #ifndef SCOPE_LIST_H
 #define SCOPE_LIST_H
 
-#include "lexer/scope_type.h"
+#include "lexer/scope_lexem.h"
 
 struct ScopeCell {
     ScopeCell * prev;
@@ -9,14 +9,14 @@ struct ScopeCell {
 
     ScopeCell * closer;
 
-    SCOPE_TYPE para_type;
+    SCOPE_TYPE scope_type;
     EDITOR_POS_TYPE pos;
     quint8 length;
 
     bool is_opener;
 
-    ScopeCell(const SCOPE_TYPE & para, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0, ScopeCell * prev_token = nullptr)
-        : prev(prev_token), next(nullptr), closer(nullptr), para_type(para), pos(start_pos), length(length), is_opener(true)
+    ScopeCell(const SCOPE_TYPE & scp, const EDITOR_POS_TYPE & start_pos, const quint8 & length = 0, ScopeCell * prev_token = nullptr)
+        : prev(prev_token), next(nullptr), closer(nullptr), scope_type(scp), pos(start_pos), length(length), is_opener(true)
     {
         if (prev) {
             if ((next = prev -> next))
@@ -42,8 +42,8 @@ class ScopeList {
     ScopeCell * root, * last;
 public:
     inline ScopeList() : root(nullptr), last(nullptr) {
-        root = new ScopeCell(sc_none, -1);
-        last = new ScopeCell(sc_max, -1, 0, root);
+        root = new ScopeCell(slex_none, -1);
+        last = new ScopeCell(slex_max, -1, 0, root);
     }
 
     inline ~ScopeList() {
@@ -78,8 +78,8 @@ public:
         if (!prev_end)
             prev_end = root; //last -> prev;
 
-        left = new ScopeCell(sc_none, -1, 0, prev_end);
-        right = new ScopeCell(sc_max, -1, 0, left);
+        left = new ScopeCell(slex_none, -1, 0, prev_end);
+        right = new ScopeCell(slex_max, -1, 0, left);
 
         right -> is_opener = false;
     }

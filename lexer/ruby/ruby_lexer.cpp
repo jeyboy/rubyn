@@ -126,6 +126,8 @@ Ruby::StateLexem Lexer::translateState(LexerControl * state, const Ruby::StateLe
         case lex_const: {
             // check word on availability in constants
         break;}
+
+        default: {}
     }
 
     return new_state;
@@ -144,115 +146,6 @@ Ruby::StateLexem Lexer::translateState(LexerControl * state, const Ruby::StateLe
 
 //    state -> lex_word = new_state;
 }
-
-
-//bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_lexem, const Ruby::StateLexem & predefined_delimiter, StackLexemFlag flags) {
-//    bool has_predefined = predefined_lexem != lex_none;
-
-//    state -> cachingPredicate();
-
-//    if (state -> cached_length || has_predefined) {
-//        LEXEM_TYPE last_non_blank = state -> lastNonBlankLexem();
-
-//        if (has_predefined)
-//            state -> lex_word = predefined_lexem;
-//        else {
-//            LEXEM_TYPE pot_lex = Predefined::obj().lexem(state -> cached);
-
-//            switch(pot_lex) {
-//                case lex_yield: { break; } // yield can call through object: 'block.yield'
-//                case lex_word: { break; }
-
-//                default: { // proc lex with dot in front like
-//                    if (last_non_blank == lex_dot)
-//                       pot_lex = lex_word;
-//                }
-//            }
-
-//            state -> lex_word = pot_lex;
-//        }
-
-//        if (state -> cached_length) {
-//            if (state -> lex_word == lex_word)
-//                identifyWordType(state);
-//            else
-//                state -> grammar -> initFlags(flags, state -> lex_word, last_non_blank);
-
-////            if (state -> lex_word == lex_word) {
-////                switch(last_non_blank) {
-////                    case lex_method_def: {
-////                        state -> lex_word = lex_method_def_name;
-////                    break;}
-////                    case lex_module_def: {
-////                        state -> lex_word = lex_module_def_name;
-////                    break;}
-////                    case lex_class_def: {
-////                        state -> lex_word = lex_class_def_name;
-////                    break;}
-////                    default:;
-////                }
-////            }
-
-//            Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
-//            if (highlightable != hid_none)
-//                state -> light(highlightable);
-//        }
-
-//        state -> attachToken(state -> lex_word, flags & slf_word_related);
-
-//        translateState(state);
-
-//        if (state -> cached_length) {
-////            if (state -> lex_word == lex_word)
-////                registerVariable(state);
-
-//            Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_word);
-//            if (highlightable == hid_none) {
-//                highlightable = state -> grammar -> toHighlightable(state -> lex_prev_word);
-//            }
-
-//            if (highlightable != hid_none)
-//                state -> light(highlightable);
-//        }
-//    }
-//    else state -> lex_word = lex_none;
-
-//    if (state -> next_offset) {
-//        LEXEM_TYPE prev_delimiter = state -> lex_delimiter;
-
-//        state -> cachingDelimiter();
-
-//        state -> lex_delimiter =
-//            predefined_delimiter == lex_none ?
-//                Predefined::obj().lexem(state -> cached) :
-//                predefined_delimiter;
-
-//        Identifier highlightable = state -> grammar -> toHighlightable(state -> lex_delimiter);
-//        if (highlightable != hid_none)
-//            state -> light(highlightable);
-
-//        state -> attachToken(state -> lex_delimiter, flags & slf_delimiter_related);
-
-//        if (state -> lex_word == lex_none) {
-//            LEXEM_TYPE new_state = state -> grammar -> translate(prev_delimiter, state -> lex_delimiter);
-
-//            if (new_state == lex_error) {
-//                state -> lightWithMessage(
-//                    lex_error,
-//                    ERROR_STATE(QByteArrayLiteral("Wrong delimiter satisfy state!!!"), prev_delimiter, state -> lex_delimiter)
-//                );
-//                //return false;
-//            }
-
-//            state -> lex_delimiter = new_state;
-//        }
-//    }
-
-//    state -> dropCached();
-
-//    return true;
-//}
-
 
 bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_lexem, const Ruby::StateLexem & predefined_delimiter, StackLexemFlag flags) {
     bool is_method_def = false;
@@ -326,6 +219,13 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
         }
         ////////////
 
+        ScopeLexem last_scope;
+        uint flags;
+
+        if (state -> grammar -> toScope((Ruby::ScopeLexem)state -> scope -> scope_type, state -> lex_word, last_scope, flags)) {
+            state -> attachScope(last_scope, flags);
+        }
+
         is_method_def = state -> lex_word == lex_method_def;
 
         if (state -> cached_length) {
@@ -347,8 +247,6 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
 
         state -> attachToken(state -> lex_delimiter, delimiter_flags);
 
-
-
         //////
 //        state -> lex_word = translateState(state, state -> lex_word, state -> lex_delimiter);
         //// REMOVE ME
@@ -363,6 +261,12 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
 
 
 
+        ScopeLexem last_scope;
+        uint flags;
+
+        if (state -> grammar -> toScope((Ruby::ScopeLexem)state -> scope -> scope_type, state -> lex_word, last_scope, flags)) {
+            state -> attachScope(last_scope, flags);
+        }
 
         state -> light(state -> grammar -> toHighlightable(state -> lex_word));
     }

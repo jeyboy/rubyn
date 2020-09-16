@@ -149,6 +149,9 @@ namespace Ruby {
 
         void procStackable(const Ruby::StateLexem & lexem, const uint & flags);
 
+        ScopeCell * scopeParent(ScopeCell * curr_scope);
+        void attachScope(const Ruby::ScopeLexem & scope_lexem, const uint & flags = slf_none);
+
         void attachToken(const Ruby::StateLexem & lexem, const uint & flags = slf_none);
     //    inline void replaceToken(const StateLexem & lexem, const uint & flags = slf_none) {
     //        token -> lexem = lexem;

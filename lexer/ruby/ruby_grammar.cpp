@@ -565,6 +565,44 @@ Identifier Grammar::toHighlightable(const Ruby::StateLexem & lexem) {
     }
 }
 
+bool Grammar::toScope(const Ruby::ScopeLexem & current_scope, const Ruby::StateLexem & lexem, Ruby::ScopeLexem & new_scope, uint & flags) {
+    int i = 0;
+
+    switch(current_scope) {
+        case slex_none: {
+
+        break;}
+
+        case slex_method_params: {
+
+        break;}
+
+        case slex_method_args: {
+
+        break;}
+
+        case slex_lambda_params: {
+
+        break;}
+
+        case slex_block_params: {
+
+        break;}
+
+        case slex_hash: {
+
+        break;}
+
+        case slex_array: {
+
+        break;}
+
+        default:;
+    }
+
+    return false;
+}
+
 Ruby::StateLexem Grammar::translate(const Ruby::StateLexem & state, const Ruby::StateLexem & handle) {
     if (state == lex_none)
         return handle;

@@ -106,6 +106,45 @@ void LexerControl::procStackable(const Ruby::StateLexem & lexem, const uint & fl
     }
 }
 
+ScopeCell * LexerControl::scopeParent(ScopeCell * curr_scope) {
+    ScopeCell * it = curr_scope -> prev;
+
+    while(it) {
+        if (it -> pos == -1) {
+            it = it -> prev;
+        } else {
+            if (it -> is_opener && !it -> closer) {
+               return it;
+            }
+
+
+            if (!it -> is_opener && it -> closer) {
+                it = it -> closer;
+            }
+
+            it = it -> prev;
+        }
+    }
+
+    return nullptr;
+}
+
+void LexerControl::attachScope(const Ruby::ScopeLexem & scope_lexem, const uint & flags) {
+    if (flags & slf_stack_word) {
+        if (scope -> next) {
+            scope = scope -> next;
+            scope -> scope_type = scope_lexem;
+            scope -> pos = cached_str_pos;
+            scope -> length = cached_length;
+        }
+        else scope = ScopeList::insert(scope, scope_lexem, cached_str_pos, cached_length);
+    } else {
+//        if (scope -> )
+
+        ScopeCell * para_scope = scopeParent(scope);
+    }
+}
+
 void LexerControl::attachToken(const Ruby::StateLexem & lexem, const uint & flags) {
     if (token -> next) {
         token = token -> next;

@@ -3,7 +3,7 @@
 
 #include "misc/defines.h"
 
-enum StackLexemFlag : uint {
+enum StackLexemFlag : uint {   
     slf_none = 0,
 
     slf_stack_word = 1,

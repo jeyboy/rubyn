@@ -13,6 +13,7 @@
 
 #include "misc/singleton.h"
 #include "ruby_state_lexems.h"
+#include "ruby_scope_lexems.h"
 #include "ruby_para_lexem.h"
 
 namespace Ruby {
@@ -56,6 +57,8 @@ namespace Ruby {
 //        LEXEM_TYPE fromContinious(const Ruby::StateLexem & lexem);
 
         Identifier toHighlightable(const Ruby::StateLexem & lexem);
+
+        bool toScope(const Ruby::ScopeLexem & current_scope, const Ruby::StateLexem & lexem, Ruby::ScopeLexem & new_scope, uint & flags);
 
         Ruby::StateLexem translate(const Ruby::StateLexem & state, const Ruby::StateLexem & handle);
     };

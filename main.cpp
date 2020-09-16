@@ -100,6 +100,8 @@
 //https://apidock.com/rails/notes
 //https://apidock.com/rails/notes/good
 
+//https://stackoverflow.com/questions/89650/how-do-you-pass-arguments-to-define-method
+
 
 //http://www.iconarchive.com/show/windows-8-icons-by-icons8.3.html
 

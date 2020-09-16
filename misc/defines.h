@@ -43,8 +43,7 @@
 
 #define SCOPE_TYPE quint32
 
-#define DefaultScopeLexems sc_none = 0, sc_max = 1 << 30
-
+#define DefaultScopeLexems slex_none = 0, slex_max = 1 << 30
 
 
 #define OVERLAY_POS_TYPE quint8
