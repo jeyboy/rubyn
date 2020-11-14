@@ -47,7 +47,7 @@ SOURCES += main.cpp\
     lexer/ruby/ruby_lexer.cpp \
     lexer/ruby/ruby_lexer_control.cpp \
     lexer/ruby/ruby_predefined.cpp \
-    lexer/yaml/yaml_lexer_frontend.cpp \
+    lexer/yaml/yaml_lexer.cpp \
     lexer/yaml/yaml_predefined.cpp \
     loggers/basic_logger.cpp \
     misc/info_collector.cpp \
@@ -192,8 +192,8 @@ HEADERS  += ide_window.h \
     lexer/scope_lexem.h \
     lexer/state_lexem.h \
     lexer/yaml/yaml_grammar.h \
+    lexer/yaml/yaml_lexer.h \
     lexer/yaml/yaml_lexer_control.h \
-    lexer/yaml/yaml_lexer_frontend.h \
     lexer/yaml/yaml_predefined.h \
     lexer/yaml/yaml_state_lexems.h \
     loggers/basic_logger.h \
@@ -203,6 +203,7 @@ HEADERS  += ide_window.h \
     misc/para_list.h \
     misc/run_config.h \
     misc/scope_list.h \
+    misc/version.h \
     project/project_tree_entry.h \
     styles/click_fix_style.h \
     controls/dock_widgets.h \

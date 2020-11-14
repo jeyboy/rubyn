@@ -27,6 +27,10 @@ File * Project::findFile(const QString & inner_path) {
     return _root -> findFile(parts);
 }
 
+void Project::initVersions() {
+
+}
+
 //bool Project::addFile(const QUrl & uri, const bool & open) {
 //    bool new_file = false;
 //    File * file;

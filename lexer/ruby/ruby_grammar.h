@@ -58,7 +58,7 @@ namespace Ruby {
 
         Identifier toHighlightable(const Ruby::StateLexem & lexem);
 
-        bool toScope(const Ruby::ScopeLexem & current_scope, const Ruby::StateLexem & lexem, Ruby::ScopeLexem & new_scope, uint & flags);
+        bool toScope(const Ruby::ScopeLexem & current_scope, const Ruby::StateLexem & lexem, const Ruby::StateLexem & last_non_blank_lexem, Ruby::ScopeLexem & new_scope, uint & flags);
 
         Ruby::StateLexem translate(const Ruby::StateLexem & state, const Ruby::StateLexem & handle);
     };

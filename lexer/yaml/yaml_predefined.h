@@ -9,13 +9,13 @@
 
 namespace Yaml {
     class Predefined : public Singleton<Predefined> {
-        QHash<QByteArray, StateLexem> keys;
+        QHash<QByteArray, Yaml::StateLexem> keys;
 
         Predefined();
         friend class Singleton<Predefined>;
     public:
         bool hasKey(const QByteArray & key);
-        StateLexem lexem(const QByteArray & key);
+        Yaml::StateLexem lexem(const QByteArray & key);
     };
 }
 

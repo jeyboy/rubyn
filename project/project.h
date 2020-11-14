@@ -2,6 +2,8 @@
 #define PROJECT_H
 
 #include "misc/defines.h"
+#include "misc/version.h"
+#include "code_formats.h"
 
 #include <qurl.h>
 
@@ -13,6 +15,7 @@ class Project {
     PROJECT_FORMAT_TYPE _project_format;
 
     IFolder * _root;
+    QHash<FormatType, Version> _versions;
 public:
     Project(const QUrl & uri = QUrl());
     ~Project();
@@ -24,6 +27,8 @@ public:
     void rename(const QString & new_name);
 
     File * findFile(const QString & inner_path);
+
+    void initVersions();
 
 //    bool addFile(const QUrl & uri = QUrl(), const bool & open = true);
 };

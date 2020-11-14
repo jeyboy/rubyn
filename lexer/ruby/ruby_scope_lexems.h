@@ -4,12 +4,11 @@
 #pragma once
 
 #include "misc/defines.h"
-//#include "lexer/scope_lexem.h"
 
 namespace Ruby {
     enum ScopeLexem : SCOPE_TYPE {
         DefaultScopeLexems,
-        slex_method_params = 1,
+        slex_method_vars = 1,
         slex_method_args,
         slex_lambda_params,
         slex_block_params,

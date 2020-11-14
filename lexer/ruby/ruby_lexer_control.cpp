@@ -130,18 +130,19 @@ ScopeCell * LexerControl::scopeParent(ScopeCell * curr_scope) {
 }
 
 void LexerControl::attachScope(const Ruby::ScopeLexem & scope_lexem, const uint & flags) {
-    if (flags & slf_stack_word) {
-        if (scope -> next) {
-            scope = scope -> next;
-            scope -> scope_type = scope_lexem;
-            scope -> pos = cached_str_pos;
-            scope -> length = cached_length;
-        }
-        else scope = ScopeList::insert(scope, scope_lexem, cached_str_pos, cached_length);
-    } else {
-//        if (scope -> )
+    if (scope -> next) {
+        scope = scope -> next;
+        scope -> scope_type = scope_lexem;
+        scope -> pos = cached_str_pos;
+        scope -> length = cached_length;
+    }
+    else scope = ScopeList::insert(scope, scope_lexem, cached_str_pos, cached_length);
 
+    scope -> is_opener = flags & slf_stack_word;
+
+    if (!scope -> is_opener) {
         ScopeCell * para_scope = scopeParent(scope);
+        para_scope -> closer = scope;
     }
 }
 

@@ -222,7 +222,7 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
         ScopeLexem last_scope;
         uint flags;
 
-        if (state -> grammar -> toScope((Ruby::ScopeLexem)state -> scope -> scope_type, state -> lex_word, last_scope, flags)) {
+        if (state -> grammar -> toScope((Ruby::ScopeLexem)state -> scope -> scope_type, state -> lex_word, state -> lastNonBlankLexem(), last_scope, flags)) {
             state -> attachScope(last_scope, flags);
         }
 
@@ -264,7 +264,7 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
         ScopeLexem last_scope;
         uint flags;
 
-        if (state -> grammar -> toScope((Ruby::ScopeLexem)state -> scope -> scope_type, state -> lex_word, last_scope, flags)) {
+        if (state -> grammar -> toScope((Ruby::ScopeLexem)state -> scope -> scope_type, state -> lex_word, state -> lastNonBlankLexem(), last_scope, flags)) {
             state -> attachScope(last_scope, flags);
         }
 

@@ -565,39 +565,68 @@ Identifier Grammar::toHighlightable(const Ruby::StateLexem & lexem) {
     }
 }
 
-bool Grammar::toScope(const Ruby::ScopeLexem & current_scope, const Ruby::StateLexem & lexem, Ruby::ScopeLexem & new_scope, uint & flags) {
-    int i = 0;
-
+bool Grammar::toScope(const Ruby::ScopeLexem & current_scope, const Ruby::StateLexem & lexem, const Ruby::StateLexem & last_non_blank_lexem, Ruby::ScopeLexem & new_scope, uint & flags) {
     switch(current_scope) {
         case slex_none: {
+            switch(lexem) {
+                case lex_method_def_args_start: {
+                    new_scope = slex_method_args;
+                    flags = slf_stack_word;
+                    return true;
+                break;}
 
+                case lex_method_def_vars_start: {
+                    new_scope = slex_method_vars;
+                    flags = slf_stack_word;
+                    return true;
+                break;}
+
+                default:;
+            }
         break;}
 
-        case slex_method_params: {
+        case slex_method_vars: {
+            switch(lexem) {
+                case lex_semicolon:
+                case lex_end_line: {
+                    new_scope = slex_method_vars;
+                    flags = slf_unstack_word;
+                    return true;
+                break;}
 
+                default:;
+            }
         break;}
 
-        case slex_method_args: {
+        case slex_method_args: {           
+            switch(lexem) {
+                case lex_method_def_args_end: {
+                    new_scope = slex_method_args;
+                    flags = slf_unstack_word;
+                    return true;
+                break;}
 
+                default:;
+            }
         break;}
 
         case slex_lambda_params: {
-
+            int y = 0;
         break;}
 
         case slex_block_params: {
-
+            int y = 0;
         break;}
 
         case slex_hash: {
-
+            int y = 0;
         break;}
 
         case slex_array: {
-
+            int y = 0;
         break;}
 
-        default:;
+        default: new_scope = current_scope;
     }
 
     return false;

@@ -9,49 +9,43 @@
 
 namespace Yaml {
     enum StateLexem : LEXEM_TYPE {
-        lex_none = 0,
+        DefaultStateLexems,
 
-        ////////// highlightable
-        yml_lex_error,
-        yml_lex_warning,
-        yml_lex_notice,
-
-    //    lex_mark,
         lex_key,
-        lex_predefined,
-        lex_name,
-    //    lex_def_name,
-        lex_commentary,
-        lex_string,
-    //    lex_regexp,
-        lex_method,
+
+        lex_scalar,
+        lex_multiline, // |
+        lex_multiline_formating, // >
+        lex_list_item, // -
+
+//        my:
+//           servers: [dev, prod]
+
+        lex_list_begin, // [
+        lex_list_end, // ]
+        lex_list_splitter, // ,
+
+//        map1:
+//          key1:value1
+//          key2:value2
+
+//        map1: {key1=value1, key2=value2}
+        lex_map_begin, // {
+        lex_map_end, // }
+        lex_map_splitter, // ,
+        lex_map__key_value_splitter, // =
 
 
+//        'here''s to "quotes"' => !!str "here's to \"quotes\""
+        lex_single_quote,
+        lex_double_quote,
 
-    //    lex_key = 1 << 19,
-    //    lex_block = 1 << 20,
-    //    lex_def = 1 << 21,
-    //    lex_commentary = 1 << 22,
-    //    lex_string = 1 << 23,
-    //    lex_def_name = 1 << 24,
-    //    lex_symbol = 1 << 25,
-    //    lex_regexp = 1 << 26,
-    //    lex_method = 1 << 27,
-    //    lex_class = 1 << 28,
-    //    lex_predefined = 1 << 29,
-    //    lex_name = 1 << 30,
-    //    //////////
+        lex_comment, // !
 
-        lex_undefined,
-        lex_end_line,
-        lex_end_doc,
-        lex_tab,
-        lex_blank,
-        lex_blanks,
-        lex_ignore,
-    //    lex_chain_item, // service token
+        lex_relation, // &
+        lex_pointer, // *
 
-        lex_max
+        lex_profile_splitter, // ---
     };
 }
 
