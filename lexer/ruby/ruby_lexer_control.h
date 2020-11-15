@@ -29,7 +29,6 @@ namespace Ruby {
         IHighlighter * lighter;
 
         Ruby::Grammar * grammar;
-        //    Scope * scope;
 
         Ruby::StateLexem lex_prev_word;
         Ruby::StateLexem lex_word;
@@ -67,7 +66,7 @@ namespace Ruby {
         BlockUserData *& user_data;
 
         LexerControl(BlockUserData *& user_data, TokenCell * stack_token = nullptr, IHighlighter * lighter = nullptr) :
-            lighter(lighter), grammar(&Ruby::Grammar::obj()),
+            lighter(lighter), grammar(&Grammar::obj()),
             lex_prev_word(lex_none), lex_word(lex_none), lex_delimiter(lex_none), next_offset(1), heredoc_token(nullptr),
             stack_token(stack_token), token(user_data -> lineControlToken()), last_non_blank_token(nullptr),
             heredoc_para(nullptr), para(user_data -> lineControlPara()), control_para(nullptr), active_para(nullptr),
@@ -97,6 +96,12 @@ namespace Ruby {
         inline bool isBufferEof() { return buffer >= end; }
         inline bool bufferIsEmpty() { return start == end; }
         inline bool strIsEmpty() { return buffer - prev == 0; }
+
+        void postCachingPredecate() {
+            if (lex_word != lex_none) {
+                lex_prev_word = lex_word;
+            }
+        }
 
         inline void cachingPredicate() {
             cached_str_pos = bufferPos();

@@ -4,24 +4,20 @@
 #include "lexer/ilexer.h"
 
 namespace Yaml {
-//    struct LexerControl;
+    struct LexerControl;
 
-//    class LexerFrontend : public ILexer {
-//        void lexicate(LexerControl * control);
-////    protected:
-////        int rubyLineState(BlockUserData * udata, const int & prev_user_state, const bool & override_status);
-//    public:
-//        LexerFrontend();
-//        ~LexerFrontend();
+    class Lexer : public ILexer {
+        void lexicate(LexerControl * state);
+    public:
+        Lexer();
+        ~Lexer();
 
-//        void handle(const QString & text, IHighlighter * lighter);
+        void handle(const QString & text, IHighlighter * lighter);
 
-//        bool isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end);
-
-//        bool isCompleterContinuable(const LEXEM_TYPE & lex, const bool & at_end);
-
-//        bool isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start);
-//    };
+        bool isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end);
+        bool isCompleterContinuable(const LEXEM_TYPE & lex, const bool & at_end);
+        bool isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start);
+    };
 }
 
 

@@ -3,13 +3,14 @@
 
 //#include "misc/stack.h"
 #include "yaml_state_lexems.h"
+#include "yaml_grammar.h"
 #include "lexer/ilexer_control.h"
 //#include "scopes/scope.h"
 
 namespace Yaml {
     struct LexerControl : public ILexerControl {
-        LexerControl(IGrammar * cgrammar, BlockUserData *& user_data, TokenCell * stack_token = nullptr, IHighlighter * lighter = nullptr) :
-            ILexerControl(cgrammar, user_data, stack_token, lighter)
+        LexerControl(BlockUserData *& user_data, TokenCell * stack_token = nullptr, IHighlighter * lighter = nullptr) :
+            ILexerControl(&Grammar::obj(), user_data, stack_token, lighter)
         {}
 
         ~LexerControl() {}

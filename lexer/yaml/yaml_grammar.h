@@ -18,17 +18,7 @@ namespace Yaml {
 
 //        LEXEM_TYPE toInterceptor(const StateLexem & lex);
 
-        StateLexem stateForHeredoc(const StateLexem & lex, const bool & content);
-
         char percentagePresentationBlocker(const char & ch);
-
-//        bool isStackDroppable(const StateLexem & lexem);
-
-//        bool isInterpolable(const StateLexem & lexem);
-
-//        StateLexem toHeredocContinious(const StateLexem & lexem);
-
-//        StateLexem fromContinious(const StateLexem & lexem);
 
         Identifier toHighlightable(const StateLexem & lexem);
 
