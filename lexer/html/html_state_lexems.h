@@ -3,43 +3,26 @@
 
 #pragma once
 
-#include "misc/defines.h"
+#include <qbytearray.h>
+
+#include "lexer/state_lexem.h"
 
 namespace Html {
     enum StateLexem : LEXEM_TYPE {
+
+//        1 << 9,// 512
+//        1 << 10,// 1024
+//        1 << 11// 2048
+//        1 << 12// 4096
+//        1 << 13// 8192
+//        1 << 14// 16384
+//        1 << 15// 32768
+
         DefaultStateLexems,
 
-        lex_word,
+//        lex_symbol_key              = (lex_reserved + 1) | lex_ruby_division_breaker | lex_ruby_ternary_braker,
 
-    //    lex_mark,
-        lex_key,
-        lex_predefined,
-        lex_name,
-    //    lex_def_name,
-        lex_commentary,
-        lex_string,
-    //    lex_regexp,
-        lex_method,
-
-
-
-    //    lex_key = 1 << 19,
-    //    lex_block = 1 << 20,
-    //    lex_def = 1 << 21,
-    //    lex_commentary = 1 << 22,
-    //    lex_string = 1 << 23,
-    //    lex_def_name = 1 << 24,
-    //    lex_symbol = 1 << 25,
-    //    lex_regexp = 1 << 26,
-    //    lex_method = 1 << 27,
-    //    lex_class = 1 << 28,
-    //    lex_predefined = 1 << 29,
-    //    lex_name = 1 << 30,
-    //    //////////
-
-    //    lex_chain_item, // service token
-
-        lex_max
+//        lex_loop,
     };
 }
 

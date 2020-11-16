@@ -3,6 +3,11 @@
 
 #pragma once
 
+//#define LEX(val, flag) (Lexem)(val | flag)
+//#define EXCLUDE_BIT(val, flag) (Lexem)(val & ~flag)
+
+ // = (1ULL << 1),
+
 #include "misc/defines.h"
 
 enum StateLexem : LEXEM_TYPE {

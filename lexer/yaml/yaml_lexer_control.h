@@ -15,8 +15,9 @@ namespace Yaml {
 
         ~LexerControl() {}
 
-        void validateHeredocState();
-        void registerHeredocMark(const StateLexem & lexem, QByteArray * name);
+        void light(const LEXEM_TYPE & lexem) {
+
+        }
     };
 }
 

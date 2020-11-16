@@ -8,14 +8,10 @@
 #include "misc/defines.h"
 #include "lexer/state_lexem.h"
 
-//#define LEX(val, flag) (Lexem)(val | flag)
-//#define EXCLUDE_BIT(val, flag) (Lexem)(val & ~flag)
-
- // = (1ULL << 1),
-
 namespace Ruby {
     enum StateLexem : LEXEM_TYPE {
 
+        // = (1ULL << 1),
         lex_ruby_division_breaker = 1 << 9, // 512
         lex_ruby_ternary_braker = 1 << 10, // 1024
 //        1 << 11// 2048

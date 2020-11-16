@@ -36,11 +36,8 @@ SOURCES += main.cpp\
     editor/parts/body_overlay_info.cpp \
     editor/code_editor.cpp \
     highlighter/highlighter.cpp \
-    lexer/css/css_lexer_frontend.cpp \
     lexer/css/css_predefined.cpp \
-    lexer/html/html_lexer_frontend.cpp \
     lexer/html/html_predefined.cpp \
-    lexer/js/js_lexer_frontend.cpp \
     lexer/js/js_predefined.cpp \
     lexer/lexer_context.cpp \
     lexer/ruby/ruby_grammar.cpp \
@@ -162,20 +159,11 @@ HEADERS  += ide_window.h \
     editor/custom/custom_selection.h \
     editor/custom/custom_text_block.h \
     editor/custom/custom_visualization.h \
-    lexer/css/css_grammar.h \
-    lexer/css/css_lexer_control.h \
-    lexer/css/css_lexer_frontend.h \
     lexer/css/css_predefined.h \
     lexer/css/css_state_lexems.h \
-    lexer/html/html_grammar.h \
-    lexer/html/html_lexer_control.h \
-    lexer/html/html_lexer_frontend.h \
     lexer/html/html_predefined.h \
     lexer/html/html_state_lexems.h \
     lexer/ilexer_control.h \
-    lexer/js/js_grammar.h \
-    lexer/js/js_lexer_control.h \
-    lexer/js/js_lexer_frontend.h \
     lexer/js/js_predefined.h \
     lexer/js/js_state_lexems.h \
     lexer/lexer_context.h \
