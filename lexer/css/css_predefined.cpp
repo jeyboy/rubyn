@@ -783,6 +783,6 @@ Predefined::Predefined() {
 
 
 bool Predefined::hasKey(const QByteArray & key) { return keys.contains(key); }
-StateLexem Predefined::lexem(const QByteArray & key) {
-    return keys.value(key, lex_word);
+Css::StateLexem Predefined::lexem(const QByteArray & key) {
+    return keys.value(key, lex_undefined);
 }

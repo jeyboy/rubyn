@@ -133,7 +133,7 @@ struct ILexerControl {
         );
     }
 
-    inline void light(const Identifier & uid) {
+    void light(const Identifier & uid) {
         if (uid == hid_none)
             return;
 
@@ -157,13 +157,14 @@ struct ILexerControl {
             );
         }
     }
-    inline void light(const int & pos, const int & len, const Identifier & uid) {
+    void light(const int & pos, const int & len, const Identifier & uid) {
         lighter -> setFormat(
             pos, len,
             HighlightFormatFactory::obj().getFormatFor(uid)
         );
     }
     virtual void light(const LEXEM_TYPE & lexem) = 0;
+
     inline void cacheAndLightWithMessage(const LEXEM_TYPE & lexem, const QByteArray & msg) {
         cachingPredicate();
         lightWithMessage(lexem, msg);

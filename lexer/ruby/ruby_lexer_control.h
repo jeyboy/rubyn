@@ -27,7 +27,7 @@ namespace Ruby {
 
         inline Ruby::StateLexem & sublastToken() { return (Ruby::StateLexem &)(token -> prev -> lexem); }
         inline Ruby::StateLexem & lastToken() { return (Ruby::StateLexem &)(token -> lexem); }
-        inline Ruby::StateLexem lastNonBlankLexem() {
+        inline Ruby::StateLexem lastNonBlankLexem() {           
             if (last_non_blank_token)
                 return Ruby::StateLexem(last_non_blank_token -> lexem);
 
@@ -66,13 +66,12 @@ namespace Ruby {
     //    }
 
 
-        void light(const LEXEM_TYPE & lexem) {
-            light((const Identifier &)grammar -> toHighlightable((const Ruby::StateLexem &)lexem));
-        }
+        void light(const int & pos, const int & len, const Identifier & uid) { ILexerControl::light(pos, len, uid); }
+        void light(const LEXEM_TYPE & lexem) { ILexerControl::light(grammar -> toHighlightable((const Ruby::StateLexem &)lexem)); }
 
-        inline void light(const Ruby::StateLexem & lexem) {
-            light((const Identifier &)grammar -> toHighlightable(lexem));
-        }
+//        inline void light(const Ruby::StateLexem & lexem) {
+//            light((const Identifier &)grammar -> toHighlightable(lexem));
+//        }
 
         inline ParaCell * prevFoldableInActiveParaLine(ParaCell * pcell) {
             ParaCell * it = pcell;
