@@ -12,17 +12,17 @@ namespace Yaml {
     protected:
         void initParas();
     public:
-        void initFlags(StackLexemFlag & flags, const StateLexem & lex, const StateLexem & last_non_blank_lex);
+        void initFlags(StackLexemFlag & flags, const LEXEM_TYPE & lex, const LEXEM_TYPE & last_non_blank_lex);
 
-        bool stackDropable(const StateLexem & state, const StateLexem & input);
+        bool stackDropable(const LEXEM_TYPE & state, const LEXEM_TYPE & input);
 
-//        LEXEM_TYPE toInterceptor(const StateLexem & lex);
+//        LEXEM_TYPE toInterceptor(const LEXEM_TYPE & lex);
 
         char percentagePresentationBlocker(const char & ch);
 
-        Identifier toHighlightable(const StateLexem & lexem);
+        Identifier toHighlightable(const LEXEM_TYPE & lexem);
 
-        StateLexem translate(const StateLexem & state, const StateLexem & input);
+        LEXEM_TYPE translate(const LEXEM_TYPE & state, const LEXEM_TYPE & input);
     };
 }
 

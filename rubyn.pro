@@ -44,6 +44,7 @@ SOURCES += main.cpp\
     lexer/ruby/ruby_lexer.cpp \
     lexer/ruby/ruby_lexer_control.cpp \
     lexer/ruby/ruby_predefined.cpp \
+    lexer/yaml/yaml_grammar.cpp \
     lexer/yaml/yaml_lexer.cpp \
     lexer/yaml/yaml_predefined.cpp \
     loggers/basic_logger.cpp \

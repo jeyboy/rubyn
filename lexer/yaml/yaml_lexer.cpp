@@ -673,536 +673,536 @@ void Lexer::handle(const QString & text, IHighlighter * lighter) {
 ////    }
 ////}
 
-//bool LexerFrontend::isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end) {}
+bool Lexer::isCompleterInitiable(const LEXEM_TYPE & lex, const bool & at_end) {}
 
-//bool LexerFrontend::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & /*at_end*/) {}
+bool Lexer::isCompleterContinuable(const LEXEM_TYPE & lex, const bool & /*at_end*/) {}
 
-//bool LexerFrontend::isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start) {}
+bool Lexer::isCompleterReplaceable(const LEXEM_TYPE & lex, const bool & at_start) {}
 
 void Lexer::lexicate(LexerControl * state) {
-    if (state -> bufferIsEmpty())
-        goto exit;
-
-//    if (!parseContinious(state))
+//    if (state -> bufferIsEmpty())
 //        goto exit;
 
-    while(true) {
-        switch(ECHAR0.unicode()) {
-            case ' ': {
-                StateLexem status = lex_blanks;
-
-                if (ECHAR1 == ' ') {
-                    int iter = 1;
-
-                    do { ++state -> next_offset; }
-                    while(*(state -> buffer + ++iter) == ' ');
-                }
-
-                if(!cutWord(state, lex_none, status)) goto exit;
-            break;}
-
-            case '\t':{
-                StateLexem status = lex_tabs;
-
-                if (ECHAR1 == '\t') {
-                    int iter = 1;
-
-                    do { ++state -> next_offset; }
-                    while(*(state -> buffer + ++iter) == '\t');
-                }
-
-                if(!cutWord(state, lex_none, status)) goto exit;
-            break;}
-
-            case ',':
-            case '~':
-            case ';':
-            case '\r':
-            case '\n':
-            case '\v': {
-                if(!cutWord(state)) goto exit;
-            break;}
-
-
-            case '{':
-            case '[':
-            case '(': {
-                if(!cutWord(state, lex_none, lex_none, slf_stack_delimiter)) goto exit;
-            break;}
-            case ']':
-            case ')': {
-                if(!cutWord(state, lex_none, lex_none, slf_unstack_delimiter)) goto exit;
-            break;}
-            case '}': {
-                StateLexem lex = lex_close_curly_bracket;
-
-                switch(state -> stack_token -> lexem) {
-                    case lex_estring_interception:
-                    case lex_regexp_interception:
-                    case lex_epercent_presentation_interception:
-                    case lex_command_interception:
-                    case lex_heredoc_interception: {
-                        lex = lex_interception_close;
-                    break;}
-
-                    default:;
-                }
-
-                if(!cutWord(state, lex_none, lex, slf_unstack_delimiter)) goto exit;
-
-                if (!parseContinious(state))
-                    goto exit;
-            break;}
-
-
-            case '.': {
-                if (ECHAR1 == '.') { // is range
-                    ++state -> next_offset;
-
-                    if (ECHAR2 == '.') // is range with exclusion
-                        ++state -> next_offset;
-                }
-
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '`': {
-                if (!cutWord(state, lex_none, lex_command_start, slf_stack_delimiter)) goto exit;
-
-                if (!parseCommand(state)) goto exit;
-            break;}
-
-
-            case '\'': {
-                if (!cutWord(state, lex_none, lex_string_start, slf_stack_delimiter)) goto exit;
-
-                if (!parseString(state)) goto exit;
-            break;}
-
-
-            case '"': {
-                if (!cutWord(state, lex_none, lex_estring_start, slf_stack_delimiter)) goto exit;
-
-                if (!parseEString(state)) goto exit;
-            break;}
-
-
-            case ':': {
-                StateLexem del_state = lex_none;
-                StackLexemFlag flags = slf_none;
-
-                if (ECHAR1 == ':') {
-                    ++state -> next_offset;
-//                } else if (ECHAR1 == '"' || ECHAR1 == '\'') {
-////                    parse symbol in quotas
-                } else { // if we have deal with symbol
-                    EDITOR_LEN_TYPE len = state -> strLength();
-
-                    if (len > 0 && isWord(ECHAR_1)) {
-                        ++state -> buffer;
-                        state -> next_offset = 0;
-                    } else {
-                        if (len == 0 && isWord(ECHAR1, false))
-                            goto iterate;
-                        else {
-                            // ternary parts should be on the same stack level
-                            if (state -> stack_token -> lexem == lex_ternary_main_start) {
-                                del_state = lex_ternary_alt_start;
-                                flags = slf_unstack_delimiter;
-                            }
-                        }
-                    }
-                }
-
-                if (!cutWord(state, lex_none, del_state, flags)) goto exit;
-            break;}
-
-
-            case '^': {
-                if (ECHAR1 == '=')
-                    ++state -> next_offset;
-
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '=': {
-                if (ECHAR1 == '~')
-                    ++state -> next_offset;
-                else if (ECHAR1 == '=') {// ==
-                    ++state -> next_offset;
-
-                    if (ECHAR2 == '=') // ===
-                        ++state -> next_offset;
-                }
-                else if (ECHAR1 == '>') {
-                    ++state -> next_offset;
-                }
-                else if (ECHAR1 == 'b') { // =begin
-                   if (ECHAR2 == 'e' && ECHAR3 == 'g' &&
-                        ECHAR4 == 'i' && ECHAR5 == 'n')
-                   {
-                        state -> buffer += 6;
-                        state -> next_offset = 0;
-
-                        if (!cutWord(state)) goto exit;
-
-                        parseComment(state);
-                        goto exit;
-                   }
-                }
-
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '|': {
-                if (ECHAR1 == '|') {
-                    ++state -> next_offset;
-
-                    if (ECHAR2 == '=') {
-                        ++state -> next_offset;
-                    }
-                }
-
-                if (ECHAR1 == '=')
-                    ++state -> next_offset;
-
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '&': {
-                if (ECHAR1 == '&') {
-                    ++state -> next_offset;
-
-                    if (ECHAR2 == '=')
-                        ++state -> next_offset;
-                }
-
-                if (ECHAR1 == '=')
-                    ++state -> next_offset;
-
-                if (ECHAR1 == '.')
-                    ++state -> next_offset;
-
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '!': {
-                if (ECHAR_1.isLetterOrNumber())
-                    goto iterate;
-
-                if (ECHAR1 == '~' || ECHAR1 == '=')
-                    ++state -> next_offset;
-
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '?': {
-                uint len = state -> strLength();
-                Ruby::StateLexem lex = lex_ternary_main_start;
-
-                if (len == 0) {
-                    LEXEM_TYPE sublex = state -> lastNonBlankLexem();
-
-                    bool is_charcode = sublex == lex_none || (sublex & lex_ruby_ternary_braker && !isBlank(ECHAR1));
-
-                    if (is_charcode) {
-                        ++state -> buffer;
-
-                        if (parseCharCode(state)) {
-                            --state -> buffer;
-                            goto iterate;
-                        }
-                    }
-                } else {
-                    if (isWord(ECHAR_1)) goto iterate;
-                }
-
-                if (!cutWord(state, lex_none, lex, lex == lex_ternary_main_start ? slf_stack_delimiter : slf_none)) goto exit;
-            break;}
-
-
-            case '<': {
-                Ruby::StateLexem lex = lex_none;
-
-                if (ECHAR1 == '<') {
-                    ++state -> next_offset;
-
-                    if (ECHAR2 == '=') {
-                        ++state -> next_offset;
-                    } else if (!isBlank(ECHAR2)) {
-                        if (parseHeredocMarks(state, lex))
-                            goto iterate;
-                    }
-                } else {
-                    if (ECHAR1 == '=') {
-                        ++state -> next_offset;
-
-                        if (ECHAR2 == '>')
-                            ++state -> next_offset;
-                    }
-                }
-
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '>': {
-                if (ECHAR1 == '>') {
-                    ++state -> next_offset;
-
-                    if (ECHAR2 == '=')
-                        ++state -> next_offset;
-                }
-
-                if (ECHAR1 == '=')
-                    ++state -> next_offset;
-
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            // make inline comments collapsable
-            case '#': { // inline comment
-                state -> moveBufferToEnd();
-                state -> next_offset = 0;
-
-                if (!cutWord(state, lex_inline_commentary_content)) goto exit;
-
-                highlightMarkupInComments(state);
-            break;}
-
-
-            case '-': {
-                if (ECHAR1 == '>' || ECHAR1 == '=')
-                    ++state -> next_offset;
-                else if(ECHAR1.isDigit() && (state -> isBufferStart() || isBlank(ECHAR_1))) {
-                    goto parse_number;
-                }
-
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '+': {
-                if (ECHAR1 == '=')
-                    ++state -> next_offset;
-                else if(ECHAR1.isDigit() && (state -> isBufferStart() || isBlank(ECHAR_1))) {
-                    goto parse_number;
-                }
-
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9': {
-                if (isWord(ECHAR_1))
-                    goto iterate;
-
-                parse_number:
-                    if (!parseNumber(state)) goto exit;
-            break;}
-
-
-            case '*': {
-                if (ECHAR1 == '*' || ECHAR1 == '=')
-                    ++state -> next_offset;
-
-                if (!cutWord(state)) goto exit;
-            break;}
-
-
-            case '%': {
-                StateLexem res = lex_none;
-                QChar braker = '\0';
-
-                switch(ECHAR1.unicode()) {
-                    case '=': { ++state -> next_offset; break; }
-
-                    case '{':
-                    case '(':
-                    case '/': {
-                        ++state -> next_offset;
-                        braker = ECHAR1;
-                        res = lex_epercent_presentation_start;
-                    break;}
-
-
-                    case 'l': // Interpolated Array of Symbols
-                    case 'Q': // double quoted string
-                    case 'r': // Regular Expression
-                    case 'W': // Array of double quoted Strings
-                    case 'x': // Backtick (capture subshell result)
-                        {
-                            state -> next_offset += 2;
-                            braker = ECHAR2;
-                            res = lex_epercent_presentation_start;
-                        break;}
-
-                    case 'i': // Array of Symbols
-                    case 'q': // single quoted string
-                    case 's': // Symbol
-                    case 'w': // Array of Strings
-                        {
-                            state -> next_offset += 2;
-                            braker = ECHAR2;
-                            res = lex_percent_presentation_start;
-                        break;}
-                };
-
-                if (res != lex_none) {
-                    if (!cutWord(state, lex_none, res, slf_stack_delimiter)) goto exit;
-
-                    if (state -> stack_token -> data) {
-                        state -> stack_token -> data -> clear();
-                        state -> stack_token -> data -> append(Grammar::obj().percentagePresentationBlocker(braker));
-                    }
-                    else state -> stack_token -> data = new QString(1, Grammar::obj().percentagePresentationBlocker(braker));
-
-                    if (!parsePercentagePresenation(state))
-                        goto exit;
-                } else {
-                    if (!cutWord(state))
-                        goto exit;
-                }
-            break;}
-
-
-            case '/': {
-                if (ECHAR1 == '=') {
-                    ++state -> next_offset;
-
-                    if (!cutWord(state)) goto exit;
-                } else {
-                    LEXEM_TYPE lex = state -> lastNonBlankLexem();
-                    bool next_is_blank = isBlank(ECHAR1);
-
-                    bool is_division = (lex != lex_none || (!state -> isBufferStart() && ECHAR_1.isLetterOrNumber())) &&
-                        (next_is_blank || !(lex & lex_ruby_division_breaker));
-
-                    if (is_division) {
-                        if (!cutWord(state)) goto exit;
-                    } else {
-                        if (!cutWord(state, lex_none, lex_regexp_start, slf_stack_delimiter)) goto exit;
-                        if (!parseRegexp(state)) goto exit;
-                    }
-                }
-            break;}
-
-
-            case '@': {
-                if (ECHAR1 == '@')
-                    ++state -> buffer;
-
-                goto iterate;
+////    if (!parseContinious(state))
+////        goto exit;
+
+//    while(true) {
+//        switch(ECHAR0.unicode()) {
+//            case ' ': {
+//                StateLexem status = lex_blanks;
+
+//                if (ECHAR1 == ' ') {
+//                    int iter = 1;
+
+//                    do { ++state -> next_offset; }
+//                    while(*(state -> buffer + ++iter) == ' ');
+//                }
+
+//                if(!cutWord(state, lex_none, status)) goto exit;
+//            break;}
+
+//            case '\t':{
+//                StateLexem status = lex_tabs;
+
+//                if (ECHAR1 == '\t') {
+//                    int iter = 1;
+
+//                    do { ++state -> next_offset; }
+//                    while(*(state -> buffer + ++iter) == '\t');
+//                }
+
+//                if(!cutWord(state, lex_none, status)) goto exit;
+//            break;}
+
+//            case ',':
+//            case '~':
+//            case ';':
+//            case '\r':
+//            case '\n':
+//            case '\v': {
+//                if(!cutWord(state)) goto exit;
+//            break;}
+
+
+//            case '{':
+//            case '[':
+//            case '(': {
+//                if(!cutWord(state, lex_none, lex_none, slf_stack_delimiter)) goto exit;
+//            break;}
+//            case ']':
+//            case ')': {
+//                if(!cutWord(state, lex_none, lex_none, slf_unstack_delimiter)) goto exit;
+//            break;}
+//            case '}': {
+//                StateLexem lex = lex_close_curly_bracket;
+
+//                switch(state -> stack_token -> lexem) {
+//                    case lex_estring_interception:
+//                    case lex_regexp_interception:
+//                    case lex_epercent_presentation_interception:
+//                    case lex_command_interception:
+//                    case lex_heredoc_interception: {
+//                        lex = lex_interception_close;
+//                    break;}
+
+//                    default:;
+//                }
+
+//                if(!cutWord(state, lex_none, lex, slf_unstack_delimiter)) goto exit;
+
+//                if (!parseContinious(state))
+//                    goto exit;
+//            break;}
+
+
+//            case '.': {
+//                if (ECHAR1 == '.') { // is range
+//                    ++state -> next_offset;
+
+//                    if (ECHAR2 == '.') // is range with exclusion
+//                        ++state -> next_offset;
+//                }
 
 //                if (!cutWord(state)) goto exit;
-            break;}
+//            break;}
 
 
-            case '$': {
-                bool has_match = false;
-                const QChar & next_char = ECHAR1;
+//            case '`': {
+//                if (!cutWord(state, lex_none, lex_command_start, slf_stack_delimiter)) goto exit;
 
-                switch(next_char.unicode()) {
-                    case '!':
-                    case '=':
-                    case '*':
-                    case '@':
-                    case '/':
-                    case '\\':
-                    case ',':
-                    case ';':
-                    case '.':
-                    case '<':
-                    case '>':
-                    case '0':
-                    case '$':
-                    case '?':
-                    case ':':
-                    case '~':
-                    case '&':
-                    case '`':
-                    case '\'':
-                    case '+': {
-                        ++state -> next_offset;
-                        has_match = true;
-                    break; }
-
-                    default: {
-                        const QChar & n1_char = ECHAR2;
-
-                        if (next_char == '-') {
-                            switch(n1_char.unicode()) {
-                                case '0':
-                                case 'a':
-                                case 'd':
-                                case 'F':
-                                case 'i':
-                                case 'K':
-                                case 'l':
-                                case 'p':
-                                case 'v':
-                                case '+': {
-                                    state -> next_offset += 2;
-                                    has_match = true;
-                                break; }
-
-                                default:;
-                            }
-                        } else if (next_char.isDigit()) { // $0-$99
-                            ++state -> buffer;
-                            parseRegexpGroup(state);
-                            goto iterate;
-                        } else if (next_char.isLetter() || next_char == '_') {
-                            goto iterate;
-                        }
-                    }
-                }
-
-                if (!cutWord(state)) goto exit;
-
-                if (!has_match)
-                    state -> cacheAndLightWithMessage(lex_inner_error, QByteArrayLiteral("Expression requires"));
-
-                else goto iterate;
-            break;}
+//                if (!parseCommand(state)) goto exit;
+//            break;}
 
 
-            case 0: {
-                state -> next_offset = 0;
-                cutWord(state);
+//            case '\'': {
+//                if (!cutWord(state, lex_none, lex_string_start, slf_stack_delimiter)) goto exit;
 
-                state -> lex_word = translateState(state, state -> lex_word, lex_end_line);
-
-                goto exit;
-            /*break;*/}
+//                if (!parseString(state)) goto exit;
+//            break;}
 
 
-            default:
-                iterate:
-                    // Ruby identifier names may consist of alphanumeric characters and the
-                    //  underscore character ( _ ).
-                    // check if word isWord(*window)
-                    ++state -> buffer;
-        }
-    }
+//            case '"': {
+//                if (!cutWord(state, lex_none, lex_estring_start, slf_stack_delimiter)) goto exit;
 
-    exit:;
-//        state -> validateHeredocState();
+//                if (!parseEString(state)) goto exit;
+//            break;}
+
+
+//            case ':': {
+//                StateLexem del_state = lex_none;
+//                StackLexemFlag flags = slf_none;
+
+//                if (ECHAR1 == ':') {
+//                    ++state -> next_offset;
+////                } else if (ECHAR1 == '"' || ECHAR1 == '\'') {
+//////                    parse symbol in quotas
+//                } else { // if we have deal with symbol
+//                    EDITOR_LEN_TYPE len = state -> strLength();
+
+//                    if (len > 0 && isWord(ECHAR_1)) {
+//                        ++state -> buffer;
+//                        state -> next_offset = 0;
+//                    } else {
+//                        if (len == 0 && isWord(ECHAR1, false))
+//                            goto iterate;
+//                        else {
+//                            // ternary parts should be on the same stack level
+//                            if (state -> stack_token -> lexem == lex_ternary_main_start) {
+//                                del_state = lex_ternary_alt_start;
+//                                flags = slf_unstack_delimiter;
+//                            }
+//                        }
+//                    }
+//                }
+
+//                if (!cutWord(state, lex_none, del_state, flags)) goto exit;
+//            break;}
+
+
+//            case '^': {
+//                if (ECHAR1 == '=')
+//                    ++state -> next_offset;
+
+//                if (!cutWord(state)) goto exit;
+//            break;}
+
+
+//            case '=': {
+//                if (ECHAR1 == '~')
+//                    ++state -> next_offset;
+//                else if (ECHAR1 == '=') {// ==
+//                    ++state -> next_offset;
+
+//                    if (ECHAR2 == '=') // ===
+//                        ++state -> next_offset;
+//                }
+//                else if (ECHAR1 == '>') {
+//                    ++state -> next_offset;
+//                }
+//                else if (ECHAR1 == 'b') { // =begin
+//                   if (ECHAR2 == 'e' && ECHAR3 == 'g' &&
+//                        ECHAR4 == 'i' && ECHAR5 == 'n')
+//                   {
+//                        state -> buffer += 6;
+//                        state -> next_offset = 0;
+
+//                        if (!cutWord(state)) goto exit;
+
+//                        parseComment(state);
+//                        goto exit;
+//                   }
+//                }
+
+//                if (!cutWord(state)) goto exit;
+//            break;}
+
+
+//            case '|': {
+//                if (ECHAR1 == '|') {
+//                    ++state -> next_offset;
+
+//                    if (ECHAR2 == '=') {
+//                        ++state -> next_offset;
+//                    }
+//                }
+
+//                if (ECHAR1 == '=')
+//                    ++state -> next_offset;
+
+//                if (!cutWord(state)) goto exit;
+//            break;}
+
+
+//            case '&': {
+//                if (ECHAR1 == '&') {
+//                    ++state -> next_offset;
+
+//                    if (ECHAR2 == '=')
+//                        ++state -> next_offset;
+//                }
+
+//                if (ECHAR1 == '=')
+//                    ++state -> next_offset;
+
+//                if (ECHAR1 == '.')
+//                    ++state -> next_offset;
+
+//                if (!cutWord(state)) goto exit;
+//            break;}
+
+
+//            case '!': {
+//                if (ECHAR_1.isLetterOrNumber())
+//                    goto iterate;
+
+//                if (ECHAR1 == '~' || ECHAR1 == '=')
+//                    ++state -> next_offset;
+
+//                if (!cutWord(state)) goto exit;
+//            break;}
+
+
+//            case '?': {
+//                uint len = state -> strLength();
+//                StateLexem lex = lex_ternary_main_start;
+
+//                if (len == 0) {
+//                    LEXEM_TYPE sublex = state -> lastNonBlankLexem();
+
+//                    bool is_charcode = sublex == lex_none || (sublex & lex_ruby_ternary_braker && !isBlank(ECHAR1));
+
+//                    if (is_charcode) {
+//                        ++state -> buffer;
+
+//                        if (parseCharCode(state)) {
+//                            --state -> buffer;
+//                            goto iterate;
+//                        }
+//                    }
+//                } else {
+//                    if (isWord(ECHAR_1)) goto iterate;
+//                }
+
+//                if (!cutWord(state, lex_none, lex, lex == lex_ternary_main_start ? slf_stack_delimiter : slf_none)) goto exit;
+//            break;}
+
+
+//            case '<': {
+//                Ruby::StateLexem lex = lex_none;
+
+//                if (ECHAR1 == '<') {
+//                    ++state -> next_offset;
+
+//                    if (ECHAR2 == '=') {
+//                        ++state -> next_offset;
+//                    } else if (!isBlank(ECHAR2)) {
+//                        if (parseHeredocMarks(state, lex))
+//                            goto iterate;
+//                    }
+//                } else {
+//                    if (ECHAR1 == '=') {
+//                        ++state -> next_offset;
+
+//                        if (ECHAR2 == '>')
+//                            ++state -> next_offset;
+//                    }
+//                }
+
+//                if (!cutWord(state)) goto exit;
+//            break;}
+
+
+//            case '>': {
+//                if (ECHAR1 == '>') {
+//                    ++state -> next_offset;
+
+//                    if (ECHAR2 == '=')
+//                        ++state -> next_offset;
+//                }
+
+//                if (ECHAR1 == '=')
+//                    ++state -> next_offset;
+
+//                if (!cutWord(state)) goto exit;
+//            break;}
+
+
+//            // make inline comments collapsable
+//            case '#': { // inline comment
+//                state -> moveBufferToEnd();
+//                state -> next_offset = 0;
+
+//                if (!cutWord(state, lex_inline_commentary_content)) goto exit;
+
+//                highlightMarkupInComments(state);
+//            break;}
+
+
+//            case '-': {
+//                if (ECHAR1 == '>' || ECHAR1 == '=')
+//                    ++state -> next_offset;
+//                else if(ECHAR1.isDigit() && (state -> isBufferStart() || isBlank(ECHAR_1))) {
+//                    goto parse_number;
+//                }
+
+//                if (!cutWord(state)) goto exit;
+//            break;}
+
+
+//            case '+': {
+//                if (ECHAR1 == '=')
+//                    ++state -> next_offset;
+//                else if(ECHAR1.isDigit() && (state -> isBufferStart() || isBlank(ECHAR_1))) {
+//                    goto parse_number;
+//                }
+
+//                if (!cutWord(state)) goto exit;
+//            break;}
+
+
+//            case '0':
+//            case '1':
+//            case '2':
+//            case '3':
+//            case '4':
+//            case '5':
+//            case '6':
+//            case '7':
+//            case '8':
+//            case '9': {
+//                if (isWord(ECHAR_1))
+//                    goto iterate;
+
+//                parse_number:
+//                    if (!parseNumber(state)) goto exit;
+//            break;}
+
+
+//            case '*': {
+//                if (ECHAR1 == '*' || ECHAR1 == '=')
+//                    ++state -> next_offset;
+
+//                if (!cutWord(state)) goto exit;
+//            break;}
+
+
+//            case '%': {
+//                StateLexem res = lex_none;
+//                QChar braker = '\0';
+
+//                switch(ECHAR1.unicode()) {
+//                    case '=': { ++state -> next_offset; break; }
+
+//                    case '{':
+//                    case '(':
+//                    case '/': {
+//                        ++state -> next_offset;
+//                        braker = ECHAR1;
+//                        res = lex_epercent_presentation_start;
+//                    break;}
+
+
+//                    case 'l': // Interpolated Array of Symbols
+//                    case 'Q': // double quoted string
+//                    case 'r': // Regular Expression
+//                    case 'W': // Array of double quoted Strings
+//                    case 'x': // Backtick (capture subshell result)
+//                        {
+//                            state -> next_offset += 2;
+//                            braker = ECHAR2;
+//                            res = lex_epercent_presentation_start;
+//                        break;}
+
+//                    case 'i': // Array of Symbols
+//                    case 'q': // single quoted string
+//                    case 's': // Symbol
+//                    case 'w': // Array of Strings
+//                        {
+//                            state -> next_offset += 2;
+//                            braker = ECHAR2;
+//                            res = lex_percent_presentation_start;
+//                        break;}
+//                };
+
+//                if (res != lex_none) {
+//                    if (!cutWord(state, lex_none, res, slf_stack_delimiter)) goto exit;
+
+//                    if (state -> stack_token -> data) {
+//                        state -> stack_token -> data -> clear();
+//                        state -> stack_token -> data -> append(Grammar::obj().percentagePresentationBlocker(braker));
+//                    }
+//                    else state -> stack_token -> data = new QString(1, Grammar::obj().percentagePresentationBlocker(braker));
+
+//                    if (!parsePercentagePresenation(state))
+//                        goto exit;
+//                } else {
+//                    if (!cutWord(state))
+//                        goto exit;
+//                }
+//            break;}
+
+
+//            case '/': {
+//                if (ECHAR1 == '=') {
+//                    ++state -> next_offset;
+
+//                    if (!cutWord(state)) goto exit;
+//                } else {
+//                    LEXEM_TYPE lex = state -> lastNonBlankLexem();
+//                    bool next_is_blank = isBlank(ECHAR1);
+
+//                    bool is_division = (lex != lex_none || (!state -> isBufferStart() && ECHAR_1.isLetterOrNumber())) &&
+//                        (next_is_blank || !(lex & lex_ruby_division_breaker));
+
+//                    if (is_division) {
+//                        if (!cutWord(state)) goto exit;
+//                    } else {
+//                        if (!cutWord(state, lex_none, lex_regexp_start, slf_stack_delimiter)) goto exit;
+//                        if (!parseRegexp(state)) goto exit;
+//                    }
+//                }
+//            break;}
+
+
+//            case '@': {
+//                if (ECHAR1 == '@')
+//                    ++state -> buffer;
+
+//                goto iterate;
+
+////                if (!cutWord(state)) goto exit;
+//            break;}
+
+
+//            case '$': {
+//                bool has_match = false;
+//                const QChar & next_char = ECHAR1;
+
+//                switch(next_char.unicode()) {
+//                    case '!':
+//                    case '=':
+//                    case '*':
+//                    case '@':
+//                    case '/':
+//                    case '\\':
+//                    case ',':
+//                    case ';':
+//                    case '.':
+//                    case '<':
+//                    case '>':
+//                    case '0':
+//                    case '$':
+//                    case '?':
+//                    case ':':
+//                    case '~':
+//                    case '&':
+//                    case '`':
+//                    case '\'':
+//                    case '+': {
+//                        ++state -> next_offset;
+//                        has_match = true;
+//                    break; }
+
+//                    default: {
+//                        const QChar & n1_char = ECHAR2;
+
+//                        if (next_char == '-') {
+//                            switch(n1_char.unicode()) {
+//                                case '0':
+//                                case 'a':
+//                                case 'd':
+//                                case 'F':
+//                                case 'i':
+//                                case 'K':
+//                                case 'l':
+//                                case 'p':
+//                                case 'v':
+//                                case '+': {
+//                                    state -> next_offset += 2;
+//                                    has_match = true;
+//                                break; }
+
+//                                default:;
+//                            }
+//                        } else if (next_char.isDigit()) { // $0-$99
+//                            ++state -> buffer;
+//                            parseRegexpGroup(state);
+//                            goto iterate;
+//                        } else if (next_char.isLetter() || next_char == '_') {
+//                            goto iterate;
+//                        }
+//                    }
+//                }
+
+//                if (!cutWord(state)) goto exit;
+
+//                if (!has_match)
+//                    state -> cacheAndLightWithMessage(lex_inner_error, QByteArrayLiteral("Expression requires"));
+
+//                else goto iterate;
+//            break;}
+
+
+//            case 0: {
+//                state -> next_offset = 0;
+//                cutWord(state);
+
+//                state -> lex_word = translateState(state, state -> lex_word, lex_end_line);
+
+//                goto exit;
+//            /*break;*/}
+
+
+//            default:
+//                iterate:
+//                    // Ruby identifier names may consist of alphanumeric characters and the
+//                    //  underscore character ( _ ).
+//                    // check if word isWord(*window)
+//                    ++state -> buffer;
+//        }
+//    }
+
+//    exit:;
+////        state -> validateHeredocState();
 }
 
