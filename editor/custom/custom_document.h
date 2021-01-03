@@ -39,6 +39,11 @@ namespace Custom {
         void appendLine(const QByteArray & line);
         quint64 linesCount() { return _lines_count; }
 
+    signals:
+        void maxCharsCountChanged(const quint64 &);
+        void linesCountChanged(const quint64 &);
+
+
         friend class DrawContext;
         friend class Editor;
     };

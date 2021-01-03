@@ -221,8 +221,8 @@ struct RunConfig {
                         rails_path = paths.takeFirst();
                     }
 
-//                    QString res = rails_path + " s -e " + envName();
-                    QString res = "cmd.exe /C \"cd /d " + work_dir + " & call bundle exec rails s -e " + envName();
+                    QString res = rails_path + " s -e " + envName();
+//                    QString res = "cmd.exe /C \"cd /d " + work_dir + " && bundle exec rails s -e " + envName();
 
                     QVariantMap::Iterator it = run_params.begin();
 

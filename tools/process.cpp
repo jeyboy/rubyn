@@ -6,7 +6,7 @@
 #include <qdebug.h>
 
 Process::Process(QObject * parent) : QProcess(parent), _timer(nullptr) {
-//    setProcessChannelMode(QProcess::MergedChannels);
+    setProcessChannelMode(QProcess::SeparateChannels);
 //    _timer = new QTimer(this);
 //    _timer -> setInterval(50);
 

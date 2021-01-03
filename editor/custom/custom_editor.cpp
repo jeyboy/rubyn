@@ -266,6 +266,11 @@ void Editor::openDocument(Document * doc) {
     _context -> setFont(font());
 //    _context -> _screen_size = size();
 
+    if (_document) {
+        disconnect(_document, &Document::maxCharsCountChanged, this, &Editor::docMaxCharsCountChanged);
+        disconnect(_document, &Document::linesCountChanged, this, &Editor::docLinesCountChanged);
+    }
+
     _document = doc;
     _context -> _select_block = nullptr;
     _context -> _top_block_offset = 0;
@@ -284,6 +289,9 @@ void Editor::openDocument(Document * doc) {
         }
 
         scroll_pos = doc -> editorScrollPos(this);
+
+        connect(doc, &Document::maxCharsCountChanged, this, &Editor::docMaxCharsCountChanged);
+        connect(doc, &Document::linesCountChanged, this, &Editor::docLinesCountChanged);
     } else {
         _context -> _top_block = nullptr;
         setLeftMargin(_context -> calcNumWidth(1) + 3);
@@ -1079,6 +1087,16 @@ bool Editor::focusNextPrevChild(bool /*next*/) {
 //        completer -> complete(cr);
 //    }
 //}
+
+
+
+void Editor::docMaxCharsCountChanged(const quint64 &) {
+    recalcScrolls();
+}
+void Editor::docLinesCountChanged(const quint64 &) {
+    setLeftMargin(_context -> calcNumWidth(_document -> linesCount()) + 3);
+    recalcScrolls();
+}
 
 void Editor::applyCompletion(const QString & completion) {
     qDebug() << "CUSTOM EDITOR: applyCompletion";

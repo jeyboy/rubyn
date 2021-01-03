@@ -149,7 +149,8 @@ namespace Custom {
 
 
     public slots:
-
+        void docMaxCharsCountChanged(const quint64 &);
+        void docLinesCountChanged(const quint64 &);
 
     private slots:
         void applyCompletion(const QString & completion);

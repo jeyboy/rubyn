@@ -87,7 +87,7 @@ namespace Custom {
         CharVisualization _visualization;
 
         qreal _cursor_width;
-        qint32 _letter_spacing;
+        qreal _letter_spacing;
         qint32 _left_padding;
         qint32 _left_margin;
         qint32 _right_margin;
