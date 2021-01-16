@@ -36,7 +36,7 @@ QPoint & Document::editorScrollPos(Editor * editor) {
     return scroll_pos[editor];
 }
 
-Document::Document(File * file, QObject * parent) : QObject(parent), _root(nullptr), _last(nullptr), _inline_pos(0), _max_line_length(0), _lines_count(0), _file(file) {
+Document::Document(File * file, QObject * parent) : QObject(parent), _root(nullptr), _last(nullptr), _inline_pos(0), _max_line_length(0), _max_line_count(0), _lines_count(0), _file(file) {
     _last = _root = new TextBlock(QByteArray(), nullptr);
 
     if (file) {
@@ -81,12 +81,29 @@ void Document::insertLine(IBlock * after, const QByteArray & line) {
     _last = new TextBlock(line, after);
     quint64 line_len = quint64(line.length());
 
-    if (line_len > _max_line_length)
+    if (line_len > _max_line_length) {
+        _max_line_count = 1;
         _max_line_length = line_len;
+    } else if (line_len > 0 && line_len == _max_line_length) {
+        _max_line_count++;
+    }
 
     ++_lines_count;
 }
 
 void Document::appendLine(const QByteArray & line) {
     insertLine(_last, line);
+}
+
+void Document::procLineChange(IBlock * blk, const int & from, const int & to) {
+    if (blk) {
+        int len = blk -> contentLength();
+
+        if (len > _max_line_length) {
+            _max_line_count = 1;
+            _max_line_length = len;
+        } else if (len == _max_line_length) {
+            _max_line_count++;
+        }
+    }
 }

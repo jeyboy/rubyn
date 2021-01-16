@@ -151,3 +151,25 @@ bool Cursor::toNextLine() {
 bool Cursor::atLineEnd() {
     return _block -> contentLength() == _pos_in_block;
 }
+
+void Cursor::insertChar(const QChar & ch) {
+    if (_block) {
+        _block -> insertChar(_pos_in_block, ch);
+//        _doc -> procLineIncrease(_block);
+    }
+}
+void Cursor::insertText(const QString & txt) {
+    if (_block) {
+        _block -> insertText(_pos_in_block, txt);
+    }
+}
+void Cursor::removeText(const int & len) {
+    if (_block) {
+        _block -> removeText(_pos_in_block, len);
+    }
+}
+void Cursor::appendText(const QString & txt) {
+    if (_block) {
+        _block -> appendText(txt);
+    }
+}

@@ -60,6 +60,11 @@ namespace Custom {
         MoveFlag moveFlag() { return _move_state; }
 
 //        void select();
+
+        void insertChar(const QChar & ch);
+        void insertText(const QString & txt);
+        void removeText(const int & len);
+        void appendText(const QString & txt);
     };
 };
 

@@ -11,6 +11,7 @@ class File;
 
 namespace Custom {
     class Editor;
+    class Cursor;
 
     class Document : public QObject, public IDocument {
         Q_OBJECT
@@ -18,6 +19,7 @@ namespace Custom {
         IBlock * _root, * _last;
         quint64 _inline_pos;
         quint64 _max_line_length;
+        int _max_line_count;
         quint64 _lines_count;
         File * _file;
         QHash<Editor *, QPoint> scroll_pos;
@@ -39,13 +41,16 @@ namespace Custom {
         void appendLine(const QByteArray & line);
         quint64 linesCount() { return _lines_count; }
 
+    protected:
+        void procLineChange(IBlock * blk, const int & from, const int & to);
+
     signals:
         void maxCharsCountChanged(const quint64 &);
         void linesCountChanged(const quint64 &);
 
-
         friend class DrawContext;
         friend class Editor;
+        friend class Cursor;
     };
 }
 
