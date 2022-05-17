@@ -30,7 +30,7 @@ namespace Web {
                 qDebug() << "~~~ CONNESTION LOST";
                 emit connectionStatus(false);
                 connection_checker = new QFutureWatcher<void>();
-                connection_checker -> setFuture(QtConcurrent::run(this, &WebConnection::checkConnection, connection_checker));
+                connection_checker -> setFuture(QtConcurrent::run(&WebConnection::checkConnection, this, connection_checker));
             }
         }
 

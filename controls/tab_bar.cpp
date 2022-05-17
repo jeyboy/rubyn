@@ -186,7 +186,7 @@ void TabBar::dropEvent(QDropEvent * event) {
             _tabs_linkages.insert(file -> uid(), target_item);
 
             if (file -> isExternal()) {
-                target_item -> setBackgroundColor(remote_file_color);
+                target_item -> setBackground(remote_file_color);
             }
         }
 

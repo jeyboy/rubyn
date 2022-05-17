@@ -13,5 +13,5 @@ void ColorButton::paintEvent(QPaintEvent * e) {
     QPainter painter(this);
 
     painter.setBrush(color);
-    painter.drawRoundRect(rect().adjusted(1, 1, -2, -2), 4, 4);
+    painter.drawRoundedRect(rect().adjusted(1, 1, -2, -2), 4, 4);
 }

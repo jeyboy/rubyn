@@ -80,7 +80,7 @@ uint File::pathToHash(const QString & url) {
 
 bool File::identifyType(const QString & name, LexerContext *& _context, const uint & level) {
     QString lower_name = name.toLower();
-    QStringList parts = lower_name.split('.', QString::SkipEmptyParts);
+    QStringList parts = lower_name.split('.', Qt::SkipEmptyParts);
 
     if (parts.length() > 1) {
         for(QStringList::Iterator it = ++parts.begin(); it != parts.end(); it++) {

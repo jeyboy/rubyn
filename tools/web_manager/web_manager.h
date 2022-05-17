@@ -39,7 +39,7 @@ namespace Web {
             rt_put
         };
     protected:
-        Manager(QObject * parent = 0, QSsl::SslProtocol protocol = QSsl::TlsV1SslV3, QSslSocket::PeerVerifyMode mode = QSslSocket::VerifyNone);
+        Manager(QObject * parent = 0, QSsl::SslProtocol protocol = QSsl::TlsV1_3OrLater, QSslSocket::PeerVerifyMode mode = QSslSocket::VerifyNone);
         QNetworkReply * createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData = 0);
 
         Response * setupCallback(QNetworkReply * m_http, RequestParams * params);

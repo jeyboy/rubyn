@@ -2,36 +2,48 @@
 #define SCREEN
 
 #include <qapplication.h>
-#include <qdesktopwidget.h>
+#include <qscreen.h>
+#include <qwidget.h>
 
 class Screen {
 public:
-    static QList<QRect> screenRects(QWidget * target) {
-        QDesktopWidget * w = QApplication::desktop();
-        QList<QRect> res;
-        for(int loop1 = 0 ; loop1 < w -> screenCount(); loop1++)
-            res << w -> availableGeometry(loop1);
+//    QList<QScreen *> QGuiApplication::screens()
+//    const QRect QDesktopWidget::screenGeometry(int screen = -1) const
+//    QGuiApplication::screenAt()
 
-        int screen_index = w -> screenNumber(target);
-        if (screen_index != -1)
-            res.move(screen_index, 0);
+
+    static QList<QRect> screenRects(QWidget * target) {
+        QList<QScreen *> screens = QGuiApplication::screens();
+        QList<QScreen *>::iterator i;
+        QList<QRect> res;
+
+        QPoint pos = target -> mapToGlobal(target -> rect().topLeft());
+
+        for(i = screens.begin(); i != screens.end(); ++i) {
+            if ((*i) -> geometry().contains(pos)) {
+                res.prepend((*i) -> availableGeometry());
+            } else {
+                res << (*i) -> availableGeometry();
+            }
+        }
 
         return res;
     }
 
     static QRect screenRect(QWidget * target) {
-        QDesktopWidget * w = QApplication::desktop();
-        int screen_index = w -> screenNumber(target);
-        if (screen_index != -1)
-            return w -> availableGeometry(screen_index);
+        QPoint pos = target -> mapToGlobal(target -> rect().topLeft());
+        QScreen * screen = QGuiApplication::screenAt(pos);
+
+        if (screen)
+            return screen -> availableGeometry();
         else
             return QRect();
     }
 
     static void screenSize(int & width, int & height) {
-        QDesktopWidget * w = QApplication::desktop();
-        width = w -> width();
-        height = w -> height();
+        QScreen * screen = QGuiApplication::primaryScreen();
+        width = screen -> size().width();
+        height = screen -> size().height();
     }
 
     static void minimizeIfNeeded(int & width, int & height, float percentage) {

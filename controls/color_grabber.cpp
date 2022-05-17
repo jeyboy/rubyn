@@ -5,7 +5,6 @@
 
 #include <qapplication.h>
 #include <qscreen.h>
-#include <qdesktopwidget.h>
 
 ColorGrabber::ColorGrabber(QWidget * parent) : QWidget(parent, Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint) {
 //    setAttribute(Qt::WA_TranslucentBackground);
@@ -26,7 +25,7 @@ void ColorGrabber::initiate() {
 
 void ColorGrabber::mouseMoveEvent(QMouseEvent * e) {
     QRect screenGeometry = qApp -> primaryScreen() -> virtualGeometry();
-    QPixmap p = qApp -> primaryScreen() -> grabWindow(qApp -> desktop() -> winId(), screenGeometry.x(), screenGeometry.y(), screenGeometry.width(), screenGeometry.height());
+    QPixmap p = qApp -> primaryScreen() -> grabWindow(/*qApp -> desktop() -> winId()*/0, screenGeometry.x(), screenGeometry.y(), screenGeometry.width(), screenGeometry.height());
     emit colorHovered(p.toImage().pixel(QCursor::pos()));
 
 //    QScreen * screen = qApp -> screenAt(QCursor::pos());
@@ -41,7 +40,7 @@ void ColorGrabber::mouseMoveEvent(QMouseEvent * e) {
 
 void ColorGrabber::mousePressEvent(QMouseEvent * e) {
     QRect screenGeometry = qApp -> primaryScreen() -> virtualGeometry();
-    QPixmap p = qApp -> primaryScreen() -> grabWindow(qApp -> desktop() -> winId(), screenGeometry.x(), screenGeometry.y(), screenGeometry.width(), screenGeometry.height());
+    QPixmap p = qApp -> primaryScreen() -> grabWindow(/*qApp -> desktop() -> winId()*/0, screenGeometry.x(), screenGeometry.y(), screenGeometry.width(), screenGeometry.height());
     emit colorHovered(p.toImage().pixel(QCursor::pos()));
 
     hide();

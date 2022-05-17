@@ -12,7 +12,7 @@ class FuzzyComparison {
     static QStringList wordLetterPairs(const QString & str) {
         QStringList all_pairs;
 
-        QStringList words = str.split(QRegularExpression(QLatin1String("\\s")), QString::SkipEmptyParts);
+        QStringList words = str.split(QRegularExpression(QLatin1String("\\s")), Qt::SkipEmptyParts);
 
         while(!words.isEmpty())
             all_pairs.append(letterPairs(words.takeFirst()));

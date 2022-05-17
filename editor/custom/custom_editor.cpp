@@ -101,12 +101,12 @@ void Editor::intialize() {
     _context = new DrawContext(nullptr, size(), font());
 
     QPalette * line_num_section_pal = new QPalette();
-    line_num_section_pal -> setColor(QPalette::Background, Qt::black);
-    line_num_section_pal -> setColor(QPalette::Foreground, Qt::white);
+    line_num_section_pal -> setColor(QPalette::Window, Qt::black);
+    line_num_section_pal -> setColor(QPalette::WindowText, Qt::white);
 
     QPalette * content_section_pal = new QPalette();
-    content_section_pal -> setColor(QPalette::Background, Qt::white);
-    content_section_pal -> setColor(QPalette::Foreground, Qt::black);
+    content_section_pal -> setColor(QPalette::Window, Qt::white);
+    content_section_pal -> setColor(QPalette::WindowText, Qt::black);
 
     _context -> setPalettes(line_num_section_pal, content_section_pal);
 
@@ -964,18 +964,20 @@ void Editor::keyReleaseEvent(QKeyEvent * e) {
 void Editor::wheelEvent(QWheelEvent * e) {
     QWidget::wheelEvent(e);
 
-    if (e -> orientation() == Qt::Vertical) {
+    if (e -> angleDelta().y() != 0) {
         qint32 offset = -1/*_context -> __line_height*/ * _context -> _vscroll_factor;
 
-        if (e -> delta() < 0) {
+        if (e -> pixelDelta().y() < 0) {
             offset = -offset;
         }
 
         _vscroll -> setValue(_vscroll -> value() + qint32(offset));
-    } else {
+    }
+
+    if (e -> angleDelta().x() != 0) {
         qint32 offset = -1/*_context -> __symbol_width*/ * _context -> _hscroll_factor;
 
-        if (e -> delta() < 0) {
+        if (e -> pixelDelta().x() < 0) {
             offset = -offset;
         }
 

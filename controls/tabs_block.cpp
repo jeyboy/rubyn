@@ -142,7 +142,7 @@ bool TabsBlock::openFile(File * file) {
         _bar -> _tabs_linkages.insert(file_uid, item);
 
         if (file -> isExternal()) {
-            item -> setBackgroundColor(_bar -> remote_file_color);
+            item -> setBackground(_bar -> remote_file_color);
         }
 
         file -> incOpened();

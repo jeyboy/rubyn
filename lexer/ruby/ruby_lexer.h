@@ -40,8 +40,8 @@ namespace Ruby {
         bool cutWord(LexerControl * state, const Ruby::StateLexem & predefined_lexem = lex_none,
                      const Ruby::StateLexem & predefined_delimiter = lex_none, StackLexemFlag flags = slf_none);
 
-        bool parseMethodName(LexerControl * state);
         bool parseContinious(LexerControl * state);
+        bool parseMethodName(LexerControl * state);
         bool parseNumber(LexerControl * state);
         bool parseStringPart(LexerControl * state);
         bool parseString(LexerControl * state);

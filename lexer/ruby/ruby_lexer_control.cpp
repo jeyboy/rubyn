@@ -56,8 +56,6 @@ void LexerControl::registerHeredocMark(const Ruby::StateLexem & lexem, QString *
         } else {
             heredoc_para = ParaList::insert(heredoc_para -> prev, grammar -> paraType(doc_lex), cached_str_pos, quint8(cached_length));
         }
-
-        heredoc_para -> potential_closer_para_type = grammar -> potentialCloserParaType((Ruby::ParaLexem &)heredoc_para -> para_type);
     } else {
         int i = 0;
     }
@@ -174,22 +172,18 @@ ParaCell * LexerControl::paraParent(int & lines_between, ParaCell * para, const 
         if (it -> pos == -1) {
             ++lines_between;
             it = it -> prev;
-
-//            if (it && it -> pos == -1)
-//                it = it -> prev;
         } else {
             if (it -> is_opener && it -> is_foldable == foldable) {
                 if (!only_blockators || (only_blockators && it -> is_blockator)) {
-//                    if (it -> para_type != pt_heredoc || para -> para_type == pt_close_heredoc) {
-//                    if (it -> canBeClosedBy(para -> para_type)) {
+                    if ((it -> para_type != pt_heredoc && para -> para_type != pt_close_heredoc) || (it -> para_type == pt_heredoc && para -> para_type == pt_close_heredoc)) {
                         return it;
-//                    }
+                    }
                 }
             }
 
 
             // skip only if type is equal to target one: ] => ] and etc.
-            if (!it -> is_opener && it -> closer /*&& (para -> para_type == it -> para_type)*/) {
+            if (!it -> is_opener && it -> closer && para -> para_type != pt_close_heredoc) {
                 it = it -> closer;
             }
 
@@ -267,9 +261,13 @@ void LexerControl::attachPara(const Ruby::ParaLexem & ptype, const uint & flags,
             control_para = prevFoldableInActiveParaLine(parent);
             return;
         }
-    } /*else {
-        para -> potential_closer_para_type = grammar -> potentialCloserParaType((Ruby::ParaLexem &)para -> para_type);
-    }*/
+    } else {
+        if (ptype == pt_heredoc) {
+            para -> data = new QString(cached);
+        }
+
+//        para -> potential_closer_para_type = grammar -> potentialCloserParaType((Ruby::ParaLexem &)para -> para_type);
+    }
 
     if (para -> is_foldable) {
         control_para = para;

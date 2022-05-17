@@ -11,7 +11,7 @@
 template <class T> class VariantPtr {
 public:
     static T * asPtr(const QVariant & v) { return (T *) v.value<void *>(); }
-    static QVariant asQVariant(T * ptr) { return qVariantFromValue((void *) ptr); }
+    static QVariant asQVariant(T * ptr) { return QVariant::fromValue((void *) ptr); }
 };
 
 #endif // VARIANTPTR_H

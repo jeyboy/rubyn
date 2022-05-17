@@ -95,5 +95,5 @@ void DirSearch::search(const QRegularExpression & pattern, const QString & paths
     in_proc = true;
     regex = pattern;
 
-    QtConcurrent::run(this, &DirSearch::process, paths_value, tree);
+    QtConcurrent::run(&DirSearch::process, this, paths_value, tree);
 }

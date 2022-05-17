@@ -54,7 +54,7 @@ const  QImage & Chars::glyph(const QChar & ch, const QFont & fnt, const CharVisu
         QFontMetrics * fmetric = MetricUnit::metric(fnt.family());
 
 //        QPointF extent = fmetric -> boundingRect(ch).bottomRight();
-        QSize glyph_size(fmetric -> width(ch), fmetric -> height());
+        QSize glyph_size(fmetric -> horizontalAdvance(ch), fmetric -> height());
 
 //        QPointF extent = m_fm.boundingRect(ch).translated(m_glyphPos).bottomRight();
 
@@ -64,7 +64,7 @@ const  QImage & Chars::glyph(const QChar & ch, const QFont & fnt, const CharVisu
         QPainter p{&glyph};
 
         p.setRenderHint(QPainter::Antialiasing, true);
-        p.setRenderHint(QPainter::HighQualityAntialiasing, true);
+        p.setRenderHint(QPainter::TextAntialiasing, true);
 
         p.setFont(fnt);
         p.setPen(Qt::black);

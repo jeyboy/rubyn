@@ -23,7 +23,7 @@ void Project::rename(const QString & /*new_name*/) {
 }
 
 File * Project::findFile(const QString & inner_path) {
-    QStringList parts = inner_path.split('/', QString::SkipEmptyParts);
+    QStringList parts = inner_path.split('/', Qt::SkipEmptyParts);
     return _root -> findFile(parts);
 }
 

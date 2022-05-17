@@ -2,7 +2,7 @@
 
 #include "web_manager.h"
 
-#include <qtextcodec.h>
+#include <QTextCodec.h>
 
 using namespace Web;
 

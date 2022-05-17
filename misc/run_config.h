@@ -206,7 +206,7 @@ struct RunConfig {
 
                     QStringList paths = rails_path.split("\r\n");
                     int pos = -1, it_pos = 0;
-                    QRegularExpression pattern("rails.bat", QRegularExpression::OptimizeOnFirstUsageOption | QRegularExpression::CaseInsensitiveOption);
+                    QRegularExpression pattern("rails.bat", QRegularExpression::CaseInsensitiveOption);
 
                     for(QStringList::Iterator it = paths.begin(); it != paths.end(); it++, ++it_pos) {
                         if ((*it).indexOf(pattern) != -1) {

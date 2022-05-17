@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui network
+QT += core gui network core5compat
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -355,7 +355,8 @@ unix:!mac {
 win32: {
 #    SOURCES += modules/controls/qxtglobalshortcut_win.cpp
     SOURCES += tools/filesystem_watcher/watcher_win.cpp
-    QMAKE_LFLAGS += -Wl,--large-address-aware
+#    QMAKE_LFLAGS += -Wl,--large-address-aware
+#    -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr -utf-8 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458
 }
 mac: {
 #    SOURCES += modules/controls/qxtglobalshortcut_mac.cpp

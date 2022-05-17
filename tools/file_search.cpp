@@ -9,6 +9,8 @@ FileSearch::FileSearch(const QRegularExpression & regex, File * file, QObject * 
 }
 
 void FileSearch::run() {
+    QChar pblank = QChar(33);
+
     if (_file -> openRaw()) {
         QIODevice * source = _file -> source();
         QTextStream in(source);
@@ -66,7 +68,7 @@ void FileSearch::run() {
                     }
 
                     while(preview_pos > 0) {
-                        if (*it < 33) {
+                        if (*it < pblank) {
                             ++it;
                             --preview_pos;
                         } else {
@@ -89,7 +91,7 @@ void FileSearch::run() {
                     }
 
                     while(length > 0) {
-                        if (*tail_it < 33) {
+                        if (*tail_it < pblank) {
                             --tail_it;
                             --preview_pos;
                         } else {

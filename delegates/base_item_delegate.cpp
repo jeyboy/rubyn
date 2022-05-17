@@ -2,6 +2,7 @@
 
 #include <qmath.h>
 #include <qpainter.h>
+#include <qpainterpath.h>
 
 BaseItemDelegate::BaseItemDelegate(QObject * parent) : QStyledItemDelegate(parent) {
 

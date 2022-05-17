@@ -892,12 +892,12 @@ qreal Color::componentMax(const Component & c, const Metric & metric) {
 void Color::getRgb(qreal & r, qreal & g, qreal & b, qreal & a, const Metric & metric) const {
     switch(metric) {
         case cm_percentage: {
-            QColor::getRgbF(&r, &g, &b, &a);
+            QColor::getRgbF(&(float&)r, &(float&)g, &(float&)b, &(float&)a);
             r *= 100.0; g *= 100.0; b *= 100.0; a *= 100.0;
         break;}
 
         case cm_proportional: {
-            QColor::getRgbF(&r, &g, &b, &a);
+            QColor::getRgbF(&(float&)r, &(float&)g, &(float&)b, &(float&)a);
         break;}
 
         case cm_ranged: {
@@ -915,12 +915,12 @@ void Color::getRgb(qreal & r, qreal & g, qreal & b, qreal & a, const Metric & me
 void Color::getHsv(qreal & h, qreal & s, qreal & v, qreal & a, const Metric & metric) const {
     switch(metric) {
         case cm_percentage: {
-            QColor::getHsvF(&h, &s, &v, &a);
+            QColor::getHsvF(&(float&)h, &(float&)s, &(float&)v, &(float&)a);
             h *= 100.0; s *= 100.0; v *= 100.0; a *= 100.0;
         break;}
 
         case cm_proportional: {
-            QColor::getHsvF(&h, &s, &v, &a);
+            QColor::getHsvF(&(float&)h, &(float&)s, &(float&)v, &(float&)a);
         break;}
 
         case cm_ranged: {
@@ -940,12 +940,12 @@ void Color::getCmyk(qreal & c, qreal & m, qreal & y, qreal & k, qreal & a, const
 
     switch(metric) {
         case cm_percentage: {
-            col.getCmykF(&c, &m, &y, &k, &a);
+            col.getCmykF(&(float&)c, &(float&)m, &(float&)y, &(float&)k, &(float&)a);
             c *= 100.0; m *= 100.0; y *= 100.0; k *= 100.0; a *= 100.0;
         break;}
 
         case cm_proportional: {
-            col.getCmykF(&c, &m, &y, &k, &a);
+            col.getCmykF(&(float&)c, &(float&)m, &(float&)y, &(float&)k, &(float&)a);
         break;}
 
         case cm_ranged: {
@@ -964,12 +964,12 @@ void Color::getCmyk(qreal & c, qreal & m, qreal & y, qreal & k, qreal & a, const
 void Color::getHsl(qreal & h, qreal & s, qreal & l, qreal & a, const Metric & metric) const {
     switch(metric) {
         case cm_percentage: {
-            QColor::getHslF(&h, &s, &l, &a);
+            QColor::getHslF(&(float&)h, &(float&)s, &(float&)l, &(float&)a);
             h *= 100.0; s *= 100.0; l *= 100.0; a *= 100.0;
         break;}
 
         case cm_proportional: {
-            QColor::getHslF(&h, &s, &l, &a);
+            QColor::getHslF(&(float&)h, &(float&)s, &(float&)l, &(float&)a);
         break;}
 
         case cm_ranged: {
@@ -987,7 +987,7 @@ void Color::getHsl(qreal & h, qreal & s, qreal & l, qreal & a, const Metric & me
 void Color::getHwb(qreal & h, qreal & w, qreal & b, qreal & a, const Metric & metric) const {
     qreal s, v;
 
-    QColor::getHsvF(&h, &s, &v, &a);
+    QColor::getHsvF(&(float&)h, &(float&)s, &(float&)v, &(float&)a);
 
     hsvToHwb(s, v, w, b);
 

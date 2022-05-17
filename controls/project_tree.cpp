@@ -172,7 +172,7 @@ QTreeWidgetItem * ProjectTree::findByPath(const QString & path) {
         if (path.startsWith(project_path, Qt::CaseInsensitive)) {
             QString inner_path = path.mid(project_path.length());
 
-            QStringList parts = inner_path.split('/', QString::SkipEmptyParts);
+            QStringList parts = inner_path.split('/', Qt::SkipEmptyParts);
             bool satisfy = true;
 
             while(satisfy && !parts.isEmpty()) {

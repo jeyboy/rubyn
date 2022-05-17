@@ -108,9 +108,6 @@ namespace Ruby {
             }
         }
         inline void cachingDelimiter() {
-    //        if (lex_word == lex_none)
-    //            lex_prev_delimiter = lex_delimiter;
-
             prev = buffer;
             buffer += next_offset;
 

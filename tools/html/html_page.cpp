@@ -1,6 +1,7 @@
 #include "html_page.h"
 
 #include <qdebug.h>
+#include <qiodevice.h>
 
 using namespace Html;
 

@@ -400,8 +400,8 @@ namespace Custom {
             int c = 0;
             _bottom_block_number = _top_block_number;
 
-            _painter -> setPen(_content_section_pal -> color(QPalette::Foreground));
-            _painter -> fillRect(numbersAreaRect(), _line_num_section_pal -> background());
+            _painter -> setPen(_content_section_pal -> color(QPalette::Window));
+            _painter -> fillRect(numbersAreaRect(), _line_num_section_pal -> windowText());
             _painter -> setClipRect(contentAreaRect());
 
             while(it) {
@@ -418,7 +418,7 @@ namespace Custom {
                 _painter -> save();
 
                 _painter -> setClipping(false);
-                _painter -> setPen(_line_num_section_pal -> color(QPalette::Foreground));
+                _painter -> setPen(_line_num_section_pal -> color(QPalette::WindowText));
                 _painter -> drawText(1, qint32(_pos.y()), _left_margin, __line_height, Qt::AlignVCenter, QString::number(++_bottom_block_number));
                 _painter -> setClipping(true);
 
@@ -596,7 +596,7 @@ namespace Custom {
         }
 
         qint32 calcStringWidth(const QString & str) {
-            return _fmetrics -> width(str);
+            return _fmetrics -> horizontalAdvance(str);
 //            int char_num = str.length();
 //            return qCeil(char_num * __symbol_width + (_letter_spacing * (char_num - 1)));
         }

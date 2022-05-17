@@ -9,11 +9,9 @@ Grammar::Grammar() {
 void Grammar::initParas() {
     para_tokens[lex_ternary_main_start] = pt_ternary;
     para_tokens[lex_ternary_alt_start] = pt_close_ternary;
-    para_closers[pt_ternary] = pt_close_ternary;
 
     para_tokens[lex_open_curly_bracket] = pt_foldable_curly_bracket;
     para_tokens[lex_close_curly_bracket] = pt_close_foldable_curly_bracket;
-    para_closers[pt_foldable_curly_bracket] = pt_close_foldable_curly_bracket;
 
     para_tokens[lex_interpolation] = pt_interpolation;
     para_tokens[lex_command_interception] = pt_interpolation;
@@ -22,15 +20,12 @@ void Grammar::initParas() {
     para_tokens[lex_heredoc_interception] = pt_interpolation;
     para_tokens[lex_regexp_interception] = pt_interpolation;
     para_tokens[lex_interception_close] = pt_close_interpolation;
-    para_closers[pt_interpolation] = pt_close_interpolation;
 
     para_tokens[lex_open_square_bracket] = pt_square_bracket;
     para_tokens[lex_close_square_bracket] = pt_close_square_bracket;
-    para_closers[pt_square_bracket] = pt_close_square_bracket;
 
     para_tokens[lex_wrap_open] = pt_round_bracket;
     para_tokens[lex_wrap_close] = pt_close_round_bracket;
-    para_closers[pt_round_bracket] = pt_close_round_bracket;
 
     para_tokens[lex_heredoc_start] = pt_heredoc;
     para_tokens[lex_heredoc_intended_start] = pt_heredoc;
@@ -39,32 +34,25 @@ void Grammar::initParas() {
     para_tokens[lex_cheredoc_start] = pt_heredoc;
     para_tokens[lex_cheredoc_intended_start] = pt_heredoc;
     para_tokens[lex_heredoc_close_mark] = pt_close_heredoc;
-    para_closers[pt_heredoc] = pt_close_heredoc;
 
 
     para_tokens[lex_percent_presentation_start] = pt_representation;
     para_tokens[lex_epercent_presentation_start] = pt_representation;
     para_tokens[lex_percent_presentation_end] = pt_close_representation;
     para_tokens[lex_epercent_presentation_end] = pt_close_representation;
-    para_closers[pt_representation] = pt_close_representation;
 
 
     para_tokens[lex_do] = pt_open_begin_block; //pt_open_do_block;
     para_tokens[lex_begin] = pt_open_begin_block;
-    para_closers[pt_open_begin_block] = pt_close_struct;
 
     para_tokens[lex_method_def] = pt_open_method;
-    para_closers[pt_open_method] = pt_close_struct;
 
     para_tokens[lex_class_def] = pt_open_class; //pt_open_class;
-    para_closers[pt_open_class] = pt_close_struct;
 
     para_tokens[lex_module_def] = pt_open_module; //pt_open_module;
-    para_closers[pt_open_module] = pt_close_struct;
 
     para_tokens[lex_if] = pt_open_if;
     para_tokens[lex_then] = pt_open_then;
-    para_closers[pt_open_if] = pt_close_struct;
 
     para_tokens[lex_for_in] = pt_open_for_in;
     para_tokens[lex_in] = pt_open_for_in;
@@ -75,16 +63,12 @@ void Grammar::initParas() {
 
     para_tokens[lex_case] = pt_open_case;
     para_tokens[lex_when] = pt_open_when;
-    para_closers[pt_open_case] = pt_close_struct;
 
     para_tokens[lex_while] = pt_open_while;
-    para_closers[pt_open_while] = pt_close_struct;
 
     para_tokens[lex_until] = pt_open_until;
-    para_closers[pt_open_until] = pt_close_struct;
 
     para_tokens[lex_for] = pt_open_for;
-    para_closers[pt_open_for] = pt_close_struct;
 
     para_tokens[lex_block_rescue] = pt_rescue;
     para_tokens[lex_block_ensure] = pt_ensure;
@@ -92,23 +76,18 @@ void Grammar::initParas() {
 
     para_tokens[lex_string_start] = pt_string;
     para_tokens[lex_string_end] = pt_close_string;
-    para_closers[pt_string] = pt_close_string;
 
     para_tokens[lex_estring_start] = pt_estring;
     para_tokens[lex_estring_end] = pt_close_estring;
-    para_closers[pt_estring] = pt_close_estring;
 
     para_tokens[lex_regexp_start] = pt_regexp;
     para_tokens[lex_regexp_end] = pt_close_regexp;
-    para_closers[pt_regexp] = pt_close_regexp;
 
     para_tokens[lex_commentary_start] = pt_foldable_comment;
     para_tokens[lex_commentary_end] = pt_close_foldable_comment;
-    para_closers[pt_foldable_comment] = pt_close_foldable_comment;
 
     para_tokens[lex_command_start] = pt_command;
     para_tokens[lex_command_end] = pt_close_command;
-    para_closers[pt_command] = pt_close_command;
 }
 
 void Grammar::initFlags(StackLexemFlag & flags, const Ruby::StateLexem & lex, const Ruby::StateLexem & last_non_blank_lex) {
@@ -305,24 +284,6 @@ bool Grammar::stackDropable(const Ruby::StateLexem & state, const Ruby::StateLex
         default: return false;
     }
 }
-
-//StateLexem Grammar::toInterceptor(const StateLexem & lex) {
-//    switch(lex) {
-//        case lex_estring_continue: return lex_estring_interception;
-//        case lex_regexp_continue: return lex_regexp_interception;
-
-//        case lex_epercent_presentation_start:
-//        case lex_epercent_presentation_continue: return lex_epercent_presentation_interception;
-
-//        case lex_eheredoc_intended_continue: return lex_eheredoc_intended_interception;
-//        case lex_cheredoc_intended_continue: return lex_cheredoc_intended_interception;
-//        case lex_eheredoc_continue: return lex_eheredoc_interception;
-//        case lex_cheredoc_continue: return lex_cheredoc_interception;
-//        case lex_command_continue: return lex_command_interception;
-
-//        default: return lex_none;
-//    };
-//}
 
 Ruby::StateLexem Grammar::stateForHeredoc(const Ruby::StateLexem & lex, const bool & content) {
     switch(lex) {

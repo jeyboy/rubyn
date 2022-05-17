@@ -45,10 +45,10 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
             QRegularExpressionMatch match = re.match(href);
 
             if (match.hasMatch()) {
-                QString version(match.capturedRef(1).mid(1).toString());
+                QString version(match.captured(1).mid(1));
                 version.replace('_', '.');
 
-                if (version.splitRef('.').length() < 3) {
+                if (version.split('.').length() < 3) {
                     version = version % ".0";
                 }
 
@@ -61,7 +61,7 @@ bool RubyDocPreparer::takeListOfAvailableDocs(DocsList & list) {
 
 //                match.capturedRef(3).mid(1); // if presents then we have preview
 
-                QStringRef url_type = match.capturedRef(4);
+                QString url_type = match.captured(4);
 
                 if (url_type == VersionUrls::core_type) {
                     ver_urls.core_url = href;

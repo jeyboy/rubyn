@@ -123,7 +123,7 @@ void Logger::initiate(const QString & file_name, const bool & create_editor) {
         file -> open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
 
         out = new QTextStream(file);
-        out -> setCodec("UTF-8");
+        out -> setEncoding(QStringConverter::Utf8);
     }
 }
 

@@ -19,7 +19,6 @@
 namespace Ruby {
     class Grammar : public Singleton<Grammar> {
         QHash<Ruby::StateLexem, Ruby::ParaLexem> para_tokens;
-        QHash<Ruby::ParaLexem, Ruby::ParaLexem> para_closers;
 
         Grammar();
 
@@ -32,17 +31,6 @@ namespace Ruby {
         bool stackDropable(const Ruby::StateLexem & state, const Ruby::StateLexem & input);
 
         inline const Ruby::ParaLexem & paraType(const Ruby::StateLexem & poss_para) { return para_tokens[poss_para]; }
-
-        inline const Ruby::ParaLexem & potentialCloserParaType(const Ruby::ParaLexem & target_para) {
-            if (!para_closers.contains(target_para)) {
-                Logger::obj().error("Ruby::Grammar", "Closer not set for " % QString::number(target_para));
-                para_closers[target_para] = pt_reserved;
-            }
-
-            return para_closers[target_para];
-        }
-
-//        LEXEM_TYPE toInterceptor(const Ruby::StateLexem & lex);
 
         Ruby::StateLexem stateForHeredoc(const Ruby::StateLexem & lex, const bool & content);
 

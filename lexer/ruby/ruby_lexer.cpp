@@ -5,6 +5,7 @@
 #include "ruby_predefined.h"
 
 #include <qdatetime.h>
+#include <qchar.h>
 
 using namespace Ruby;
 
@@ -280,6 +281,36 @@ bool Lexer::cutWord(LexerControl * state, const Ruby::StateLexem & predefined_le
     return true;
 }
 
+bool Lexer::parseContinious(LexerControl * state) {
+    if (state -> stack_token) {
+        switch(state -> stack_token -> lexem) {
+            case lex_string_start: { return parseString(state); }
+
+            case lex_estring_start: { return parseEString(state); }
+
+            case lex_regexp_start: { return parseRegexp(state); }
+
+            case lex_percent_presentation_start:
+            case lex_epercent_presentation_start: { return parsePercentagePresenation(state); }
+
+            case lex_commentary_start: { return parseComment(state); }
+
+            case lex_cheredoc_start:
+            case lex_cheredoc_intended_start:
+            case lex_eheredoc_start:
+            case lex_eheredoc_intended_start:
+            case lex_heredoc_start:
+            case lex_heredoc_intended_start: { return parseHeredoc(state); }
+
+            case lex_command_start: { return parseCommand(state); }
+
+            default:;
+        };
+    }
+
+    return true;
+}
+
 bool Lexer::parseMethodName(LexerControl * state) {
     // define_method(:'$% ^&') { 0 }
 
@@ -331,36 +362,6 @@ bool Lexer::parseMethodName(LexerControl * state) {
 
         ++state -> buffer;
     }
-}
-
-bool Lexer::parseContinious(LexerControl * state) {
-    if (state -> stack_token) {
-        switch(state -> stack_token -> lexem) {
-            case lex_string_start: { return parseString(state); }
-
-            case lex_estring_start: { return parseEString(state); }
-
-            case lex_regexp_start: { return parseRegexp(state); }
-
-            case lex_percent_presentation_start:
-            case lex_epercent_presentation_start: { return parsePercentagePresenation(state); }
-
-            case lex_commentary_start: { return parseComment(state); }
-
-            case lex_cheredoc_start:
-            case lex_cheredoc_intended_start:
-            case lex_eheredoc_start:
-            case lex_eheredoc_intended_start:
-            case lex_heredoc_start:
-            case lex_heredoc_intended_start: { return parseHeredoc(state); }
-
-            case lex_command_start: { return parseCommand(state); }
-
-            default:;
-        };
-    }
-
-    return true;
 }
 
 bool Lexer::parseNumber(LexerControl * state) {
@@ -721,7 +722,7 @@ bool Lexer::parsePercentagePresenation(LexerControl * state) {
         return true; // false;
     }
 
-    const QCharRef blocker = stack_state -> data -> operator[](0);
+    const QChar blocker = stack_state -> data -> operator[](0);
 
     Ruby::StateLexem stack_lexem = (Ruby::StateLexem)state -> stack_token -> lexem;
     Ruby::StateLexem lex = lex_none;

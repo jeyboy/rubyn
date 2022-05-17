@@ -51,7 +51,7 @@
 #define UID_TYPE qint8
 #define STACK_INT_TYPE uint
 
-#define EDITOR_POS_TYPE int
+#define EDITOR_POS_TYPE qsizetype
 #define EDITOR_LEN_TYPE uint
 
 #define DATA_FLAGS_TYPE quint8

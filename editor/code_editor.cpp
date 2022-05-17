@@ -1073,7 +1073,7 @@ void CodeEditor::extraAreaMouseEvent(QMouseEvent * event) {
 
 void CodeEditor::extraAreaLeaveEvent(QEvent *) {
     // fake missing mouse move event from Qt
-    QMouseEvent me(QEvent::MouseMove, QPoint(-99, -99), Qt::NoButton, nullptr, nullptr);
+    QMouseEvent me(QEvent::MouseMove, QPointF(-99, -99), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
     extraAreaMouseEvent(&me);
 }
 
@@ -1358,7 +1358,7 @@ void CodeEditor::customPaintEvent(QPainter & painter, QPaintEvent * e) {
                 QPoint(static_cast<int>(er.left()), static_cast<int>(offset.y())),
                 er.bottomRight()
             ),
-            palette().background()
+            palette().window()
         );
     }
 
@@ -1769,8 +1769,8 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
     completer_info.at_word_end = completer_info.cursor_pos - completer_info.word_start == completer_info.word_length;
 
     QString block_text = block.text();
-    QStringRef completion_prefix = block_text.midRef(completer_info.word_start, completer_info.cursor_pos - completer_info.word_start);
-    QStringRef text = block_text.midRef(completer_info.word_start, completer_info.word_length);
+    QString completion_prefix = block_text.mid(completer_info.word_start, completer_info.cursor_pos - completer_info.word_start);
+    QString text = block_text.mid(completer_info.word_start, completer_info.word_length);
 
     if (!wrapper -> isCompleterInitiable(completer_info.lex, completer_info.at_word_end)) {
         completer -> hide();
@@ -1792,7 +1792,7 @@ void CodeEditor::procCompleterForCursor(QTextCursor & tc, const bool & initiate_
             bool from_scratch = !wrapper -> isCompleterContinuable(completer_info.lex, completer_info.at_word_end);
 
             completer -> setCompletionPrefix(
-                from_scratch ? QString() : completion_prefix.toString()
+                from_scratch ? QString() : completion_prefix
             );
         }
     }

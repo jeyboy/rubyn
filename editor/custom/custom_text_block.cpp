@@ -71,7 +71,7 @@ void TextBlock::draw(DrawContext * context) {
     //    It can be constructed by passing a QFont object to QRawFont::fromFont(). The function will return a QRawFont object representing the font that will be selected as response to the QFont query and the selected writing system.
 
         for(int i = 0; i < str.length(); i++) {
-            if (str[i] < 33 && context -> _visualization == cv_none)
+            if (str[i].unicode() < 33 && context -> _visualization == cv_none)
                 continue;
 
             const QChar & ch = str[i];

@@ -288,10 +288,10 @@ QString Dumper::intArrToStr(const QList<int> & arr) {
     return res.mid(1);
 }
 QList<int> Dumper::strToIntArr(const QString & str) {
-    QVector<QStringRef> parts = str.splitRef(',');
+    QVector<QString> parts = str.split(',');
     QList<int> res;
 
-    QVector<QStringRef>::ConstIterator it = parts.constBegin();
+    QVector<QString>::ConstIterator it = parts.constBegin();
 
     for(; it != parts.constEnd(); it++)
         res.append((*it).toInt());

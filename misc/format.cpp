@@ -10,7 +10,7 @@ bool Info::isNumber(const QString & str) {
 }
 
 bool Info::extractNumber(const QString & text, QString & res, int index) {
-    QStringList digits = text.split(QRegularExpression("\\D+"), QString::SkipEmptyParts);
+    QStringList digits = text.split(QRegularExpression("\\D+"), Qt::SkipEmptyParts);
 
     if (digits.length() < index) return false;
 
@@ -68,12 +68,12 @@ QString Info::toUnits(long long val) {
     for (; rel < size && dVal > 1023; rel++)
         dVal /= 1024.0;
 
-    return QString().sprintf("%.2f ", dVal) + unitList[rel];
+    return QString().asprintf("%.2f ", dVal) + unitList[rel];
 }
 
 long long Info::fromUnits(const QString & val) {
     int size = sizeof(unitList) / sizeof(unitList[0]);
-    QStringList rel = val.split(' ', QString::SkipEmptyParts);
+    QStringList rel = val.split(' ', Qt::SkipEmptyParts);
 
     for(int i = 0; i < size; i++)
         if (unitList[i] == rel.last())
